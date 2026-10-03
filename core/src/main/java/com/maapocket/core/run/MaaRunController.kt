@@ -326,8 +326,15 @@ class MaaRunController(private val context: Context) {
         try {
             val installer = PiInstaller(context)
             // 资源包身份戳先读一次 assets 里的 interface.json 版本号，读不到就退化成 "dev"。
+            //
+            // 还必须带上 APK 的安装时间：只按 `<version>-vc<versionCode>` 判身份时，**改了资源包
+            // 但没升 versionCode** 的构建会命中旧目录，用户看到的仍是上一版资源。真机上就踩过
+            // 这个坑 —— 崩铁包补了 B 服 overlay 和 5 个 option，装上新 APK 后界面上一个都没变。
+            // 换版本号能救一次，但治不了根：只要有构建忘了升号就会再次发生。
+            // `lastUpdateTime` 每次安装都会变，用它当身份戳的语义正好是「这次安装的 assets 可能
+            // 和上次不同」；重解代价只在安装后第一次点「解包」时付一次。
             val stamp = runCatching { readAssetVersion() }.getOrNull() ?: "dev"
-            val fullStamp = "$stamp-vc${appVersionCode()}"
+            val fullStamp = "$stamp-vc${appVersionCode()}-u${appLastUpdateTime()}"
             val result = installer.install(fullStamp, force)
             log(
                 "pi pack → ${result.root.absolutePath} " +
@@ -364,6 +371,11 @@ class MaaRunController(private val context: Context) {
         context.packageManager.getPackageInfo(context.packageName, 0).let {
             if (android.os.Build.VERSION.SDK_INT >= 28) it.longVersionCode else it.versionCode.toLong()
         }
+    }.getOrDefault(0L)
+
+    /** APK 的安装时间（毫秒）。见 [extractPack]：用它让「换了资源包但没升 versionCode」也能重解。 */
+    private fun appLastUpdateTime(): Long = runCatching {
+        context.packageManager.getPackageInfo(context.packageName, 0).lastUpdateTime
     }.getOrDefault(0L)
 
     /** 给 `PI_CLIENT_VERSION` 用；拿不到就不注入（规范允许省略）。 */

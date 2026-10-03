@@ -9,6 +9,7 @@ static jmethodID g_touch_up_method = nullptr;
 static jmethodID g_key_down_method = nullptr;
 static jmethodID g_key_up_method = nullptr;
 static jmethodID g_start_app_method = nullptr;
+static jmethodID g_stop_app_method = nullptr;
 
 /* upcall 落到 DriverClass -> InputControlUtils/ActivityUtils，那边全是对隐藏 API 的反射，
  * 各家 ROM 上抛异常是常态。异常挂在 JNIEnv 上不清掉，下一次 JNI 调用就是未定义行为
@@ -53,6 +54,22 @@ static int UpcallStartApp(JNIEnv *env, const char *packageName, int displayId, b
     return FinishUpcall(env, result, "DriverClass.startApp");
 }
 
+/* MaaFramework 的 StopGameArgs 字段名是 client_type，但 AndroidNativeControlUnitMgr::stop_app
+ * 是把 pipeline 里写的字符串**原样**塞进去的（AndroidNativeControlUnitMgr.cpp:86-100），
+ * PI-V2 的 `StopApp{package}` 填的就是包名。以前这里没有 case，STOP_GAME 落进 default 静默
+ * no-op —— 于是所有 CloseGame 任务都关不掉游戏。 */
+static int UpcallStopApp(JNIEnv *env, const char *packageName, int displayId) {
+    if (!env || !packageName || !g_driver_clz || !g_stop_app_method) {
+        return -1;
+    }
+
+    jstring jPackageName = env->NewStringUTF(packageName);
+    jboolean result = env->CallStaticBooleanMethod(g_driver_clz, g_stop_app_method, jPackageName,
+                                                   displayId);
+    env->DeleteLocalRef(jPackageName);
+    return FinishUpcall(env, result, "DriverClass.stopApp");
+}
+
 bool InitInputBridge(JavaVM *vm, JNIEnv *env, const char *driverClassName) {
     g_jvm = vm;
     if (!env || !driverClassName) {
@@ -77,10 +94,11 @@ bool InitInputBridge(JavaVM *vm, JNIEnv *env, const char *driverClassName) {
     g_key_up_method = env->GetStaticMethodID(g_driver_clz, "keyUp", "(II)Z");
     g_start_app_method = env->GetStaticMethodID(g_driver_clz, "startApp",
                                                 "(Ljava/lang/String;IZ)Z");
+    g_stop_app_method = env->GetStaticMethodID(g_driver_clz, "stopApp", "(Ljava/lang/String;I)Z");
 
     if (CheckJNIException(env, "GetStaticMethodID(DriverClass)") ||
         !g_touch_down_method || !g_touch_move_method || !g_touch_up_method ||
-        !g_key_down_method || !g_key_up_method || !g_start_app_method) {
+        !g_key_down_method || !g_key_up_method || !g_start_app_method || !g_stop_app_method) {
         ReleaseInputBridge(env);
         return false;
     }
@@ -95,6 +113,7 @@ void ReleaseInputBridge(JNIEnv *env) {
     g_key_down_method = nullptr;
     g_key_up_method = nullptr;
     g_start_app_method = nullptr;
+    g_stop_app_method = nullptr;
 
     if (g_driver_clz && env) {
         env->DeleteGlobalRef(g_driver_clz);
@@ -151,6 +170,8 @@ BRIDGE_API int DispatchInputMessage(MethodParam param) {
         case START_GAME:
             return UpcallStartApp(env, param.args.start_game.package_name, param.display_id,
                                   param.args.start_game.force_stop != 0);
+        case STOP_GAME:
+            return UpcallStopApp(env, param.args.stop_game.client_type, param.display_id);
         default:
             return 0;
     }

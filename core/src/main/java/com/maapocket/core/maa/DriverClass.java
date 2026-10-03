@@ -19,24 +19,59 @@ public final class DriverClass {
     private DriverClass() {
     }
 
-    public static boolean startApp(String packageName, int displayId, boolean forceStop) {
-        if (displayId == PrimaryDisplayManager.DISPLAY_ID) {
-            return ActivityUtils.startApp(packageName, displayId, forceStop);
+    /**
+     * 见 `ActivityUtils.normalisePackage`：`package/activity` 只取包名。
+     * 带 `/` 的字符串喂给 `getLaunchIntentForPackage` 只会拿到 null。
+     */
+    private static String normalise(String raw) {
+        if (raw == null) {
+            return null;
         }
-        boolean ret = ActivityUtils.startApp(packageName, displayId, forceStop, true);
+        int slash = raw.indexOf('/');
+        String pkg = (slash >= 0 ? raw.substring(0, slash) : raw).trim();
+        return pkg.isEmpty() ? null : pkg;
+    }
+
+    public static boolean startApp(String packageName, int displayId, boolean forceStop) {
+        String pkg = normalise(packageName);
+        if (pkg == null) {
+            Ln.w(TAG + ": startApp with empty package name");
+            return false;
+        }
+        if (displayId == PrimaryDisplayManager.DISPLAY_ID) {
+            return ActivityUtils.startApp(pkg, displayId, forceStop);
+        }
+        boolean ret = ActivityUtils.startApp(pkg, displayId, forceStop, true);
         if (ret) {
             // 部分 ROM（如 One UI）会把游戏从虚拟屏挪回主屏，启动后校验并尝试拉回；
             // 拉不回则快速失败，避免识别对着虚拟屏空转
-            ret = ActivityUtils.ensureAppOnDisplay(packageName, displayId);
+            ret = ActivityUtils.ensureAppOnDisplay(pkg, displayId);
             if (!ret) {
-                Ln.e(TAG + ": " + packageName + " could not be pinned on display " + displayId);
+                Ln.e(TAG + ": " + pkg + " could not be pinned on display " + displayId);
             }
         }
         if (ret) {
             awaitFirstFrame();
-            GameFpsMonitor.start(packageName);
+            GameFpsMonitor.start(pkg);
         }
         return ret;
+    }
+
+    /**
+     * MaaFramework 的 `StopApp` 动作。参数名在 C ABI 里叫 `client_type`，但 AndroidNative
+     * ControlUnitMgr 是把 pipeline 里写的字符串**原样**透传的（`AndroidNativeControlUnitMgr.cpp:86-100`），
+     * PI-V2 的 `StopApp{package}` 填的就是包名。
+     *
+     * 以前 `DispatchInputMessage` 没有 `STOP_GAME` 分支，落进 `default: return 0` 静默 no-op，
+     * 于是所有 `CloseGame` 任务都关不掉游戏（迁移包的迁移报告把它记为 KNOWN_LIMITATION）。
+     */
+    public static boolean stopApp(String packageName, int displayId) {
+        String pkg = normalise(packageName);
+        if (pkg == null) {
+            Ln.w(TAG + ": stopApp with empty package name");
+            return false;
+        }
+        return ActivityUtils.stopApp(pkg, displayId);
     }
 
     private static void awaitFirstFrame() {

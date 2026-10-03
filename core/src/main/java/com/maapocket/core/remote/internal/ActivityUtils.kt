@@ -100,6 +100,20 @@ object ActivityUtils {
         if (occupiesDisplay) StaleFrameGuard.blankAfterKill(displayId, packageName)
     }
 
+    /**
+     * 只取 `/` 前面的部分。
+     *
+     * MaaFramework 的 `StartApp`/`StopApp` 参数是「intent 字符串」，PI-V2 里允许写成
+     * `package/activity`（MaaEnd 的 B 服 case 就是
+     * `com.hypergryph.endfield.bilibili/com.u8.sdk.U8UnityContext`）。但
+     * `PackageManager.getLaunchIntentForPackage` 只吃**纯包名**，带 `/` 必然返回 null，
+     * 结果是点「启动游戏」什么都不会发生，日志里只有一句 "Cannot create launch intent"。
+     * 迁移侧已经会削掉（见 scripts/migrate_maaend.py 的 normalise_android_intents），
+     * 这里再兜一层，免得第三方资源包又把带 `/` 的值喂进来。
+     */
+    private fun normalisePackage(raw: String): String? =
+        raw.substringBefore('/').trim().takeIf { it.isNotEmpty() }
+
     @JvmStatic
     @JvmOverloads
     fun startApp(
@@ -108,14 +122,18 @@ object ActivityUtils {
         forceStop: Boolean = true,
         excludeFromRecents: Boolean = true
     ): Boolean {
+        val pkg = normalisePackage(packageName) ?: run {
+            Ln.w("startApp: empty package name")
+            return false
+        }
         val pm = FakeContext.get().packageManager
 
-        val intent = pm.getLaunchIntentForPackage(packageName) ?: run {
-            pm.getLeanbackLaunchIntentForPackage(packageName)
+        val intent = pm.getLaunchIntentForPackage(pkg) ?: run {
+            pm.getLeanbackLaunchIntentForPackage(pkg)
         }
 
         if (intent == null) {
-            Ln.w("Cannot create launch intent for app $packageName")
+            Ln.w("Cannot create launch intent for app $pkg")
             return false
         }
 
@@ -126,13 +144,32 @@ object ActivityUtils {
         intent.addFlags(flag)
 
         if (forceStop) {
-            forceStop(packageName, displayId)
+            forceStop(pkg, displayId)
         }
         Ln.i("startApp ${intent.component?.flattenToShortString()}")
 
         return startActivity(intent, displayId).also { started ->
-            if (started) lastLaunched = packageName to displayId
+            if (started) lastLaunched = pkg to displayId
         }
+    }
+
+    /**
+     * `StopApp` 的实现，见 `bridge_input.cpp` 的 `UpcallStopApp`。
+     *
+     * 返回 true 只表示「force-stop 已经发出去了」，不保证进程已经消失 ——
+     * `ActivityManager.forceStopPackage` 本身是异步的。
+     */
+    @JvmStatic
+    fun stopApp(packageName: String, displayId: Int): Boolean {
+        val pkg = normalisePackage(packageName) ?: run {
+            Ln.w("stopApp: empty package name")
+            return false
+        }
+        return runCatching {
+            Ln.i("stopApp $pkg")
+            forceStop(pkg, displayId)
+            true
+        }.onFailure { Ln.w("stopApp failed: $pkg", it) }.getOrDefault(false)
     }
 
     sealed interface DisplayOccupancy {
