@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.os.Process;
-import android.os.UserHandle;
 import android.system.Os;
 
 import com.maapocket.core.third.Ln;
@@ -89,7 +88,12 @@ public final class BootstrapClient {
                                 ParcelFileDescriptor fromRemote, ParcelFileDescriptor toRemote) {
         final String authority = packageName + BootstrapProtocol.AUTHORITY_SUFFIX;
         // uid 非正说明 --uid= 没解析出来（launcher 理论上拦掉了），退到 user 0 而不是崩。
-        final int userId = appUid > 0 ? UserHandle.getUserId(appUid) : 0;
+        //
+        // 不用 UserHandle.getUserId(int)：它是 @UnsupportedAppUsage 的隐藏 API，公开
+        // android.jar 里没有（CI 原文 `error: cannot find symbol` / `symbol: method
+        // getUserId(int)` / `location: class UserHandle`）。而它的实现就是
+        // uid / PER_USER_RANGE，所以这里直接写常量，行为完全一致。
+        final int userId = appUid > 0 ? appUid / 100_000 : 0;
         final IBinder providerToken = new Binder();
 
         err("attach authority=" + authority + " userId=" + userId + " appUid=" + appUid);

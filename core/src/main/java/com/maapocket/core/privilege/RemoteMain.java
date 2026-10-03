@@ -248,7 +248,9 @@ public final class RemoteMain {
                 up[1] = null;
                 down[0] = null;   // 所有权已交给 RemoteServer
 
-                srv.awaitTermination();
+                // Kotlin 的默认参数对 Java 调用方不可见（除非 @JvmOverloads），所以显式传 0：
+                // 0 表示「无限等」，语义见 RemoteServer.awaitTermination。
+                srv.awaitTermination(0L);
                 Ln.i(TAG + ": transport closed");
             } catch (Throwable t) {
                 Ln.e(TAG + ": transport setup failed", t);
