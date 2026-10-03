@@ -1,0 +1,135 @@
+{
+  "item_processing": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "道具处理"
+              ],
+              "roi": [
+                178,
+                18,
+                152,
+                68
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "item_processing__标题-道具处理",
+      "item_processing__按钮-返回",
+      "item_processing__详情标题",
+      "item_processing__合成素材不足",
+      "item_processing__按钮-合成"
+    ]
+  },
+  "item_processing__标题-道具处理": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "道具处理"
+        ],
+        "roi": [
+          178,
+          18,
+          152,
+          68
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "item_processing__按钮-返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          82,
+          13,
+          68,
+          77
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "item_processing__详情标题": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1400,
+          196,
+          320,
+          58
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "item_processing__合成素材不足": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "合成素材不足"
+        ],
+        "roi": [
+          1469,
+          896,
+          136,
+          47
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "item_processing__按钮-合成": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "合成"
+        ],
+        "roi": [
+          1540,
+          1000,
+          300,
+          62
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "item_processing_confirm"
+    ]
+  }
+}

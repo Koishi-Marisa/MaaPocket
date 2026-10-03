@@ -1,0 +1,195 @@
+{
+  "Screen_currency_wars_mode_select": {
+    "recognition": "TemplateMatch",
+    "template": "screen/currency_wars/mode_select.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [],
+    "attach": {
+      "march7th:kind": "screen-anchor",
+      "march7th:screen_id": "currency_wars_mode_select",
+      "march7th:screen_name": "货币战争-模式选择",
+      "march7th:source_image_path": "./assets/images/screen/currency_wars/mode_select.png",
+      "march7th:note": "模板是 1920x1080 PC 客户端截图的小块裁剪，手机上必须重新采集，见 RECAPTURE.md"
+    }
+  },
+  "currency_wars_mode_select__currency_wars_homepage__0": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 111,
+    "next": [
+      "Screen_currency_wars_homepage"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "currency_wars_mode_select",
+        "currency_wars_homepage"
+      ],
+      "march7th:edge_index": 0,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.press_key('esc')",
+      "march7th:kind": "press_key",
+      "march7th:upstream_key": "esc",
+      "march7th:android_keycode": 111
+    }
+  },
+  "currency_wars_mode_select__currency_wars_mode_select_normal__0__UNMAPPED_17": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "currency_wars_mode_select__currency_wars_mode_select_normal__1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "currency_wars_mode_select",
+        "currency_wars_mode_select_normal"
+      ],
+      "march7th:edge_index": 1,
+      "march7th:action_index": 0,
+      "march7th:unmapped_expression": "auto.click_element('标准博弈', 'text', None, 10, crop=(38.0 / 1920, 111.0 / 1080, 490.0 / 1920, 807.0 / 1080))",
+      "march7th:unmapped_reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。",
+      "march7th:planned_recognition": "OCR (recognition:\"OCR\" + expected + roi)",
+      "march7th:parsed": true,
+      "march7th:find_type": "text"
+    }
+  },
+  "currency_wars_mode_select__currency_wars_mode_select_normal__1": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 1000,
+    "next": [
+      "currency_wars_mode_select__currency_wars_mode_select_normal__2__UNMAPPED_18"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "currency_wars_mode_select",
+        "currency_wars_mode_select_normal"
+      ],
+      "march7th:edge_index": 1,
+      "march7th:action_index": 1,
+      "march7th:expression": "time.sleep(1)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "currency_wars_mode_select__currency_wars_mode_select_normal__2__UNMAPPED_18": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_currency_wars_mode_select_normal"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "currency_wars_mode_select",
+        "currency_wars_mode_select_normal"
+      ],
+      "march7th:edge_index": 1,
+      "march7th:action_index": 2,
+      "march7th:unmapped_expression": "auto.click_element('进入标准博弈', 'text', None, 10, crop=(1396.0 / 1920, 917.0 / 1080, 476.0 / 1920, 75.0 / 1080))",
+      "march7th:unmapped_reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。",
+      "march7th:planned_recognition": "OCR (recognition:\"OCR\" + expected + roi)",
+      "march7th:parsed": true,
+      "march7th:find_type": "text"
+    }
+  },
+  "currency_wars_mode_select__currency_wars_mode_select_overclock__0__UNMAPPED_19": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "currency_wars_mode_select__currency_wars_mode_select_overclock__1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "currency_wars_mode_select",
+        "currency_wars_mode_select_overclock"
+      ],
+      "march7th:edge_index": 2,
+      "march7th:action_index": 0,
+      "march7th:unmapped_expression": "auto.click_element('超频博弈', 'text', None, 10, crop=(38.0 / 1920, 111.0 / 1080, 490.0 / 1920, 807.0 / 1080))",
+      "march7th:unmapped_reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。",
+      "march7th:planned_recognition": "OCR (recognition:\"OCR\" + expected + roi)",
+      "march7th:parsed": true,
+      "march7th:find_type": "text"
+    }
+  },
+  "currency_wars_mode_select__currency_wars_mode_select_overclock__1": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 1000,
+    "next": [
+      "currency_wars_mode_select__currency_wars_mode_select_overclock__2__UNMAPPED_20"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "currency_wars_mode_select",
+        "currency_wars_mode_select_overclock"
+      ],
+      "march7th:edge_index": 2,
+      "march7th:action_index": 1,
+      "march7th:expression": "time.sleep(1)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "currency_wars_mode_select__currency_wars_mode_select_overclock__2__UNMAPPED_20": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_currency_wars_mode_select_overclock"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "currency_wars_mode_select",
+        "currency_wars_mode_select_overclock"
+      ],
+      "march7th:edge_index": 2,
+      "march7th:action_index": 2,
+      "march7th:unmapped_expression": "auto.click_element('进入超频博弈', 'text', None, 10, crop=(1396.0 / 1920, 917.0 / 1080, 476.0 / 1920, 75.0 / 1080))",
+      "march7th:unmapped_reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。",
+      "march7th:planned_recognition": "OCR (recognition:\"OCR\" + expected + roi)",
+      "march7th:parsed": true,
+      "march7th:find_type": "text"
+    }
+  },
+  "Nav_currency_wars_mode_select_from_currency_wars_homepage": {
+    "recognition": "TemplateMatch",
+    "template": "screen/currency_wars/homepage.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "currency_wars_homepage__currency_wars_mode_select__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 currency_wars_homepage 上时，沿上游第一条 currency_wars_homepage -> currency_wars_mode_select 边前进"
+    }
+  },
+  "NavTo_currency_wars_mode_select": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Nav_currency_wars_mode_select_from_currency_wars_homepage",
+      "Screen_currency_wars_mode_select"
+    ],
+    "attach": {
+      "march7th:kind": "nav-router",
+      "march7th:target_screen": "currency_wars_mode_select",
+      "march7th:predecessors": [
+        "currency_wars_homepage",
+        "currency_wars_mode_select_normal",
+        "currency_wars_mode_select_overclock"
+      ],
+      "march7th:note": "DirectHit 进入：先按顺序试探各前驱屏幕守卫节点（TemplateMatch 前驱屏幕锚点），命中则沿那条上游边导航；全部未命中则回退到 Screen_currency_wars_mode_select 锚点——若此时已经在 currency_wars_mode_select 上即成功，否则本节点识别失败（诚实失败，不静默跳过）。只覆盖单跳。"
+    }
+  }
+}

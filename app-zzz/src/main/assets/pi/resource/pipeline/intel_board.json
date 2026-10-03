@@ -1,0 +1,228 @@
+{
+  "intel_board": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "点数兑换"
+              ],
+              "roi": [
+                954,
+                991,
+                288,
+                73
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "intel_board/refresh/raw.png"
+              ],
+              "roi": [
+                801,
+                999,
+                59,
+                59
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                878,
+                999,
+                58,
+                59
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1422,
+                998,
+                282,
+                60
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1200,
+                100,
+                720,
+                860
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1800,
+                40,
+                1,
+                1
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                322,
+                1019,
+                191,
+                42
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "intel_board__点数兑换",
+      "intel_board__刷新按钮",
+      "intel_board__筛选按钮",
+      "intel_board__重置按钮",
+      "intel_board__搜索区域",
+      "intel_board__关闭筛选",
+      "intel_board__进度文本"
+    ]
+  },
+  "intel_board__点数兑换": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "点数兑换"
+        ],
+        "roi": [
+          954,
+          991,
+          288,
+          73
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "intel_board__刷新按钮": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "intel_board/refresh/raw.png"
+        ],
+        "roi": [
+          801,
+          999,
+          59,
+          59
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "intel_board__筛选按钮": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          878,
+          999,
+          58,
+          59
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "intel_board__重置按钮": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1422,
+          998,
+          282,
+          60
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "intel_board__搜索区域": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1200,
+          100,
+          720,
+          860
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "intel_board__关闭筛选": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1800,
+          40,
+          1,
+          1
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "intel_board__进度文本": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          322,
+          1019,
+          191,
+          42
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

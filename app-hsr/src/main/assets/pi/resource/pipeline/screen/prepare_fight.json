@@ -1,0 +1,104 @@
+{
+  "Screen_prepare_fight": {
+    "recognition": "TemplateMatch",
+    "template": "forgottenhall/prepare_fight.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [],
+    "attach": {
+      "march7th:kind": "screen-anchor",
+      "march7th:screen_id": "prepare_fight",
+      "march7th:screen_name": "忘却之庭-准备战斗",
+      "march7th:source_image_path": "./assets/images/forgottenhall/prepare_fight.png",
+      "march7th:note": "模板是 1920x1080 PC 客户端截图的小块裁剪，手机上必须重新采集，见 RECAPTURE.md"
+    }
+  },
+  "prepare_fight__memory_of_chaos__0": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 111,
+    "next": [
+      "prepare_fight__memory_of_chaos__1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "prepare_fight",
+        "memory_of_chaos"
+      ],
+      "march7th:edge_index": 0,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.press_key('esc')",
+      "march7th:kind": "press_key",
+      "march7th:upstream_key": "esc",
+      "march7th:android_keycode": 111
+    }
+  },
+  "prepare_fight__memory_of_chaos__1": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 1000,
+    "next": [
+      "prepare_fight__memory_of_chaos__2"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "prepare_fight",
+        "memory_of_chaos"
+      ],
+      "march7th:edge_index": 0,
+      "march7th:action_index": 1,
+      "march7th:expression": "time.sleep(1)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "prepare_fight__memory_of_chaos__2": {
+    "recognition": "TemplateMatch",
+    "template": "zh_CN/base/confirm.png",
+    "threshold": 0.9,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "Screen_memory_of_chaos"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "prepare_fight",
+        "memory_of_chaos"
+      ],
+      "march7th:edge_index": 0,
+      "march7th:action_index": 2,
+      "march7th:expression": "auto.click_element('./assets/images/zh_CN/base/confirm.png', 'image', 0.9, 2)",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 0.9,
+      "march7th:masked_template": false,
+      "march7th:max_retries": 2
+    },
+    "rate_limit": 1000,
+    "timeout": 20000
+  },
+  "NavTo_prepare_fight": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_prepare_fight"
+    ],
+    "attach": {
+      "march7th:kind": "nav-router",
+      "march7th:target_screen": "prepare_fight",
+      "march7th:predecessors": [],
+      "march7th:note": "DirectHit 进入：先按顺序试探各前驱屏幕守卫节点（TemplateMatch 前驱屏幕锚点），命中则沿那条上游边导航；全部未命中则回退到 Screen_prepare_fight 锚点——若此时已经在 prepare_fight 上即成功，否则本节点识别失败（诚实失败，不静默跳过）。只覆盖单跳。"
+    }
+  }
+}

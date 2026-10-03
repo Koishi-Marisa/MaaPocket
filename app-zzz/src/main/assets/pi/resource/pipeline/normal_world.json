@@ -1,0 +1,383 @@
+{
+  "normal_world": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "normal_world/message/raw.png"
+              ],
+              "roi": [
+                1728,
+                918,
+                98,
+                98
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "星期"
+              ],
+              "roi": [
+                201,
+                38,
+                69,
+                48
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                100,
+                54,
+                62,
+                40
+              ]
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "normal_world/map/raw.png"
+              ],
+              "roi": [
+                1696,
+                319,
+                162,
+                96
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1534,
+                201,
+                210,
+                210
+              ]
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "normal_world/compendium/raw.png"
+              ],
+              "roi": [
+                1440,
+                28,
+                249,
+                90
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                892,
+                798,
+                150,
+                38
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1420,
+                552,
+                498,
+                252
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "取消"
+              ],
+              "roi": [
+                726,
+                600,
+                192,
+                52
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                1036,
+                593,
+                176,
+                64
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "按自己的步调度过这一天"
+              ],
+              "roi": [
+                10,
+                115,
+                340,
+                185
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "normal_world__信息",
+      "normal_world__星期",
+      "normal_world__菜单",
+      "normal_world__地图",
+      "normal_world__小地图",
+      "normal_world__快捷手册",
+      "normal_world__好感度标题",
+      "normal_world__好感度选项",
+      "normal_world__对话框取消",
+      "normal_world__对话框确认",
+      "normal_world__任务追踪"
+    ]
+  },
+  "normal_world__信息": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "normal_world/message/raw.png"
+        ],
+        "roi": [
+          1728,
+          918,
+          98,
+          98
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "normal_world__星期": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "星期"
+        ],
+        "roi": [
+          201,
+          38,
+          69,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "normal_world__菜单": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          100,
+          54,
+          62,
+          40
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "normal_world__地图": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "normal_world/map/raw.png"
+        ],
+        "roi": [
+          1696,
+          319,
+          162,
+          96
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "normal_world__小地图": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1534,
+          201,
+          210,
+          210
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "normal_world__快捷手册": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "normal_world/compendium/raw.png"
+        ],
+        "roi": [
+          1440,
+          28,
+          249,
+          90
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "compendium_training"
+    ]
+  },
+  "normal_world__好感度标题": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          892,
+          798,
+          150,
+          38
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "normal_world__好感度选项": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1420,
+          552,
+          498,
+          252
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "normal_world__对话框取消": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "取消"
+        ],
+        "roi": [
+          726,
+          600,
+          192,
+          52
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "normal_world__对话框确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1036,
+          593,
+          176,
+          64
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "normal_world__任务追踪": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "按自己的步调度过这一天"
+        ],
+        "roi": [
+          10,
+          115,
+          340,
+          185
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

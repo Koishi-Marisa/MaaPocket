@@ -1,0 +1,202 @@
+{
+  "lost_void_gear": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "携带"
+              ],
+              "roi": [
+                1732,
+                846,
+                180,
+                50
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "详情"
+              ],
+              "roi": [
+                186,
+                28,
+                68,
+                46
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "lost_void_gear__按钮-携带",
+      "lost_void_gear__文本-详情",
+      "lost_void_gear__按钮-返回",
+      "lost_void_gear__武备列表",
+      "lost_void_gear__等级列表",
+      "lost_void_gear__武备名称",
+      "lost_void_gear__确认",
+      "lost_void_gear__不再提示"
+    ]
+  },
+  "lost_void_gear__按钮-携带": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "携带"
+        ],
+        "roi": [
+          1732,
+          846,
+          180,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "lost_void_gear__文本-详情": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "详情"
+        ],
+        "roi": [
+          186,
+          28,
+          68,
+          46
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_gear__按钮-返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          82,
+          13,
+          68,
+          77
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "lost_void_gear__武备列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          190,
+          892,
+          1550,
+          180
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_gear__等级列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          216,
+          922,
+          1426,
+          38
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_gear__武备名称": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          452,
+          459,
+          1052,
+          108
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_gear__确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1055,
+          656,
+          141,
+          45
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "lost_void_gear__不再提示": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "不再提示"
+        ],
+        "roi": [
+          882,
+          552,
+          155,
+          46
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

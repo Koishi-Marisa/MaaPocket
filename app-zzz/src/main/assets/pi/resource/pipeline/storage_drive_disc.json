@@ -1,0 +1,91 @@
+{
+  "storage_drive_disc": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "驱动仓库"
+              ],
+              "roi": [
+                70,
+                116,
+                94,
+                48
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "拆解"
+              ],
+              "roi": [
+                250,
+                900,
+                188,
+                60
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "storage_drive_disc__标题-驱动仓库",
+      "storage_drive_disc__按钮-拆解"
+    ]
+  },
+  "storage_drive_disc__标题-驱动仓库": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "驱动仓库"
+        ],
+        "roi": [
+          70,
+          116,
+          94,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "storage_drive_disc__按钮-拆解": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "拆解"
+        ],
+        "roi": [
+          250,
+          900,
+          188,
+          60
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "drive_disc_dismantle"
+    ]
+  }
+}

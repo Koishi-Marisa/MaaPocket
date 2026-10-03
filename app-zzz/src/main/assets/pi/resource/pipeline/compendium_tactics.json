@@ -1,0 +1,201 @@
+{
+  "compendium_tactics": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "战术"
+              ],
+              "roi": [
+                708,
+                140,
+                928,
+                80
+              ],
+              "threshold": 0.5,
+              "color_filter": "compendium_tactics__TAB-战术__color"
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "compendium_tactics__TAB-训练",
+      "compendium_tactics__TAB-目标",
+      "compendium_tactics__TAB-日常",
+      "compendium_tactics__TAB-作战",
+      "compendium_tactics__TAB-战术",
+      "compendium_tactics__按钮-关闭"
+    ]
+  },
+  "compendium_tactics__TAB-训练": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "训练"
+        ],
+        "roi": [
+          708,
+          140,
+          928,
+          80
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "compendium_training"
+    ]
+  },
+  "compendium_tactics__TAB-目标": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "目标"
+        ],
+        "roi": [
+          708,
+          140,
+          928,
+          80
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "compendium_primer"
+    ]
+  },
+  "compendium_tactics__TAB-日常": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "日常"
+        ],
+        "roi": [
+          708,
+          140,
+          928,
+          80
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "compendium_errands"
+    ]
+  },
+  "compendium_tactics__TAB-作战": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "作战"
+        ],
+        "roi": [
+          708,
+          140,
+          928,
+          80
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "compendium_combat"
+    ]
+  },
+  "compendium_tactics__TAB-战术": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "战术"
+        ],
+        "roi": [
+          708,
+          140,
+          928,
+          80
+        ],
+        "threshold": 0.5,
+        "color_filter": "compendium_tactics__TAB-战术__color"
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "compendium_tactics"
+    ]
+  },
+  "compendium_tactics__按钮-关闭": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1721,
+          229,
+          78,
+          78
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "menu",
+      "normal_world_basic"
+    ]
+  },
+  "compendium_tactics__TAB-战术__color": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "method": 4,
+        "roi": [
+          708,
+          140,
+          928,
+          80
+        ],
+        "lower": [
+          0,
+          160,
+          200
+        ],
+        "upper": [
+          60,
+          210,
+          255
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

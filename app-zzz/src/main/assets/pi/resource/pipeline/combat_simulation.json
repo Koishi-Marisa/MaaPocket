@@ -1,0 +1,636 @@
+{
+  "combat_simulation": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "挑战奖励"
+              ],
+              "roi": [
+                84,
+                1006,
+                224,
+                48
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                128,
+                724,
+                1668,
+                158
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1440,
+                1000,
+                56,
+                55
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1508,
+                1000,
+                44,
+                55
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "下一步"
+              ],
+              "roi": [
+                1590,
+                1000,
+                260,
+                55
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "出战"
+              ],
+              "roi": [
+                1638,
+                1002,
+                194,
+                50
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "挑战等级"
+              ],
+              "roi": [
+                1454,
+                26,
+                132,
+                54
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                406,
+                592,
+                1122,
+                236
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                130,
+                222,
+                304,
+                436
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                254,
+                128,
+                188,
+                116
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                546,
+                170,
+                212,
+                280
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "保存方案"
+              ],
+              "roi": [
+                1600,
+                1008,
+                234,
+                40
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确定并出战"
+              ],
+              "roi": [
+                1026,
+                602,
+                204,
+                50
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "预备编队"
+              ],
+              "roi": [
+                368,
+                1002,
+                195,
+                55
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "预备出战"
+              ],
+              "roi": [
+                1634,
+                1000,
+                192,
+                54
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                128,
+                740,
+                1670,
+                36
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "获得"
+              ],
+              "roi": [
+                919,
+                395,
+                80,
+                56
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                1091,
+                701,
+                78,
+                55
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "前往"
+              ],
+              "roi": [
+                788,
+                702,
+                78,
+                54
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "combat_simulation__挑战奖励",
+      "combat_simulation__副本名称列表",
+      "combat_simulation__剩余电量",
+      "combat_simulation__需要电量",
+      "combat_simulation__下一步",
+      "combat_simulation__出战",
+      "combat_simulation__挑战等级",
+      "combat_simulation__副本类型列表",
+      "combat_simulation__外层-卡片1",
+      "combat_simulation__内层-已选择卡片1",
+      "combat_simulation__内层-卡片1",
+      "combat_simulation__保存方案",
+      "combat_simulation__确定并出战",
+      "combat_simulation__预备编队",
+      "combat_simulation__预备出战",
+      "combat_simulation__副本名称列表顶部",
+      "combat_simulation__战斗结果-获得",
+      "combat_simulation__战斗结果-获得-确认",
+      "combat_simulation__战斗结果-获得-前往"
+    ]
+  },
+  "combat_simulation__挑战奖励": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "挑战奖励"
+        ],
+        "roi": [
+          84,
+          1006,
+          224,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "combat_simulation__副本名称列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          128,
+          724,
+          1668,
+          158
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "combat_simulation__剩余电量": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1440,
+          1000,
+          56,
+          55
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "combat_simulation__需要电量": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1508,
+          1000,
+          44,
+          55
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "combat_simulation__下一步": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "下一步"
+        ],
+        "roi": [
+          1590,
+          1000,
+          260,
+          55
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "combat_simulation__出战": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "出战"
+        ],
+        "roi": [
+          1638,
+          1002,
+          194,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "combat_simulation__挑战等级": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "挑战等级"
+        ],
+        "roi": [
+          1454,
+          26,
+          132,
+          54
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "combat_simulation__副本类型列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          406,
+          592,
+          1122,
+          236
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "combat_simulation__外层-卡片1": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          130,
+          222,
+          304,
+          436
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "combat_simulation__内层-已选择卡片1": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          254,
+          128,
+          188,
+          116
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "combat_simulation__内层-卡片1": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          546,
+          170,
+          212,
+          280
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "combat_simulation__保存方案": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "保存方案"
+        ],
+        "roi": [
+          1600,
+          1008,
+          234,
+          40
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "combat_simulation__确定并出战": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确定并出战"
+        ],
+        "roi": [
+          1026,
+          602,
+          204,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "combat_simulation__预备编队": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "预备编队"
+        ],
+        "roi": [
+          368,
+          1002,
+          195,
+          55
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "combat_simulation__预备出战": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "预备出战"
+        ],
+        "roi": [
+          1634,
+          1000,
+          192,
+          54
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "combat_simulation__副本名称列表顶部": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          128,
+          740,
+          1670,
+          36
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "combat_simulation__战斗结果-获得": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "获得"
+        ],
+        "roi": [
+          919,
+          395,
+          80,
+          56
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "combat_simulation__战斗结果-获得-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1091,
+          701,
+          78,
+          55
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "combat_simulation__战斗结果-获得-前往": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "前往"
+        ],
+        "roi": [
+          788,
+          702,
+          78,
+          54
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

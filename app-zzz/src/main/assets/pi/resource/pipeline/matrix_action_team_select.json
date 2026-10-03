@@ -1,0 +1,213 @@
+{
+  "matrix_action_team_select": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "开始挑战"
+              ],
+              "roi": [
+                1633,
+                998,
+                178,
+                54
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "matrix_action_team_select__预备编队",
+      "matrix_action_team_select__主战编队",
+      "matrix_action_team_select__协战代理人",
+      "matrix_action_team_select__编队列表",
+      "matrix_action_team_select__按钮-开始挑战",
+      "matrix_action_team_select__代理人列表",
+      "matrix_action_team_select__主战编队槽",
+      "matrix_action_team_select__协战编队槽",
+      "matrix_action_team_select__协战代理人属性",
+      "matrix_action_team_select__确认"
+    ]
+  },
+  "matrix_action_team_select__预备编队": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "预备编队"
+        ],
+        "roi": [
+          679,
+          24,
+          146,
+          47
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "matrix_action_team_select__主战编队": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1024,
+          116,
+          105,
+          34
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "matrix_action_team_select__协战代理人": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1026,
+          312,
+          125,
+          38
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "matrix_action_team_select__编队列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          185,
+          156,
+          781,
+          903
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "matrix_action_team_select__按钮-开始挑战": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "开始挑战"
+        ],
+        "roi": [
+          1633,
+          998,
+          178,
+          54
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "matrix_action_team_select__代理人列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          188,
+          96,
+          778,
+          963
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "matrix_action_team_select__主战编队槽": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1028,
+          162,
+          605,
+          137
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "matrix_action_team_select__协战编队槽": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1018,
+          350,
+          163,
+          159
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "matrix_action_team_select__协战代理人属性": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1300,
+          400,
+          74,
+          34
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "matrix_action_team_select__确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          920,
+          540,
+          110,
+          260
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

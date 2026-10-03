@@ -1,0 +1,865 @@
+{
+  "notorious_hunt": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                240,
+                216,
+                1512,
+                250
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1516,
+                1018,
+                22,
+                25
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "当期剩余奖励次数"
+              ],
+              "roi": [
+                192,
+                992,
+                176,
+                33
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "选择"
+              ],
+              "roi": [
+                860,
+                772,
+                190,
+                48
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "重新开始"
+              ],
+              "roi": [
+                1228,
+                1008,
+                280,
+                50
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                1030,
+                602,
+                196,
+                50
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                68,
+                948,
+                114,
+                112
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "全部领取"
+              ],
+              "roi": [
+                1192,
+                344,
+                202,
+                38
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1566,
+                24,
+                246,
+                48
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1570,
+                100,
+                258,
+                324
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                218,
+                218,
+                1366,
+                702
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "剩余奖励次数"
+              ],
+              "roi": [
+                1380,
+                1004,
+                126,
+                46
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "退出战斗"
+              ],
+              "roi": [
+                1614,
+                1004,
+                216,
+                48
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                1030,
+                602,
+                196,
+                50
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "退出"
+              ],
+              "roi": [
+                1562,
+                1006,
+                264,
+                44
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                160,
+                772,
+                1690,
+                48
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "ON"
+              ],
+              "roi": [
+                1658,
+                672,
+                96,
+                50
+              ],
+              "threshold": 0.5,
+              "color_filter": "notorious_hunt__按钮-深度追猎-ON__color"
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                1030,
+                602,
+                196,
+                50
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1465,
+                1000,
+                63,
+                55
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1533,
+                1000,
+                53,
+                55
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "无报酬模式"
+              ],
+              "roi": [
+                1602,
+                1000,
+                228,
+                55
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "街区"
+              ],
+              "roi": [
+                238,
+                24,
+                150,
+                58
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                750,
+                168,
+                726,
+                97
+              ]
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "battle/boss_life/raw.png"
+              ],
+              "roi": [
+                1620,
+                16,
+                100,
+                90
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "notorious_hunt/info/raw.png"
+              ],
+              "roi": [
+                1480,
+                675,
+                45,
+                45
+              ],
+              "threshold": 0.7
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "notorious_hunt__副本名称列表",
+      "notorious_hunt__剩余次数",
+      "notorious_hunt__当期剩余奖励次数",
+      "notorious_hunt__选择",
+      "notorious_hunt__重新开始",
+      "notorious_hunt__重新开始-确认",
+      "notorious_hunt__奖励入口",
+      "notorious_hunt__全部领取",
+      "notorious_hunt__难度选择入口",
+      "notorious_hunt__难度选择区域",
+      "notorious_hunt__鸣徽交互区域",
+      "notorious_hunt__剩余奖励次数",
+      "notorious_hunt__退出战斗",
+      "notorious_hunt__退出战斗-确认",
+      "notorious_hunt__挑战结果-退出",
+      "notorious_hunt__区域-鸣徽选择列表",
+      "notorious_hunt__按钮-深度追猎-ON",
+      "notorious_hunt__按钮-深度追猎-确认",
+      "notorious_hunt__文本-剩余电量",
+      "notorious_hunt__文本-需要电量",
+      "notorious_hunt__按钮-无报酬模式",
+      "notorious_hunt__按钮-街区",
+      "notorious_hunt__标题-副本名称",
+      "notorious_hunt__标识-BOSS血条",
+      "notorious_hunt__深度追猎-信息"
+    ]
+  },
+  "notorious_hunt__副本名称列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          240,
+          216,
+          1512,
+          250
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "notorious_hunt__剩余次数": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1516,
+          1018,
+          22,
+          25
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "notorious_hunt__当期剩余奖励次数": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "当期剩余奖励次数"
+        ],
+        "roi": [
+          192,
+          992,
+          176,
+          33
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "notorious_hunt__选择": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "选择"
+        ],
+        "roi": [
+          860,
+          772,
+          190,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "notorious_hunt__重新开始": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "重新开始"
+        ],
+        "roi": [
+          1228,
+          1008,
+          280,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "notorious_hunt__重新开始-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1030,
+          602,
+          196,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "notorious_hunt__奖励入口": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          68,
+          948,
+          114,
+          112
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "notorious_hunt__全部领取": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "全部领取"
+        ],
+        "roi": [
+          1192,
+          344,
+          202,
+          38
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "notorious_hunt__难度选择入口": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1566,
+          24,
+          246,
+          48
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "notorious_hunt__难度选择区域": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1570,
+          100,
+          258,
+          324
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "notorious_hunt__鸣徽交互区域": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          218,
+          218,
+          1366,
+          702
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "notorious_hunt__剩余奖励次数": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "剩余奖励次数"
+        ],
+        "roi": [
+          1380,
+          1004,
+          126,
+          46
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "notorious_hunt__退出战斗": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "退出战斗"
+        ],
+        "roi": [
+          1614,
+          1004,
+          216,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "notorious_hunt__退出战斗-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1030,
+          602,
+          196,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "notorious_hunt__挑战结果-退出": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "退出"
+        ],
+        "roi": [
+          1562,
+          1006,
+          264,
+          44
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "notorious_hunt__区域-鸣徽选择列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          160,
+          772,
+          1690,
+          48
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "notorious_hunt__按钮-深度追猎-ON": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "ON"
+        ],
+        "roi": [
+          1658,
+          672,
+          96,
+          50
+        ],
+        "threshold": 0.5,
+        "color_filter": "notorious_hunt__按钮-深度追猎-ON__color"
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "notorious_hunt__按钮-深度追猎-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1030,
+          602,
+          196,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "notorious_hunt__文本-剩余电量": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1465,
+          1000,
+          63,
+          55
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "notorious_hunt__文本-需要电量": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1533,
+          1000,
+          53,
+          55
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "notorious_hunt__按钮-无报酬模式": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "无报酬模式"
+        ],
+        "roi": [
+          1602,
+          1000,
+          228,
+          55
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "notorious_hunt__按钮-街区": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "街区"
+        ],
+        "roi": [
+          238,
+          24,
+          150,
+          58
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "notorious_hunt__标题-副本名称": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          750,
+          168,
+          726,
+          97
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "notorious_hunt__标识-BOSS血条": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "battle/boss_life/raw.png"
+        ],
+        "roi": [
+          1620,
+          16,
+          100,
+          90
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "notorious_hunt__深度追猎-信息": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "notorious_hunt/info/raw.png"
+        ],
+        "roi": [
+          1480,
+          675,
+          45,
+          45
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "notorious_hunt__按钮-深度追猎-ON__color": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "method": 4,
+        "roi": [
+          1658,
+          672,
+          96,
+          50
+        ],
+        "lower": [
+          0,
+          80,
+          70
+        ],
+        "upper": [
+          255,
+          255,
+          255
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

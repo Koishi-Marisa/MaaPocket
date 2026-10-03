@@ -1,0 +1,368 @@
+{
+  "fishing": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                286,
+                110,
+                1266,
+                702
+              ]
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "fishing/interact_timing/raw.png"
+              ],
+              "roi": [
+                1516,
+                798,
+                168,
+                168
+              ],
+              "threshold": 0.9
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "fishing/btn_left/raw.png"
+              ],
+              "roi": [
+                253,
+                816,
+                134,
+                134
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "fishing/btn_right/raw.png"
+              ],
+              "roi": [
+                1516,
+                798,
+                168,
+                168
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "fishing/btn_back/raw.png"
+              ],
+              "roi": [
+                50,
+                10,
+                158,
+                80
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "点击空白处关闭"
+              ],
+              "roi": [
+                824,
+                966,
+                274,
+                112
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "挑战结果"
+              ],
+              "roi": [
+                602,
+                110,
+                688,
+                266
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确定"
+              ],
+              "roi": [
+                870,
+                866,
+                220,
+                64
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "fishing/btn_power/raw.png"
+              ],
+              "roi": [
+                130,
+                744,
+                102,
+                110
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "fishing/btn_power/raw.png"
+              ],
+              "roi": [
+                1686,
+                746,
+                104,
+                108
+              ],
+              "threshold": 0.7
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "fishing__指令文本区域",
+      "fishing__按键-时机上鱼",
+      "fishing__按键-左",
+      "fishing__按键-右",
+      "fishing__按键-返回",
+      "fishing__按钮-点击空白处关闭",
+      "fishing__标题-挑战结果",
+      "fishing__按钮-确定",
+      "fishing__按键-强力-左",
+      "fishing__按键-强力-右"
+    ]
+  },
+  "fishing__指令文本区域": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          286,
+          110,
+          1266,
+          702
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "fishing__按键-时机上鱼": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "fishing/interact_timing/raw.png"
+        ],
+        "roi": [
+          1516,
+          798,
+          168,
+          168
+        ],
+        "threshold": 0.9
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "fishing__按键-左": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "fishing/btn_left/raw.png"
+        ],
+        "roi": [
+          253,
+          816,
+          134,
+          134
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "fishing__按键-右": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "fishing/btn_right/raw.png"
+        ],
+        "roi": [
+          1516,
+          798,
+          168,
+          168
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "fishing__按键-返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "fishing/btn_back/raw.png"
+        ],
+        "roi": [
+          50,
+          10,
+          158,
+          80
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "fishing__按钮-点击空白处关闭": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "点击空白处关闭"
+        ],
+        "roi": [
+          824,
+          966,
+          274,
+          112
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "fishing__标题-挑战结果": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "挑战结果"
+        ],
+        "roi": [
+          602,
+          110,
+          688,
+          266
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "fishing__按钮-确定": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确定"
+        ],
+        "roi": [
+          870,
+          866,
+          220,
+          64
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "fishing__按键-强力-左": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "fishing/btn_power/raw.png"
+        ],
+        "roi": [
+          130,
+          744,
+          102,
+          110
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "fishing__按键-强力-右": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "fishing/btn_power/raw.png"
+        ],
+        "roi": [
+          1686,
+          746,
+          104,
+          108
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

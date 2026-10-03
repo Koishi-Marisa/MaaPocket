@@ -1,0 +1,185 @@
+{
+  "lost_void_entry_task_force": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "街区"
+              ],
+              "roi": [
+                238,
+                26,
+                156,
+                52
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "menu/back/raw.png"
+              ],
+              "roi": [
+                82,
+                13,
+                68,
+                77
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "特遣任务"
+              ],
+              "roi": [
+                1322,
+                1002,
+                228,
+                54
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "lost_void_entry_task_force__按钮-街区",
+      "lost_void_entry_task_force__菜单-返回",
+      "lost_void_entry_task_force__按钮-特遣任务",
+      "lost_void_entry_task_force__按钮-下一步",
+      "lost_void_entry_task_force__区域-代理人头像",
+      "lost_void_entry_task_force__按钮-调查战略"
+    ]
+  },
+  "lost_void_entry_task_force__按钮-街区": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "街区"
+        ],
+        "roi": [
+          238,
+          26,
+          156,
+          52
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "normal_world_basic"
+    ]
+  },
+  "lost_void_entry_task_force__菜单-返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          82,
+          13,
+          68,
+          77
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "lost_void_entry_standard"
+    ]
+  },
+  "lost_void_entry_task_force__按钮-特遣任务": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "特遣任务"
+        ],
+        "roi": [
+          1322,
+          1002,
+          228,
+          54
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_entry_task_force__按钮-下一步": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "下一步"
+        ],
+        "roi": [
+          1606,
+          1002,
+          234,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "lost_void_entry_task_force__区域-代理人头像": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          990,
+          396,
+          834,
+          202
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_entry_task_force__按钮-调查战略": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1708,
+          198,
+          88,
+          98
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

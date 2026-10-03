@@ -1,0 +1,336 @@
+{
+  "interface_version": 2,
+  "name": "MaaPocketZZZ",
+  "label": "$interface.label",
+  "version": "0.1.0",
+  "description": "$interface.description",
+  "welcome": "$interface.welcome",
+  "license": "GPL-3.0 (derived from ZenlessZoneZero-OneDragon)",
+  "controller": [
+    {
+      "name": "Android",
+      "label": "$controller.Android.label",
+      "type": "Adb",
+      "display_short_side": 1080,
+      "attach_resource_path": [
+        "./resource"
+      ]
+    }
+  ],
+  "resource": [
+    {
+      "name": "国服",
+      "path": [
+        "./resource"
+      ]
+    }
+  ],
+  "group": [
+    {
+      "name": "one_dragon",
+      "label": "$group.one_dragon.label"
+    },
+    {
+      "name": "battle_assistant",
+      "label": "$group.battle_assistant.label"
+    },
+    {
+      "name": "hollow_zero",
+      "label": "$group.hollow_zero.label"
+    },
+    {
+      "name": "game_assistant",
+      "label": "$group.game_assistant.label"
+    },
+    {
+      "name": "world_patrol",
+      "label": "$group.world_patrol.label"
+    },
+    {
+      "name": "standalone",
+      "label": "$group.standalone.label"
+    },
+    {
+      "name": "devtools",
+      "label": "$group.devtools.label"
+    }
+  ],
+  "task": [
+    {
+      "name": "TaskAutoBattle",
+      "label": "$task.TaskAutoBattle.label",
+      "entry": "TaskAutoBattle",
+      "group": [
+        "battle_assistant"
+      ],
+      "description": "$task.TaskAutoBattle.description"
+    },
+    {
+      "name": "TaskChargePlan",
+      "label": "$task.TaskChargePlan.label",
+      "entry": "TaskChargePlan",
+      "group": [
+        "one_dragon"
+      ],
+      "description": "$task.TaskChargePlan.description"
+    },
+    {
+      "name": "TaskCityFund",
+      "label": "$task.TaskCityFund.label",
+      "entry": "TaskCityFund",
+      "group": [
+        "standalone"
+      ],
+      "description": "$task.TaskCityFund.description"
+    },
+    {
+      "name": "TaskCoffee",
+      "label": "$task.TaskCoffee.label",
+      "entry": "TaskCoffee",
+      "group": [
+        "standalone"
+      ],
+      "description": "$task.TaskCoffee.description"
+    },
+    {
+      "name": "TaskCommissionAssistant",
+      "label": "$task.TaskCommissionAssistant.label",
+      "entry": "TaskCommissionAssistant",
+      "group": [
+        "game_assistant"
+      ],
+      "description": "$task.TaskCommissionAssistant.description"
+    },
+    {
+      "name": "TaskDailySignin",
+      "label": "$task.TaskDailySignin.label",
+      "entry": "TaskDailySignin",
+      "group": [
+        "standalone"
+      ],
+      "description": "$task.TaskDailySignin.description"
+    },
+    {
+      "name": "TaskDodgeAssistant",
+      "label": "$task.TaskDodgeAssistant.label",
+      "entry": "TaskDodgeAssistant",
+      "group": [
+        "battle_assistant"
+      ],
+      "description": "$task.TaskDodgeAssistant.description"
+    },
+    {
+      "name": "TaskDriveDiscDismantle",
+      "label": "$task.TaskDriveDiscDismantle.label",
+      "entry": "TaskDriveDiscDismantle",
+      "group": [
+        "standalone"
+      ],
+      "description": "$task.TaskDriveDiscDismantle.description"
+    },
+    {
+      "name": "TaskEmail",
+      "label": "$task.TaskEmail.label",
+      "entry": "TaskEmail",
+      "group": [
+        "standalone"
+      ],
+      "description": "$task.TaskEmail.description"
+    },
+    {
+      "name": "TaskEngagementReward",
+      "label": "$task.TaskEngagementReward.label",
+      "entry": "TaskEngagementReward",
+      "group": [
+        "standalone"
+      ],
+      "description": "$task.TaskEngagementReward.description"
+    },
+    {
+      "name": "TaskHouHouBakery",
+      "label": "$task.TaskHouHouBakery.label",
+      "entry": "TaskHouHouBakery",
+      "group": [
+        "standalone"
+      ],
+      "description": "$task.TaskHouHouBakery.description"
+    },
+    {
+      "name": "TaskIntelBoard",
+      "label": "$task.TaskIntelBoard.label",
+      "entry": "TaskIntelBoard",
+      "group": [
+        "standalone"
+      ],
+      "description": "$task.TaskIntelBoard.description"
+    },
+    {
+      "name": "TaskLifeOnLine",
+      "label": "$task.TaskLifeOnLine.label",
+      "entry": "TaskLifeOnLine",
+      "group": [
+        "standalone"
+      ],
+      "description": "$task.TaskLifeOnLine.description"
+    },
+    {
+      "name": "TaskLostVoid",
+      "label": "$task.TaskLostVoid.label",
+      "entry": "TaskLostVoid",
+      "group": [
+        "hollow_zero"
+      ],
+      "description": "$task.TaskLostVoid.description"
+    },
+    {
+      "name": "TaskMouseSensitivityChecker",
+      "label": "$task.TaskMouseSensitivityChecker.label",
+      "entry": "TaskMouseSensitivityChecker",
+      "group": [
+        "one_dragon"
+      ],
+      "description": "$task.TaskMouseSensitivityChecker.description"
+    },
+    {
+      "name": "TaskNotify",
+      "label": "$task.TaskNotify.label",
+      "entry": "TaskNotify",
+      "group": [
+        "standalone"
+      ],
+      "description": "$task.TaskNotify.description"
+    },
+    {
+      "name": "TaskNotoriousHunt",
+      "label": "$task.TaskNotoriousHunt.label",
+      "entry": "TaskNotoriousHunt",
+      "group": [
+        "standalone"
+      ],
+      "description": "$task.TaskNotoriousHunt.description"
+    },
+    {
+      "name": "TaskOneDragon",
+      "label": "$task.TaskOneDragon.label",
+      "entry": "TaskOneDragon",
+      "group": [
+        "one_dragon"
+      ],
+      "description": "$task.TaskOneDragon.description"
+    },
+    {
+      "name": "TaskOperationDebug",
+      "label": "$task.TaskOperationDebug.label",
+      "entry": "TaskOperationDebug",
+      "group": [
+        "devtools"
+      ],
+      "description": "$task.TaskOperationDebug.description"
+    },
+    {
+      "name": "TaskPredefinedTeamChecker",
+      "label": "$task.TaskPredefinedTeamChecker.label",
+      "entry": "TaskPredefinedTeamChecker",
+      "group": [
+        "one_dragon"
+      ],
+      "description": "$task.TaskPredefinedTeamChecker.description"
+    },
+    {
+      "name": "TaskRandomPlay",
+      "label": "$task.TaskRandomPlay.label",
+      "entry": "TaskRandomPlay",
+      "group": [
+        "standalone"
+      ],
+      "description": "$task.TaskRandomPlay.description"
+    },
+    {
+      "name": "TaskRedemptionCode",
+      "label": "$task.TaskRedemptionCode.label",
+      "entry": "TaskRedemptionCode",
+      "group": [
+        "standalone"
+      ],
+      "description": "$task.TaskRedemptionCode.description"
+    },
+    {
+      "name": "TaskRiduWeekly",
+      "label": "$task.TaskRiduWeekly.label",
+      "entry": "TaskRiduWeekly",
+      "group": [
+        "standalone"
+      ],
+      "description": "$task.TaskRiduWeekly.description"
+    },
+    {
+      "name": "TaskScratchCard",
+      "label": "$task.TaskScratchCard.label",
+      "entry": "TaskScratchCard",
+      "group": [
+        "standalone"
+      ],
+      "description": "$task.TaskScratchCard.description"
+    },
+    {
+      "name": "TaskScreenshotHelper",
+      "label": "$task.TaskScreenshotHelper.label",
+      "entry": "TaskScreenshotHelper",
+      "group": [
+        "devtools"
+      ],
+      "description": "$task.TaskScreenshotHelper.description"
+    },
+    {
+      "name": "TaskShiyuDefense",
+      "label": "$task.TaskShiyuDefense.label",
+      "entry": "TaskShiyuDefense",
+      "group": [
+        "standalone"
+      ],
+      "description": "$task.TaskShiyuDefense.description"
+    },
+    {
+      "name": "TaskSuibianTemple",
+      "label": "$task.TaskSuibianTemple.label",
+      "entry": "TaskSuibianTemple",
+      "group": [
+        "standalone"
+      ],
+      "description": "$task.TaskSuibianTemple.description"
+    },
+    {
+      "name": "TaskTrigramsCollection",
+      "label": "$task.TaskTrigramsCollection.label",
+      "entry": "TaskTrigramsCollection",
+      "group": [
+        "standalone"
+      ],
+      "description": "$task.TaskTrigramsCollection.description"
+    },
+    {
+      "name": "TaskWitheredDomain",
+      "label": "$task.TaskWitheredDomain.label",
+      "entry": "TaskWitheredDomain",
+      "group": [
+        "hollow_zero"
+      ],
+      "description": "$task.TaskWitheredDomain.description"
+    },
+    {
+      "name": "TaskWorldPatrol",
+      "label": "$task.TaskWorldPatrol.label",
+      "entry": "TaskWorldPatrol",
+      "group": [
+        "world_patrol"
+      ],
+      "description": "$task.TaskWorldPatrol.description"
+    }
+  ],
+  "option": {},
+  "agent": [],
+  "import": [],
+  "languages": {
+    "zh_cn": "locales/interface/zh_cn.json"
+  }
+}

@@ -1,0 +1,229 @@
+{
+  "suibian_temple_boobox": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "聘用"
+              ],
+              "roi": [
+                1553,
+                972,
+                102,
+                60
+              ],
+              "threshold": 0.3
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "suibian_temple_boobox__按钮-跳过",
+      "suibian_temple_boobox__按钮-聘用",
+      "suibian_temple_boobox__次数用尽",
+      "suibian_temple_boobox__按钮-刷新",
+      "suibian_temple_boobox__确认",
+      "suibian_temple_boobox__标题-无法聘用",
+      "suibian_temple_boobox__取消",
+      "suibian_temple_boobox__区域-邦布类型",
+      "suibian_temple_boobox__标题-邦布名称",
+      "suibian_temple_boobox__区域-邦布列表"
+    ]
+  },
+  "suibian_temple_boobox__按钮-跳过": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "跳过"
+        ],
+        "roi": [
+          1680,
+          105,
+          161,
+          57
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_boobox__按钮-聘用": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "聘用"
+        ],
+        "roi": [
+          1553,
+          972,
+          102,
+          60
+        ],
+        "threshold": 0.3
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "suibian_temple_boobox__次数用尽": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "次数用尽"
+        ],
+        "roi": [
+          1268,
+          912,
+          132,
+          56
+        ],
+        "threshold": 0.3
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "suibian_temple_boobox__按钮-刷新": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "刷新"
+        ],
+        "roi": [
+          1202,
+          972,
+          236,
+          59
+        ],
+        "threshold": 0.3
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "suibian_temple_boobox__确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          625,
+          535,
+          160,
+          40
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "suibian_temple_boobox__标题-无法聘用": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "无法聘用"
+        ],
+        "roi": [
+          721,
+          436,
+          474,
+          130
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_boobox__取消": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "取消"
+        ],
+        "roi": [
+          657,
+          586,
+          298,
+          106
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "suibian_temple_boobox__区域-邦布类型": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          600,
+          385,
+          302,
+          235
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_boobox__标题-邦布名称": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          580,
+          125,
+          468,
+          74
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_boobox__区域-邦布列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1124,
+          209,
+          683,
+          629
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "Task_weekly_relic_cleanup": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "NavTo_bag_relicset"
+    ],
+    "attach": {
+      "march7th:kind": "task-entry",
+      "march7th:task_id": "weekly_relic_cleanup",
+      "march7th:entry_screen": "bag_relicset",
+      "march7th:source_module": "tasks/power/weekly_relic_cleanup.py",
+      "march7th:confidence": "high",
+      "march7th:rationale": "tasks/power/weekly_relic_cleanup.py:123 显式 screen.change_to('bag_relicset')。",
+      "march7th:note": "本节点只负责把游戏导航到该功能所在的界面；上游任务的采集/战斗循环逻辑没有迁移。"
+    }
+  }
+}

@@ -1,0 +1,147 @@
+{
+  "lost_void_lottery": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "menu/back/raw.png"
+              ],
+              "roi": [
+                82,
+                13,
+                68,
+                77
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "奖励预览"
+              ],
+              "roi": [
+                1620,
+                36,
+                190,
+                46
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "lost_void_lottery__按钮-返回",
+      "lost_void_lottery__按钮-奖励预览",
+      "lost_void_lottery__按钮-开始",
+      "lost_void_lottery__文本-剩余次数",
+      "lost_void_lottery__按钮-获取确定"
+    ]
+  },
+  "lost_void_lottery__按钮-返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          82,
+          13,
+          68,
+          77
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "lost_void_lottery__按钮-奖励预览": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "奖励预览"
+        ],
+        "roi": [
+          1620,
+          36,
+          190,
+          46
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_lottery__按钮-开始": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "开始"
+        ],
+        "roi": [
+          804,
+          904,
+          312,
+          66
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "lost_void_lottery__文本-剩余次数": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          874,
+          902,
+          116,
+          70
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_lottery__按钮-获取确定": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确定"
+        ],
+        "roi": [
+          790,
+          10,
+          356,
+          1060
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

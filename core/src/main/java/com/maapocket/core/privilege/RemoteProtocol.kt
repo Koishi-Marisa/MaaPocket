@@ -87,9 +87,9 @@ object RemoteProtocol {
      */
     @JvmStatic
     fun fatalData(threadName: String, error: Throwable): JsonObject = buildJsonObject {
-        put("thread", threadName)
-        put("throwable", error.toString())
-        put("stack", error.stackTraceToString())
+        put("thread", JsonPrimitive(threadName))
+        put("throwable", JsonPrimitive(error.toString()))
+        put("stack", JsonPrimitive(error.stackTraceToString()))
     }
 
     /** 协议级错误码。app 侧按 [RemoteError.code] 分支，不解析 message。 */
@@ -105,7 +105,8 @@ object RemoteProtocol {
         const val INTERNAL = "E_INTERNAL"
         const val UNSUPPORTED = "E_UNSUPPORTED"
 
-        /** MaaFramework 绑定类尚未接进本仓（见 `RemoteEngine.maaBootstrap`），`engine.*` 会回这个。 */
+        /** MaaFramework / 外部库 `bridge` 没能在特权进程里加载成功（原因见 `MaaFw.lastFailure`），
+         *  `engine.setup`（`requireMaa=true`）与 `maa.*` 会回这个。 */
         const val MAAFRAMEWORK_NOT_WIRED = "E_MAAFRAMEWORK_NOT_WIRED"
     }
 

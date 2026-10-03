@@ -1,0 +1,196 @@
+{
+  "common_deploy": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "下一步"
+              ],
+              "roi": [
+                1586,
+                1002,
+                228,
+                52
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "出战"
+              ],
+              "roi": [
+                1570,
+                982,
+                250,
+                62
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                1030,
+                602,
+                192,
+                54
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确定并出战"
+              ],
+              "roi": [
+                1030,
+                602,
+                192,
+                54
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "驱动盘数量已达到可拥有上限"
+              ],
+              "roi": [
+                720,
+                500,
+                490,
+                55
+              ],
+              "threshold": 0.7
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "common_deploy__按钮-下一步",
+      "common_deploy__按钮-出战",
+      "common_deploy__按钮-队员数量少-确认",
+      "common_deploy__按钮-等级低-确定并出战",
+      "common_deploy__标题-驱动盘数量已达到可拥有上限"
+    ]
+  },
+  "common_deploy__按钮-下一步": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "下一步"
+        ],
+        "roi": [
+          1586,
+          1002,
+          228,
+          52
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "common_deploy__按钮-出战": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "出战"
+        ],
+        "roi": [
+          1570,
+          982,
+          250,
+          62
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "common_deploy__按钮-队员数量少-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1030,
+          602,
+          192,
+          54
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "common_deploy__按钮-等级低-确定并出战": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确定并出战"
+        ],
+        "roi": [
+          1030,
+          602,
+          192,
+          54
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "common_deploy__标题-驱动盘数量已达到可拥有上限": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "驱动盘数量已达到可拥有上限"
+        ],
+        "roi": [
+          720,
+          500,
+          490,
+          55
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

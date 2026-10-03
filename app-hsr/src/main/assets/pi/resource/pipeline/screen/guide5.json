@@ -1,0 +1,398 @@
+{
+  "Screen_guide5": {
+    "recognition": "TemplateMatch",
+    "template": "screen/guide/guide5.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [],
+    "attach": {
+      "march7th:kind": "screen-anchor",
+      "march7th:screen_id": "guide5",
+      "march7th:screen_name": "星际和平指南-旷宇纷争",
+      "march7th:source_image_path": "./assets/images/screen/guide/guide5.png",
+      "march7th:note": "模板是 1920x1080 PC 客户端截图的小块裁剪，手机上必须重新采集，见 RECAPTURE.md"
+    }
+  },
+  "guide5__menu__0": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 111,
+    "next": [
+      "Screen_menu"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "guide5",
+        "menu"
+      ],
+      "march7th:edge_index": 0,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.press_key('esc')",
+      "march7th:kind": "press_key",
+      "march7th:upstream_key": "esc",
+      "march7th:android_keycode": 111
+    }
+  },
+  "guide5__guide2__0": {
+    "recognition": "TemplateMatch",
+    "template": "screen/guide/enter_guide2.png",
+    "threshold": 0.9,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "Screen_guide2"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "guide5",
+        "guide2"
+      ],
+      "march7th:edge_index": 1,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.click_element('./assets/images/screen/guide/enter_guide2.png', 'image', 0.9)",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 0.9,
+      "march7th:masked_template": false
+    }
+  },
+  "guide5__guide3__0": {
+    "recognition": "TemplateMatch",
+    "template": "screen/guide/enter_guide3.png",
+    "threshold": 0.9,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "Screen_guide3"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "guide5",
+        "guide3"
+      ],
+      "march7th:edge_index": 2,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.click_element('./assets/images/screen/guide/enter_guide3.png', 'image', 0.9)",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 0.9,
+      "march7th:masked_template": false
+    }
+  },
+  "guide5__guide4__0": {
+    "recognition": "TemplateMatch",
+    "template": "screen/guide/enter_guide4.png",
+    "threshold": 0.9,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "Screen_guide4"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "guide5",
+        "guide4"
+      ],
+      "march7th:edge_index": 3,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.click_element('./assets/images/screen/guide/enter_guide4.png', 'image', 0.9)",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 0.9,
+      "march7th:masked_template": false
+    }
+  },
+  "guide5__currency_wars_homepage__0__UNMAPPED_9": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "guide5__currency_wars_homepage__1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "guide5",
+        "currency_wars_homepage"
+      ],
+      "march7th:edge_index": 4,
+      "march7th:action_index": 0,
+      "march7th:unmapped_expression": "auto.click_element('货币战争', 'text', None, 10, crop=(238.0 / 1920, 257.0 / 1080, 449.0 / 1920, 525.0 / 1080))",
+      "march7th:unmapped_reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。",
+      "march7th:planned_recognition": "OCR (recognition:\"OCR\" + expected + roi)",
+      "march7th:parsed": true,
+      "march7th:find_type": "text"
+    }
+  },
+  "guide5__currency_wars_homepage__1": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 1000,
+    "next": [
+      "guide5__currency_wars_homepage__2__UNMAPPED_10"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "guide5",
+        "currency_wars_homepage"
+      ],
+      "march7th:edge_index": 4,
+      "march7th:action_index": 1,
+      "march7th:expression": "time.sleep(1)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "guide5__currency_wars_homepage__2__UNMAPPED_10": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_currency_wars_homepage"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "guide5",
+        "currency_wars_homepage"
+      ],
+      "march7th:edge_index": 4,
+      "march7th:action_index": 2,
+      "march7th:unmapped_expression": "auto.click_element('前往参与', 'text', None, 10, crop=(684.0 / 1920, 278.0 / 1080, 981.0 / 1920, 656.0 / 1080))",
+      "march7th:unmapped_reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。",
+      "march7th:planned_recognition": "OCR (recognition:\"OCR\" + expected + roi)",
+      "march7th:parsed": true,
+      "march7th:find_type": "text"
+    }
+  },
+  "guide5__divergent_main__0__UNMAPPED_11": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "guide5__divergent_main__1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "guide5",
+        "divergent_main"
+      ],
+      "march7th:edge_index": 5,
+      "march7th:action_index": 0,
+      "march7th:unmapped_expression": "auto.click_element('差分宇宙', 'text', None, 10, crop=(238.0 / 1920, 257.0 / 1080, 449.0 / 1920, 525.0 / 1080))",
+      "march7th:unmapped_reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。",
+      "march7th:planned_recognition": "OCR (recognition:\"OCR\" + expected + roi)",
+      "march7th:parsed": true,
+      "march7th:find_type": "text"
+    }
+  },
+  "guide5__divergent_main__1": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 1000,
+    "next": [
+      "guide5__divergent_main__2__UNMAPPED_12"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "guide5",
+        "divergent_main"
+      ],
+      "march7th:edge_index": 5,
+      "march7th:action_index": 1,
+      "march7th:expression": "time.sleep(1)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "guide5__divergent_main__2__UNMAPPED_12": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_divergent_main"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "guide5",
+        "divergent_main"
+      ],
+      "march7th:edge_index": 5,
+      "march7th:action_index": 2,
+      "march7th:unmapped_expression": "auto.click_element('前往参与', 'text', None, 10, crop=(684.0 / 1920, 278.0 / 1080, 981.0 / 1920, 656.0 / 1080))",
+      "march7th:unmapped_reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。",
+      "march7th:planned_recognition": "OCR (recognition:\"OCR\" + expected + roi)",
+      "march7th:parsed": true,
+      "march7th:find_type": "text"
+    }
+  },
+  "guide5__universe_main__0__UNMAPPED_13": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "guide5__universe_main__1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "guide5",
+        "universe_main"
+      ],
+      "march7th:edge_index": 6,
+      "march7th:action_index": 0,
+      "march7th:unmapped_expression": "auto.click_element('差分宇宙', 'text', None, 10, crop=(238.0 / 1920, 257.0 / 1080, 449.0 / 1920, 525.0 / 1080))",
+      "march7th:unmapped_reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。",
+      "march7th:planned_recognition": "OCR (recognition:\"OCR\" + expected + roi)",
+      "march7th:parsed": true,
+      "march7th:find_type": "text"
+    }
+  },
+  "guide5__universe_main__1": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 1000,
+    "next": [
+      "guide5__universe_main__2__UNMAPPED_14"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "guide5",
+        "universe_main"
+      ],
+      "march7th:edge_index": 6,
+      "march7th:action_index": 1,
+      "march7th:expression": "time.sleep(1)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "guide5__universe_main__2__UNMAPPED_14": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_universe_main"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "guide5",
+        "universe_main"
+      ],
+      "march7th:edge_index": 6,
+      "march7th:action_index": 2,
+      "march7th:unmapped_expression": "auto.click_element('前往模拟宇宙', 'text', None, 10, crop=(698.0 / 1920, 340.0 / 1080, 203.0 / 1920, 60.0 / 1080))",
+      "march7th:unmapped_reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。",
+      "march7th:planned_recognition": "OCR (recognition:\"OCR\" + expected + roi)",
+      "march7th:parsed": true,
+      "march7th:find_type": "text"
+    }
+  },
+  "Nav_guide5_from_guide2": {
+    "recognition": "TemplateMatch",
+    "template": "screen/guide/guide2.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "guide2__guide5__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 guide2 上时，沿上游第一条 guide2 -> guide5 边前进"
+    }
+  },
+  "Nav_guide5_from_guide3": {
+    "recognition": "TemplateMatch",
+    "template": "screen/guide/guide3.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "guide3__guide5__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 guide3 上时，沿上游第一条 guide3 -> guide5 边前进"
+    }
+  },
+  "Nav_guide5_from_guide4": {
+    "recognition": "TemplateMatch",
+    "template": "screen/guide/guide4.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "guide4__guide5__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 guide4 上时，沿上游第一条 guide4 -> guide5 边前进"
+    }
+  },
+  "Nav_guide5_from_menu": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/more.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "menu__guide5__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 menu 上时，沿上游第一条 menu -> guide5 边前进"
+    }
+  },
+  "NavTo_guide5": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Nav_guide5_from_guide2",
+      "Nav_guide5_from_guide3",
+      "Nav_guide5_from_guide4",
+      "Nav_guide5_from_menu",
+      "Screen_guide5"
+    ],
+    "attach": {
+      "march7th:kind": "nav-router",
+      "march7th:target_screen": "guide5",
+      "march7th:predecessors": [
+        "guide2",
+        "guide3",
+        "guide4",
+        "menu"
+      ],
+      "march7th:note": "DirectHit 进入：先按顺序试探各前驱屏幕守卫节点（TemplateMatch 前驱屏幕锚点），命中则沿那条上游边导航；全部未命中则回退到 Screen_guide5 锚点——若此时已经在 guide5 上即成功，否则本节点识别失败（诚实失败，不静默跳过）。只覆盖单跳。"
+    }
+  }
+}

@@ -1,0 +1,1768 @@
+{
+  "enter_game": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "点击进入游戏"
+              ],
+              "roi": [
+                782,
+                846,
+                354,
+                186
+              ],
+              "threshold": 0.6
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                700,
+                820,
+                520,
+                212
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "游戏数据已更新"
+              ],
+              "roi": [
+                760,
+                520,
+                400,
+                70
+              ],
+              "threshold": 0.6
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确定"
+              ],
+              "roi": [
+                820,
+                610,
+                300,
+                90
+              ],
+              "threshold": 0.6
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "账号密码"
+              ],
+              "roi": [
+                608,
+                728,
+                706,
+                76
+              ],
+              "threshold": 0.6
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                612,
+                368,
+                646,
+                70
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                612,
+                470,
+                646,
+                74
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                606,
+                576,
+                38,
+                38
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "进入游戏"
+              ],
+              "roi": [
+                608,
+                648,
+                682,
+                74
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确定"
+              ],
+              "roi": [
+                1036,
+                604,
+                190,
+                208
+              ],
+              "threshold": 1.0
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "enter_game/switch_account/raw.png"
+              ],
+              "roi": [
+                1790,
+                965,
+                63,
+                64
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "登录"
+              ],
+              "roi": [
+                839,
+                555,
+                241,
+                109
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "登录/注册"
+              ],
+              "roi": [
+                839,
+                626,
+                241,
+                38
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                889,
+                443,
+                159,
+                30
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1891,
+                495,
+                1,
+                32
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                834,
+                571,
+                20,
+                17
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1032,
+                436,
+                1,
+                1
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "bilibili游戏隐私政策提示"
+              ],
+              "roi": [
+                739,
+                380,
+                441,
+                100
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "同意"
+              ],
+              "roi": [
+                930,
+                560,
+                170,
+                148
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "登录记录"
+              ],
+              "roi": [
+                739,
+                380,
+                441,
+                90
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "enter_game/bilibili_switch_account/raw.png"
+              ],
+              "roi": [
+                1000,
+                350,
+                200,
+                200
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                739,
+                500,
+                441,
+                340
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "退出登录"
+              ],
+              "roi": [
+                546,
+                250,
+                194,
+                112
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确定"
+              ],
+              "roi": [
+                1030,
+                752,
+                212,
+                46
+              ],
+              "threshold": 1.0
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "账号密码"
+              ],
+              "roi": [
+                608,
+                768,
+                706,
+                76
+              ],
+              "threshold": 0.75
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                612,
+                335,
+                646,
+                70
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                612,
+                430,
+                646,
+                74
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                606,
+                605,
+                38,
+                40
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "进入游戏"
+              ],
+              "roi": [
+                608,
+                680,
+                682,
+                70
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "登陆其他账号"
+              ],
+              "roi": [
+                614,
+                680,
+                664,
+                70
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "点击登录"
+              ],
+              "roi": [
+                810,
+                846,
+                278,
+                96
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                612,
+                368,
+                646,
+                70
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "输入密码"
+              ],
+              "roi": [
+                612,
+                470,
+                646,
+                74
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                608,
+                625,
+                682,
+                95
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                782,
+                966,
+                354,
+                66
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "Europe"
+              ],
+              "roi": [
+                616,
+                428,
+                686,
+                90
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "America"
+              ],
+              "roi": [
+                616,
+                518,
+                686,
+                98
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "Asia"
+              ],
+              "roi": [
+                616,
+                616,
+                686,
+                98
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "TW,HK,MO"
+              ],
+              "roi": [
+                616,
+                714,
+                686,
+                52
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "重试"
+              ],
+              "roi": [
+                822,
+                598,
+                276,
+                62
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "enter_game/annual_reward/raw.png"
+              ],
+              "roi": [
+                1576,
+                118,
+                134,
+                128
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "enter_game/login_back/raw.png"
+              ],
+              "roi": [
+                527,
+                210,
+                61,
+                61
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "enter_game/resource_check/raw.png"
+              ],
+              "roi": [
+                1787,
+                705,
+                66,
+                66
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "enter_game/settings/raw.png"
+              ],
+              "roi": [
+                1787,
+                791,
+                66,
+                66
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "enter_game/announcement/raw.png"
+              ],
+              "roi": [
+                1787,
+                877,
+                66,
+                66
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "退出并清除登录记录"
+              ],
+              "roi": [
+                662,
+                432,
+                215,
+                28
+              ],
+              "threshold": 0.6
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "退出并保留登录记录"
+              ],
+              "roi": [
+                662,
+                510,
+                215,
+                27
+              ],
+              "threshold": 0.6
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "取消"
+              ],
+              "roi": [
+                791,
+                760,
+                57,
+                31
+              ],
+              "threshold": 0.6
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "进入游戏"
+              ],
+              "roi": [
+                907,
+                608,
+                107,
+                35
+              ],
+              "threshold": 0.6
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "enter_game/account_dropdown_expand/raw.png"
+              ],
+              "roi": [
+                1208,
+                487,
+                35,
+                35
+              ],
+              "threshold": 0.9
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "enter_game/account_dropdown_collapse/raw.png"
+              ],
+              "roi": [
+                1208,
+                487,
+                35,
+                35
+              ],
+              "threshold": 0.9
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "enter_game/annual_reward_2/raw.png"
+              ],
+              "roi": [
+                1520,
+                170,
+                110,
+                110
+              ],
+              "threshold": 0.7
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "enter_game__点击进入游戏",
+      "enter_game__进入游戏点击后状态",
+      "enter_game__游戏数据更新提示",
+      "enter_game__游戏数据更新-确定",
+      "enter_game__国服-账号密码",
+      "enter_game__国服-账号输入区域",
+      "enter_game__国服-密码输入区域",
+      "enter_game__国服-同意按钮",
+      "enter_game__国服-账号密码进入游戏",
+      "enter_game__切换账号确定",
+      "enter_game__切换账号",
+      "enter_game__B服-登录",
+      "enter_game__B服新-手机号登录",
+      "enter_game__B服-账号输入区域",
+      "enter_game__B服-密码输入区域",
+      "enter_game__B服-同意按钮",
+      "enter_game__B服-账号删除区域",
+      "enter_game__B服新-隐私政策提示",
+      "enter_game__B服新-同意隐私政策",
+      "enter_game__B服新-登录记录",
+      "enter_game__B服新-切换账号",
+      "enter_game__B服新-账号列表",
+      "enter_game__标题-退出登录",
+      "enter_game__按钮-退出登录-确定",
+      "enter_game__国服-账号密码-新",
+      "enter_game__国服-账号输入区域-新",
+      "enter_game__国服-密码输入区域-新",
+      "enter_game__国服-同意按钮-新",
+      "enter_game__国服-账号密码进入游戏-新",
+      "enter_game__按钮-登陆其他账号",
+      "enter_game__国际服-点击登录",
+      "enter_game__国际服-账号输入区域",
+      "enter_game__国际服-密码输入区域",
+      "enter_game__国际服-账号密码进入游戏",
+      "enter_game__国际服-换服",
+      "enter_game__国际服-换服-欧洲",
+      "enter_game__国际服-换服-美国",
+      "enter_game__国际服-换服-亚洲",
+      "enter_game__国际服-换服-港澳台",
+      "enter_game__重试",
+      "enter_game__一周年自选奖励",
+      "enter_game__国服-返回按钮",
+      "enter_game__资源检测",
+      "enter_game__设置",
+      "enter_game__游戏公告",
+      "enter_game__退出登录-清除登录记录",
+      "enter_game__退出登录-保留登录记录",
+      "enter_game__按钮-退出登录-取消",
+      "enter_game__账号确认-进入游戏",
+      "enter_game__账号下拉-点击展开",
+      "enter_game__账号下拉-点击收起",
+      "enter_game__二周年自选奖励"
+    ]
+  },
+  "enter_game__点击进入游戏": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "点击进入游戏"
+        ],
+        "roi": [
+          782,
+          846,
+          354,
+          186
+        ],
+        "threshold": 0.6
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__进入游戏点击后状态": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          700,
+          820,
+          520,
+          212
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "enter_game__游戏数据更新提示": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "游戏数据已更新"
+        ],
+        "roi": [
+          760,
+          520,
+          400,
+          70
+        ],
+        "threshold": 0.6
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "enter_game__游戏数据更新-确定": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确定"
+        ],
+        "roi": [
+          820,
+          610,
+          300,
+          90
+        ],
+        "threshold": 0.6
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__国服-账号密码": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "账号密码"
+        ],
+        "roi": [
+          608,
+          728,
+          706,
+          76
+        ],
+        "threshold": 0.6
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__国服-账号输入区域": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          612,
+          368,
+          646,
+          70
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__国服-密码输入区域": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          612,
+          470,
+          646,
+          74
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__国服-同意按钮": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          606,
+          576,
+          38,
+          38
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__国服-账号密码进入游戏": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "进入游戏"
+        ],
+        "roi": [
+          608,
+          648,
+          682,
+          74
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__切换账号确定": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确定"
+        ],
+        "roi": [
+          1036,
+          604,
+          190,
+          208
+        ],
+        "threshold": 1.0
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__切换账号": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "enter_game/switch_account/raw.png"
+        ],
+        "roi": [
+          1790,
+          965,
+          63,
+          64
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__B服-登录": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "登录"
+        ],
+        "roi": [
+          839,
+          555,
+          241,
+          109
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__B服新-手机号登录": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "登录/注册"
+        ],
+        "roi": [
+          839,
+          626,
+          241,
+          38
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "enter_game__B服-账号输入区域": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          889,
+          443,
+          159,
+          30
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__B服-密码输入区域": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1891,
+          495,
+          1,
+          32
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__B服-同意按钮": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          834,
+          571,
+          20,
+          17
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__B服-账号删除区域": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1032,
+          436,
+          1,
+          1
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__B服新-隐私政策提示": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "bilibili游戏隐私政策提示"
+        ],
+        "roi": [
+          739,
+          380,
+          441,
+          100
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "enter_game__B服新-同意隐私政策": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "同意"
+        ],
+        "roi": [
+          930,
+          560,
+          170,
+          148
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__B服新-登录记录": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "登录记录"
+        ],
+        "roi": [
+          739,
+          380,
+          441,
+          90
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "enter_game__B服新-切换账号": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "enter_game/bilibili_switch_account/raw.png"
+        ],
+        "roi": [
+          1000,
+          350,
+          200,
+          200
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__B服新-账号列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          739,
+          500,
+          441,
+          340
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "enter_game__标题-退出登录": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "退出登录"
+        ],
+        "roi": [
+          546,
+          250,
+          194,
+          112
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "enter_game__按钮-退出登录-确定": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确定"
+        ],
+        "roi": [
+          1030,
+          752,
+          212,
+          46
+        ],
+        "threshold": 1.0
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__国服-账号密码-新": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "账号密码"
+        ],
+        "roi": [
+          608,
+          768,
+          706,
+          76
+        ],
+        "threshold": 0.75
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__国服-账号输入区域-新": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          612,
+          335,
+          646,
+          70
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__国服-密码输入区域-新": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          612,
+          430,
+          646,
+          74
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__国服-同意按钮-新": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          606,
+          605,
+          38,
+          40
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__国服-账号密码进入游戏-新": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "进入游戏"
+        ],
+        "roi": [
+          608,
+          680,
+          682,
+          70
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__按钮-登陆其他账号": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "登陆其他账号"
+        ],
+        "roi": [
+          614,
+          680,
+          664,
+          70
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__国际服-点击登录": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "点击登录"
+        ],
+        "roi": [
+          810,
+          846,
+          278,
+          96
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__国际服-账号输入区域": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          612,
+          368,
+          646,
+          70
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__国际服-密码输入区域": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "输入密码"
+        ],
+        "roi": [
+          612,
+          470,
+          646,
+          74
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__国际服-账号密码进入游戏": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          608,
+          625,
+          682,
+          95
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__国际服-换服": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          782,
+          966,
+          354,
+          66
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__国际服-换服-欧洲": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "Europe"
+        ],
+        "roi": [
+          616,
+          428,
+          686,
+          90
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__国际服-换服-美国": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "America"
+        ],
+        "roi": [
+          616,
+          518,
+          686,
+          98
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "enter_game__国际服-换服-亚洲": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "Asia"
+        ],
+        "roi": [
+          616,
+          616,
+          686,
+          98
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__国际服-换服-港澳台": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "TW,HK,MO"
+        ],
+        "roi": [
+          616,
+          714,
+          686,
+          52
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__重试": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "重试"
+        ],
+        "roi": [
+          822,
+          598,
+          276,
+          62
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__一周年自选奖励": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "enter_game/annual_reward/raw.png"
+        ],
+        "roi": [
+          1576,
+          118,
+          134,
+          128
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__国服-返回按钮": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "enter_game/login_back/raw.png"
+        ],
+        "roi": [
+          527,
+          210,
+          61,
+          61
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "enter_game__资源检测": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "enter_game/resource_check/raw.png"
+        ],
+        "roi": [
+          1787,
+          705,
+          66,
+          66
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "enter_game__设置": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "enter_game/settings/raw.png"
+        ],
+        "roi": [
+          1787,
+          791,
+          66,
+          66
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "enter_game__游戏公告": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "enter_game/announcement/raw.png"
+        ],
+        "roi": [
+          1787,
+          877,
+          66,
+          66
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "enter_game__退出登录-清除登录记录": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "退出并清除登录记录"
+        ],
+        "roi": [
+          662,
+          432,
+          215,
+          28
+        ],
+        "threshold": 0.6
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "enter_game__退出登录-保留登录记录": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "退出并保留登录记录"
+        ],
+        "roi": [
+          662,
+          510,
+          215,
+          27
+        ],
+        "threshold": 0.6
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "enter_game__按钮-退出登录-取消": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "取消"
+        ],
+        "roi": [
+          791,
+          760,
+          57,
+          31
+        ],
+        "threshold": 0.6
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "enter_game__账号确认-进入游戏": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "进入游戏"
+        ],
+        "roi": [
+          907,
+          608,
+          107,
+          35
+        ],
+        "threshold": 0.6
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "enter_game__账号下拉-点击展开": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "enter_game/account_dropdown_expand/raw.png"
+        ],
+        "roi": [
+          1208,
+          487,
+          35,
+          35
+        ],
+        "threshold": 0.9
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "enter_game__账号下拉-点击收起": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "enter_game/account_dropdown_collapse/raw.png"
+        ],
+        "roi": [
+          1208,
+          487,
+          35,
+          35
+        ],
+        "threshold": 0.9
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "enter_game__二周年自选奖励": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "enter_game/annual_reward_2/raw.png"
+        ],
+        "roi": [
+          1520,
+          170,
+          110,
+          110
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

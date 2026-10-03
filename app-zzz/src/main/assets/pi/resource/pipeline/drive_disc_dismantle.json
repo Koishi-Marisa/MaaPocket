@@ -1,0 +1,235 @@
+{
+  "drive_disc_dismantle": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "驱动"
+              ],
+              "roi": [
+                168,
+                17,
+                264,
+                75
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "快速选择"
+              ],
+              "roi": [
+                134,
+                968,
+                273,
+                100
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "drive_disc_dismantle__标题-驱动盘拆解",
+      "drive_disc_dismantle__按钮-快速选择",
+      "drive_disc_dismantle__按钮-全选已弃置",
+      "drive_disc_dismantle__按钮-A及以下",
+      "drive_disc_dismantle__按钮-S及以下",
+      "drive_disc_dismantle__按钮-快速选择-确认",
+      "drive_disc_dismantle__按钮-拆解",
+      "drive_disc_dismantle__按钮-拆解-确认",
+      "drive_disc_dismantle__按钮-B"
+    ]
+  },
+  "drive_disc_dismantle__标题-驱动盘拆解": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "驱动"
+        ],
+        "roi": [
+          168,
+          17,
+          264,
+          75
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "drive_disc_dismantle__按钮-快速选择": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "快速选择"
+        ],
+        "roi": [
+          134,
+          968,
+          273,
+          100
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "drive_disc_dismantle__按钮-全选已弃置": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "全选已弃置"
+        ],
+        "roi": [
+          642,
+          466,
+          296,
+          36
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "drive_disc_dismantle__按钮-A及以下": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "A及以下"
+        ],
+        "roi": [
+          984,
+          568,
+          286,
+          42
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "drive_disc_dismantle__按钮-S及以下": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "S及以下"
+        ],
+        "roi": [
+          642,
+          628,
+          292,
+          42
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "drive_disc_dismantle__按钮-快速选择-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          994,
+          754,
+          240,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "drive_disc_dismantle__按钮-拆解": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "拆解"
+        ],
+        "roi": [
+          1626,
+          876,
+          182,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "drive_disc_dismantle__按钮-拆解-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1030,
+          622,
+          190,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "drive_disc_dismantle__按钮-B": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "B"
+        ],
+        "roi": [
+          642,
+          566,
+          288,
+          44
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

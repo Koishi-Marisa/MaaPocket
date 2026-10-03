@@ -1,0 +1,115 @@
+{
+  "Screen_monthly_card": {
+    "recognition": "TemplateMatch",
+    "template": "screen/monthly_card.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [],
+    "attach": {
+      "march7th:kind": "screen-anchor",
+      "march7th:screen_id": "monthly_card",
+      "march7th:screen_name": "月卡",
+      "march7th:source_image_path": "./assets/images/screen/monthly_card.png",
+      "march7th:note": "模板是 1920x1080 PC 客户端截图的小块裁剪，手机上必须重新采集，见 RECAPTURE.md"
+    }
+  },
+  "monthly_card__main__0": {
+    "recognition": "TemplateMatch",
+    "template": "screen/monthly_card.png",
+    "threshold": 0.88,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "monthly_card__main__1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "monthly_card",
+        "main"
+      ],
+      "march7th:edge_index": 0,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.click_element('./assets/images/screen/monthly_card.png', 'image', 0.88, 10)",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 0.88,
+      "march7th:masked_template": false,
+      "march7th:max_retries": 10
+    },
+    "rate_limit": 1000,
+    "timeout": 20000
+  },
+  "monthly_card__main__1": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 4000,
+    "next": [
+      "monthly_card__main__2"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "monthly_card",
+        "main"
+      ],
+      "march7th:edge_index": 0,
+      "march7th:action_index": 1,
+      "march7th:expression": "time.sleep(4)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "monthly_card__main__2": {
+    "recognition": "TemplateMatch",
+    "template": "screen/monthly_card.png",
+    "threshold": 0.88,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "Screen_main"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "monthly_card",
+        "main"
+      ],
+      "march7th:edge_index": 0,
+      "march7th:action_index": 2,
+      "march7th:expression": "auto.click_element('./assets/images/screen/monthly_card.png', 'image', 0.88, 10)",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 0.88,
+      "march7th:masked_template": false,
+      "march7th:max_retries": 10
+    },
+    "rate_limit": 1000,
+    "timeout": 20000
+  },
+  "NavTo_monthly_card": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_monthly_card"
+    ],
+    "attach": {
+      "march7th:kind": "nav-router",
+      "march7th:target_screen": "monthly_card",
+      "march7th:predecessors": [],
+      "march7th:note": "DirectHit 进入：先按顺序试探各前驱屏幕守卫节点（TemplateMatch 前驱屏幕锚点），命中则沿那条上游边导航；全部未命中则回退到 Screen_monthly_card 锚点——若此时已经在 monthly_card 上即成功，否则本节点识别失败（诚实失败，不静默跳过）。只覆盖单跳。"
+    }
+  }
+}

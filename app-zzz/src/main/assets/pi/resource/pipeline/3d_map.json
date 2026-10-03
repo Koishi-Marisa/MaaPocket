@@ -1,0 +1,324 @@
+{
+  "3d_map": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "快捷导航"
+              ],
+              "roi": [
+                1502,
+                26,
+                156,
+                52
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "menu/back/raw.png"
+              ],
+              "roi": [
+                82,
+                13,
+                68,
+                77
+              ],
+              "threshold": 0.7
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "3d_map__按钮-快捷导航",
+      "3d_map__菜单-返回",
+      "3d_map__区域-区域列表",
+      "3d_map__按钮-筛选",
+      "3d_map__区域-筛选选项",
+      "3d_map__标题-标识点筛选",
+      "3d_map__按钮-关闭筛选",
+      "3d_map__按钮-当前子区域",
+      "3d_map__区域-子区域列表",
+      "3d_map__按钮-缩小",
+      "3d_map__区域-地图",
+      "3d_map__标题-当前选择传送点",
+      "3d_map__按钮-前往",
+      "3d_map__按钮-最小缩放",
+      "3d_map__按钮-区域信息-关闭"
+    ]
+  },
+  "3d_map__按钮-快捷导航": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "快捷导航"
+        ],
+        "roi": [
+          1502,
+          26,
+          156,
+          52
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "3d_map__菜单-返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          82,
+          13,
+          68,
+          77
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "normal_world_basic"
+    ]
+  },
+  "3d_map__区域-区域列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1402,
+          330,
+          450,
+          622
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "3d_map__按钮-筛选": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1790,
+          14,
+          72,
+          64
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "3d_map__区域-筛选选项": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1282,
+          226,
+          568,
+          728
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "3d_map__标题-标识点筛选": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "标识点筛选"
+        ],
+        "roi": [
+          1300,
+          26,
+          156,
+          72
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "3d_map__按钮-关闭筛选": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1774,
+          24,
+          60,
+          50
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "3d_map__按钮-当前子区域": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          74,
+          994,
+          280,
+          54
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "3d_map__区域-子区域列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          66,
+          340,
+          340,
+          636
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "3d_map__按钮-缩小": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          756,
+          994,
+          54,
+          48
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "3d_map__区域-地图": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          66,
+          85,
+          1314,
+          915
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "3d_map__标题-当前选择传送点": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1442,
+          118,
+          352,
+          62
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "3d_map__按钮-前往": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "前往"
+        ],
+        "roi": [
+          1542,
+          874,
+          204,
+          56
+        ],
+        "threshold": 1.0
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "3d_map__按钮-最小缩放": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          822,
+          1004,
+          22,
+          26
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "3d_map__按钮-区域信息-关闭": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "normal_world_investigation/btn_area_info_close/raw.png"
+        ],
+        "roi": [
+          1760,
+          100,
+          110,
+          100
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

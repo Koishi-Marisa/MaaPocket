@@ -1,0 +1,214 @@
+{
+  "lost_void_entry_periodic": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "周期"
+              ],
+              "roi": [
+                1453,
+                26,
+                114,
+                46
+              ],
+              "threshold": 0.5,
+              "color_filter": "lost_void_entry_periodic__按钮-周期__color"
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "探索收集"
+              ],
+              "roi": [
+                1658,
+                991,
+                146,
+                73
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "lost_void_entry_periodic__按钮-周期",
+      "lost_void_entry_periodic__按钮-常规",
+      "lost_void_entry_periodic__探索收集",
+      "lost_void_entry_periodic__区域-矩阵行动",
+      "lost_void_entry_periodic__按钮-前往挑战"
+    ]
+  },
+  "lost_void_entry_periodic__按钮-周期": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "周期"
+        ],
+        "roi": [
+          1453,
+          26,
+          114,
+          46
+        ],
+        "threshold": 0.5,
+        "color_filter": "lost_void_entry_periodic__按钮-周期__color"
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_entry_periodic__按钮-常规": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "常规"
+        ],
+        "roi": [
+          1616,
+          19,
+          124,
+          70
+        ],
+        "threshold": 0.5,
+        "color_filter": "lost_void_entry_periodic__按钮-常规__color"
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "lost_void_entry_standard"
+    ]
+  },
+  "lost_void_entry_periodic__探索收集": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "探索收集"
+        ],
+        "roi": [
+          1658,
+          991,
+          146,
+          73
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_entry_periodic__区域-矩阵行动": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "矩阵行动"
+        ],
+        "roi": [
+          745,
+          233,
+          162,
+          55
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_entry_periodic__按钮-前往挑战": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "前往挑战"
+        ],
+        "roi": [
+          1142,
+          746,
+          242,
+          63
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "lost_void_entry_matrix_action"
+    ]
+  },
+  "lost_void_entry_periodic__按钮-周期__color": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "method": 4,
+        "roi": [
+          1453,
+          26,
+          114,
+          46
+        ],
+        "lower": [
+          0,
+          120,
+          120
+        ],
+        "upper": [
+          255,
+          255,
+          255
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_entry_periodic__按钮-常规__color": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "method": 4,
+        "roi": [
+          1616,
+          19,
+          124,
+          70
+        ],
+        "lower": [
+          40,
+          40,
+          40
+        ],
+        "upper": [
+          255,
+          255,
+          255
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

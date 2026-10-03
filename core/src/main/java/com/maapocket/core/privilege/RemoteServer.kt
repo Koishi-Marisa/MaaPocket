@@ -264,7 +264,7 @@ class RemoteServer(
                     } catch (e: RemoteProtocolException) {
                         // 连 id 都解析不出来，只能发一条不带 id 的错误帧。
                         Ln.w("RemoteServer: malformed frame: ${e.message}")
-                        sendErrorNow(null, e.code, e.message, e.detail)
+                        sendErrorNow(null, e.code, e.message ?: "malformed frame", e.detail)
                         continue
                     }
                     if (frame == null) continue

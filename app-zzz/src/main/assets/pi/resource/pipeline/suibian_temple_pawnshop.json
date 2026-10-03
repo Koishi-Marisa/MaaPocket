@@ -1,0 +1,233 @@
+{
+  "suibian_temple_pawnshop": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "menu/back/raw.png"
+              ],
+              "roi": [
+                60,
+                9,
+                102,
+                82
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "百通宝\\-周期"
+              ],
+              "roi": [
+                1309,
+                120,
+                252,
+                51
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "云纹徽\\-周期"
+              ],
+              "roi": [
+                1582,
+                116,
+                261,
+                58
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "suibian_temple_pawnshop__按钮-返回",
+      "suibian_temple_pawnshop__按钮-百通宝-周期",
+      "suibian_temple_pawnshop__按钮-云纹徽-周期",
+      "suibian_temple_pawnshop__区域-商品列表",
+      "suibian_temple_pawnshop__按钮-购买件数-最小",
+      "suibian_temple_pawnshop__按钮-购买件数-最大",
+      "suibian_temple_pawnshop__按钮-确认",
+      "suibian_temple_pawnshop__按钮-兑换关闭",
+      "suibian_temple_pawnshop__区域-购买货币"
+    ]
+  },
+  "suibian_temple_pawnshop__按钮-返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          60,
+          9,
+          102,
+          82
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "suibian_temple_entry"
+    ]
+  },
+  "suibian_temple_pawnshop__按钮-百通宝-周期": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "百通宝\\-周期"
+        ],
+        "roi": [
+          1309,
+          120,
+          252,
+          51
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "suibian_temple_pawnshop__按钮-云纹徽-周期": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "云纹徽\\-周期"
+        ],
+        "roi": [
+          1582,
+          116,
+          261,
+          58
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "suibian_temple_pawnshop__区域-商品列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1051,
+          221,
+          765,
+          716
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_pawnshop__按钮-购买件数-最小": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          741,
+          659,
+          30,
+          29
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_pawnshop__按钮-购买件数-最大": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1150,
+          659,
+          18,
+          28
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_pawnshop__按钮-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          995,
+          712,
+          259,
+          89
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "suibian_temple_pawnshop__按钮-兑换关闭": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1279,
+          289,
+          54,
+          48
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "suibian_temple_pawnshop__区域-购买货币": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          683,
+          712,
+          302,
+          95
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

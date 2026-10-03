@@ -1,0 +1,812 @@
+{
+  "battle": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                104,
+                40,
+                170,
+                70
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1620,
+                917,
+                100,
+                100
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1728,
+                778,
+                98,
+                98
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                479,
+                828,
+                118,
+                118
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1322,
+                828,
+                118,
+                118
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1731,
+                920,
+                96,
+                96
+              ]
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "battle/btn_normal_attack/raw.png"
+              ],
+              "roi": [
+                1403,
+                916,
+                102,
+                101
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "battle/agent_dead/raw.png"
+              ],
+              "roi": [
+                830,
+                40,
+                100,
+                47
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "完成"
+              ],
+              "roi": [
+                1566,
+                1004,
+                266,
+                52
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "再来一次"
+              ],
+              "roi": [
+                1232,
+                1006,
+                276,
+                46
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "已达成"
+              ],
+              "roi": [
+                610,
+                1000,
+                80,
+                55
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                432,
+                132,
+                1208,
+                710
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                82,
+                46,
+                28,
+                54
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "撤退"
+              ],
+              "roi": [
+                526,
+                848,
+                220,
+                64
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "倒带"
+              ],
+              "roi": [
+                874,
+                850,
+                214,
+                64
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "退出"
+              ],
+              "roi": [
+                1566,
+                1004,
+                266,
+                52
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "battle/avatar_2_anby/raw.png"
+              ],
+              "roi": [
+                559,
+                40,
+                103,
+                51
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "battle/avatar_2_anton/raw.png"
+              ],
+              "roi": [
+                741,
+                40,
+                103,
+                51
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "battle/avatar_2_piper/raw.png"
+              ],
+              "roi": [
+                594,
+                40,
+                103,
+                51
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "battle/btn_interact/raw.png"
+              ],
+              "roi": [
+                1403,
+                916,
+                102,
+                102
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1628,
+                79,
+                42,
+                28
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1628,
+                159,
+                42,
+                28
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                813,
+                889,
+                285,
+                1
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1658,
+                891,
+                3,
+                6
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1660,
+                860,
+                21,
+                2
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "battle__头像-3-1",
+      "battle__按键-特殊攻击",
+      "battle__按键-终结技",
+      "battle__连携技-1",
+      "battle__连携技-2",
+      "battle__按键-切换角色",
+      "battle__按键-普通攻击",
+      "battle__代理人阵亡",
+      "battle__战斗结果-完成",
+      "battle__战斗结果-再来一次",
+      "battle__战斗结果-已达成",
+      "battle__距离显示区域",
+      "battle__菜单",
+      "battle__战斗结果-撤退",
+      "battle__战斗结果-倒带",
+      "battle__战斗结果-退出",
+      "battle__头像-3-2",
+      "battle__头像-3-3",
+      "battle__头像-2-2",
+      "battle__按键-交互",
+      "battle__式舆防卫战-倒计时",
+      "battle__式舆防卫战-倒计时-精英",
+      "battle__连携条",
+      "battle__按键-切换后援标记",
+      "battle__按键-切换后援灰度区域"
+    ]
+  },
+  "battle__头像-3-1": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          104,
+          40,
+          170,
+          70
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "battle__按键-特殊攻击": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1620,
+          917,
+          100,
+          100
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "battle__按键-终结技": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1728,
+          778,
+          98,
+          98
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "battle__连携技-1": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          479,
+          828,
+          118,
+          118
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "battle__连携技-2": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1322,
+          828,
+          118,
+          118
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "battle__按键-切换角色": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1731,
+          920,
+          96,
+          96
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "battle__按键-普通攻击": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "battle/btn_normal_attack/raw.png"
+        ],
+        "roi": [
+          1403,
+          916,
+          102,
+          101
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "battle__代理人阵亡": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "battle/agent_dead/raw.png"
+        ],
+        "roi": [
+          830,
+          40,
+          100,
+          47
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "battle__战斗结果-完成": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "完成"
+        ],
+        "roi": [
+          1566,
+          1004,
+          266,
+          52
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "battle__战斗结果-再来一次": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "再来一次"
+        ],
+        "roi": [
+          1232,
+          1006,
+          276,
+          46
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "battle__战斗结果-已达成": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "已达成"
+        ],
+        "roi": [
+          610,
+          1000,
+          80,
+          55
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "battle__距离显示区域": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          432,
+          132,
+          1208,
+          710
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "battle__菜单": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          82,
+          46,
+          28,
+          54
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "battle__战斗结果-撤退": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "撤退"
+        ],
+        "roi": [
+          526,
+          848,
+          220,
+          64
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "battle__战斗结果-倒带": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "倒带"
+        ],
+        "roi": [
+          874,
+          850,
+          214,
+          64
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "battle__战斗结果-退出": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "退出"
+        ],
+        "roi": [
+          1566,
+          1004,
+          266,
+          52
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "battle__头像-3-2": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "battle/avatar_2_anby/raw.png"
+        ],
+        "roi": [
+          559,
+          40,
+          103,
+          51
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "battle__头像-3-3": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "battle/avatar_2_anton/raw.png"
+        ],
+        "roi": [
+          741,
+          40,
+          103,
+          51
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "battle__头像-2-2": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "battle/avatar_2_piper/raw.png"
+        ],
+        "roi": [
+          594,
+          40,
+          103,
+          51
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "battle__按键-交互": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "battle/btn_interact/raw.png"
+        ],
+        "roi": [
+          1403,
+          916,
+          102,
+          102
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "battle__式舆防卫战-倒计时": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1628,
+          79,
+          42,
+          28
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "battle__式舆防卫战-倒计时-精英": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1628,
+          159,
+          42,
+          28
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "battle__连携条": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          813,
+          889,
+          285,
+          1
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "battle__按键-切换后援标记": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1658,
+          891,
+          3,
+          6
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "battle__按键-切换后援灰度区域": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1660,
+          860,
+          21,
+          2
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "coupon": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                920,
+                737,
+                80,
+                43
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "绳网信用"
+              ],
+              "roi": [
+                1090,
+                362,
+                116,
+                43
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "使用"
+              ],
+              "roi": [
+                1040,
+                1005,
+                160,
+                45
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                936,
+                1012,
+                41,
+                33
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "coupon__确认",
+      "coupon__绳网信用",
+      "coupon__使用",
+      "coupon__数量"
+    ]
+  },
+  "coupon__确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          920,
+          737,
+          80,
+          43
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "coupon__绳网信用": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "绳网信用"
+        ],
+        "roi": [
+          1090,
+          362,
+          116,
+          43
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "coupon__使用": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "使用"
+        ],
+        "roi": [
+          1040,
+          1005,
+          160,
+          45
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "coupon__数量": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          936,
+          1012,
+          41,
+          33
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

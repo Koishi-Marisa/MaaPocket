@@ -1,0 +1,174 @@
+{
+  "normal_world_basic": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "normal_world/function_menu/raw.png"
+              ],
+              "roi": [
+                1776,
+                28,
+                93,
+                89
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "normal_world/preset_config/raw.png"
+              ],
+              "roi": [
+                1225,
+                44,
+                280,
+                58
+              ],
+              "threshold": 0.7
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "normal_world_basic__按钮-信息",
+      "normal_world_basic__按钮-菜单",
+      "normal_world_basic__快捷手册",
+      "normal_world_basic__星期",
+      "normal_world_basic__功能导览",
+      "normal_world_basic__预备编队"
+    ]
+  },
+  "normal_world_basic__按钮-信息": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "normal_world/message/raw.png"
+        ],
+        "roi": [
+          1728,
+          918,
+          98,
+          98
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "normal_world_basic__按钮-菜单": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          96,
+          34,
+          68,
+          74
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "menu"
+    ]
+  },
+  "normal_world_basic__快捷手册": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "normal_world/compendium/raw.png"
+        ],
+        "roi": [
+          1440,
+          29,
+          239,
+          84
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "compendium_training"
+    ]
+  },
+  "normal_world_basic__星期": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "星期"
+        ],
+        "roi": [
+          201,
+          38,
+          69,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "normal_world_basic__功能导览": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "normal_world/function_menu/raw.png"
+        ],
+        "roi": [
+          1776,
+          28,
+          93,
+          89
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "normal_world_basic__预备编队": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "normal_world/preset_config/raw.png"
+        ],
+        "roi": [
+          1225,
+          44,
+          280,
+          58
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

@@ -1,0 +1,200 @@
+{
+  "lostvoid_indexpanel": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "menu/back/raw.png"
+              ],
+              "roi": [
+                82,
+                12,
+                68,
+                78
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "藏品"
+              ],
+              "roi": [
+                602,
+                24,
+                248,
+                48
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                238,
+                210,
+                38,
+                42
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1298,
+                314,
+                532,
+                624
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1782,
+                32,
+                40,
+                34
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                324,
+                276,
+                298,
+                760
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "lostvoid_indexpanel__返回按钮",
+      "lostvoid_indexpanel__藏品",
+      "lostvoid_indexpanel__过滤按钮",
+      "lostvoid_indexpanel__类型列表",
+      "lostvoid_indexpanel__关闭过滤",
+      "lostvoid_indexpanel__藏品清单"
+    ]
+  },
+  "lostvoid_indexpanel__返回按钮": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          82,
+          12,
+          68,
+          78
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "lostvoid_indexpanel__藏品": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "藏品"
+        ],
+        "roi": [
+          602,
+          24,
+          248,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "lostvoid_indexpanel__过滤按钮": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          238,
+          210,
+          38,
+          42
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lostvoid_indexpanel__类型列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1298,
+          314,
+          532,
+          624
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lostvoid_indexpanel__关闭过滤": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1782,
+          32,
+          40,
+          34
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lostvoid_indexpanel__藏品清单": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          324,
+          276,
+          298,
+          760
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

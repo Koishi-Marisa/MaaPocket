@@ -1,0 +1,236 @@
+{
+  "lost_void_entry_purge": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "战线肃清"
+              ],
+              "roi": [
+                986,
+                208,
+                708,
+                54
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "街区"
+              ],
+              "roi": [
+                234,
+                26,
+                156,
+                54
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "menu/back/raw.png"
+              ],
+              "roi": [
+                82,
+                13,
+                68,
+                77
+              ],
+              "threshold": 0.7
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "lost_void_entry_purge__标题-战线肃清",
+      "lost_void_entry_purge__按钮-街区",
+      "lost_void_entry_purge__菜单-返回",
+      "lost_void_entry_purge__周期增益-第一个",
+      "lost_void_entry_purge__周期增益-第二个",
+      "lost_void_entry_purge__周期增益-第三个",
+      "lost_void_entry_purge__按钮-难度",
+      "lost_void_entry_purge__区域-难度列表",
+      "lost_void_entry_purge__按钮-调查战略"
+    ]
+  },
+  "lost_void_entry_purge__标题-战线肃清": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "战线肃清"
+        ],
+        "roi": [
+          986,
+          208,
+          708,
+          54
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_entry_purge__按钮-街区": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "街区"
+        ],
+        "roi": [
+          234,
+          26,
+          156,
+          54
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "normal_world_basic"
+    ]
+  },
+  "lost_void_entry_purge__菜单-返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          82,
+          13,
+          68,
+          77
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "lost_void_entry_standard"
+    ]
+  },
+  "lost_void_entry_purge__周期增益-第一个": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1000,
+          388,
+          750,
+          136
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_entry_purge__周期增益-第二个": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1000,
+          536,
+          750,
+          118
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_entry_purge__周期增益-第三个": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1000,
+          678,
+          750,
+          130
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_entry_purge__按钮-难度": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "难度"
+        ],
+        "roi": [
+          1578,
+          22,
+          240,
+          60
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_entry_purge__区域-难度列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1566,
+          94,
+          252,
+          340
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_entry_purge__按钮-调查战略": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1708,
+          198,
+          88,
+          98
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

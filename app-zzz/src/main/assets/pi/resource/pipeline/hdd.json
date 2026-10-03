@@ -1,0 +1,300 @@
+{
+  "hdd": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1510,
+                0,
+                276,
+                120
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1508,
+                104,
+                320,
+                268
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                256,
+                124,
+                1458,
+                824
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "下一步"
+              ],
+              "roi": [
+                1592,
+                1004,
+                222,
+                48
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                964,
+                192,
+                514,
+                696
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "出战"
+              ],
+              "roi": [
+                1626,
+                1004,
+                200,
+                48
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "街区"
+              ],
+              "roi": [
+                230,
+                24,
+                160,
+                52
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                416,
+                28,
+                344,
+                42
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确定并出战"
+              ],
+              "roi": [
+                1026,
+                602,
+                204,
+                50
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "hdd__章节显示",
+      "hdd__章节列表",
+      "hdd__委托区域",
+      "hdd__下一步",
+      "hdd__副本区域",
+      "hdd__出战",
+      "hdd__街区",
+      "hdd__空白",
+      "hdd__确定并出战"
+    ]
+  },
+  "hdd__章节显示": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1510,
+          0,
+          276,
+          120
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "hdd__章节列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1508,
+          104,
+          320,
+          268
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hdd__委托区域": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          256,
+          124,
+          1458,
+          824
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hdd__下一步": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "下一步"
+        ],
+        "roi": [
+          1592,
+          1004,
+          222,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "hdd__副本区域": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          964,
+          192,
+          514,
+          696
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hdd__出战": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "出战"
+        ],
+        "roi": [
+          1626,
+          1004,
+          200,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "hdd__街区": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "街区"
+        ],
+        "roi": [
+          230,
+          24,
+          160,
+          52
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hdd__空白": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          416,
+          28,
+          344,
+          42
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "hdd__确定并出战": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确定并出战"
+        ],
+        "roi": [
+          1026,
+          602,
+          204,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

@@ -1,0 +1,260 @@
+{
+  "hollow_zero_battle": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确定"
+              ],
+              "roi": [
+                860,
+                776,
+                200,
+                44
+              ],
+              "threshold": 1.0
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1048,
+                810,
+                220,
+                222
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "挑战结果"
+              ],
+              "roi": [
+                556,
+                8,
+                812,
+                328
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "退出战斗"
+              ],
+              "roi": [
+                1614,
+                1006,
+                222,
+                48
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                1026,
+                604,
+                202,
+                50
+              ],
+              "threshold": 1.0
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                878,
+                598,
+                196,
+                58
+              ],
+              "threshold": 1.0
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "hollow/critical_reward_money/raw.png"
+              ],
+              "roi": [
+                1312,
+                530,
+                518,
+                340
+              ],
+              "threshold": 0.7
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "hollow_zero_battle__鸣徽-确定",
+      "hollow_zero_battle__战斗结果-确定",
+      "hollow_zero_battle__挑战结果",
+      "hollow_zero_battle__退出战斗",
+      "hollow_zero_battle__退出战斗-确认",
+      "hollow_zero_battle__结算周期上限-确认",
+      "hollow_zero_battle__通关-丁尼奖励"
+    ]
+  },
+  "hollow_zero_battle__鸣徽-确定": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确定"
+        ],
+        "roi": [
+          860,
+          776,
+          200,
+          44
+        ],
+        "threshold": 1.0
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_battle__战斗结果-确定": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1048,
+          810,
+          220,
+          222
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "hollow_zero_battle__挑战结果": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "挑战结果"
+        ],
+        "roi": [
+          556,
+          8,
+          812,
+          328
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_battle__退出战斗": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "退出战斗"
+        ],
+        "roi": [
+          1614,
+          1006,
+          222,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "hollow_zero_battle__退出战斗-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1026,
+          604,
+          202,
+          50
+        ],
+        "threshold": 1.0
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "hollow_zero_battle__结算周期上限-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          878,
+          598,
+          196,
+          58
+        ],
+        "threshold": 1.0
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "hollow_zero_battle__通关-丁尼奖励": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "hollow/critical_reward_money/raw.png"
+        ],
+        "roi": [
+          1312,
+          530,
+          518,
+          340
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

@@ -1,0 +1,232 @@
+{
+  "city_fund": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "成长任务"
+              ],
+              "roi": [
+                1436,
+                26,
+                152,
+                50
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "等级回馈"
+              ],
+              "roi": [
+                1218,
+                20,
+                144,
+                68
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "全部领取"
+              ],
+              "roi": [
+                1240,
+                982,
+                256,
+                94
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "全部领取"
+              ],
+              "roi": [
+                1592,
+                982,
+                256,
+                74
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "开启丽都城募"
+              ],
+              "roi": [
+                1402,
+                936,
+                446,
+                120
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                874,
+                600,
+                200,
+                260
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "city_fund__成长任务",
+      "city_fund__等级回馈",
+      "city_fund__等级-全部领取",
+      "city_fund__任务-全部领取",
+      "city_fund__开启丽都城募",
+      "city_fund__按钮-确认"
+    ]
+  },
+  "city_fund__成长任务": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "成长任务"
+        ],
+        "roi": [
+          1436,
+          26,
+          152,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "city_fund__等级回馈": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "等级回馈"
+        ],
+        "roi": [
+          1218,
+          20,
+          144,
+          68
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "city_fund__等级-全部领取": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "全部领取"
+        ],
+        "roi": [
+          1240,
+          982,
+          256,
+          94
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "city_fund__任务-全部领取": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "全部领取"
+        ],
+        "roi": [
+          1592,
+          982,
+          256,
+          74
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "city_fund__开启丽都城募": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "开启丽都城募"
+        ],
+        "roi": [
+          1402,
+          936,
+          446,
+          120
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "city_fund__按钮-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          874,
+          600,
+          200,
+          260
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

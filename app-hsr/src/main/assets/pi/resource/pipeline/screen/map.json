@@ -1,0 +1,78 @@
+{
+  "Screen_map": {
+    "recognition": "TemplateMatch",
+    "template": "screen/map.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [],
+    "attach": {
+      "march7th:kind": "screen-anchor",
+      "march7th:screen_id": "map",
+      "march7th:screen_name": "地图",
+      "march7th:source_image_path": "./assets/images/screen/map.png",
+      "march7th:note": "模板是 1920x1080 PC 客户端截图的小块裁剪，手机上必须重新采集，见 RECAPTURE.md"
+    }
+  },
+  "map__main__0": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 111,
+    "next": [
+      "Screen_main"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "map",
+        "main"
+      ],
+      "march7th:edge_index": 0,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.press_key('esc')",
+      "march7th:kind": "press_key",
+      "march7th:upstream_key": "esc",
+      "march7th:android_keycode": 111
+    }
+  },
+  "Nav_map_from_main": {
+    "recognition": "TemplateMatch",
+    "template": "screen/main.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "main__map__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 main 上时，沿上游第一条 main -> map 边前进"
+    }
+  },
+  "NavTo_map": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Nav_map_from_main",
+      "Screen_map"
+    ],
+    "attach": {
+      "march7th:kind": "nav-router",
+      "march7th:target_screen": "map",
+      "march7th:predecessors": [
+        "main",
+        "map3d"
+      ],
+      "march7th:note": "DirectHit 进入：先按顺序试探各前驱屏幕守卫节点（TemplateMatch 前驱屏幕锚点），命中则沿那条上游边导航；全部未命中则回退到 Screen_map 锚点——若此时已经在 map 上即成功，否则本节点识别失败（诚实失败，不静默跳过）。只覆盖单跳。"
+    }
+  }
+}

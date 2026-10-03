@@ -1,0 +1,325 @@
+{
+  "lost_void_bangboo_store": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "详情"
+              ],
+              "roi": [
+                192,
+                22,
+                98,
+                56
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "刷新"
+              ],
+              "roi": [
+                1678,
+                1002,
+                152,
+                48
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "menu/back/raw.png"
+              ],
+              "roi": [
+                82,
+                13,
+                68,
+                77
+              ],
+              "threshold": 0.7
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "lost_void_bangboo_store__文本-详情",
+      "lost_void_bangboo_store__按钮-刷新",
+      "lost_void_bangboo_store__区域-藏品名称",
+      "lost_void_bangboo_store__区域-价格",
+      "lost_void_bangboo_store__区域-购买按钮",
+      "lost_void_bangboo_store__按钮-购买-确认",
+      "lost_void_bangboo_store__按钮-返回",
+      "lost_void_bangboo_store__按钮-刷新-可用",
+      "lost_void_bangboo_store__按钮-刷新-确认",
+      "lost_void_bangboo_store__标识-血量",
+      "lost_void_bangboo_store__标识-金币",
+      "lost_void_bangboo_store__区域-角色头像"
+    ]
+  },
+  "lost_void_bangboo_store__文本-详情": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "详情"
+        ],
+        "roi": [
+          192,
+          22,
+          98,
+          56
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_bangboo_store__按钮-刷新": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "刷新"
+        ],
+        "roi": [
+          1678,
+          1002,
+          152,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_bangboo_store__区域-藏品名称": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          90,
+          480,
+          1710,
+          50
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_bangboo_store__区域-价格": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          90,
+          735,
+          1710,
+          45
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_bangboo_store__区域-购买按钮": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          90,
+          780,
+          1710,
+          60
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_bangboo_store__按钮-购买-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1034,
+          600,
+          196,
+          54
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "lost_void_bangboo_store__按钮-返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          82,
+          13,
+          68,
+          77
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "lost_void_bangboo_store__按钮-刷新-可用": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "刷新"
+        ],
+        "roi": [
+          1678,
+          1002,
+          152,
+          48
+        ],
+        "threshold": 0.5,
+        "color_filter": "lost_void_bangboo_store__按钮-刷新-可用__color"
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "lost_void_bangboo_store__按钮-刷新-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1034,
+          600,
+          196,
+          54
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "lost_void_bangboo_store__标识-血量": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "lost_void/blood_drop/raw.png"
+        ],
+        "roi": [
+          1485,
+          1000,
+          65,
+          58
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_bangboo_store__标识-金币": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "lost_void/gold/raw.png"
+        ],
+        "roi": [
+          1485,
+          1000,
+          65,
+          58
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_bangboo_store__区域-角色头像": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1224,
+          20,
+          546,
+          65
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_bangboo_store__按钮-刷新-可用__color": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "method": 4,
+        "roi": [
+          1678,
+          1002,
+          152,
+          48
+        ],
+        "lower": [
+          200,
+          200,
+          200
+        ],
+        "upper": [
+          255,
+          255,
+          255
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

@@ -1,0 +1,209 @@
+{
+  "lost_void_entry_standard": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "作战潜能"
+              ],
+              "roi": [
+                909,
+                979,
+                128,
+                85
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "探索收集"
+              ],
+              "roi": [
+                1658,
+                991,
+                146,
+                73
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "lost_void_entry_standard__按钮-常规",
+      "lost_void_entry_standard__按钮-周期",
+      "lost_void_entry_standard__按钮-战线肃清",
+      "lost_void_entry_standard__按钮-特遣调查",
+      "lost_void_entry_standard__作战潜能",
+      "lost_void_entry_standard__探索收集"
+    ]
+  },
+  "lost_void_entry_standard__按钮-常规": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "常规"
+        ],
+        "roi": [
+          1616,
+          19,
+          124,
+          70
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_entry_standard__按钮-周期": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "周期"
+        ],
+        "roi": [
+          1453,
+          26,
+          114,
+          46
+        ],
+        "threshold": 0.5,
+        "color_filter": "lost_void_entry_standard__按钮-周期__color"
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "lost_void_entry_periodic"
+    ]
+  },
+  "lost_void_entry_standard__按钮-战线肃清": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "战线肃清"
+        ],
+        "roi": [
+          878,
+          318,
+          191,
+          47
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "lost_void_entry_purge"
+    ]
+  },
+  "lost_void_entry_standard__按钮-特遣调查": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "特遣调查"
+        ],
+        "roi": [
+          1425,
+          311,
+          188,
+          51
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "lost_void_entry_task_force"
+    ]
+  },
+  "lost_void_entry_standard__作战潜能": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "作战潜能"
+        ],
+        "roi": [
+          909,
+          979,
+          128,
+          85
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_entry_standard__探索收集": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "探索收集"
+        ],
+        "roi": [
+          1658,
+          991,
+          146,
+          73
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_entry_standard__按钮-周期__color": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "method": 4,
+        "roi": [
+          1453,
+          26,
+          114,
+          46
+        ],
+        "lower": [
+          40,
+          40,
+          40
+        ],
+        "upper": [
+          255,
+          255,
+          255
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

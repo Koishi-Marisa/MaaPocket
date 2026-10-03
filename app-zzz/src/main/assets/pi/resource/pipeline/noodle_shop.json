@@ -1,0 +1,152 @@
+{
+  "noodle_shop": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "点单"
+              ],
+              "roi": [
+                1678,
+                678,
+                232,
+                46
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                106,
+                820,
+                1708,
+                198
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                1030,
+                620,
+                200,
+                56
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                882,
+                622,
+                194,
+                144
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "noodle_shop__点单",
+      "noodle_shop__拉面列表",
+      "noodle_shop__点单确认",
+      "noodle_shop__效果确认"
+    ]
+  },
+  "noodle_shop__点单": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "点单"
+        ],
+        "roi": [
+          1678,
+          678,
+          232,
+          46
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "noodle_shop__拉面列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          106,
+          820,
+          1708,
+          198
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "noodle_shop__点单确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1030,
+          620,
+          200,
+          56
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "noodle_shop__效果确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          882,
+          622,
+          194,
+          144
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

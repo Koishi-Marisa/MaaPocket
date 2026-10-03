@@ -1,0 +1,296 @@
+{
+  "lost_void_entry": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "menu/btn_close/raw.png"
+              ],
+              "roi": [
+                1234,
+                160,
+                366,
+                190
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "悬赏委托"
+              ],
+              "roi": [
+                1181,
+                19,
+                165,
+                46
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "全部领取"
+              ],
+              "roi": [
+                1342,
+                316,
+                212,
+                40
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1526,
+                198,
+                56,
+                50
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "8000/8000"
+              ],
+              "roi": [
+                736,
+                12,
+                402,
+                80
+              ],
+              "threshold": 1.0
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "下一步"
+              ],
+              "roi": [
+                1633,
+                1001,
+                169,
+                51
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "常规"
+              ],
+              "roi": [
+                1616,
+                19,
+                124,
+                70
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "周期"
+              ],
+              "roi": [
+                1453,
+                26,
+                114,
+                46
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "lost_void_entry__按钮-更新弹窗-关闭",
+      "lost_void_entry__按钮-悬赏委托",
+      "lost_void_entry__按钮-悬赏委托-全部领取",
+      "lost_void_entry__按钮-悬赏委托-关闭",
+      "lost_void_entry__区域-悬赏委托-进度",
+      "lost_void_entry__按钮-下一步",
+      "lost_void_entry__按钮-常规",
+      "lost_void_entry__按钮-周期"
+    ]
+  },
+  "lost_void_entry__按钮-更新弹窗-关闭": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/btn_close/raw.png"
+        ],
+        "roi": [
+          1234,
+          160,
+          366,
+          190
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "lost_void_entry__按钮-悬赏委托": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "悬赏委托"
+        ],
+        "roi": [
+          1181,
+          19,
+          165,
+          46
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "lost_void_entry__按钮-悬赏委托-全部领取": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "全部领取"
+        ],
+        "roi": [
+          1342,
+          316,
+          212,
+          40
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "lost_void_entry__按钮-悬赏委托-关闭": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1526,
+          198,
+          56,
+          50
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_entry__区域-悬赏委托-进度": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "8000/8000"
+        ],
+        "roi": [
+          736,
+          12,
+          402,
+          80
+        ],
+        "threshold": 1.0
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_entry__按钮-下一步": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "下一步"
+        ],
+        "roi": [
+          1633,
+          1001,
+          169,
+          51
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "lost_void_entry__按钮-常规": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "常规"
+        ],
+        "roi": [
+          1616,
+          19,
+          124,
+          70
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_entry__按钮-周期": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "周期"
+        ],
+        "roi": [
+          1453,
+          26,
+          114,
+          46
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

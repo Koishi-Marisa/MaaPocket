@@ -1,0 +1,77 @@
+{
+  "Screen_currency_wars_mode_select_overclock": {
+    "recognition": "TemplateMatch",
+    "template": "screen/currency_wars/mode_select_overclock.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [],
+    "attach": {
+      "march7th:kind": "screen-anchor",
+      "march7th:screen_id": "currency_wars_mode_select_overclock",
+      "march7th:screen_name": "货币战争-超频博弈",
+      "march7th:source_image_path": "./assets/images/screen/currency_wars/mode_select_overclock.png",
+      "march7th:note": "模板是 1920x1080 PC 客户端截图的小块裁剪，手机上必须重新采集，见 RECAPTURE.md"
+    }
+  },
+  "currency_wars_mode_select_overclock__currency_wars_mode_select__0": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 111,
+    "next": [
+      "Screen_currency_wars_mode_select"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "currency_wars_mode_select_overclock",
+        "currency_wars_mode_select"
+      ],
+      "march7th:edge_index": 0,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.press_key('esc')",
+      "march7th:kind": "press_key",
+      "march7th:upstream_key": "esc",
+      "march7th:android_keycode": 111
+    }
+  },
+  "Nav_currency_wars_mode_select_overclock_from_currency_wars_mode_select": {
+    "recognition": "TemplateMatch",
+    "template": "screen/currency_wars/mode_select.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "currency_wars_mode_select__currency_wars_mode_select_overclock__0__UNMAPPED_19"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 currency_wars_mode_select 上时，沿上游第一条 currency_wars_mode_select -> currency_wars_mode_select_overclock 边前进"
+    }
+  },
+  "NavTo_currency_wars_mode_select_overclock": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Nav_currency_wars_mode_select_overclock_from_currency_wars_mode_select",
+      "Screen_currency_wars_mode_select_overclock"
+    ],
+    "attach": {
+      "march7th:kind": "nav-router",
+      "march7th:target_screen": "currency_wars_mode_select_overclock",
+      "march7th:predecessors": [
+        "currency_wars_mode_select"
+      ],
+      "march7th:note": "DirectHit 进入：先按顺序试探各前驱屏幕守卫节点（TemplateMatch 前驱屏幕锚点），命中则沿那条上游边导航；全部未命中则回退到 Screen_currency_wars_mode_select_overclock 锚点——若此时已经在 currency_wars_mode_select_overclock 上即成功，否则本节点识别失败（诚实失败，不静默跳过）。只覆盖单跳。"
+    }
+  }
+}

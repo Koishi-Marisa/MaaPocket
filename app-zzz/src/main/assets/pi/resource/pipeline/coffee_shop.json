@@ -1,0 +1,324 @@
+{
+  "coffee_shop": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "点单"
+              ],
+              "roi": [
+                1702,
+                880,
+                212,
+                140
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                132,
+                682,
+                990,
+                372
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "前往"
+              ],
+              "roi": [
+                728,
+                600,
+                200,
+                92
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                1040,
+                600,
+                188,
+                88
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "跳过"
+              ],
+              "roi": [
+                1684,
+                64,
+                166,
+                136
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                875,
+                640,
+                325,
+                114
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                882,
+                606,
+                202,
+                84
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1438,
+                536,
+                476,
+                294
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "汀曼大师"
+              ],
+              "roi": [
+                880,
+                800,
+                160,
+                40
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "coffee_shop__点单",
+      "coffee_shop__咖啡列表",
+      "coffee_shop__对话框前往",
+      "coffee_shop__对话框确认",
+      "coffee_shop__点单后跳过",
+      "coffee_shop__电量确认",
+      "coffee_shop__不可贪杯确认",
+      "coffee_shop__右侧选项区域",
+      "coffee_shop__对话框标题-汀曼大师"
+    ]
+  },
+  "coffee_shop__点单": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "点单"
+        ],
+        "roi": [
+          1702,
+          880,
+          212,
+          140
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "coffee_shop__咖啡列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          132,
+          682,
+          990,
+          372
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "coffee_shop__对话框前往": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "前往"
+        ],
+        "roi": [
+          728,
+          600,
+          200,
+          92
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "coffee_shop__对话框确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1040,
+          600,
+          188,
+          88
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "coffee_shop__点单后跳过": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "跳过"
+        ],
+        "roi": [
+          1684,
+          64,
+          166,
+          136
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "coffee_shop__电量确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          875,
+          640,
+          325,
+          114
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "coffee_shop__不可贪杯确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          882,
+          606,
+          202,
+          84
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "coffee_shop__右侧选项区域": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1438,
+          536,
+          476,
+          294
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "coffee_shop__对话框标题-汀曼大师": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "汀曼大师"
+        ],
+        "roi": [
+          880,
+          800,
+          160,
+          40
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

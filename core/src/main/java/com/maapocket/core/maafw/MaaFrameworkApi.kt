@@ -10,7 +10,7 @@ import com.sun.jna.ptr.LongByReference
  * JNA binding for **MaaFramework v5.14.2** (`libMaaFramework.so`).
  *
  * Every declaration here is transcribed from the headers shipped inside
- * `MAA-android-aarch64-v5.14.2.zip` (`include/MaaFramework/**`). Names, parameter order and
+ * `MAA-android-aarch64-v5.14.2.zip` (`include/MaaFramework/\**`). Names, parameter order and
  * types are kept byte-identical to C so that a future framework release breaking the ABI
  * shows up as a link failure rather than silent corruption.
  *

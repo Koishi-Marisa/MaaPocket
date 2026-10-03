@@ -1,0 +1,816 @@
+{
+  "hollow_zero_event": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1230,
+                4,
+                686,
+                964
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                830,
+                966,
+                140,
+                84
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                930,
+                966,
+                140,
+                84
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1030,
+                966,
+                140,
+                84
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1232,
+                434,
+                158,
+                70
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                880,
+                626,
+                198,
+                46
+              ],
+              "threshold": 1.0
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                22,
+                1060,
+                152,
+                20
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                278,
+                678,
+                1372,
+                58
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                332,
+                752,
+                1256,
+                110
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "背包"
+              ],
+              "roi": [
+                1448,
+                980,
+                128,
+                40
+              ],
+              "threshold": 1.0
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "完成"
+              ],
+              "roi": [
+                1564,
+                1004,
+                268,
+                48
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                416,
+                490,
+                256,
+                40
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                832,
+                490,
+                256,
+                40
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1248,
+                490,
+                258,
+                40
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                456,
+                774,
+                180,
+                50
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                872,
+                774,
+                180,
+                50
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1284,
+                774,
+                174,
+                50
+              ]
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "hollow/speed_up/raw.png"
+              ],
+              "roi": [
+                174,
+                25,
+                74,
+                55
+              ],
+              "threshold": 0.9
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                420,
+                38,
+                18,
+                27
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "放弃"
+              ],
+              "roi": [
+                1564,
+                1004,
+                268,
+                48
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                1024,
+                600,
+                210,
+                52
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                74,
+                28,
+                66,
+                48
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "背包已满"
+              ],
+              "roi": [
+                826,
+                344,
+                266,
+                110
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "menu/back/raw.png"
+              ],
+              "roi": [
+                82,
+                13,
+                68,
+                77
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1392,
+                750,
+                518,
+                74
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "可再次触发事件"
+              ],
+              "roi": [
+                1004,
+                884,
+                162,
+                40
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "hollow_zero_event__事件文本",
+      "hollow_zero_event__角色-1",
+      "hollow_zero_event__角色-2",
+      "hollow_zero_event__角色-3",
+      "hollow_zero_event__呼叫增援-角色行",
+      "hollow_zero_event__消息-确认",
+      "hollow_zero_event__空白",
+      "hollow_zero_event__底部-清除列表",
+      "hollow_zero_event__底部-选择列表",
+      "hollow_zero_event__背包",
+      "hollow_zero_event__通关-完成",
+      "hollow_zero_event__鸣徽名称-1",
+      "hollow_zero_event__鸣徽名称-2",
+      "hollow_zero_event__鸣徽名称-3",
+      "hollow_zero_event__鸣徽选择-1",
+      "hollow_zero_event__鸣徽选择-2",
+      "hollow_zero_event__鸣徽选择-3",
+      "hollow_zero_event__快进",
+      "hollow_zero_event__当前层数",
+      "hollow_zero_event__放弃",
+      "hollow_zero_event__放弃-确认",
+      "hollow_zero_event__菜单",
+      "hollow_zero_event__背包已满",
+      "hollow_zero_event__旧都失物-返回",
+      "hollow_zero_event__格子入口选项",
+      "hollow_zero_event__交互可再次触发事件"
+    ]
+  },
+  "hollow_zero_event__事件文本": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1230,
+          4,
+          686,
+          964
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "hollow_zero_event__角色-1": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          830,
+          966,
+          140,
+          84
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_event__角色-2": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          930,
+          966,
+          140,
+          84
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_event__角色-3": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1030,
+          966,
+          140,
+          84
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_event__呼叫增援-角色行": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1232,
+          434,
+          158,
+          70
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_event__消息-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          880,
+          626,
+          198,
+          46
+        ],
+        "threshold": 1.0
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_event__空白": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          22,
+          1060,
+          152,
+          20
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "hollow_zero_event__底部-清除列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          278,
+          678,
+          1372,
+          58
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_event__底部-选择列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          332,
+          752,
+          1256,
+          110
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_event__背包": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "背包"
+        ],
+        "roi": [
+          1448,
+          980,
+          128,
+          40
+        ],
+        "threshold": 1.0
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_event__通关-完成": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "完成"
+        ],
+        "roi": [
+          1564,
+          1004,
+          268,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "hollow_zero_event__鸣徽名称-1": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          416,
+          490,
+          256,
+          40
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_event__鸣徽名称-2": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          832,
+          490,
+          256,
+          40
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_event__鸣徽名称-3": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1248,
+          490,
+          258,
+          40
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_event__鸣徽选择-1": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          456,
+          774,
+          180,
+          50
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_event__鸣徽选择-2": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          872,
+          774,
+          180,
+          50
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_event__鸣徽选择-3": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1284,
+          774,
+          174,
+          50
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_event__快进": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "hollow/speed_up/raw.png"
+        ],
+        "roi": [
+          174,
+          25,
+          74,
+          55
+        ],
+        "threshold": 0.9
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "hollow_zero_event__当前层数": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          420,
+          38,
+          18,
+          27
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_event__放弃": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "放弃"
+        ],
+        "roi": [
+          1564,
+          1004,
+          268,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "hollow_zero_event__放弃-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1024,
+          600,
+          210,
+          52
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "hollow_zero_event__菜单": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          74,
+          28,
+          66,
+          48
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "hollow_zero_event__背包已满": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "背包已满"
+        ],
+        "roi": [
+          826,
+          344,
+          266,
+          110
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_event__旧都失物-返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          82,
+          13,
+          68,
+          77
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "hollow_zero_event__格子入口选项": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1392,
+          750,
+          518,
+          74
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_event__交互可再次触发事件": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "可再次触发事件"
+        ],
+        "roi": [
+          1004,
+          884,
+          162,
+          40
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

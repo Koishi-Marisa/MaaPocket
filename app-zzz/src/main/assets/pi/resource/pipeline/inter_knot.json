@@ -1,0 +1,130 @@
+{
+  "inter_knot": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "inter_knot/btn_go/raw.png"
+              ],
+              "roi": [
+                212,
+                898,
+                104,
+                104
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "menu/back/raw.png"
+              ],
+              "roi": [
+                82,
+                13,
+                68,
+                77
+              ],
+              "threshold": 0.7
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "inter_knot__按钮-GO",
+      "inter_knot__按钮-返回",
+      "inter_knot__按钮-停止追踪",
+      "inter_knot__按钮-追踪"
+    ]
+  },
+  "inter_knot__按钮-GO": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "inter_knot/btn_go/raw.png"
+        ],
+        "roi": [
+          212,
+          898,
+          104,
+          104
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "inter_knot__按钮-返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          82,
+          13,
+          68,
+          77
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "inter_knot__按钮-停止追踪": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "停止追踪"
+        ],
+        "roi": [
+          410,
+          900,
+          136,
+          88
+        ],
+        "threshold": 1.0
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "inter_knot__按钮-追踪": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "追踪"
+        ],
+        "roi": [
+          410,
+          900,
+          136,
+          88
+        ],
+        "threshold": 1.0
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

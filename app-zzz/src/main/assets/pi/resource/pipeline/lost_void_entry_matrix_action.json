@@ -1,0 +1,154 @@
+{
+  "lost_void_entry_matrix_action": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "矩阵行动"
+              ],
+              "roi": [
+                960,
+                156,
+                201,
+                100
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "街区"
+              ],
+              "roi": [
+                234,
+                26,
+                156,
+                54
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "menu/back/raw.png"
+              ],
+              "roi": [
+                82,
+                13,
+                68,
+                77
+              ],
+              "threshold": 0.7
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "lost_void_entry_matrix_action__标题-矩阵行动",
+      "lost_void_entry_matrix_action__按钮-街区",
+      "lost_void_entry_matrix_action__菜单-返回",
+      "lost_void_entry_matrix_action__下一步"
+    ]
+  },
+  "lost_void_entry_matrix_action__标题-矩阵行动": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "矩阵行动"
+        ],
+        "roi": [
+          960,
+          156,
+          201,
+          100
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_entry_matrix_action__按钮-街区": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "街区"
+        ],
+        "roi": [
+          234,
+          26,
+          156,
+          54
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "normal_world_basic"
+    ]
+  },
+  "lost_void_entry_matrix_action__菜单-返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          82,
+          13,
+          68,
+          77
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "lost_void_entry_periodic"
+    ]
+  },
+  "lost_void_entry_matrix_action__下一步": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "下一步"
+        ],
+        "roi": [
+          1633,
+          998,
+          178,
+          54
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "matrix_action_team_select"
+    ]
+  }
+}

@@ -1,0 +1,318 @@
+{
+  "suibian_temple_craft": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "制造坊"
+              ],
+              "roi": [
+                1404,
+                479,
+                203,
+                62
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "menu/back/raw.png"
+              ],
+              "roi": [
+                82,
+                13,
+                68,
+                77
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "街区"
+              ],
+              "roi": [
+                238,
+                26,
+                154,
+                50
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "suibian_temple_craft__标题-制造坊",
+      "suibian_temple_craft__菜单-返回",
+      "suibian_temple_craft__区域-商品列表",
+      "suibian_temple_craft__按钮-街区",
+      "suibian_temple_craft__按钮-制造后确认",
+      "suibian_temple_craft__区域-邦布-1",
+      "suibian_temple_craft__区域-邦布-2",
+      "suibian_temple_craft__区域-邦布-3",
+      "suibian_temple_craft__区域-邦布-4",
+      "suibian_temple_craft__区域-邦布-5",
+      "suibian_temple_craft__区域-邦布-6",
+      "suibian_temple_craft__区域-邦布-7",
+      "suibian_temple_craft__区域-邦布-8",
+      "suibian_temple_craft__区域-选择邦布"
+    ]
+  },
+  "suibian_temple_craft__标题-制造坊": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "制造坊"
+        ],
+        "roi": [
+          1404,
+          479,
+          203,
+          62
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_craft__菜单-返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          82,
+          13,
+          68,
+          77
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_craft__区域-商品列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          306,
+          326,
+          830,
+          604
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_craft__按钮-街区": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "街区"
+        ],
+        "roi": [
+          238,
+          26,
+          154,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "normal_world_basic"
+    ]
+  },
+  "suibian_temple_craft__按钮-制造后确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1026,
+          741,
+          204,
+          49
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_craft__区域-邦布-1": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          133,
+          182,
+          241,
+          324
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_craft__区域-邦布-2": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          402,
+          186,
+          233,
+          307
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_craft__区域-邦布-3": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          669,
+          187,
+          221,
+          305
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_craft__区域-邦布-4": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          935,
+          187,
+          219,
+          303
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_craft__区域-邦布-5": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          135,
+          526,
+          239,
+          292
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_craft__区域-邦布-6": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          400,
+          526,
+          238,
+          292
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_craft__区域-邦布-7": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          666,
+          526,
+          236,
+          292
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_craft__区域-邦布-8": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          929,
+          526,
+          236,
+          291
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_craft__区域-选择邦布": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1220,
+          237,
+          109,
+          105
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "storage_wengine": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "音擎仓库"
+              ],
+              "roi": [
+                70,
+                116,
+                94,
+                48
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "回收"
+              ],
+              "roi": [
+                250,
+                900,
+                188,
+                60
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "storage_wengine__标题-音擎仓库",
+      "storage_wengine__按钮-回收",
+      "storage_wengine__左上角-街区",
+      "storage_wengine__TAB-驱动盘"
+    ]
+  },
+  "storage_wengine__标题-音擎仓库": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "音擎仓库"
+        ],
+        "roi": [
+          70,
+          116,
+          94,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "storage_wengine__按钮-回收": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "回收"
+        ],
+        "roi": [
+          250,
+          900,
+          188,
+          60
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "storage_wengine__左上角-街区": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "街区"
+        ],
+        "roi": [
+          238,
+          26,
+          150,
+          52
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "normal_world_basic"
+    ]
+  },
+  "storage_wengine__TAB-驱动盘": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1510,
+          126,
+          78,
+          84
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "storage_drive_disc"
+    ]
+  }
+}

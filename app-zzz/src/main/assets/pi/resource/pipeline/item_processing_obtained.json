@@ -1,0 +1,91 @@
+{
+  "item_processing_obtained": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "获得"
+              ],
+              "roi": [
+                860,
+                386,
+                200,
+                74
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                820,
+                712,
+                340,
+                78
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "item_processing_obtained__标题-获得",
+      "item_processing_obtained__按钮-确认"
+    ]
+  },
+  "item_processing_obtained__标题-获得": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "获得"
+        ],
+        "roi": [
+          860,
+          386,
+          200,
+          74
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "item_processing_obtained__按钮-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          820,
+          712,
+          340,
+          78
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "item_processing"
+    ]
+  }
+}

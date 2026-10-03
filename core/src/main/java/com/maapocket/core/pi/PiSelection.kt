@@ -84,7 +84,7 @@ object PiSelection {
             File(root, rel).absolutePath
         }
         bundlePaths.forEach { p ->
-            if (!File(p).isDirectory) warnings += "资源目录不存在：${File(root).toURI().relativize(File(p).toURI()).path}"
+            if (!File(p).isDirectory) warnings += "资源目录不存在：${root.toURI().relativize(File(p).toURI()).path}"
         }
         if (bundlePaths.isEmpty()) warnings += "解析出的资源目录为空。"
 

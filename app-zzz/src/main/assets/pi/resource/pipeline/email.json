@@ -1,0 +1,133 @@
+{
+  "email": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "全部领取"
+              ],
+              "roi": [
+                122,
+                982,
+                184,
+                92
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "邮件"
+              ],
+              "roi": [
+                160,
+                18,
+                102,
+                66
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "email__全部领取",
+      "email__确认",
+      "email__标题-邮件",
+      "email__按钮-返回"
+    ]
+  },
+  "email__全部领取": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "全部领取"
+        ],
+        "roi": [
+          122,
+          982,
+          184,
+          92
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "email__确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          882,
+          708,
+          202,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "email__标题-邮件": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "邮件"
+        ],
+        "roi": [
+          160,
+          18,
+          102,
+          66
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "email__按钮-返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          82,
+          13,
+          68,
+          77
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "menu"
+    ]
+  }
+}

@@ -29,6 +29,19 @@ concurrency:
 permissions:
   contents: read
 
+# agent（Go 交叉编译）用的常量。
+# 注意：这几个值在 .github/workflows/build-agents.yml 里还有一份（那是独立 workflow）。
+# 本 workflow 刻意**内联** go agent 的构建而不是下载它的 artifact（理由见 build job 里的注释），
+# 因此下面的 Guard 步骤会强制校验两处逐字一致：改一处忘另一处会立刻红，而不是悄悄用错 MaaEnd commit。
+env:
+  MAAEND_REPO: MaaEnd/MaaEnd
+  # 必须与 build-agents.yml 的 MAAEND_REF 一致（也与 prepare-packs.yml 对齐，见那边的注释）。
+  MAAEND_REF: ae43a184c02408410061c858a46205cf90606a26
+  GO_VERSION: '1.25.6'
+  # Go 的 android 端口强制走 external linking，所以 NDK 是必需而非可选（见 docs/agents.md §5）。
+  NDK_VERSION: '29.0.13113456'
+  GOTOOLCHAIN: local
+
 jobs:
   # 把 workflow_dispatch 的 abis 输入（或 push/pr 的默认值）变成矩阵。
   # 单独一个 job 是因为 strategy.matrix 不能直接消费 shell，需要 fromJSON 一个真实数组。
@@ -84,7 +97,7 @@ jobs:
         run: |
           set -euo pipefail
           yes | sdkmanager --licenses > /dev/null || true
-          sdkmanager --install "ndk;29.0.13113456" "cmake;3.22.1"
+          sdkmanager --install "ndk;${NDK_VERSION}" "cmake;3.22.1"
           sdkmanager --list_installed
 
       - name: Set up Python 3.12
@@ -116,6 +129,125 @@ jobs:
           fi
           echo "==> python scripts/setup_maa_framework.py ${args[*]}"
           python scripts/setup_maa_framework.py "${args[@]}"
+
+      # ---------------------------------------------------------------- agent 产物（Go）
+      # 为什么把 go agent 的构建**内联**在本 job，而不是下载 build-agents.yml 上传的
+      # maaend-go-agent-<abi>：
+      #   · 跨 workflow 取产物是抢占式依赖：build-agents.yml 只在它自己的 paths 命中（push）
+      #     或被手动触发时才跑，普通 push/PR 上「当前 commit 一定有该 artifact」并不成立，
+      #     `gh run download` / dawidd6/action-download-artifact 会时好时坏 —— 等于给主构建
+      #     引入了与代码质量无关的随机失败；
+      #   · 改成 `workflow_run` 触发器又会把 build.yml 现有的 push/PR 触发语义整体换掉，
+      #     而且只在默认分支上可靠；
+      #   · 内联是自包含的：checkout 上游 → go build → 铺进 core，全部由本 job 决定，
+      #     没有跨 run 的时序依赖，也不需要多传一路 artifact（每个 ABI 腿本来就要各自构建）。
+      # 代价：MAAEND_REF / GO_VERSION / NDK_VERSION 在本文件出现第二份拷贝，
+      # 所以紧接着一步就是守卫脚本，把两处绑死。
+      - name: Guard - agent build constants must match build-agents.yml
+        shell: bash
+        run: |
+          set -euo pipefail
+          upstream=.github/workflows/build-agents.yml
+          [ -f "$upstream" ] || { echo "::error::$upstream 不存在"; exit 1; }
+          ref_up="$(grep -oE '[0-9a-f]{40}' "$upstream" | head -1)"
+          go_up="$(grep -E '^[[:space:]]*GO_VERSION:' "$upstream" | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?' | head -1)"
+          ndk_up="$(grep -E '^[[:space:]]*NDK_VERSION:' "$upstream" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)"
+          echo "build.yml        : ref=$MAAEND_REF go=$GO_VERSION ndk=$NDK_VERSION"
+          echo "build-agents.yml : ref=$ref_up go=$go_up ndk=$ndk_up"
+          rc=0
+          [ "$ref_up" = "$MAAEND_REF" ] || { echo "::error::MAAEND_REF 与 build-agents.yml 不一致（$MAAEND_REF vs $ref_up）"; rc=1; }
+          [ "$go_up" = "$GO_VERSION" ] || { echo "::error::GO_VERSION 与 build-agents.yml 不一致（$GO_VERSION vs $go_up）"; rc=1; }
+          [ "$ndk_up" = "$NDK_VERSION" ] || { echo "::error::NDK_VERSION 与 build-agents.yml 不一致（$NDK_VERSION vs $ndk_up）"; rc=1; }
+          exit "$rc"
+
+      # 与 build-agents.yml 完全同参：完整 checkout（不能 sparse —— 脚本要读 assets/locales/），
+      # fetch-depth: 1 省时间，pin 到 MAAEND_REF 保证可复现。
+      - name: Checkout MaaEnd (upstream, pinned)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.MAAEND_REPO }}
+          ref: ${{ env.MAAEND_REF }}
+          path: upstream/MaaEnd
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Go ${{ env.GO_VERSION }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+          cache-dependency-path: upstream/MaaEnd/agent/go-service/go.sum
+
+      # 缺文件时早点失败：否则 go build 会在几百行后的报错里才暴露「上游改了目录结构」。
+      - name: Preflight - check MaaEnd agent inputs
+        shell: bash
+        run: |
+          set -uo pipefail
+          rc=0
+          for f in \
+            upstream/MaaEnd/agent/go-service/go.mod \
+            upstream/MaaEnd/agent/go-service/go.sum \
+            upstream/MaaEnd/assets/locales/go-service/zh_cn.json \
+            upstream/MaaEnd/assets/locales/interface/zh_cn.json
+          do
+            if [ ! -f "$f" ]; then echo "::error file=$f::$f 不存在（MaaEnd 目录结构变了？）"; rc=1; fi
+          done
+          exit "$rc"
+
+      # NDK 用上面 `Install NDK and CMake` 装好的那一份（同一个 NDK_VERSION），
+      # 路径就是脚本 locate_ndk() 的兜底位置 $ANDROID_SDK_ROOT/ndk/<version>。
+      - name: Build go agent (${{ matrix.abi }})
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/build_go_agent.py \
+            --source upstream/MaaEnd \
+            --out dist/agents \
+            --abi "${{ matrix.abi }}" \
+            --ndk "${ANDROID_SDK_ROOT}/ndk/${NDK_VERSION}"
+
+      # 产物是「名字像库、内容是可执行文件」的 ELF，架构错了在运行期才炸（而且报错离这里很远），
+      # 所以在这里就核对 e_machine / 字节序 / 是 PIE（Android 5.0+ 拒绝执行 ET_EXEC）。
+      - name: Verify go agent ELF (${{ matrix.abi }})
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - "${{ matrix.abi }}" <<'PY'
+          import struct, sys, pathlib
+          want = {"arm64-v8a": 0xB7, "x86_64": 0x3E}[sys.argv[1]]
+          p = pathlib.Path("dist/agents") / sys.argv[1] / "libMaaEnd_go_service.so"
+          head = p.read_bytes()[:64]
+          assert head[:4] == b"\x7fELF", f"{p}: 不是 ELF"
+          assert head[5] == 1, f"{p}: 不是小端序 (EI_DATA={head[5]})"
+          e_type, e_machine = struct.unpack_from("<HH", head, 16)
+          assert e_machine == want, f"{p}: e_machine=0x{e_machine:X}, 期望 0x{want:X}"
+          assert e_type != 2, f"{p}: ET_EXEC（非 PIE），Android 5.0+ 不会执行它"
+          print(f"ok: {p} e_machine=0x{e_machine:X} e_type={e_type} bytes={p.stat().st_size}")
+          PY
+
+      # 铺进 Gradle 真正会打包的位置：
+      #   · 可执行文件必须落 core/src/main/jniLibs/<abi>/lib*.so —— 只有匹配 lib*.so 的文件
+      #     才会被当作原生库安装到应用私有目录并拿到 x 权限（Android 不允许从 assets execve）；
+      #   · locale bundle 进 assets/pi-agent-bundle/go-service/，由 AgentWorkspace 在启动前
+      #     解到 agent 的工作目录（Go agent 以 locales/go-service/zh_cn.json 的存在判定 locale 目录）。
+      - name: Install go agent into the Android source tree (${{ matrix.abi }})
+        shell: bash
+        run: |
+          set -euo pipefail
+          abi="${{ matrix.abi }}"
+          src="dist/agents/${abi}"
+          [ -f "${src}/libMaaEnd_go_service.so" ] || { echo "::error::缺少 agent 产物 ${src}/libMaaEnd_go_service.so"; exit 1; }
+          mkdir -p "core/src/main/jniLibs/${abi}"
+          cp "${src}/libMaaEnd_go_service.so" "core/src/main/jniLibs/${abi}/libMaaEnd_go_service.so"
+          chmod 755 "core/src/main/jniLibs/${abi}/libMaaEnd_go_service.so"
+          rm -rf core/src/main/assets/pi-agent-bundle/go-service
+          mkdir -p core/src/main/assets/pi-agent-bundle
+          cp -R "${src}/bundle/go-service" core/src/main/assets/pi-agent-bundle/go-service
+          marker=core/src/main/assets/pi-agent-bundle/go-service/locales/go-service/zh_cn.json
+          [ -f "$marker" ] || { echo "::error::locale bundle 不完整，缺 $marker"; exit 1; }
+          echo "jniLibs: $(ls -l core/src/main/jniLibs/${abi}/libMaaEnd_go_service.so)"
+          echo "assets : $(find core/src/main/assets/pi-agent-bundle -type f | wc -l) 个文件"
+          find core/src/main/assets/pi-agent-bundle/go-service -maxdepth 2 -type d | sort
 
       - name: Make gradlew executable
         run: chmod +x gradlew

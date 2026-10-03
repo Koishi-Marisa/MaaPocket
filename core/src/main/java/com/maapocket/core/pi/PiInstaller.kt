@@ -9,7 +9,7 @@ import java.io.File
 import java.io.IOException
 
 /**
- * 把 APK 里烘焙好的 pi pack（`assets/pi/**`）解包到 App 私有外部目录。
+ * 把 APK 里烘焙好的 pi pack（`assets/pi/\**`）解包到 App 私有外部目录。
  *
  * 为什么必须解包：MaaFramework 的 `MaaResourcePostBundle` 只接受**真实目录路径**，
  * 没法直接读 APK 内的 assets。

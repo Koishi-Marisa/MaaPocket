@@ -1,0 +1,127 @@
+{
+  "Screen_divergent_main": {
+    "recognition": "TemplateMatch",
+    "template": "screen/universe/divergent_main.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [],
+    "attach": {
+      "march7th:kind": "screen-anchor",
+      "march7th:screen_id": "divergent_main",
+      "march7th:screen_name": "差分宇宙-主界面",
+      "march7th:source_image_path": "./assets/images/screen/universe/divergent_main.png",
+      "march7th:note": "模板是 1920x1080 PC 客户端截图的小块裁剪，手机上必须重新采集，见 RECAPTURE.md"
+    }
+  },
+  "divergent_main__main__0": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 111,
+    "next": [
+      "Screen_main"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "divergent_main",
+        "main"
+      ],
+      "march7th:edge_index": 0,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.press_key('esc')",
+      "march7th:kind": "press_key",
+      "march7th:upstream_key": "esc",
+      "march7th:android_keycode": 111
+    }
+  },
+  "divergent_main__divergent_mode_select__0": {
+    "recognition": "TemplateMatch",
+    "template": "screen/universe/homepage.png",
+    "threshold": 0.9,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "divergent_main__divergent_mode_select__1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "divergent_main",
+        "divergent_mode_select"
+      ],
+      "march7th:edge_index": 1,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.click_element('./assets/images/screen/universe/homepage.png', 'image', 0.9, 10)",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 0.9,
+      "march7th:masked_template": false,
+      "march7th:max_retries": 10
+    },
+    "rate_limit": 1000,
+    "timeout": 20000
+  },
+  "divergent_main__divergent_mode_select__1": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 2000,
+    "next": [
+      "Screen_divergent_mode_select"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "divergent_main",
+        "divergent_mode_select"
+      ],
+      "march7th:edge_index": 1,
+      "march7th:action_index": 1,
+      "march7th:expression": "time.sleep(2)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "Nav_divergent_main_from_guide5": {
+    "recognition": "TemplateMatch",
+    "template": "screen/guide/guide5.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "guide5__divergent_main__0__UNMAPPED_11"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 guide5 上时，沿上游第一条 guide5 -> divergent_main 边前进"
+    }
+  },
+  "NavTo_divergent_main": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Nav_divergent_main_from_guide5",
+      "Screen_divergent_main"
+    ],
+    "attach": {
+      "march7th:kind": "nav-router",
+      "march7th:target_screen": "divergent_main",
+      "march7th:predecessors": [
+        "divergent_mode_select",
+        "guide5"
+      ],
+      "march7th:note": "DirectHit 进入：先按顺序试探各前驱屏幕守卫节点（TemplateMatch 前驱屏幕锚点），命中则沿那条上游边导航；全部未命中则回退到 Screen_divergent_main 锚点——若此时已经在 divergent_main 上即成功，否则本节点识别失败（诚实失败，不静默跳过）。只覆盖单跳。"
+    }
+  }
+}

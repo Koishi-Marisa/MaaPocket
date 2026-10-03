@@ -1,0 +1,575 @@
+{
+  "ScreenIndex": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "Screen_menu",
+      "Screen_map",
+      "Screen_map3d",
+      "Screen_monthly_card",
+      "Screen_enter_cloud_game",
+      "Screen_start_game",
+      "Screen_click_enter",
+      "Screen_leave_temporarily",
+      "Screen_universe_report",
+      "Screen_universe_map",
+      "Screen_retreat",
+      "Screen_fight_exit",
+      "Screen_guide2",
+      "Screen_guide3",
+      "Screen_guide4",
+      "Screen_guide5",
+      "Screen_mail",
+      "Screen_visa",
+      "Screen_redemption",
+      "Screen_camera",
+      "Screen_photo_preview",
+      "Screen_universe_main",
+      "Screen_universe_expansion",
+      "Screen_divergent_main",
+      "Screen_divergent_mode_select",
+      "Screen_divergent_mode_select_normal",
+      "Screen_divergent_mode_select_cycle",
+      "Screen_currency_wars_homepage",
+      "Screen_currency_wars_mode_select",
+      "Screen_currency_wars_mode_select_normal",
+      "Screen_currency_wars_mode_select_overclock",
+      "Screen_dispatch",
+      "Screen_start_srpass",
+      "Screen_pass1",
+      "Screen_pass2",
+      "Screen_consumables",
+      "Screen_material",
+      "Screen_bag_consumables",
+      "Screen_bag_relicset",
+      "Screen_bag_lc",
+      "Screen_memory_of_chaos",
+      "Screen_memory",
+      "Screen_prepare_fight",
+      "Screen_purefiction",
+      "Screen_apocalyptic",
+      "Screen_configure_team",
+      "Screen_activity",
+      "Screen_character_warp",
+      "Screen_stellar_warp",
+      "Screen_himeko_try",
+      "Screen_himeko_try_banner",
+      "Screen_himeko_prepare",
+      "Screen_achievement",
+      "Screen_incoming_message",
+      "Screen_reward_guide"
+    ],
+    "attach": {
+      "march7th:kind": "screen-index",
+      "march7th:note": "按 screens.json 的文件顺序依次尝试各屏幕锚点，第一个识别到的即当前所在屏幕",
+      "march7th:screens": [
+        {
+          "id": "main",
+          "name": "主界面",
+          "node": "Screen_main"
+        },
+        {
+          "id": "menu",
+          "name": "手机菜单",
+          "node": "Screen_menu"
+        },
+        {
+          "id": "map",
+          "name": "地图",
+          "node": "Screen_map"
+        },
+        {
+          "id": "map3d",
+          "name": "3D地图",
+          "node": "Screen_map3d"
+        },
+        {
+          "id": "monthly_card",
+          "name": "月卡",
+          "node": "Screen_monthly_card"
+        },
+        {
+          "id": "enter_cloud_game",
+          "name": "进入云游戏",
+          "node": "Screen_enter_cloud_game"
+        },
+        {
+          "id": "start_game",
+          "name": "启动游戏",
+          "node": "Screen_start_game"
+        },
+        {
+          "id": "click_enter",
+          "name": "点击进入",
+          "node": "Screen_click_enter"
+        },
+        {
+          "id": "leave_temporarily",
+          "name": "退出「模拟宇宙」",
+          "node": "Screen_leave_temporarily"
+        },
+        {
+          "id": "universe_report",
+          "name": "模拟宇宙-分析报告",
+          "node": "Screen_universe_report"
+        },
+        {
+          "id": "universe_map",
+          "name": "模拟宇宙-地图",
+          "node": "Screen_universe_map"
+        },
+        {
+          "id": "retreat",
+          "name": "撤退",
+          "node": "Screen_retreat"
+        },
+        {
+          "id": "fight_exit",
+          "name": "退出关卡",
+          "node": "Screen_fight_exit"
+        },
+        {
+          "id": "guide2",
+          "name": "星际和平指南-每日实训",
+          "node": "Screen_guide2"
+        },
+        {
+          "id": "guide3",
+          "name": "星际和平指南-生存索引",
+          "node": "Screen_guide3"
+        },
+        {
+          "id": "guide4",
+          "name": "星际和平指南-逐光捡金",
+          "node": "Screen_guide4"
+        },
+        {
+          "id": "guide5",
+          "name": "星际和平指南-旷宇纷争",
+          "node": "Screen_guide5"
+        },
+        {
+          "id": "mail",
+          "name": "邮箱",
+          "node": "Screen_mail"
+        },
+        {
+          "id": "visa",
+          "name": "漫游签证",
+          "node": "Screen_visa"
+        },
+        {
+          "id": "redemption",
+          "name": "兑换码",
+          "node": "Screen_redemption"
+        },
+        {
+          "id": "camera",
+          "name": "相机",
+          "node": "Screen_camera"
+        },
+        {
+          "id": "photo_preview",
+          "name": "照片预览",
+          "node": "Screen_photo_preview"
+        },
+        {
+          "id": "universe_main",
+          "name": "模拟宇宙-主界面",
+          "node": "Screen_universe_main"
+        },
+        {
+          "id": "universe_expansion",
+          "name": "模拟宇宙-扩展装置",
+          "node": "Screen_universe_expansion"
+        },
+        {
+          "id": "divergent_main",
+          "name": "差分宇宙-主界面",
+          "node": "Screen_divergent_main"
+        },
+        {
+          "id": "divergent_mode_select",
+          "name": "差分宇宙-模式选择",
+          "node": "Screen_divergent_mode_select"
+        },
+        {
+          "id": "divergent_mode_select_normal",
+          "name": "差分宇宙-常规演算",
+          "node": "Screen_divergent_mode_select_normal"
+        },
+        {
+          "id": "divergent_mode_select_cycle",
+          "name": "差分宇宙-周期演算",
+          "node": "Screen_divergent_mode_select_cycle"
+        },
+        {
+          "id": "currency_wars_homepage",
+          "name": "货币战争-主界面",
+          "node": "Screen_currency_wars_homepage"
+        },
+        {
+          "id": "currency_wars_mode_select",
+          "name": "货币战争-模式选择",
+          "node": "Screen_currency_wars_mode_select"
+        },
+        {
+          "id": "currency_wars_mode_select_normal",
+          "name": "货币战争-标准博弈",
+          "node": "Screen_currency_wars_mode_select_normal"
+        },
+        {
+          "id": "currency_wars_mode_select_overclock",
+          "name": "货币战争-超频博弈",
+          "node": "Screen_currency_wars_mode_select_overclock"
+        },
+        {
+          "id": "dispatch",
+          "name": "委托",
+          "node": "Screen_dispatch"
+        },
+        {
+          "id": "start_srpass",
+          "name": "开启无名勋礼",
+          "node": "Screen_start_srpass"
+        },
+        {
+          "id": "pass1",
+          "name": "无名勋礼-奖励",
+          "node": "Screen_pass1"
+        },
+        {
+          "id": "pass2",
+          "name": "无名勋礼-任务",
+          "node": "Screen_pass2"
+        },
+        {
+          "id": "consumables",
+          "name": "合成-消耗品合成",
+          "node": "Screen_consumables"
+        },
+        {
+          "id": "material",
+          "name": "合成-材料合成",
+          "node": "Screen_material"
+        },
+        {
+          "id": "bag_consumables",
+          "name": "背包-消耗品",
+          "node": "Screen_bag_consumables"
+        },
+        {
+          "id": "bag_relicset",
+          "name": "背包-遗器",
+          "node": "Screen_bag_relicset"
+        },
+        {
+          "id": "bag_lc",
+          "name": "背包-光锥",
+          "node": "Screen_bag_lc"
+        },
+        {
+          "id": "memory_of_chaos",
+          "name": "忘却之庭-混沌回忆",
+          "node": "Screen_memory_of_chaos"
+        },
+        {
+          "id": "memory",
+          "name": "忘却之庭-回忆",
+          "node": "Screen_memory"
+        },
+        {
+          "id": "prepare_fight",
+          "name": "忘却之庭-准备战斗",
+          "node": "Screen_prepare_fight"
+        },
+        {
+          "id": "purefiction",
+          "name": "虚构叙事",
+          "node": "Screen_purefiction"
+        },
+        {
+          "id": "apocalyptic",
+          "name": "末日幻影",
+          "node": "Screen_apocalyptic"
+        },
+        {
+          "id": "configure_team",
+          "name": "队伍",
+          "node": "Screen_configure_team"
+        },
+        {
+          "id": "activity",
+          "name": "活动",
+          "node": "Screen_activity"
+        },
+        {
+          "id": "character_warp",
+          "name": "角色活动跃迁",
+          "node": "Screen_character_warp"
+        },
+        {
+          "id": "stellar_warp",
+          "name": "常驻跃迁",
+          "node": "Screen_stellar_warp"
+        },
+        {
+          "id": "himeko_try",
+          "name": "姬子试用",
+          "node": "Screen_himeko_try"
+        },
+        {
+          "id": "himeko_try_banner",
+          "name": "姬子试用-弹窗",
+          "node": "Screen_himeko_try_banner"
+        },
+        {
+          "id": "himeko_prepare",
+          "name": "姬子试用-准备战斗",
+          "node": "Screen_himeko_prepare"
+        },
+        {
+          "id": "achievement",
+          "name": "成就",
+          "node": "Screen_achievement"
+        },
+        {
+          "id": "incoming_message",
+          "name": "新消息通知",
+          "node": "Screen_incoming_message"
+        },
+        {
+          "id": "reward_guide",
+          "name": "奖励指南",
+          "node": "Screen_reward_guide"
+        }
+      ],
+      "march7th:adjacency": {
+        "main": [
+          "menu",
+          "map",
+          "stellar_warp",
+          "incoming_message"
+        ],
+        "menu": [
+          "main",
+          "guide2",
+          "guide3",
+          "guide4",
+          "guide5",
+          "mail",
+          "visa",
+          "redemption",
+          "camera",
+          "dispatch",
+          "pass1",
+          "consumables",
+          "bag_consumables",
+          "bag_relicset",
+          "bag_lc",
+          "configure_team",
+          "activity",
+          "achievement"
+        ],
+        "map": [
+          "main"
+        ],
+        "map3d": [
+          "map"
+        ],
+        "monthly_card": [
+          "main"
+        ],
+        "enter_cloud_game": [
+          "click_enter"
+        ],
+        "start_game": [
+          "click_enter"
+        ],
+        "click_enter": [
+          "main"
+        ],
+        "leave_temporarily": [
+          "main"
+        ],
+        "universe_report": [
+          "universe_main"
+        ],
+        "universe_map": [
+          "leave_temporarily"
+        ],
+        "retreat": [
+          "main"
+        ],
+        "fight_exit": [
+          "main"
+        ],
+        "guide2": [
+          "menu",
+          "guide3",
+          "guide4",
+          "guide5"
+        ],
+        "guide3": [
+          "menu",
+          "guide2",
+          "guide4",
+          "guide5"
+        ],
+        "guide4": [
+          "menu",
+          "guide2",
+          "guide3",
+          "guide5",
+          "memory_of_chaos",
+          "purefiction",
+          "apocalyptic"
+        ],
+        "guide5": [
+          "menu",
+          "guide2",
+          "guide3",
+          "guide4",
+          "currency_wars_homepage",
+          "divergent_main",
+          "universe_main"
+        ],
+        "mail": [
+          "menu"
+        ],
+        "visa": [
+          "menu"
+        ],
+        "redemption": [
+          "menu"
+        ],
+        "camera": [
+          "main"
+        ],
+        "photo_preview": [
+          "camera"
+        ],
+        "universe_main": [
+          "main",
+          "universe_expansion"
+        ],
+        "universe_expansion": [
+          "main",
+          "universe_main"
+        ],
+        "divergent_main": [
+          "main",
+          "divergent_mode_select"
+        ],
+        "divergent_mode_select": [
+          "divergent_main",
+          "divergent_mode_select_normal",
+          "divergent_mode_select_cycle"
+        ],
+        "divergent_mode_select_normal": [
+          "divergent_mode_select"
+        ],
+        "divergent_mode_select_cycle": [
+          "divergent_mode_select"
+        ],
+        "currency_wars_homepage": [
+          "main",
+          "currency_wars_mode_select"
+        ],
+        "currency_wars_mode_select": [
+          "currency_wars_homepage",
+          "currency_wars_mode_select_normal",
+          "currency_wars_mode_select_overclock"
+        ],
+        "currency_wars_mode_select_normal": [
+          "currency_wars_mode_select"
+        ],
+        "currency_wars_mode_select_overclock": [
+          "currency_wars_mode_select"
+        ],
+        "dispatch": [
+          "menu"
+        ],
+        "start_srpass": [
+          "pass1"
+        ],
+        "pass1": [
+          "menu",
+          "pass2"
+        ],
+        "pass2": [
+          "menu",
+          "pass1"
+        ],
+        "consumables": [
+          "menu",
+          "material"
+        ],
+        "material": [
+          "menu",
+          "consumables"
+        ],
+        "bag_consumables": [
+          "menu"
+        ],
+        "bag_relicset": [
+          "menu"
+        ],
+        "bag_lc": [
+          "menu"
+        ],
+        "memory_of_chaos": [
+          "main",
+          "memory"
+        ],
+        "memory": [
+          "main"
+        ],
+        "prepare_fight": [
+          "memory_of_chaos"
+        ],
+        "purefiction": [
+          "main"
+        ],
+        "apocalyptic": [
+          "main"
+        ],
+        "configure_team": [
+          "main"
+        ],
+        "activity": [
+          "menu",
+          "reward_guide"
+        ],
+        "character_warp": [
+          "menu"
+        ],
+        "stellar_warp": [
+          "main",
+          "himeko_try"
+        ],
+        "himeko_try": [
+          "stellar_warp",
+          "himeko_try_banner"
+        ],
+        "himeko_try_banner": [
+          "himeko_prepare"
+        ],
+        "himeko_prepare": [
+          "himeko_try"
+        ],
+        "achievement": [
+          "menu"
+        ],
+        "incoming_message": [
+          "main"
+        ],
+        "reward_guide": [
+          "activity"
+        ]
+      },
+      "march7th:edge_count": 110
+    }
+  }
+}

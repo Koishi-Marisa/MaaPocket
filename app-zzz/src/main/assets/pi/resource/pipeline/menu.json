@@ -1,0 +1,343 @@
+{
+  "menu": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "menu/back/raw.png"
+              ],
+              "roi": [
+                82,
+                13,
+                68,
+                77
+              ],
+              "threshold": 0.9
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "menu/dynamic_wallpaper/raw.png"
+              ],
+              "roi": [
+                80,
+                776,
+                102,
+                65
+              ],
+              "threshold": 0.9
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "menu__返回",
+      "menu__关闭",
+      "menu__邮件",
+      "menu__底部列表",
+      "menu__更多登出确认",
+      "menu__更多功能区域",
+      "menu__兑换码输入框",
+      "menu__兑换码兑换",
+      "menu__按钮-返回",
+      "menu__底部-仓库",
+      "menu__底部-邮件",
+      "menu__底部-更多",
+      "menu__底部-绳网",
+      "menu__菜单-动态壁纸"
+    ]
+  },
+  "menu__返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          82,
+          13,
+          68,
+          77
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "menu__关闭": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/btn_close/raw.png"
+        ],
+        "roi": [
+          120,
+          80,
+          1680,
+          920
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "menu__邮件": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "邮件"
+        ],
+        "roi": [
+          934,
+          544,
+          56,
+          28
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "menu__底部列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          200,
+          924,
+          1528,
+          134
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "menu__更多登出确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1036,
+          604,
+          190,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "menu__更多功能区域": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          474,
+          280,
+          966,
+          624
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "menu__兑换码输入框": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          718,
+          536,
+          480,
+          74
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "menu__兑换码兑换": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "兑换"
+        ],
+        "roi": [
+          878,
+          690,
+          196,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "menu__按钮-返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          82,
+          13,
+          68,
+          77
+        ],
+        "threshold": 0.9
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "normal_world_basic"
+    ]
+  },
+  "menu__底部-仓库": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "仓库"
+        ],
+        "roi": [
+          200,
+          924,
+          1528,
+          134
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "storage_wengine"
+    ]
+  },
+  "menu__底部-邮件": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "邮件"
+        ],
+        "roi": [
+          200,
+          924,
+          1528,
+          134
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "email"
+    ]
+  },
+  "menu__底部-更多": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "更多"
+        ],
+        "roi": [
+          200,
+          924,
+          1528,
+          134
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "menu_more"
+    ]
+  },
+  "menu__底部-绳网": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "绳网"
+        ],
+        "roi": [
+          200,
+          924,
+          1528,
+          134
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "inter_knot"
+    ]
+  },
+  "menu__菜单-动态壁纸": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/dynamic_wallpaper/raw.png"
+        ],
+        "roi": [
+          80,
+          776,
+          102,
+          65
+        ],
+        "threshold": 0.9
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

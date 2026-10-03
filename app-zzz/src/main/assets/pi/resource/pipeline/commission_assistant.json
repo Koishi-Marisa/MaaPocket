@@ -1,0 +1,301 @@
+{
+  "commission_assistant": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "battle/btn_menu/raw.png"
+              ],
+              "roi": [
+                58,
+                40,
+                84,
+                70
+              ],
+              "threshold": 0.7
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "commission_assistant__对话框标题",
+      "commission_assistant__对话框内容",
+      "commission_assistant__右侧选项区域",
+      "commission_assistant__中间选项区域",
+      "commission_assistant__左上角街区",
+      "commission_assistant__对话框确认",
+      "commission_assistant__左上角返回",
+      "commission_assistant__战斗-菜单",
+      "commission_assistant__文本-剧情右上角",
+      "commission_assistant__标题-短信",
+      "commission_assistant__玩法引导",
+      "commission_assistant__按钮-短信-关闭",
+      "commission_assistant__区域-短信-文本框",
+      "commission_assistant__按钮-自动"
+    ]
+  },
+  "commission_assistant__对话框标题": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          810,
+          770,
+          300,
+          60
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "commission_assistant__对话框内容": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          418,
+          831,
+          1082,
+          149
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "commission_assistant__右侧选项区域": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1438,
+          536,
+          476,
+          294
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "commission_assistant__中间选项区域": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "commission_assistant/1/raw.png"
+        ],
+        "roi": [
+          520,
+          245,
+          845,
+          525
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "commission_assistant__左上角街区": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "街区"
+        ],
+        "roi": [
+          234,
+          26,
+          160,
+          52
+        ],
+        "threshold": 1.0
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "commission_assistant__对话框确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1022,
+          544,
+          216,
+          206
+        ],
+        "threshold": 1.0
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "commission_assistant__左上角返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          82,
+          13,
+          68,
+          77
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "commission_assistant__战斗-菜单": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "battle/btn_menu/raw.png"
+        ],
+        "roi": [
+          58,
+          40,
+          84,
+          70
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "commission_assistant__文本-剧情右上角": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1680,
+          20,
+          160,
+          145
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "commission_assistant__标题-短信": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "knock\\ knock"
+        ],
+        "roi": [
+          412,
+          148,
+          204,
+          70
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "commission_assistant__玩法引导": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          342,
+          213,
+          223,
+          72
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "commission_assistant__按钮-短信-关闭": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/btn_close/raw.png"
+        ],
+        "roi": [
+          1462,
+          130,
+          118,
+          116
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "commission_assistant__区域-短信-文本框": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          790,
+          314,
+          684,
+          606
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "commission_assistant__按钮-自动": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "自动"
+        ],
+        "roi": [
+          1686,
+          186,
+          152,
+          56
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

@@ -1,0 +1,160 @@
+{
+  "common_screen": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "区域"
+              ],
+              "roi": [
+                234,
+                26,
+                160,
+                52
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "menu/back/raw.png"
+              ],
+              "roi": [
+                82,
+                13,
+                68,
+                77
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "menu/btn_close/raw.png"
+              ],
+              "roi": [
+                120,
+                80,
+                1680,
+                920
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "完成"
+              ],
+              "roi": [
+                1564,
+                1004,
+                268,
+                48
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "common_screen__左上角-区域",
+      "common_screen__返回",
+      "common_screen__关闭",
+      "common_screen__完成"
+    ]
+  },
+  "common_screen__左上角-区域": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "区域"
+        ],
+        "roi": [
+          234,
+          26,
+          160,
+          52
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "common_screen__返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          82,
+          13,
+          68,
+          77
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "common_screen__关闭": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/btn_close/raw.png"
+        ],
+        "roi": [
+          120,
+          80,
+          1680,
+          920
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "common_screen__完成": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "完成"
+        ],
+        "roi": [
+          1564,
+          1004,
+          268,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

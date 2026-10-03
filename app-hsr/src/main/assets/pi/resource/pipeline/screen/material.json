@@ -1,0 +1,105 @@
+{
+  "Screen_material": {
+    "recognition": "TemplateMatch",
+    "template": "screen/synthesis/material.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [],
+    "attach": {
+      "march7th:kind": "screen-anchor",
+      "march7th:screen_id": "material",
+      "march7th:screen_name": "合成-材料合成",
+      "march7th:source_image_path": "./assets/images/screen/synthesis/material.png",
+      "march7th:note": "模板是 1920x1080 PC 客户端截图的小块裁剪，手机上必须重新采集，见 RECAPTURE.md"
+    }
+  },
+  "material__menu__0": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 111,
+    "next": [
+      "Screen_menu"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "material",
+        "menu"
+      ],
+      "march7th:edge_index": 0,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.press_key('esc')",
+      "march7th:kind": "press_key",
+      "march7th:upstream_key": "esc",
+      "march7th:android_keycode": 111
+    }
+  },
+  "material__consumables__0": {
+    "recognition": "TemplateMatch",
+    "template": "share/synthesis/enter_consumables.png",
+    "threshold": 0.9,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "Screen_consumables"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "material",
+        "consumables"
+      ],
+      "march7th:edge_index": 1,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.click_element('./assets/images/share/synthesis/enter_consumables.png', 'image', 0.9)",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 0.9,
+      "march7th:masked_template": false
+    }
+  },
+  "Nav_material_from_consumables": {
+    "recognition": "TemplateMatch",
+    "template": "screen/synthesis/consumables.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "consumables__material__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 consumables 上时，沿上游第一条 consumables -> material 边前进"
+    }
+  },
+  "NavTo_material": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Nav_material_from_consumables",
+      "Screen_material"
+    ],
+    "attach": {
+      "march7th:kind": "nav-router",
+      "march7th:target_screen": "material",
+      "march7th:predecessors": [
+        "consumables"
+      ],
+      "march7th:note": "DirectHit 进入：先按顺序试探各前驱屏幕守卫节点（TemplateMatch 前驱屏幕锚点），命中则沿那条上游边导航；全部未命中则回退到 Screen_material 锚点——若此时已经在 material 上即成功，否则本节点识别失败（诚实失败，不静默跳过）。只覆盖单跳。"
+    }
+  }
+}

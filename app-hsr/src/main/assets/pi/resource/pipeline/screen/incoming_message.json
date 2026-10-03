@@ -1,0 +1,77 @@
+{
+  "Screen_incoming_message": {
+    "recognition": "TemplateMatch",
+    "template": "screen/incoming_message.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [],
+    "attach": {
+      "march7th:kind": "screen-anchor",
+      "march7th:screen_id": "incoming_message",
+      "march7th:screen_name": "新消息通知",
+      "march7th:source_image_path": "./assets/images/screen/incoming_message.png",
+      "march7th:note": "模板是 1920x1080 PC 客户端截图的小块裁剪，手机上必须重新采集，见 RECAPTURE.md"
+    }
+  },
+  "incoming_message__main__0": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 111,
+    "next": [
+      "Screen_main"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "incoming_message",
+        "main"
+      ],
+      "march7th:edge_index": 0,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.press_key('esc')",
+      "march7th:kind": "press_key",
+      "march7th:upstream_key": "esc",
+      "march7th:android_keycode": 111
+    }
+  },
+  "Nav_incoming_message_from_main": {
+    "recognition": "TemplateMatch",
+    "template": "screen/main.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "main__incoming_message__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 main 上时，沿上游第一条 main -> incoming_message 边前进"
+    }
+  },
+  "NavTo_incoming_message": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Nav_incoming_message_from_main",
+      "Screen_incoming_message"
+    ],
+    "attach": {
+      "march7th:kind": "nav-router",
+      "march7th:target_screen": "incoming_message",
+      "march7th:predecessors": [
+        "main"
+      ],
+      "march7th:note": "DirectHit 进入：先按顺序试探各前驱屏幕守卫节点（TemplateMatch 前驱屏幕锚点），命中则沿那条上游边导航；全部未命中则回退到 Screen_incoming_message 锚点——若此时已经在 incoming_message 上即成功，否则本节点识别失败（诚实失败，不静默跳过）。只覆盖单跳。"
+    }
+  }
+}

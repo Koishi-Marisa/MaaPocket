@@ -1,0 +1,563 @@
+{
+  "TaskAutoBattle": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "TaskChargePlan": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "TaskCityFund": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "city_fund"
+    ]
+  },
+  "TaskCoffee": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "coffee_shop"
+    ]
+  },
+  "TaskCommissionAssistant": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "commission_assistant",
+      "fishing"
+    ]
+  },
+  "TaskDailySignin": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "TaskDodgeAssistant": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "TaskDriveDiscDismantle": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "drive_disc_dismantle",
+      "storage_drive_disc",
+      "storage_wengine"
+    ]
+  },
+  "TaskEmail": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "email"
+    ]
+  },
+  "TaskEngagementReward": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "TaskHouHouBakery": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "hou_hou_bakery"
+    ]
+  },
+  "TaskIntelBoard": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "intel_board"
+    ]
+  },
+  "TaskLifeOnLine": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "life_on_line"
+    ]
+  },
+  "TaskLostVoid": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "lost_void_bangboo_store",
+      "lost_void_battle_fail",
+      "lost_void_battle_result",
+      "lost_void_choose_common",
+      "lost_void_entry",
+      "lost_void_entry_matrix_action",
+      "lost_void_entry_periodic",
+      "lost_void_entry_purge",
+      "lost_void_entry_standard",
+      "lost_void_entry_task_force",
+      "lost_void_gear",
+      "lost_void_lottery",
+      "lost_void_normal_world",
+      "lost_void_route_change",
+      "lostvoid_indexpanel",
+      "lostvoid_investigativeStrategy",
+      "matrix_action_team_select"
+    ]
+  },
+  "TaskMouseSensitivityChecker": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "TaskNotify": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "TaskNotoriousHunt": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "TaskOneDragon": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "TaskOperationDebug": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "TaskPredefinedTeamChecker": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "TaskRandomPlay": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "random_play"
+    ]
+  },
+  "TaskRedemptionCode": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "TaskRiduWeekly": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "ridu_weekly"
+    ]
+  },
+  "TaskScratchCard": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "news_stand"
+    ]
+  },
+  "TaskScreenshotHelper": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "TaskShiyuDefense": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "shiyu_defense",
+      "shiyu_defense_select_3"
+    ]
+  },
+  "TaskSuibianTemple": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "suibian_temple_adventure",
+      "suibian_temple_boobox",
+      "suibian_temple_craft",
+      "suibian_temple_entry",
+      "suibian_temple_pawnshop",
+      "suibian_temple_sales_stall",
+      "suibian_temple_yumchaxian"
+    ]
+  },
+  "TaskTrigramsCollection": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "trigrams_collection"
+    ]
+  },
+  "TaskWitheredDomain": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "hollow_zero_battle",
+      "hollow_zero_entry",
+      "hollow_zero_event",
+      "hollow_zero_merchant"
+    ]
+  },
+  "TaskWorldPatrol": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "3d_map",
+      "inter_knot"
+    ]
+  }
+}

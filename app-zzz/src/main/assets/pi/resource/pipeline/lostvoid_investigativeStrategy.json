@@ -1,0 +1,44 @@
+{
+  "lostvoid_investigativeStrategy": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                2,
+                206,
+                1918,
+                152
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "lostvoid_investigativeStrategy__战略等级"
+    ]
+  },
+  "lostvoid_investigativeStrategy__战略等级": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          2,
+          206,
+          1918,
+          152
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

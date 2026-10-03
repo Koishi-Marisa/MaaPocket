@@ -1,0 +1,152 @@
+{
+  "life_on_line": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "第二章间章"
+              ],
+              "roi": [
+                1510,
+                2,
+                276,
+                122
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1434,
+                640,
+                264,
+                200
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "高坂"
+              ],
+              "roi": [
+                890,
+                798,
+                146,
+                32
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确定并出战"
+              ],
+              "roi": [
+                1026,
+                602,
+                204,
+                50
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "life_on_line__第二章间章",
+      "life_on_line__对话选项",
+      "life_on_line__对话人",
+      "life_on_line__确定并出战"
+    ]
+  },
+  "life_on_line__第二章间章": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "第二章间章"
+        ],
+        "roi": [
+          1510,
+          2,
+          276,
+          122
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "life_on_line__对话选项": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1434,
+          640,
+          264,
+          200
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "life_on_line__对话人": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "高坂"
+        ],
+        "roi": [
+          890,
+          798,
+          146,
+          32
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "life_on_line__确定并出战": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确定并出战"
+        ],
+        "roi": [
+          1026,
+          602,
+          204,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

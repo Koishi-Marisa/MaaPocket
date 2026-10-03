@@ -1,0 +1,864 @@
+{
+  "random_play": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "昨日账本"
+              ],
+              "roi": [
+                528,
+                224,
+                151,
+                49
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "menu/btn_close/raw.png"
+              ],
+              "roi": [
+                1250,
+                100,
+                250,
+                250
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "menu/back/raw.png"
+              ],
+              "roi": [
+                54,
+                12,
+                108,
+                72
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                800,
+                620,
+                200,
+                272
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1106,
+                618,
+                164,
+                278
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "经营状况"
+              ],
+              "roi": [
+                1272,
+                14,
+                280,
+                70
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                784,
+                136,
+                128,
+                88
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                914,
+                136,
+                116,
+                88
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1030,
+                136,
+                126,
+                88
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                532,
+                144,
+                188,
+                278
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                744,
+                144,
+                180,
+                276
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                1590,
+                1004,
+                226,
+                50
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "上架筛选"
+              ],
+              "roi": [
+                1588,
+                28,
+                228,
+                50
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1124,
+                104,
+                700,
+                324
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "上架"
+              ],
+              "roi": [
+                1628,
+                1004,
+                188,
+                48
+              ],
+              "threshold": 1.0
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "下架"
+              ],
+              "roi": [
+                1628,
+                1004,
+                188,
+                48
+              ],
+              "threshold": 1.0
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "选择宣传员"
+              ],
+              "roi": [
+                104,
+                1006,
+                316,
+                44
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "换下"
+              ],
+              "roi": [
+                1628,
+                1004,
+                188,
+                48
+              ],
+              "threshold": 1.0
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "开始营业"
+              ],
+              "roi": [
+                1536,
+                950,
+                256,
+                48
+              ],
+              "threshold": 0.75
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                1032,
+                600,
+                200,
+                56
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                800,
+                600,
+                250,
+                56
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "正在营业"
+              ],
+              "roi": [
+                1536,
+                950,
+                256,
+                48
+              ],
+              "threshold": 0.75
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "推荐上架"
+              ],
+              "roi": [
+                1320,
+                1002,
+                196,
+                50
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                530,
+                140,
+                1240,
+                832
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1438,
+                536,
+                476,
+                294
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                880,
+                800,
+                160,
+                40
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "random_play__昨日账本",
+      "random_play__按钮-关闭",
+      "random_play__返回",
+      "random_play__宣传员入口",
+      "random_play__录像带入口",
+      "random_play__经营状况",
+      "random_play__录像带主题-1",
+      "random_play__录像带主题-2",
+      "random_play__录像带主题-3",
+      "random_play__宣传员-1",
+      "random_play__宣传员-2",
+      "random_play__确认",
+      "random_play__上架筛选",
+      "random_play__主题筛选",
+      "random_play__上架",
+      "random_play__下架",
+      "random_play__选择宣传员",
+      "random_play__换下",
+      "random_play__开始营业",
+      "random_play__开始营业-确认",
+      "random_play__营业后确认",
+      "random_play__正在营业",
+      "random_play__推荐上架",
+      "random_play__宣传员列表",
+      "random_play__右侧选项区域",
+      "random_play__对话框标题"
+    ]
+  },
+  "random_play__昨日账本": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "昨日账本"
+        ],
+        "roi": [
+          528,
+          224,
+          151,
+          49
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "random_play__按钮-关闭": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/btn_close/raw.png"
+        ],
+        "roi": [
+          1250,
+          100,
+          250,
+          250
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "random_play__返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          54,
+          12,
+          108,
+          72
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "random_play__宣传员入口": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          800,
+          620,
+          200,
+          272
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "random_play__录像带入口": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1106,
+          618,
+          164,
+          278
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "random_play__经营状况": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "经营状况"
+        ],
+        "roi": [
+          1272,
+          14,
+          280,
+          70
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "random_play__录像带主题-1": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          784,
+          136,
+          128,
+          88
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "random_play__录像带主题-2": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          914,
+          136,
+          116,
+          88
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "random_play__录像带主题-3": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1030,
+          136,
+          126,
+          88
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "random_play__宣传员-1": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          532,
+          144,
+          188,
+          278
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "random_play__宣传员-2": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          744,
+          144,
+          180,
+          276
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "random_play__确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1590,
+          1004,
+          226,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "random_play__上架筛选": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "上架筛选"
+        ],
+        "roi": [
+          1588,
+          28,
+          228,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "random_play__主题筛选": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1124,
+          104,
+          700,
+          324
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "random_play__上架": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "上架"
+        ],
+        "roi": [
+          1628,
+          1004,
+          188,
+          48
+        ],
+        "threshold": 1.0
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "random_play__下架": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "下架"
+        ],
+        "roi": [
+          1628,
+          1004,
+          188,
+          48
+        ],
+        "threshold": 1.0
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "random_play__选择宣传员": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "选择宣传员"
+        ],
+        "roi": [
+          104,
+          1006,
+          316,
+          44
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "random_play__换下": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "换下"
+        ],
+        "roi": [
+          1628,
+          1004,
+          188,
+          48
+        ],
+        "threshold": 1.0
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "random_play__开始营业": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "开始营业"
+        ],
+        "roi": [
+          1536,
+          950,
+          256,
+          48
+        ],
+        "threshold": 0.75
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "random_play__开始营业-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1032,
+          600,
+          200,
+          56
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "random_play__营业后确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          800,
+          600,
+          250,
+          56
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "random_play__正在营业": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "正在营业"
+        ],
+        "roi": [
+          1536,
+          950,
+          256,
+          48
+        ],
+        "threshold": 0.75
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "random_play__推荐上架": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "推荐上架"
+        ],
+        "roi": [
+          1320,
+          1002,
+          196,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "random_play__宣传员列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          530,
+          140,
+          1240,
+          832
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "random_play__右侧选项区域": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1438,
+          536,
+          476,
+          294
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "random_play__对话框标题": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          880,
+          800,
+          160,
+          40
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

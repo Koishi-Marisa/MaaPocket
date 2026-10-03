@@ -1,0 +1,77 @@
+{
+  "Screen_memory": {
+    "recognition": "TemplateMatch",
+    "template": "screen/forgottenhall/memory.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [],
+    "attach": {
+      "march7th:kind": "screen-anchor",
+      "march7th:screen_id": "memory",
+      "march7th:screen_name": "忘却之庭-回忆",
+      "march7th:source_image_path": "./assets/images/screen/forgottenhall/memory.png",
+      "march7th:note": "模板是 1920x1080 PC 客户端截图的小块裁剪，手机上必须重新采集，见 RECAPTURE.md"
+    }
+  },
+  "memory__main__0": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 111,
+    "next": [
+      "Screen_main"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "memory",
+        "main"
+      ],
+      "march7th:edge_index": 0,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.press_key('esc')",
+      "march7th:kind": "press_key",
+      "march7th:upstream_key": "esc",
+      "march7th:android_keycode": 111
+    }
+  },
+  "Nav_memory_from_memory_of_chaos": {
+    "recognition": "TemplateMatch",
+    "template": "screen/forgottenhall/memory_of_chaos.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "memory_of_chaos__memory__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 memory_of_chaos 上时，沿上游第一条 memory_of_chaos -> memory 边前进"
+    }
+  },
+  "NavTo_memory": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Nav_memory_from_memory_of_chaos",
+      "Screen_memory"
+    ],
+    "attach": {
+      "march7th:kind": "nav-router",
+      "march7th:target_screen": "memory",
+      "march7th:predecessors": [
+        "memory_of_chaos"
+      ],
+      "march7th:note": "DirectHit 进入：先按顺序试探各前驱屏幕守卫节点（TemplateMatch 前驱屏幕锚点），命中则沿那条上游边导航；全部未命中则回退到 Screen_memory 锚点——若此时已经在 memory 上即成功，否则本节点识别失败（诚实失败，不静默跳过）。只覆盖单跳。"
+    }
+  }
+}

@@ -1,0 +1,167 @@
+{
+  "Screen_activity": {
+    "recognition": "TemplateMatch",
+    "template": [
+      "screen/activity.png",
+      "screen/activity_2.png"
+    ],
+    "threshold": [
+      0.8,
+      0.8
+    ],
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [],
+    "attach": {
+      "march7th:kind": "screen-anchor",
+      "march7th:screen_id": "activity",
+      "march7th:screen_name": "活动",
+      "march7th:source_image_path": [
+        "./assets/images/screen/activity.png",
+        "./assets/images/screen/activity_2.png"
+      ],
+      "march7th:note": "模板是 1920x1080 PC 客户端截图的小块裁剪，手机上必须重新采集，见 RECAPTURE.md"
+    }
+  },
+  "activity__menu__0": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 111,
+    "next": [
+      "Screen_menu"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "activity",
+        "menu"
+      ],
+      "march7th:edge_index": 0,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.press_key('esc')",
+      "march7th:kind": "press_key",
+      "march7th:upstream_key": "esc",
+      "march7th:android_keycode": 111
+    }
+  },
+  "activity__reward_guide__0": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 1000,
+    "next": [
+      "activity__reward_guide__1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "activity",
+        "reward_guide"
+      ],
+      "march7th:edge_index": 1,
+      "march7th:action_index": 0,
+      "march7th:expression": "time.sleep(1)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "activity__reward_guide__1": {
+    "recognition": "TemplateMatch",
+    "template": "screen/activity.png",
+    "threshold": 0.9,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "activity__reward_guide__2"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "activity",
+        "reward_guide"
+      ],
+      "march7th:edge_index": 1,
+      "march7th:action_index": 1,
+      "march7th:expression": "auto.click_element('./assets/images/screen/activity.png', 'image', 0.9, 5)",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 0.9,
+      "march7th:masked_template": false,
+      "march7th:max_retries": 5
+    },
+    "rate_limit": 1000,
+    "timeout": 20000
+  },
+  "activity__reward_guide__2": {
+    "recognition": "TemplateMatch",
+    "template": "screen/activity_2.png",
+    "threshold": 0.9,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "Screen_reward_guide"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "activity",
+        "reward_guide"
+      ],
+      "march7th:edge_index": 1,
+      "march7th:action_index": 2,
+      "march7th:expression": "auto.click_element('./assets/images/screen/activity_2.png', 'image', 0.9, 1)",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 0.9,
+      "march7th:masked_template": false,
+      "march7th:max_retries": 1
+    },
+    "rate_limit": 1000,
+    "timeout": 20000
+  },
+  "Nav_activity_from_menu": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/more.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "menu__activity__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 menu 上时，沿上游第一条 menu -> activity 边前进"
+    }
+  },
+  "NavTo_activity": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Nav_activity_from_menu",
+      "Screen_activity"
+    ],
+    "attach": {
+      "march7th:kind": "nav-router",
+      "march7th:target_screen": "activity",
+      "march7th:predecessors": [
+        "menu",
+        "reward_guide"
+      ],
+      "march7th:note": "DirectHit 进入：先按顺序试探各前驱屏幕守卫节点（TemplateMatch 前驱屏幕锚点），命中则沿那条上游边导航；全部未命中则回退到 Screen_activity 锚点——若此时已经在 activity 上即成功，否则本节点识别失败（诚实失败，不静默跳过）。只覆盖单跳。"
+    }
+  }
+}

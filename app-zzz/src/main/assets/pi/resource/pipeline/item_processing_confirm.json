@@ -1,0 +1,100 @@
+{
+  "item_processing_confirm": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认使用"
+              ],
+              "roi": [
+                680,
+                386,
+                600,
+                64
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "item_processing_confirm__标题-合成确认",
+      "item_processing_confirm__按钮-取消",
+      "item_processing_confirm__按钮-确认"
+    ]
+  },
+  "item_processing_confirm__标题-合成确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认使用"
+        ],
+        "roi": [
+          680,
+          386,
+          600,
+          64
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "item_processing_confirm__按钮-取消": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "取消"
+        ],
+        "roi": [
+          674,
+          712,
+          286,
+          78
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "item_processing"
+    ]
+  },
+  "item_processing_confirm__按钮-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          980,
+          712,
+          356,
+          78
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "item_processing_obtained"
+    ]
+  }
+}

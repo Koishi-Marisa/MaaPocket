@@ -1,0 +1,221 @@
+{
+  "suibian_temple_entry": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "邻里街坊"
+              ],
+              "roi": [
+                1332,
+                922,
+                256,
+                48
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "派驻邦布"
+              ],
+              "roi": [
+                110,
+                740,
+                120,
+                50
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "menu/back/raw.png"
+              ],
+              "roi": [
+                82,
+                13,
+                68,
+                77
+              ],
+              "threshold": 0.7
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "suibian_temple_entry__按钮-邻里街坊",
+      "suibian_temple_entry__按钮-派驻邦布",
+      "suibian_temple_entry__按钮-返回",
+      "suibian_temple_entry__按钮-游历",
+      "suibian_temple_entry__按钮-经营",
+      "suibian_temple_entry__标题-制造坊",
+      "suibian_temple_entry__区域-制造坊商品列表",
+      "suibian_temple_entry__区域-左半屏"
+    ]
+  },
+  "suibian_temple_entry__按钮-邻里街坊": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "邻里街坊"
+        ],
+        "roi": [
+          1332,
+          922,
+          256,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_entry__按钮-派驻邦布": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "派驻邦布"
+        ],
+        "roi": [
+          110,
+          740,
+          120,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_entry__按钮-返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          82,
+          13,
+          68,
+          77
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_entry__按钮-游历": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "游历"
+        ],
+        "roi": [
+          1524,
+          578,
+          142,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "suibian_temple_entry__按钮-经营": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "经营"
+        ],
+        "roi": [
+          1246,
+          578,
+          148,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_entry__标题-制造坊": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "制造坊"
+        ],
+        "roi": [
+          166,
+          10,
+          138,
+          72
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_entry__区域-制造坊商品列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          306,
+          326,
+          830,
+          604
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_entry__区域-左半屏": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          1400,
+          1080
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

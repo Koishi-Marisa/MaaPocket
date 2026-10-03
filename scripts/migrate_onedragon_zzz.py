@@ -850,6 +850,172 @@ def load_apps(source):
     return apps
 
 
+# Upstream splits its click call sites between src/zzz_od (73 files) and
+# src/one_dragon (3 files), so the evidence scan covers all of `src`.
+CLICK_SITE_ROOT = "src"
+_CLICK_CALL_RE = re.compile(r"(?:\w+_)?click_area\s*\(")
+_READ_CALL_RE = re.compile(r"(?:\w+_)?find_area\s*\(|(?:\w+_)?get_area\s*\(")
+_STRING_LITERAL_RE = re.compile(r"'([^'\n]*)'|\"([^\"\n]*)\"")
+
+
+def _iter_call_arguments(text, call_re):
+    """Yield the raw argument text of every `...click_area(` call in `text`.
+
+    Parens inside string literals are not tracked (the upstream call sites do
+    not contain any), so this is a best-effort balanced scan.
+    """
+    for match in call_re.finditer(text):
+        depth = 1
+        i = match.end()
+        j = i
+        while j < len(text) and depth > 0:
+            ch = text[j]
+            if ch == "(":
+                depth += 1
+            elif ch == ")":
+                depth -= 1
+                if depth == 0:
+                    break
+            j += 1
+        yield text[i:j]
+
+
+def _call_literals(text, call_re):
+    """Yield (raw_args, [string literals without {} placeholders]) per call."""
+    for args in _iter_call_arguments(text, call_re):
+        literals = [
+            (m.group(1) if m.group(1) is not None else m.group(2))
+            for m in _STRING_LITERAL_RE.finditer(args)
+        ]
+        yield args, [v for v in literals if v and "{" not in v and "}" not in v]
+
+
+def _classify(literals, screen_names, area_names):
+    """Split one argument list into (screen context, area context)."""
+    screens = [v for v in literals if v in screen_names]
+    areas = [v for v in literals if v in area_names]
+    return screens, areas
+
+
+def scrape_click_sites(source, screens):
+    """Derive click / read-only evidence for every area from upstream call sites.
+
+    Upstream `screen_info` YAML has NO click flag: whether an area is a click
+    target is decided by the calling code, and nothing in the screen data marks
+    it. `ScreenUtils.find_and_click_area|click_area` (and the
+    `round_by_find_and_click_area` / `round_by_click_area` wrappers) are where an
+    area is actually clicked; `ScreenUtils.find_area` / `ScreenLoader.get_area`
+    are where an area is only *read* (OCR crop, template search region, branch
+    condition). Scraping both gives positive evidence in either direction.
+
+    Limitation: when the area name is passed through a local variable
+    (e.g. `first_area = '对话框确认'` then `...find_and_click_area(shot, '大世界',
+    first_area)`) the argument list holds no area literal. Such names are caught
+    one level weaker by `literals` (the literal does appear in the file), and
+    f-string names (`f'宣传员-{idx}'`) cannot be resolved at all.
+    """
+    screen_names = set()
+    area_names = set()
+    for screen in screens:
+        screen_names.add(screen["screen_name"])
+        for area in screen["areas"]:
+            if area.get("area_name"):
+                area_names.add(area["area_name"])
+
+    pairs = set()
+    bare = set()
+    loose = set()
+    dynamic = set()
+    read_pairs = set()
+    read_bare = set()
+    literals = set()
+    call_sites = 0
+    read_sites = 0
+    files = set()
+    try:
+        hits = source.grep(r"click_area\(|find_area\(|get_area\(", CLICK_SITE_ROOT)
+    except RuntimeError:
+        hits = []
+    for path in sorted({p for p, _ln, _c in hits}):
+        files.add(path)
+        try:
+            text = source.show(path)
+        except RuntimeError:
+            continue
+        for match in _STRING_LITERAL_RE.finditer(text):
+            value = match.group(1) if match.group(1) is not None else match.group(2)
+            if value:
+                literals.add(value)
+        for args, args_literals in _call_literals(text, _CLICK_CALL_RE):
+            call_sites += 1
+            for m in _STRING_LITERAL_RE.finditer(args):
+                value = m.group(1) if m.group(1) is not None else m.group(2)
+                if value and ("{" in value or "}" in value):
+                    dynamic.add(value)
+            screens_ctx, areas_ctx = _classify(args_literals, screen_names, area_names)
+            if screens_ctx and areas_ctx:
+                for s in screens_ctx:
+                    for a in areas_ctx:
+                        pairs.add((s, a))
+            elif areas_ctx:
+                for a in areas_ctx:
+                    bare.add(a)
+            elif len(args_literals) >= 2:
+                loose.add((args_literals[0], args_literals[1]))
+        for _args, args_literals in _call_literals(text, _READ_CALL_RE):
+            read_sites += 1
+            screens_ctx, areas_ctx = _classify(args_literals, screen_names, area_names)
+            if screens_ctx and areas_ctx:
+                for s in screens_ctx:
+                    for a in areas_ctx:
+                        read_pairs.add((s, a))
+            elif areas_ctx:
+                for a in areas_ctx:
+                    read_bare.add(a)
+    return {
+        "root": CLICK_SITE_ROOT,
+        "files": sorted(files),
+        "call_sites": call_sites,
+        "read_call_sites": read_sites,
+        "pairs": pairs,
+        "bare": bare,
+        "read_pairs": read_pairs,
+        "read_bare": read_bare,
+        "literals": literals,
+        "loose": sorted(loose),
+        "dynamic_area_names": sorted(dynamic),
+        "screen_names_known": len(screen_names),
+        "area_names_known": len(area_names),
+    }
+
+
+def click_evidence(area_name, screen_name, goto, id_mark, sites):
+    """Return (action, evidence) for one area, preferring positive evidence.
+
+    Precedence, strongest first:
+      1. the area is clicked by name somewhere            -> Click
+      2. the area declares `goto_list` (upstream: 交互后)  -> Click
+      3. the area is only ever read (find_area/get_area)  -> DoNothing
+      4. the area is a screen fingerprint (`id_mark`)     -> DoNothing
+      5. the name appears as a source literal but not in a
+         resolvable click call (variable-mediated click)  -> Click
+      6. no evidence at all                               -> DoNothing
+    """
+    if (screen_name, area_name) in sites["pairs"]:
+        return "Click", "click-call-site"
+    if area_name in sites["bare"]:
+        return "Click", "click-call-site-bare-name"
+    if goto:
+        return "Click", "goto_list"
+    if (screen_name, area_name) in sites["read_pairs"] or area_name in sites["read_bare"]:
+        return "DoNothing", "read-only-area-usage"
+    if id_mark:
+        return "DoNothing", "id_mark-fingerprint-only"
+    if area_name in sites["literals"]:
+        return "Click", "literal-ambiguous-use"
+    return "DoNothing", "unreferenced"
+
+
 # --------------------------------------------------------------------------
 # Pipeline generation
 # --------------------------------------------------------------------------
@@ -864,6 +1030,7 @@ class Migration(object):
         if args.only_screens:
             self.only_screens = {s.strip() for s in args.only_screens.split(",") if s.strip()}
         self.head = self.source.head()
+        self.click_sites = None
         self.files_written = []
         self.bytes_written = 0
         self.stats = {
@@ -879,6 +1046,8 @@ class Migration(object):
             "template_files_copied": 0,
             "unresolved_goto": 0,
             "tasks": 0,
+            "files_changed": 0,
+            "files_unchanged": 0,
         }
         self.report = {
             "generator": "MaaPocket/scripts/migrate_onedragon_zzz.py",
@@ -891,6 +1060,7 @@ class Migration(object):
             },
             "arguments": {
                 "out": self.out,
+                "schemas": os.path.abspath(args.schemas) if args.schemas else None,
                 "only_screens": sorted(self.only_screens),
                 "skip_templates": bool(args.skip_templates),
                 "force": bool(args.force),
@@ -924,18 +1094,24 @@ class Migration(object):
                 shutil.rmtree(self.out)
         os.makedirs(self.out, exist_ok=True)
 
-    def emit_json(self, rel_path, obj):
-        path = os.path.join(self.out, rel_path)
-        _, size = write_json(path, obj)
+    def _record(self, rel_path, changed, size):
         self.files_written.append(rel_path)
         self.bytes_written += size
+        if changed:
+            self.stats["files_changed"] += 1
+        else:
+            self.stats["files_unchanged"] += 1
+
+    def emit_json(self, rel_path, obj):
+        path = os.path.join(self.out, rel_path)
+        changed, size = write_json(path, obj)
+        self._record(rel_path, changed, size)
         return path
 
     def emit_bytes(self, rel_path, data):
         path = os.path.join(self.out, rel_path)
-        _, size = write_bytes(path, data)
-        self.files_written.append(rel_path)
-        self.bytes_written += size
+        changed, size = write_bytes(path, data)
+        self._record(rel_path, changed, size)
         return path
 
     # -- area -> node ----------------------------------------------------
@@ -1030,12 +1206,21 @@ class Migration(object):
         # `color_filter` is an OCR-only field, so it must go on the OCR branch.
         color_range = area.get("color_range")
         color_node_name = None
-        if (
+        color_usable = (
             ocr_branch is not None
             and isinstance(color_range, list)
             and len(color_range) == 2
             and all(isinstance(c, list) and len(c) == 3 for c in color_range)
-        ):
+        )
+        if color_range and not color_usable:
+            # Upstream consumes color_range only inside OcrService._apply_color_filter,
+            # so a color_range on an area with no OCR text is dead data (there is
+            # exactly one such area upstream: compendium / 资源栏).
+            warnings.append(
+                "color_range present but unusable (needs OCR text + [[b,g,r],[b,g,r]]): %r"
+                % (color_range,)
+            )
+        if color_usable:
             color_node_name = node_name + "__color"
             color_nodes[color_node_name] = {
                 "recognition": {
@@ -1064,13 +1249,17 @@ class Migration(object):
                 and not template_entry["reference_file"]:
             recognition_available = False
 
-        # click vs identify-only
-        if goto:
-            action = {"type": "Click"}
-        elif bool(area.get("id_mark")):
-            action = {"type": "DoNothing"}
-        else:
-            action = {"type": "Click"}
+        # Click vs identify-only. The screen data has no click flag at all, so
+        # the decision is derived from the upstream call sites (see
+        # scrape_click_sites) plus the declarative `goto_list` metadata.
+        action_type, evidence = click_evidence(
+            area_name,
+            screen["screen_name"],
+            goto,
+            bool(area.get("id_mark")),
+            self.click_sites,
+        )
+        action = {"type": action_type}
 
         if action["type"] == "Click":
             self.stats["area_click"] += 1
@@ -1093,6 +1282,7 @@ class Migration(object):
                 "kind": kind,
                 "id_mark": bool(area.get("id_mark")),
                 "action": action["type"],
+                "click_evidence": evidence,
                 "lcs_percent": lcs_percent,
                 # MaaFramework OCR `threshold` is a model-confidence threshold,
                 # not an LCS ratio; lcs_percent is copied in as documented proxy.
@@ -1204,6 +1394,7 @@ class Migration(object):
             name_to_id[screen["screen_name"]] = screen["screen_id"]
             name_to_id.setdefault(screen["screen_id"], screen["screen_id"])
 
+        self.click_sites = scrape_click_sites(self.source, screens)
         self.template_index, template_records = self.scan_templates(screens)
         self.copy_templates(template_records)
         self.report["templates"] = template_records
@@ -1481,15 +1672,43 @@ class Migration(object):
             },
             "click_vs_donothing": {
                 "rule": (
-                    "goto_list non-empty -> Click; id_mark true and goto_list empty -> DoNothing; "
-                    "otherwise -> Click"
+                    "precedence: (1) area clicked by name in upstream source -> Click; "
+                    "(2) goto_list non-empty -> Click; (3) area only ever read via find_area/get_area -> "
+                    "DoNothing; (4) id_mark true -> DoNothing; (5) area name appears as a source literal "
+                    "but not inside a resolvable click call -> Click; (6) no evidence -> DoNothing"
+                ),
+                "why": (
+                    "the screen YAML has no click flag of any kind, so click intent had to come from the "
+                    "calling code: ScreenUtils.find_and_click_area/click_area is where an area is clicked, "
+                    "find_area / ScreenLoader.get_area is where it is only read (OCR crop, template search "
+                    "window, branch condition)."
                 ),
                 "evidence": [
                     "src/one_dragon/base/screen/screen_area.py: "
                     "self.id_mark: bool = id_mark  # 是否用于画面的唯一标识",
                     "src/one_dragon/base/screen/screen_utils.py: is_target_screen() only reads id_mark areas",
                     "src/one_dragon/base/screen/screen_match.py: find_area_with_detail() checks is_text_area first, then is_template_area",
+                    "src/one_dragon/base/screen/screen_utils.py: find_and_click_area() clicks ANY area, "
+                    "so the data itself cannot express 'do not click'",
+                    "src/zzz_od/application/email_app/email_app.py:46: "
+                    "self.round_by_find_and_click_area(self.last_screenshot, '邮件', '全部领取', ...)",
+                    "src/zzz_od/operation/compendium/area_patrol.py:243: "
+                    "area = ctx.screen_loader.get_area('区域巡防', '剩余电量')  # read-only OCR crop",
                 ],
+                "scrape": {
+                    "root": CLICK_SITE_ROOT,
+                    "patterns": {
+                        "click": "(?:\\w+_)?click_area\\s*\\(",
+                        "read": "(?:\\w+_)?find_area\\s*\\(|(?:\\w+_)?get_area\\s*\\(",
+                    },
+                    "limitation": (
+                        "an area name passed through a local variable "
+                        "(first_area = '对话框确认' -> find_and_click_area(shot, '大世界', first_area)) is "
+                        "invisible to the click scan; such names fall through to the "
+                        "'literal-ambiguous-use' label. f-string names (f'宣传员-{idx}') cannot be "
+                        "resolved at all and are listed under dynamic_area_names."
+                    ),
+                },
                 "note": "the upstream data has no explicit click flag; intent was inferred from the above.",
             },
             "screen_to_area_navigation": {
@@ -1617,6 +1836,26 @@ class Migration(object):
 
         self.stats["files_written"] = len(self.files_written)
         self.stats["bytes_written"] = self.bytes_written
+        if self.click_sites is not None:
+            evidence_counts = {}
+            for screen_report in self.report["screens"]:
+                for record in screen_report["areas"]:
+                    key = record["click_evidence"]
+                    evidence_counts[key] = evidence_counts.get(key, 0) + 1
+            self.stats["click_evidence"] = evidence_counts
+            self.report["notes"]["click_sites"] = {
+                "root": self.click_sites["root"],
+                "files_scanned": len(self.click_sites["files"]),
+                "click_call_sites": self.click_sites["call_sites"],
+                "read_call_sites": self.click_sites["read_call_sites"],
+                "click_pairs": len(self.click_sites["pairs"]),
+                "click_bare_names": len(self.click_sites["bare"]),
+                "read_pairs": len(self.click_sites["read_pairs"]),
+                "read_bare_names": len(self.click_sites["read_bare"]),
+                "source_literals": len(self.click_sites["literals"]),
+                "unresolved_screen_area_literals": self.click_sites["loose"],
+                "dynamic_area_names": self.click_sites["dynamic_area_names"],
+            }
         self.report["stats"] = self.stats
         self.report["files"] = sorted(self.files_written)
 
@@ -1634,7 +1873,9 @@ class Migration(object):
               % (len(self.report["templates"]), self.stats["templates_copied"],
                  self.stats["template_files_copied"]))
         print("tasks        : %d" % self.stats["tasks"])
-        print("files written: %d (%d bytes)" % (len(self.files_written), self.bytes_written))
+        print("files        : %d emitted (%d changed, %d already up to date, %d bytes)"
+              % (len(self.files_written), self.stats["files_changed"],
+                 self.stats["files_unchanged"], self.bytes_written))
         print("out          : %s" % self.out)
 
         if notes["parse_errors"]:

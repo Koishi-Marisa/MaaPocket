@@ -1,0 +1,157 @@
+{
+  "interface": {
+    "label": "绝区零",
+    "description": "由 ZenlessZoneZero-OneDragon 迁移的《绝区零》Android 自动化资源包",
+    "welcome": "本资源包只迁移了画面识别与区域数据；所有 roi 与模板图来自 PC 端，需按 RECAPTURE.md 重新采集。"
+  },
+  "controller": {
+    "Android": {
+      "label": "Android 设备"
+    }
+  },
+  "group": {
+    "one_dragon": {
+      "label": "一条龙"
+    },
+    "battle_assistant": {
+      "label": "战斗助手"
+    },
+    "hollow_zero": {
+      "label": "空洞零号"
+    },
+    "game_assistant": {
+      "label": "游戏助手"
+    },
+    "world_patrol": {
+      "label": "锄大地"
+    },
+    "standalone": {
+      "label": "独立应用"
+    },
+    "devtools": {
+      "label": "开发工具"
+    }
+  },
+  "task": {
+    "TaskAutoBattle": {
+      "label": "自动战斗",
+      "description": "上游应用 自动战斗（包 battle_assistant，app_id=auto_battle）；迁移置信度：taxonomy-only-no-screens"
+    },
+    "TaskChargePlan": {
+      "label": "体力刷本",
+      "description": "上游应用 体力刷本（包 charge_plan，app_id=charge_plan）；迁移置信度：taxonomy-only-no-screens"
+    },
+    "TaskCityFund": {
+      "label": "丽都城募",
+      "description": "上游应用 丽都城募（包 city_fund，app_id=city_fund）；迁移置信度：navigation-stub-package-known"
+    },
+    "TaskCoffee": {
+      "label": "咖啡店",
+      "description": "上游应用 咖啡店（包 coffee，app_id=coffee）；迁移置信度：navigation-stub-package-known"
+    },
+    "TaskCommissionAssistant": {
+      "label": "委托助手",
+      "description": "上游应用 委托助手（包 commission_assistant，app_id=commission_assistant）；迁移置信度：navigation-stub-package-known"
+    },
+    "TaskDailySignin": {
+      "label": "每日签到",
+      "description": "上游应用 每日签到（包 daily_signin，app_id=daily_signin）；迁移置信度：taxonomy-only-no-screens"
+    },
+    "TaskDodgeAssistant": {
+      "label": "闪避助手",
+      "description": "上游应用 闪避助手（包 battle_assistant，app_id=dodge_assistant）；迁移置信度：taxonomy-only-no-screens"
+    },
+    "TaskDriveDiscDismantle": {
+      "label": "驱动盘拆解",
+      "description": "上游应用 驱动盘拆解（包 drive_disc_dismantle，app_id=drive_disc_dismantle）；迁移置信度：navigation-stub-package-known"
+    },
+    "TaskEmail": {
+      "label": "邮件",
+      "description": "上游应用 邮件（包 email_app，app_id=email）；迁移置信度：navigation-stub-package-known"
+    },
+    "TaskEngagementReward": {
+      "label": "活跃度奖励",
+      "description": "上游应用 活跃度奖励（包 engagement_reward，app_id=engagement_reward）；迁移置信度：taxonomy-only-no-screens"
+    },
+    "TaskHouHouBakery": {
+      "label": "吼吼饼铺",
+      "description": "上游应用 吼吼饼铺（包 hou_hou_bakery，app_id=hou_hou_bakery）；迁移置信度：navigation-stub-package-known"
+    },
+    "TaskIntelBoard": {
+      "label": "情报板",
+      "description": "上游应用 情报板（包 intel_board，app_id=intel_board）；迁移置信度：navigation-stub-package-known"
+    },
+    "TaskLifeOnLine": {
+      "label": "真·拿命验收",
+      "description": "上游应用 真·拿命验收（包 life_on_line，app_id=life_on_line）；迁移置信度：navigation-stub-package-known"
+    },
+    "TaskLostVoid": {
+      "label": "迷失之地",
+      "description": "上游应用 迷失之地（包 hollow_zero，app_id=lost_void）；迁移置信度：navigation-stub-package-known"
+    },
+    "TaskMouseSensitivityChecker": {
+      "label": "鼠标灵敏度检测",
+      "description": "上游应用 鼠标灵敏度检测（包 game_config_checker，app_id=mouse_sensitivity_checker）；迁移置信度：taxonomy-only-no-screens"
+    },
+    "TaskNotify": {
+      "label": "通知",
+      "description": "上游应用 通知（包 notify，app_id=notify）；迁移置信度：taxonomy-only-no-screens"
+    },
+    "TaskNotoriousHunt": {
+      "label": "恶名狩猎",
+      "description": "上游应用 恶名狩猎（包 notorious_hunt，app_id=notorious_hunt）；迁移置信度：taxonomy-only-no-screens"
+    },
+    "TaskOneDragon": {
+      "label": "一条龙",
+      "description": "上游应用 一条龙（包 one_dragon_app，app_id=one_dragon）；迁移置信度：taxonomy-only-no-screens"
+    },
+    "TaskOperationDebug": {
+      "label": "指令调试",
+      "description": "上游应用 指令调试（包 devtools，app_id=operation_debug）；迁移置信度：taxonomy-only-no-screens"
+    },
+    "TaskPredefinedTeamChecker": {
+      "label": "预备编队角色识别",
+      "description": "上游应用 预备编队角色识别（包 game_config_checker，app_id=predefined_team_checker）；迁移置信度：taxonomy-only-no-screens"
+    },
+    "TaskRandomPlay": {
+      "label": "录像店营业",
+      "description": "上游应用 录像店营业（包 random_play，app_id=random_play）；迁移置信度：navigation-stub-package-known"
+    },
+    "TaskRedemptionCode": {
+      "label": "兑换码",
+      "description": "上游应用 兑换码（包 redemption_code，app_id=redemption_code）；迁移置信度：taxonomy-only-no-screens"
+    },
+    "TaskRiduWeekly": {
+      "label": "丽都周纪 (领奖励)",
+      "description": "上游应用 丽都周纪 (领奖励)（包 ridu_weekly，app_id=ridu_weekly）；迁移置信度：navigation-stub-package-known"
+    },
+    "TaskScratchCard": {
+      "label": "刮刮卡",
+      "description": "上游应用 刮刮卡（包 scratch_card，app_id=scratch_card）；迁移置信度：navigation-stub-package-known"
+    },
+    "TaskScreenshotHelper": {
+      "label": "闪避截图",
+      "description": "上游应用 闪避截图（包 devtools，app_id=screenshot_helper）；迁移置信度：taxonomy-only-no-screens"
+    },
+    "TaskShiyuDefense": {
+      "label": "式舆防卫战",
+      "description": "上游应用 式舆防卫战（包 shiyu_defense，app_id=shiyu_defense）；迁移置信度：navigation-stub-package-known"
+    },
+    "TaskSuibianTemple": {
+      "label": "随便观",
+      "description": "上游应用 随便观（包 suibian_temple，app_id=suibian_temple）；迁移置信度：navigation-stub-package-known"
+    },
+    "TaskTrigramsCollection": {
+      "label": "卦象集录",
+      "description": "上游应用 卦象集录（包 trigrams_collection，app_id=trigrams_collection）；迁移置信度：navigation-stub-package-known"
+    },
+    "TaskWitheredDomain": {
+      "label": "枯萎之都",
+      "description": "上游应用 枯萎之都（包 hollow_zero，app_id=withered_domain）；迁移置信度：navigation-stub-package-known"
+    },
+    "TaskWorldPatrol": {
+      "label": "锄大地",
+      "description": "上游应用 锄大地（包 world_patrol，app_id=world_patrol）；迁移置信度：navigation-stub-package-known"
+    }
+  }
+}

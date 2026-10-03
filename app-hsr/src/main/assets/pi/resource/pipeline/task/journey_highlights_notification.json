@@ -1,0 +1,18 @@
+{
+  "Task_journey_highlights_notification": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "NavTo_reward_guide"
+    ],
+    "attach": {
+      "march7th:kind": "task-entry",
+      "march7th:task_id": "journey_highlights_notification",
+      "march7th:entry_screen": "reward_guide",
+      "march7th:source_module": "tasks/activity/journey_highlights_notification.py",
+      "march7th:confidence": "high",
+      "march7th:rationale": "tasks/activity/journey_highlights_notification.py:16 显式 screen.change_to('reward_guide')。",
+      "march7th:note": "本节点只负责把游戏导航到该功能所在的界面；上游任务的采集/战斗循环逻辑没有迁移。"
+    }
+  }
+}

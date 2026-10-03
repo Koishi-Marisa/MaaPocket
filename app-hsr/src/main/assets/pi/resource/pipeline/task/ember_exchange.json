@@ -1,0 +1,18 @@
+{
+  "Task_ember_exchange": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "NavTo_menu"
+    ],
+    "attach": {
+      "march7th:kind": "task-entry",
+      "march7th:task_id": "ember_exchange",
+      "march7th:entry_screen": "menu",
+      "march7th:source_module": "tasks/daily/ember_exchange.py",
+      "march7th:confidence": "high",
+      "march7th:rationale": "tasks/daily/ember_exchange.py:128 显式 screen.change_to('menu')；:414 回到 main。",
+      "march7th:note": "本节点只负责把游戏导航到该功能所在的界面；上游任务的采集/战斗循环逻辑没有迁移。"
+    }
+  }
+}

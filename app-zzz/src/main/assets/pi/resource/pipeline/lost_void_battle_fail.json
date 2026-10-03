@@ -1,0 +1,109 @@
+{
+  "lost_void_battle_fail": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "撤退"
+              ],
+              "roi": [
+                550,
+                845,
+                320,
+                65
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "重播"
+              ],
+              "roi": [
+                910,
+                845,
+                310,
+                65
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "lost_void_battle_fail__按钮-撤退",
+      "lost_void_battle_fail__按钮-重播",
+      "lost_void_battle_fail__按钮-分析"
+    ]
+  },
+  "lost_void_battle_fail__按钮-撤退": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "撤退"
+        ],
+        "roi": [
+          550,
+          845,
+          320,
+          65
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "lost_void_battle_fail__按钮-重播": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "重播"
+        ],
+        "roi": [
+          910,
+          845,
+          310,
+          65
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_battle_fail__按钮-分析": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "分析"
+        ],
+        "roi": [
+          1270,
+          845,
+          120,
+          65
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

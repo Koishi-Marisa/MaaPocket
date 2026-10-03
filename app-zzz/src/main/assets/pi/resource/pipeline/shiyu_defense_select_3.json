@@ -1,0 +1,283 @@
+{
+  "shiyu_defense_select_3": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "总分"
+              ],
+              "roi": [
+                122,
+                218,
+                200,
+                50
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "shiyu_defense_select_3__第一间",
+      "shiyu_defense_select_3__第二间",
+      "shiyu_defense_select_3__第三间",
+      "shiyu_defense_select_3__第一间属性",
+      "shiyu_defense_select_3__第二间属性",
+      "shiyu_defense_select_3__第三间属性",
+      "shiyu_defense_select_3__前往第一间",
+      "shiyu_defense_select_3__前往第二间",
+      "shiyu_defense_select_3__前往第三间",
+      "shiyu_defense_select_3__返回",
+      "shiyu_defense_select_3__本期最佳总分",
+      "shiyu_defense_select_3__重置全部",
+      "shiyu_defense_select_3__确认"
+    ]
+  },
+  "shiyu_defense_select_3__第一间": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          907,
+          224,
+          117,
+          48
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "shiyu_defense_select_3__第二间": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          907,
+          447,
+          129,
+          49
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "shiyu_defense_select_3__第三间": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          907,
+          669,
+          138,
+          51
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "shiyu_defense_select_3__第一间属性": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1317,
+          258,
+          474,
+          148
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "shiyu_defense_select_3__第二间属性": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1318,
+          481,
+          470,
+          150
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "shiyu_defense_select_3__第三间属性": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1317,
+          703,
+          471,
+          144
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "shiyu_defense_select_3__前往第一间": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "属性"
+        ],
+        "roi": [
+          1319,
+          224,
+          106,
+          40
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "shiyu_defense_select_3__前往第二间": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "属性"
+        ],
+        "roi": [
+          1315,
+          446,
+          104,
+          40
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "shiyu_defense_select_3__前往第三间": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "属性"
+        ],
+        "roi": [
+          1313,
+          664,
+          120,
+          43
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "shiyu_defense_select_3__返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          62,
+          15,
+          111,
+          79
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "shiyu_defense"
+    ]
+  },
+  "shiyu_defense_select_3__本期最佳总分": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "总分"
+        ],
+        "roi": [
+          122,
+          218,
+          200,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "shiyu_defense_select_3__重置全部": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "重置"
+        ],
+        "roi": [
+          1248,
+          1009,
+          247,
+          36
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "shiyu_defense_select_3__确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1038,
+          624,
+          184,
+          41
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

@@ -1,0 +1,199 @@
+{
+  "suibian_temple_sales_stall": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "售卖铺"
+              ],
+              "roi": [
+                1404,
+                479,
+                203,
+                62
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "menu/back/raw.png"
+              ],
+              "roi": [
+                82,
+                13,
+                68,
+                77
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "街区"
+              ],
+              "roi": [
+                238,
+                26,
+                154,
+                50
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "suibian_temple_sales_stall__标题-售卖铺",
+      "suibian_temple_sales_stall__按钮-返回",
+      "suibian_temple_sales_stall__区域-商品列表",
+      "suibian_temple_sales_stall__按钮-街区",
+      "suibian_temple_sales_stall__区域-选择邦布",
+      "suibian_temple_sales_stall__区域-第二只邦布",
+      "suibian_temple_sales_stall__按钮-确认派驻"
+    ]
+  },
+  "suibian_temple_sales_stall__标题-售卖铺": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "售卖铺"
+        ],
+        "roi": [
+          1404,
+          479,
+          203,
+          62
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_sales_stall__按钮-返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          82,
+          13,
+          68,
+          77
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "suibian_temple_sales_stall__区域-商品列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          306,
+          326,
+          830,
+          604
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "suibian_temple_sales_stall__按钮-街区": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "街区"
+        ],
+        "roi": [
+          238,
+          26,
+          154,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "normal_world_basic"
+    ]
+  },
+  "suibian_temple_sales_stall__区域-选择邦布": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1715,
+          889,
+          148,
+          121
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "suibian_temple_sales_stall__区域-第二只邦布": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          398,
+          185,
+          242,
+          321
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "suibian_temple_sales_stall__按钮-确认派驻": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认派驻"
+        ],
+        "roi": [
+          1400,
+          882,
+          255,
+          62
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

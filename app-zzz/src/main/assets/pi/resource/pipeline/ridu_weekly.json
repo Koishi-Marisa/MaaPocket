@@ -1,0 +1,328 @@
+{
+  "ridu_weekly": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "丽都周纪"
+              ],
+              "roi": [
+                414,
+                840,
+                182,
+                60
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                534,
+                400,
+                812,
+                376
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                818,
+                798,
+                278,
+                50
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "领取"
+              ],
+              "roi": [
+                452,
+                804,
+                174,
+                44
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "未完成"
+              ],
+              "roi": [
+                452,
+                804,
+                174,
+                44
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                168,
+                260,
+                884,
+                694
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1558,
+                314,
+                1,
+                1
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                120,
+                410,
+                930,
+                60
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                120,
+                640,
+                930,
+                50
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                120,
+                870,
+                935,
+                55
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "ridu_weekly__丽都周纪",
+      "ridu_weekly__代办列表",
+      "ridu_weekly__确认代办",
+      "ridu_weekly__领取",
+      "ridu_weekly__未完成",
+      "ridu_weekly__任务区域",
+      "ridu_weekly__领取奖励",
+      "ridu_weekly__积分行-1",
+      "ridu_weekly__积分行-2",
+      "ridu_weekly__积分行-3"
+    ]
+  },
+  "ridu_weekly__丽都周纪": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "丽都周纪"
+        ],
+        "roi": [
+          414,
+          840,
+          182,
+          60
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "ridu_weekly__代办列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          534,
+          400,
+          812,
+          376
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "ridu_weekly__确认代办": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          818,
+          798,
+          278,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "ridu_weekly__领取": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "领取"
+        ],
+        "roi": [
+          452,
+          804,
+          174,
+          44
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "ridu_weekly__未完成": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "未完成"
+        ],
+        "roi": [
+          452,
+          804,
+          174,
+          44
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "ridu_weekly__任务区域": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          168,
+          260,
+          884,
+          694
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "ridu_weekly__领取奖励": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1558,
+          314,
+          1,
+          1
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "ridu_weekly__积分行-1": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          120,
+          410,
+          930,
+          60
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "ridu_weekly__积分行-2": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          120,
+          640,
+          930,
+          50
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "ridu_weekly__积分行-3": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          120,
+          870,
+          935,
+          55
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

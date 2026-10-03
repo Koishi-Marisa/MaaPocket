@@ -1,0 +1,44 @@
+{
+  "hou_hou_bakery": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1100,
+                430,
+                160,
+                140
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "hou_hou_bakery__盲盒"
+    ]
+  },
+  "hou_hou_bakery__盲盒": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1100,
+          430,
+          160,
+          140
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

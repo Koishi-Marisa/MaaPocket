@@ -1,0 +1,72 @@
+{
+  "expert_challenge": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1475,
+                1000,
+                53,
+                55
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1535,
+                1000,
+                45,
+                55
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "expert_challenge__剩余电量",
+      "expert_challenge__需要电量"
+    ]
+  },
+  "expert_challenge__剩余电量": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1475,
+          1000,
+          53,
+          55
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "expert_challenge__需要电量": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1535,
+          1000,
+          45,
+          55
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

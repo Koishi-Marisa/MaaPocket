@@ -1,0 +1,264 @@
+{
+  "lost_void_choose_common": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确定"
+              ],
+              "roi": [
+                855,
+                765,
+                310,
+                210
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "lost_void/normal_world_tab/raw.png"
+              ],
+              "roi": [
+                0,
+                482,
+                102,
+                118
+              ],
+              "threshold": 0.7
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "lost_void_choose_common__文本-详情",
+      "lost_void_choose_common__按钮-确定",
+      "lost_void_choose_common__区域-藏品名称",
+      "lost_void_choose_common__区域-武备名称",
+      "lost_void_choose_common__区域-标题",
+      "lost_void_choose_common__迷失之地-TAB",
+      "lost_void_choose_common__按钮-刷新",
+      "lost_void_choose_common__区域-藏品已选择",
+      "lost_void_choose_common__区域-武备标识",
+      "lost_void_choose_common__中间区域-识别黑屏"
+    ]
+  },
+  "lost_void_choose_common__文本-详情": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "详情"
+        ],
+        "roi": [
+          74,
+          24,
+          68,
+          56
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_choose_common__按钮-确定": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确定"
+        ],
+        "roi": [
+          855,
+          765,
+          310,
+          210
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "lost_void_choose_common__区域-藏品名称": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          80,
+          411,
+          1831,
+          182
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_choose_common__区域-武备名称": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          82,
+          415,
+          1816,
+          60
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_choose_common__区域-标题": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          760,
+          146,
+          396,
+          74
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_choose_common__迷失之地-TAB": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "lost_void/normal_world_tab/raw.png"
+        ],
+        "roi": [
+          0,
+          482,
+          102,
+          118
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_choose_common__按钮-刷新": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "刷新"
+        ],
+        "roi": [
+          1672,
+          22,
+          158,
+          54
+        ],
+        "threshold": 0.5,
+        "color_filter": "lost_void_choose_common__按钮-刷新__color"
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "lost_void_choose_common__区域-藏品已选择": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          82,
+          210,
+          1816,
+          60
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_choose_common__区域-武备标识": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "lost_void/common_choose_gear/raw.png"
+        ],
+        "roi": [
+          80,
+          730,
+          1830,
+          100
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_choose_common__中间区域-识别黑屏": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          520,
+          245,
+          845,
+          525
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_choose_common__按钮-刷新__color": {
+    "recognition": {
+      "type": "ColorMatch",
+      "param": {
+        "method": 4,
+        "roi": [
+          1672,
+          22,
+          158,
+          54
+        ],
+        "lower": [
+          200,
+          200,
+          200
+        ],
+        "upper": [
+          255,
+          255,
+          255
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

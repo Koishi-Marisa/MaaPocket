@@ -1,30 +1,374 @@
 {
-  "$schema": "https://raw.githubusercontent.com/MaaXYZ/MaaFramework/main/tools/interface.schema.json",
   "interface_version": 2,
   "name": "MaaPocketHSR",
   "version": "0.1.0",
-  "label": "$interface.label",
-  "icon": "icon.png",
-  "description": "$interface.description",
-  "message": "$interface.message",
+  "label": "崩坏：星穹铁道",
+  "title": "MaaPocket · 崩坏：星穹铁道",
+  "description": "从 March7thAssistant 迁移而来的屏幕导航图与任务结构（仅导航，不含采集/战斗循环）。模板全部是 PC 客户端截图，手机端需要重新采集。",
+  "welcome": "模板尚未在手机端重新采集，识别可能直接失败。请先读 RECAPTURE.md。",
+  "license": "GPL-3.0",
+  "github": "https://github.com/moesnow/March7thAssistant",
   "controller": [
     {
       "name": "Android",
       "type": "Adb",
-      "display_short_side": 720
+      "label": "Android（ADB）",
+      "display_long_side": 1920,
+      "attach_resource_path": [
+        "./resource"
+      ]
     }
   ],
   "resource": [
     {
-      "name": "官服",
-      "path": ["./resource"]
+      "name": "国服",
+      "label": "国服",
+      "path": [
+        "./resource"
+      ]
     }
   ],
-  "task": [],
-  "option": [],
-  "agent": [],
-  "import": [],
   "languages": {
-    "zh_cn": "locales/interface/zh_cn.json"
-  }
+    "zh_cn": "./resource/locale/zh_cn.json"
+  },
+  "group": [
+    {
+      "name": "daily",
+      "label": "日常",
+      "default_expand": true
+    },
+    {
+      "name": "power",
+      "label": "体力",
+      "default_expand": true
+    },
+    {
+      "name": "reward",
+      "label": "奖励",
+      "default_expand": true
+    },
+    {
+      "name": "weekly",
+      "label": "周常",
+      "default_expand": true
+    },
+    {
+      "name": "challenge",
+      "label": "挑战",
+      "default_expand": true
+    },
+    {
+      "name": "activity",
+      "label": "活动",
+      "default_expand": true
+    },
+    {
+      "name": "base",
+      "label": "基础",
+      "default_expand": true
+    }
+  ],
+  "task": [
+    {
+      "name": "daily",
+      "label": "日常",
+      "entry": "Task_daily",
+      "description": "Daily 本身没有单一 change_to；它是调度器，把工作分给 buildtarget/fight/synthesis 等子模块（tasks/daily/daily.py:131 currency_wars_homepage、:142 divergent_main、:222 guide2 都是交接点）。入口取 main 是因为所有子任务都从主界面出发。",
+      "default_check": false,
+      "group": [
+        "daily"
+      ]
+    },
+    {
+      "name": "buildtarget",
+      "label": "刷历战余响/凝滞虚影",
+      "entry": "Task_buildtarget",
+      "description": "tasks/daily/buildtarget.py:545 显式 screen.change_to('guide3')。",
+      "default_check": false,
+      "group": [
+        "daily"
+      ]
+    },
+    {
+      "name": "ember_exchange",
+      "label": "余烬兑换",
+      "entry": "Task_ember_exchange",
+      "description": "tasks/daily/ember_exchange.py:128 显式 screen.change_to('menu')；:414 回到 main。",
+      "default_check": false,
+      "group": [
+        "daily"
+      ]
+    },
+    {
+      "name": "fight",
+      "label": "战斗",
+      "entry": "Task_fight",
+      "description": "tasks/daily/fight.py:102 显式 screen.change_to('main')（:98 先切到配队界面）。",
+      "default_check": false,
+      "group": [
+        "daily"
+      ]
+    },
+    {
+      "name": "himekotry",
+      "label": "姬子试用",
+      "entry": "Task_himekotry",
+      "description": "tasks/daily/himekotry.py:11/22 显式 screen.change_to('himeko_prepare')。",
+      "default_check": false,
+      "group": [
+        "daily"
+      ]
+    },
+    {
+      "name": "photo",
+      "label": "拍照",
+      "entry": "Task_photo",
+      "description": "tasks/daily/photo.py:14 显式 screen.change_to('camera')。",
+      "default_check": false,
+      "group": [
+        "daily"
+      ]
+    },
+    {
+      "name": "redemption",
+      "label": "兑换码",
+      "entry": "Task_redemption",
+      "description": "tasks/daily/redemption.py:197 显式 screen.change_to('redemption')。",
+      "default_check": false,
+      "group": [
+        "daily"
+      ]
+    },
+    {
+      "name": "synthesis",
+      "label": "合成",
+      "entry": "Task_synthesis",
+      "description": "tasks/daily/synthesis.py:17/50 显式 screen.change_to('material')。",
+      "default_check": false,
+      "group": [
+        "daily"
+      ]
+    },
+    {
+      "name": "power",
+      "label": "清体力",
+      "entry": "Task_power",
+      "description": "tasks/power/power.py:244 显式 screen.change_to('guide3')。",
+      "default_check": false,
+      "group": [
+        "power"
+      ]
+    },
+    {
+      "name": "instance",
+      "label": "副本",
+      "entry": "Task_instance",
+      "description": "tasks/power/instance.py:88 显式 screen.change_to('guide3')。",
+      "default_check": false,
+      "group": [
+        "power"
+      ]
+    },
+    {
+      "name": "relicset",
+      "label": "遗器套装",
+      "entry": "Task_relicset",
+      "description": "tasks/power/relicset.py:43 显式 screen.change_to('bag_relicset')。",
+      "default_check": false,
+      "group": [
+        "power"
+      ]
+    },
+    {
+      "name": "weekly_relic_cleanup",
+      "label": "每周遗器清理",
+      "entry": "Task_weekly_relic_cleanup",
+      "description": "tasks/power/weekly_relic_cleanup.py:123 显式 screen.change_to('bag_relicset')。",
+      "default_check": false,
+      "group": [
+        "power"
+      ]
+    },
+    {
+      "name": "mail",
+      "label": "邮件",
+      "entry": "Task_mail",
+      "description": "RewardManager 构造 Mail('邮件', …, 'mail')，第三参数即入口屏幕（tasks/reward/__init__.py）。",
+      "default_check": false,
+      "group": [
+        "reward"
+      ]
+    },
+    {
+      "name": "assist",
+      "label": "支援",
+      "entry": "Task_assist",
+      "description": "RewardManager 构造 Assist('支援', …, 'visa')。",
+      "default_check": false,
+      "group": [
+        "reward"
+      ]
+    },
+    {
+      "name": "dispatch",
+      "label": "委托",
+      "entry": "Task_dispatch",
+      "description": "RewardManager 构造 Dispatch('委托', …, 'dispatch')。",
+      "default_check": false,
+      "group": [
+        "reward"
+      ]
+    },
+    {
+      "name": "quest",
+      "label": "每日实训",
+      "entry": "Task_quest",
+      "description": "RewardManager 构造 Quest('每日实训', …, 'guide2')。",
+      "default_check": false,
+      "group": [
+        "reward"
+      ]
+    },
+    {
+      "name": "srpass",
+      "label": "无名勋礼",
+      "entry": "Task_srpass",
+      "description": "tasks/reward/srpass.py:14 显式 screen.change_to('pass1')。",
+      "default_check": false,
+      "group": [
+        "reward"
+      ]
+    },
+    {
+      "name": "achievement",
+      "label": "成就",
+      "entry": "Task_achievement",
+      "description": "RewardManager 构造 Achievement('成就', …, 'achievement')。",
+      "default_check": false,
+      "group": [
+        "reward"
+      ]
+    },
+    {
+      "name": "message",
+      "label": "短信",
+      "entry": "Task_message",
+      "description": "RewardManager 构造 Message('短信', …, 'incoming_message')。",
+      "default_check": false,
+      "group": [
+        "reward"
+      ]
+    },
+    {
+      "name": "currency_wars",
+      "label": "货币战争",
+      "entry": "Task_currency_wars",
+      "description": "tasks/weekly/currency_wars.py:2977 check_screen('currency_wars_homepage')（:317 先 change_to('guide3')）。",
+      "default_check": false,
+      "group": [
+        "weekly"
+      ]
+    },
+    {
+      "name": "divergent_universe",
+      "label": "差分宇宙",
+      "entry": "Task_divergent_universe",
+      "description": "tasks/weekly/divergent_universe.py:178 显式 screen.change_to('divergent_mode_select')。",
+      "default_check": false,
+      "group": [
+        "weekly"
+      ]
+    },
+    {
+      "name": "echoofwar",
+      "label": "历战余响",
+      "entry": "Task_echoofwar",
+      "description": "tasks/weekly/echoofwar.py:16 显式 screen.change_to('guide3')。",
+      "default_check": false,
+      "group": [
+        "weekly"
+      ]
+    },
+    {
+      "name": "universe",
+      "label": "模拟宇宙",
+      "entry": "Task_universe",
+      "description": "tasks/weekly/universe.py:184 显式 screen.change_to('divergent_main')。",
+      "default_check": false,
+      "group": [
+        "weekly"
+      ]
+    },
+    {
+      "name": "apocalyptic",
+      "label": "末日幻影",
+      "entry": "Task_apocalyptic",
+      "description": "tasks/challenge/apocalyptic.py:29 显式 screen.change_to('guide4')。",
+      "default_check": false,
+      "group": [
+        "challenge"
+      ]
+    },
+    {
+      "name": "memoryofchaos",
+      "label": "混沌回忆",
+      "entry": "Task_memoryofchaos",
+      "description": "tasks/challenge/memoryofchaos.py:29 显式 screen.change_to('guide4')。",
+      "default_check": false,
+      "group": [
+        "challenge"
+      ]
+    },
+    {
+      "name": "memoryone",
+      "label": "单层忘却之庭",
+      "entry": "Task_memoryone",
+      "description": "tasks/challenge/memoryone.py:31 显式 screen.change_to('memory')。",
+      "default_check": false,
+      "group": [
+        "challenge"
+      ]
+    },
+    {
+      "name": "purefiction",
+      "label": "虚构叙事",
+      "entry": "Task_purefiction",
+      "description": "tasks/challenge/purefiction.py:29 显式 screen.change_to('guide4')。",
+      "default_check": false,
+      "group": [
+        "challenge"
+      ]
+    },
+    {
+      "name": "activity",
+      "label": "活动",
+      "entry": "Task_activity",
+      "description": "tasks/activity/__init__.py:58 与 tasks/activity/activitytemplate.py:23 都显式 screen.change_to('activity')。",
+      "default_check": false,
+      "group": [
+        "activity"
+      ]
+    },
+    {
+      "name": "journey_highlights_notification",
+      "label": "旅程回顾通知",
+      "entry": "Task_journey_highlights_notification",
+      "description": "tasks/activity/journey_highlights_notification.py:16 显式 screen.change_to('reward_guide')。",
+      "default_check": false,
+      "group": [
+        "activity"
+      ]
+    },
+    {
+      "name": "team",
+      "label": "配队",
+      "entry": "Task_team",
+      "description": "tasks/base/team.py:18 显式 screen.change_to('configure_team')。",
+      "default_check": false,
+      "group": [
+        "base"
+      ]
+    }
+  ],
+  "agent": []
 }

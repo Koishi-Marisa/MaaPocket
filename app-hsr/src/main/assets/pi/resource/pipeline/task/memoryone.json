@@ -1,0 +1,18 @@
+{
+  "Task_memoryone": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "NavTo_memory"
+    ],
+    "attach": {
+      "march7th:kind": "task-entry",
+      "march7th:task_id": "memoryone",
+      "march7th:entry_screen": "memory",
+      "march7th:source_module": "tasks/challenge/memoryone.py",
+      "march7th:confidence": "high",
+      "march7th:rationale": "tasks/challenge/memoryone.py:31 显式 screen.change_to('memory')。",
+      "march7th:note": "本节点只负责把游戏导航到该功能所在的界面；上游任务的采集/战斗循环逻辑没有迁移。"
+    }
+  }
+}

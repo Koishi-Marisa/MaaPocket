@@ -1,0 +1,348 @@
+{
+  "hollow_zero_merchant": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "hollow/right_top_back/raw.png"
+              ],
+              "roi": [
+                1773,
+                25,
+                64,
+                56
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确定"
+              ],
+              "roi": [
+                846,
+                768,
+                212,
+                46
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1266,
+                28,
+                498,
+                54
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1306,
+                374,
+                59,
+                412
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1416,
+                258,
+                496,
+                418
+              ]
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "hollow/merchant_add/raw.png"
+              ],
+              "roi": [
+                1800,
+                290,
+                110,
+                476
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1290,
+                376,
+                90,
+                24
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1290,
+                568,
+                90,
+                21
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1290,
+                758,
+                90,
+                23
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1290,
+                472,
+                90,
+                22
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1290,
+                660,
+                90,
+                24
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "hollow_zero_merchant__右上角-返回",
+      "hollow_zero_merchant__购买后确定",
+      "hollow_zero_merchant__二级标题",
+      "hollow_zero_merchant__商品价格区域",
+      "hollow_zero_merchant__商品描述区域",
+      "hollow_zero_merchant__商品购买区域",
+      "hollow_zero_merchant__商品价格-3-1",
+      "hollow_zero_merchant__商品价格-3-2",
+      "hollow_zero_merchant__商品价格-3-3",
+      "hollow_zero_merchant__商品价格-2-1",
+      "hollow_zero_merchant__商品价格-2-2"
+    ]
+  },
+  "hollow_zero_merchant__右上角-返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "hollow/right_top_back/raw.png"
+        ],
+        "roi": [
+          1773,
+          25,
+          64,
+          56
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "hollow_zero_merchant__购买后确定": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确定"
+        ],
+        "roi": [
+          846,
+          768,
+          212,
+          46
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "hollow_zero_merchant__二级标题": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1266,
+          28,
+          498,
+          54
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_merchant__商品价格区域": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1306,
+          374,
+          59,
+          412
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_merchant__商品描述区域": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1416,
+          258,
+          496,
+          418
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_merchant__商品购买区域": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "hollow/merchant_add/raw.png"
+        ],
+        "roi": [
+          1800,
+          290,
+          110,
+          476
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "hollow_zero_merchant__商品价格-3-1": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1290,
+          376,
+          90,
+          24
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_merchant__商品价格-3-2": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1290,
+          568,
+          90,
+          21
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_merchant__商品价格-3-3": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1290,
+          758,
+          90,
+          23
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_merchant__商品价格-2-1": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1290,
+          472,
+          90,
+          22
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_merchant__商品价格-2-2": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1290,
+          660,
+          90,
+          24
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

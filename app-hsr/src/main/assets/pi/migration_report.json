@@ -1,0 +1,3114 @@
+{
+  "counts": {
+    "distinct_forms": 10,
+    "edges_emitted": 110,
+    "edges_in_source": 110,
+    "edges_omitted": 0,
+    "expressions_mapped": 165,
+    "expressions_total": 185,
+    "expressions_unmapped": 20,
+    "expressions_unparsed": 0,
+    "images_copied": 395,
+    "screens_emitted": 56,
+    "screens_in_source": 56,
+    "tasks_emitted": 30,
+    "tasks_skipped": 14,
+    "unmapped_nodes": 20
+  },
+  "design_resolution": {
+    "height": 1080,
+    "width": 1920
+  },
+  "expression_census": [
+    {
+      "count": 51,
+      "examples": [
+        "auto.press_key('esc')",
+        "auto.press_key('p')",
+        "auto.press_key('f')"
+      ],
+      "form": "auto.press_key('<literal>')",
+      "mappable": true,
+      "mapping": "ClickKey 节点, key = Android KEYCODE_*",
+      "notes": "PC 上按下的物理键在 Android 上必须换成 KeyEvent 虚拟键码（Adb 控制器的 key 参数即此）。手机客户端根本没有 ESC/热键这一层输入，映射仅是形式上的对齐，见 RECAPTURE.md。",
+      "ok": true,
+      "status": "MANAGED"
+    },
+    {
+      "count": 41,
+      "examples": [
+        "time.sleep(2)",
+        "time.sleep(1)",
+        "time.sleep(4)",
+        "time.sleep(6)"
+      ],
+      "form": "time.sleep(<n>)",
+      "mappable": true,
+      "mapping": "DoNothing 节点 + post_delay = n*1000 毫秒",
+      "notes": "MaaFramework 的 post_delay 就是本节点动作结束后的固定等待，语义等价。",
+      "ok": true,
+      "status": "MANAGED"
+    },
+    {
+      "count": 38,
+      "examples": [
+        "auto.click_element('./assets/images/zh_CN/map/back.png', 'image', 0.9)",
+        "auto.click_element('./assets/images/share/warp/stellar_warp.png', 'image', 0.9)",
+        "auto.click_element('./assets/images/screen/guide/enter_guide2.png', 'image', 0.9)",
+        "auto.click_element('./assets/images/screen/guide/enter_guide3.png', 'image', 0.9)"
+      ],
+      "form": "auto.click_element(<path>, 'image', <float>)",
+      "mappable": true,
+      "mapping": "TemplateMatch(template, threshold) + Click, target = true",
+      "notes": "上游 TM_CCOEFF_NORMED 的相关系数与 MaaFramework 的 method=5 是同一个算法，分数可近似直接搬运；上游截图阈值 0.88，本包统一用 0.8。",
+      "ok": true,
+      "status": "MANAGED"
+    },
+    {
+      "count": 19,
+      "examples": [
+        "auto.click_element('漫游签证', 'text', None, 2, crop=(1261.0 / 1920, 1.0 / 1080, 552.0 / 1920, 346.0 / 1080))",
+        "auto.click_element('兑换码', 'text', None, 2, crop=(1261.0 / 1920, 1.0 / 1080, 552.0 / 1920, 420.0 / 1080))",
+        "auto.click_element('忘却之庭', 'text', None, 10, crop=(231.0 / 1920, 420.0 / 1080, 450.0 / 1920, 536.0 / 1080))",
+        "auto.click_element('传送', 'text', None, 10, crop=(689.0 / 1920, 285.0 / 1080, 970.0 / 1920, 474.0 / 1080))"
+      ],
+      "form": "auto.click_element(<text>, 'text', <max_retries>, crop=(<x>/1920,<y>/1080,<w>/1920,<h>/1080))",
+      "mappable": false,
+      "mapping": "OCR 识别（recognition: \"OCR\" + expected + roi）",
+      "notes": "需要 MaaFramework 的 OCR 模型资源，本资源包未附带模型，且 OCR 结果依赖手机端渲染的字号/字体，静态模板无法保证。默认降级为 DoNothing 占位节点。",
+      "ok": true,
+      "status": "UNMAPPED"
+    },
+    {
+      "count": 17,
+      "examples": [
+        "auto.click_element('./assets/images/share/menu/bag_consumables.png', 'image', 0.9, 2)",
+        "auto.click_element('./assets/images/share/menu/bag_relicset.png', 'image', 0.9, 2)",
+        "auto.click_element('./assets/images/share/menu/bag_lc.png', 'image', 0.9, 2)",
+        "auto.click_element('./assets/images/screen/monthly_card.png', 'image', 0.88, 10)"
+      ],
+      "form": "auto.click_element(<path>, 'image', <float>, <max_retries>)",
+      "mappable": true,
+      "mapping": "TemplateMatch + Click；max_retries 记入 attach",
+      "notes": "MaaFramework 没有“重试 n 次”参数，它是靠 timeout(默认 20s) + rate_limit(默认 1s) 的识别循环实现等价重试。原值写入 attach['march7th:max_retries']，不做 1:1 换算。",
+      "ok": true,
+      "status": "MANAGED-WITH-LOSS"
+    },
+    {
+      "count": 14,
+      "examples": [
+        "auto.click_element('./assets/images/share/menu/guide.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+        "auto.click_element('./assets/images/share/menu/dispatch.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+        "auto.click_element('./assets/images/share/menu/pass.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+        "auto.click_element('./assets/images/share/menu/synthesis.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))"
+      ],
+      "form": "auto.click_element(<path>, 'image', <int>, crop=(<x>/1920,<y>/1080,<w>/1920,<h>/1080))",
+      "mappable": true,
+      "mapping": "TemplateMatch(roi=同上, threshold=0.7) + Click",
+      "notes": "阈值 >= 1000 说明模板带真实 alpha，上游走 cv2.TM_SQDIFF + mask，**分值越低越像**，2000000 实际是“接受任意位置”。SQDIFF 分数与 TM_CCOEFF_NORMED 不可换算，这里退化为普通的 >= 0.7 相关匹配；mask 语义在 MaaFramework 里只能用 green_mask 近似，本脚本未启用。",
+      "ok": true,
+      "status": "APPROXIMATED"
+    },
+    {
+      "count": 2,
+      "examples": [
+        "auto.press_key(cfg.get_value('hotkey_map', 'm'))",
+        "auto.press_key(cfg.get_value('hotkey_warp', 'f3'))"
+      ],
+      "form": "auto.press_key(cfg.get_value('<section>','<key>'))",
+      "mappable": true,
+      "mapping": "ClickKey 节点, key = 该热键的**默认值**对应的 KEYCODE_*",
+      "notes": "静态资源包读不到用户的 config.yaml，只能常量折叠成默认热键（hotkey_map=m → KEYCODE_M=41，hotkey_warp=f3 → KEYCODE_F3=133）。用户改过热键则本节点失效。",
+      "ok": true,
+      "status": "MANAGED-WITH-LOSS"
+    },
+    {
+      "count": 1,
+      "examples": [
+        "auto.click_element((1846 / 1920, 253 / 1080, 43 / 1920, 37 / 1080), 'crop')"
+      ],
+      "form": "auto.click_element((<x>/1920,<y>/1080,<w>/1920,<h>/1080), 'crop')",
+      "mappable": true,
+      "mapping": "DirectHit + Click, target = [x, y, w, h] 像素矩形",
+      "notes": "上游 find_type='crop' 分支就是“不做识别，直接点归一化矩形”，MaaFramework 的 DirectHit + Click(target=矩形) 完全等价。",
+      "ok": true,
+      "status": "MANAGED"
+    },
+    {
+      "count": 1,
+      "examples": [
+        "auto.click_element('./assets/images/share/menu/camera.png', 'image', 0.8, crop=(0.95, 0.1, 0.05, 0.6))"
+      ],
+      "form": "auto.click_element(<path>, 'image', <float>, crop=(<x>/1920,<y>/1080,<w>/1920,<h>/1080))",
+      "mappable": true,
+      "mapping": "TemplateMatch(roi=去归一化后的像素矩形) + Click",
+      "notes": "crop 是归一化矩形，按 1920x1080 展开成 roi=[round(x*1920), round(y*1080), round(w*1920), round(h*1080)] 并夹在屏幕内。",
+      "ok": true,
+      "status": "MANAGED"
+    },
+    {
+      "count": 1,
+      "examples": [
+        "auto.click_element('日幻影', 'text', max_retries=10, crop=(274.0 / 1920, 419.0 / 1080, (670.0) / 1920, (419.0+322.0) / 1080), include=True)"
+      ],
+      "form": "auto.click_element(<text>, 'text', <max_retries>, crop=(<x>/1920,<y>/1080,<w>/1920,<h>/1080), include=True)",
+      "mappable": false,
+      "mapping": "OCR 识别（recognition: \"OCR\" + expected + roi）",
+      "notes": "需要 MaaFramework 的 OCR 模型资源，本资源包未附带模型，且 OCR 结果依赖手机端渲染的字号/字体，静态模板无法保证。默认降级为 DoNothing 占位节点。",
+      "ok": true,
+      "status": "UNMAPPED"
+    }
+  ],
+  "generator": "migrate_march7th.py",
+  "images": {
+    "bytes": 3883745,
+    "copied": 395,
+    "missing_in_git": [],
+    "skipped_underscore_dirs": [],
+    "source_files": 395
+  },
+  "interface_json_replacement": {
+    "bytes": 10138,
+    "classification": "previous-run-output",
+    "path": "MaaPocket/app-hsr/src/main/assets/pi/interface.json",
+    "sha256": "859a28aa83f945f215963a94c0505c6e6bc6a044a9fac8ae043d670f1ec2b307"
+  },
+  "omitted_edges": [],
+  "options": {
+    "force": true,
+    "include_unsupported": false,
+    "schemas": null
+  },
+  "original_placeholder_interface": {
+    "author": "another agent (guess, not generated by this script)",
+    "defects": [
+      "controller[0].type == \"Adb\" 但没有 attach_resource_path",
+      "顶层 `message` 键在 interface.schema.json 中不存在",
+      "task == [] —— 没有任何任务",
+      "languages 指向 locales/interface/zh_cn.json，而本文档生成的是 resource/locale/zh_cn.json"
+    ],
+    "disposition": "deleted and replaced by this script (see interface_json_replacement)",
+    "observed_lines": 30,
+    "observed_size_bytes": 637,
+    "path": "MaaPocket/app-hsr/src/main/assets/pi/interface.json"
+  },
+  "out": "D:\\Trea\\二游自动化\\MaaPocket\\app-hsr\\src\\main\\assets\\pi",
+  "out_cleaned": true,
+  "pipeline_files": [
+    {
+      "bytes": 10116,
+      "path": "interface.json",
+      "sha256": "b445f6850f91a3b828fa8c0d73bc541572653c250717d891b8e306ac975e8d8a"
+    },
+    {
+      "bytes": 5539,
+      "path": "resource/locale/zh_cn.json",
+      "sha256": "9afddfb5974c2d0e59096fac289636a2524066bdb2ec395b2650500992bd1df4"
+    },
+    {
+      "bytes": 14039,
+      "path": "resource/pipeline/screen/_index.json",
+      "sha256": "89a97e60acf426f16ee77bd2dcda31bd83bc85e201252bf591727807fc04920f"
+    },
+    {
+      "bytes": 2165,
+      "path": "resource/pipeline/screen/achievement.json",
+      "sha256": "5741b40632445d3b770a989b3bc734eec48a7a37f45f32c65d7d16868ea5e532"
+    },
+    {
+      "bytes": 4215,
+      "path": "resource/pipeline/screen/activity.json",
+      "sha256": "f984b6198026488858d295aefb52b3685f01c23fd8dd4e9da3bb96484ec2886b"
+    },
+    {
+      "bytes": 2223,
+      "path": "resource/pipeline/screen/apocalyptic.json",
+      "sha256": "2067200ea30b64e06354a408e174072be895653b340cef90ddc16b26b10c2949"
+    },
+    {
+      "bytes": 2243,
+      "path": "resource/pipeline/screen/bag_consumables.json",
+      "sha256": "3af2d6ee4ad644affe5d986e0d8b12efd9c2e13770ddc309b159f69aa05cff71"
+    },
+    {
+      "bytes": 2105,
+      "path": "resource/pipeline/screen/bag_lc.json",
+      "sha256": "d8fb885307b936e24883d9a1d0f2c8ce5ad666d69dbd75337a24e797ddd47276"
+    },
+    {
+      "bytes": 2195,
+      "path": "resource/pipeline/screen/bag_relicset.json",
+      "sha256": "107abce4e36a0dd419a2bb1ab57a22ac6208f10be8484d24b07366e58c9825f7"
+    },
+    {
+      "bytes": 2115,
+      "path": "resource/pipeline/screen/camera.json",
+      "sha256": "9973d133f31dcf3cae2ee0588e704617d53556b0734db37f28d9d7153a7e6b7b"
+    },
+    {
+      "bytes": 1746,
+      "path": "resource/pipeline/screen/character_warp.json",
+      "sha256": "ee83b3a197bd28852a8f93faf143477e99af8441edb1cc55242cbeea05c0ba68"
+    },
+    {
+      "bytes": 3351,
+      "path": "resource/pipeline/screen/click_enter.json",
+      "sha256": "0a562f05c8100b7e153f4a80b74bb839c13058a040661d1650f4fe3a6f67ac9f"
+    },
+    {
+      "bytes": 2210,
+      "path": "resource/pipeline/screen/configure_team.json",
+      "sha256": "de4b6fa0a3ed6e5961f741d4937ba0d4100952332651f6191539d46ace1dd580"
+    },
+    {
+      "bytes": 2916,
+      "path": "resource/pipeline/screen/consumables.json",
+      "sha256": "ddbe8426bb9f00609e922ae46a4c7288d761cd427932f97b770ec914f29ee2a8"
+    },
+    {
+      "bytes": 3760,
+      "path": "resource/pipeline/screen/currency_wars_homepage.json",
+      "sha256": "7b190167715113dee3f503326cef50bd1d18b2a73398268ffd41dc26fd8960d7"
+    },
+    {
+      "bytes": 7452,
+      "path": "resource/pipeline/screen/currency_wars_mode_select.json",
+      "sha256": "7e667a18402705101febd761804123319951162aa4687a82cb7826f84a2813b7"
+    },
+    {
+      "bytes": 2718,
+      "path": "resource/pipeline/screen/currency_wars_mode_select_normal.json",
+      "sha256": "dc7ab6ee8435e3d13a771c501192290cd8ff69d7d1c3dfc14cb4b1c9606eb8e8"
+    },
+    {
+      "bytes": 2763,
+      "path": "resource/pipeline/screen/currency_wars_mode_select_overclock.json",
+      "sha256": "ce9e5d7551e4096209f0738daecd3e1966840da4df770b2f27791c7fb300a547"
+    },
+    {
+      "bytes": 2120,
+      "path": "resource/pipeline/screen/dispatch.json",
+      "sha256": "22c5f871fff96f441a0d495054d580308b222caeeae8a1e7cc5ed3562325ef47"
+    },
+    {
+      "bytes": 3581,
+      "path": "resource/pipeline/screen/divergent_main.json",
+      "sha256": "c8fc2d12e1dd236ba7a82e02b1fd5692da917aee448a5cabc984274bda9ba511"
+    },
+    {
+      "bytes": 4287,
+      "path": "resource/pipeline/screen/divergent_mode_select.json",
+      "sha256": "9ceefc461349d1c96765d3fb84d78b4fc5936dee6654f07cae470dfdd1e06ea8"
+    },
+    {
+      "bytes": 2781,
+      "path": "resource/pipeline/screen/divergent_mode_select_cycle.json",
+      "sha256": "930a71363e0aebb66bd3b6d0904e4451b92200f2621420e92057c307848a6d60"
+    },
+    {
+      "bytes": 2625,
+      "path": "resource/pipeline/screen/divergent_mode_select_normal.json",
+      "sha256": "f7adceb0785e91f63b83d69414c6f62b0a922c19f737986fa85b0ef13989a783"
+    },
+    {
+      "bytes": 2434,
+      "path": "resource/pipeline/screen/enter_cloud_game.json",
+      "sha256": "027762abc1ed6583d3f7c4ae9dadc5c730305cb40a21232382cc105d7a240c13"
+    },
+    {
+      "bytes": 2289,
+      "path": "resource/pipeline/screen/fight_exit.json",
+      "sha256": "7d881f98b11aa16af31b77f9bea04113aa10c91d4b5248a3311a81080d26fd35"
+    },
+    {
+      "bytes": 4188,
+      "path": "resource/pipeline/screen/guide2.json",
+      "sha256": "62acb2b310680409964413a53da4712773263994926b76c89c56120e69a1eaa5"
+    },
+    {
+      "bytes": 4634,
+      "path": "resource/pipeline/screen/guide3.json",
+      "sha256": "ad1fbd112896ff9405719b81a048da6a7be4316de77488e35be0b2e8a0fda8c9"
+    },
+    {
+      "bytes": 11224,
+      "path": "resource/pipeline/screen/guide4.json",
+      "sha256": "203f7976a7d24f5577d7c98fbecde9f812a3f287f4488936527ccecfdb955ce7"
+    },
+    {
+      "bytes": 11782,
+      "path": "resource/pipeline/screen/guide5.json",
+      "sha256": "4ec817381a687bd4268b8502863a6817b2f735443dfb48aaccf774d18396779d"
+    },
+    {
+      "bytes": 3558,
+      "path": "resource/pipeline/screen/himeko_prepare.json",
+      "sha256": "40305a0a3043aa9669fce9365b74233949372a954e14da2c3aecde87564e06ec"
+    },
+    {
+      "bytes": 3416,
+      "path": "resource/pipeline/screen/himeko_try.json",
+      "sha256": "c99d8fc1bc52dc0278dc32d59e6d8db824d0b86c1219d9229b870c1c09519d39"
+    },
+    {
+      "bytes": 2351,
+      "path": "resource/pipeline/screen/himeko_try_banner.json",
+      "sha256": "c26874fbe1ab6087f16825fbb613b20469dccf8331b8bacc8fdd38a4cc83f4c8"
+    },
+    {
+      "bytes": 2245,
+      "path": "resource/pipeline/screen/incoming_message.json",
+      "sha256": "839bdb4ea6b3d5f416c825cb8f384ab72873e839ec341981eec19ba0226f1477"
+    },
+    {
+      "bytes": 2459,
+      "path": "resource/pipeline/screen/leave_temporarily.json",
+      "sha256": "6f8eb5c3cb338b32b1f7fea22a3955a3a23f0a69955cc1a5e5a677cfc6676d5f"
+    },
+    {
+      "bytes": 2060,
+      "path": "resource/pipeline/screen/mail.json",
+      "sha256": "179f5717dbc2f0bfe18fb3383cff81b9325e99a046bf827cf73784ff30f5ae96"
+    },
+    {
+      "bytes": 6059,
+      "path": "resource/pipeline/screen/main.json",
+      "sha256": "4a98c652e9e347163f327b937428f21b0af0c2df6f0da3bc225c31bd2dc085ad"
+    },
+    {
+      "bytes": 2058,
+      "path": "resource/pipeline/screen/map.json",
+      "sha256": "89f25226caadb0678b34e64e65672c36458b71ce645158d89379176680feebf9"
+    },
+    {
+      "bytes": 1801,
+      "path": "resource/pipeline/screen/map3d.json",
+      "sha256": "689d7f3e869579b39ae9dfc7ac1b90a65bfe751248af493e9b40a9b5ce02e490"
+    },
+    {
+      "bytes": 2912,
+      "path": "resource/pipeline/screen/material.json",
+      "sha256": "2b18f53bf0324b9e03f62c8eb3aaabfaf1ffb774f0c4904e3f2c7e3362446f10"
+    },
+    {
+      "bytes": 2218,
+      "path": "resource/pipeline/screen/memory.json",
+      "sha256": "1f74fc0795b72a605564b7bee9adcedd78d111156cc7cb997b370b0e7dbaf316"
+    },
+    {
+      "bytes": 3700,
+      "path": "resource/pipeline/screen/memory_of_chaos.json",
+      "sha256": "4cae9603bab196f29950158d1594e52ce1d858d34c50418dcb9e4fa1d673a43b"
+    },
+    {
+      "bytes": 32561,
+      "path": "resource/pipeline/screen/menu.json",
+      "sha256": "aa6a026525924cce59e217c11c0552f80bd6d5d82176e418ef8bc2f6a2476394"
+    },
+    {
+      "bytes": 3142,
+      "path": "resource/pipeline/screen/monthly_card.json",
+      "sha256": "8abe1795e3e83bfd87b2913fb8fd1772e61935c532300a1e442c5341ca204170"
+    },
+    {
+      "bytes": 3283,
+      "path": "resource/pipeline/screen/pass1.json",
+      "sha256": "fbd34f65ec8ff685290c9afb460a47e3d0c1272f1563d81bcecf8c8137928444"
+    },
+    {
+      "bytes": 2778,
+      "path": "resource/pipeline/screen/pass2.json",
+      "sha256": "d304d96d11e48475ec0f7741cd84060c06c120844870b57b85cc8dd6f125d344"
+    },
+    {
+      "bytes": 1725,
+      "path": "resource/pipeline/screen/photo_preview.json",
+      "sha256": "d2d00c5c5491e8a3c7e5e434b699287e753123d3e91215f78ab3cb45b4f5c7ad"
+    },
+    {
+      "bytes": 3010,
+      "path": "resource/pipeline/screen/prepare_fight.json",
+      "sha256": "a5b1efc9b6c524aec5e6ebf8c341915b889bf37af5d28841d2a074bd7dfb3bb9"
+    },
+    {
+      "bytes": 2223,
+      "path": "resource/pipeline/screen/purefiction.json",
+      "sha256": "92dbb88111ff448863bd30ba707ea65d45f5c5d1301b8c39f0117d3c762f36c2"
+    },
+    {
+      "bytes": 2153,
+      "path": "resource/pipeline/screen/redemption.json",
+      "sha256": "c6815c76a52cc0605e1cd8a5636f683153b1193507475bc672f55516e6dbab54"
+    },
+    {
+      "bytes": 2235,
+      "path": "resource/pipeline/screen/retreat.json",
+      "sha256": "14aa91da1fb358ed92930e424f3047ae33283030187c4f2e6266501bafdb4c07"
+    },
+    {
+      "bytes": 2292,
+      "path": "resource/pipeline/screen/reward_guide.json",
+      "sha256": "9ca03a91388cf91d7abc783402cdaa05519fdaa10d2489e88fbfb42c9ecef962"
+    },
+    {
+      "bytes": 2311,
+      "path": "resource/pipeline/screen/start_game.json",
+      "sha256": "f1ded0f4b2f3283a3f32984e4df6ec3aec633a16ad0779c77bc7a8515f043b04"
+    },
+    {
+      "bytes": 1988,
+      "path": "resource/pipeline/screen/start_srpass.json",
+      "sha256": "e2604fb3d09f00a02d0e2aa30f5602c3bd635a0bcacd0680bdfdce4d09faf7b3"
+    },
+    {
+      "bytes": 3333,
+      "path": "resource/pipeline/screen/stellar_warp.json",
+      "sha256": "3b53f316e96c7cc9b6fcd63c44cb4dba8f3496461af5d5ac1e554f7a178367b7"
+    },
+    {
+      "bytes": 3167,
+      "path": "resource/pipeline/screen/universe_expansion.json",
+      "sha256": "ab2eeabf72d8a6a8172c43c59175d7b5dc8f0a852b793b4d8ef3982e5bd43747"
+    },
+    {
+      "bytes": 3643,
+      "path": "resource/pipeline/screen/universe_main.json",
+      "sha256": "7d20891add7721ad7d2c7065a514557e44e2b71a98a89e191220ee790979d585"
+    },
+    {
+      "bytes": 2742,
+      "path": "resource/pipeline/screen/universe_map.json",
+      "sha256": "cd65f6a1290291c920bdac0632392374fe069f169605e1b302acd21c761ee8dc"
+    },
+    {
+      "bytes": 1799,
+      "path": "resource/pipeline/screen/universe_report.json",
+      "sha256": "4a396e9505bea2c6d4469faf4c0aa157cfaa1c222a18901eb6d2a54963fc0248"
+    },
+    {
+      "bytes": 2066,
+      "path": "resource/pipeline/screen/visa.json",
+      "sha256": "0a58b936bf7a6caf7e89a4ff2789ee4691713ae16a5daf3221cdd00bb123b7e2"
+    },
+    {
+      "bytes": 622,
+      "path": "resource/pipeline/task/achievement.json",
+      "sha256": "78e3a9348a6043e70f3dc130d67be165d00782aeadb6136f695c41d42dc4ea9d"
+    },
+    {
+      "bytes": 660,
+      "path": "resource/pipeline/task/activity.json",
+      "sha256": "3154295efd0deefaf36f6946ecc750e33c606ac8f5c05a0875af45d1fb64349f"
+    },
+    {
+      "bytes": 623,
+      "path": "resource/pipeline/task/apocalyptic.json",
+      "sha256": "4b043ffb5c15d1be9db968a475a72f6c41cdeea993873f97bfc3b9007d071a0d"
+    },
+    {
+      "bytes": 586,
+      "path": "resource/pipeline/task/assist.json",
+      "sha256": "011c5bba0b8dca87ca26e1ce200d61c62c17e04443f78d14a692ee935f09bc51"
+    },
+    {
+      "bytes": 616,
+      "path": "resource/pipeline/task/buildtarget.json",
+      "sha256": "50f8733352a30cedef3d8eacb0f8c4f1fd59bd96f958dff48e21bbcfadb8695d"
+    },
+    {
+      "bytes": 698,
+      "path": "resource/pipeline/task/currency_wars.json",
+      "sha256": "ab0fbbd038d663e10fd942d72963cc5a9d2d851fa2214bc7564973260386b18d"
+    },
+    {
+      "bytes": 811,
+      "path": "resource/pipeline/task/daily.json",
+      "sha256": "7e9d186008fb176a420b5bbc52e2dc7328ee719eae05bd67ff0db47ed7f19936"
+    },
+    {
+      "bytes": 604,
+      "path": "resource/pipeline/task/dispatch.json",
+      "sha256": "f921a4c5130fcd92897377cc8f37cfccc47a3400c7f113f5a8ea273572fb29b4"
+    },
+    {
+      "bytes": 691,
+      "path": "resource/pipeline/task/divergent_universe.json",
+      "sha256": "15690cd2d7b2bb69f375ba2fe15432bfd3e13bbdad67d49a94d78de7976e0adc"
+    },
+    {
+      "bytes": 609,
+      "path": "resource/pipeline/task/echoofwar.json",
+      "sha256": "e26ec2adf49237c6a509a7ea40747fde1bea39459ed7232bf54a2daa6306c4f2"
+    },
+    {
+      "bytes": 641,
+      "path": "resource/pipeline/task/ember_exchange.json",
+      "sha256": "d0645b46deffbe6f2a769936202aae1fc5e292c8afe215676d104618470d2c9c"
+    },
+    {
+      "bytes": 617,
+      "path": "resource/pipeline/task/fight.json",
+      "sha256": "9f11c6db6d41aef1324e17958efc505ac9f43595487306cf670400e94730a118"
+    },
+    {
+      "bytes": 634,
+      "path": "resource/pipeline/task/himekotry.json",
+      "sha256": "0e94f9447d31aad1bfe3c7b008aad8b0686a7abb9abed39cfcce096a27971081"
+    },
+    {
+      "bytes": 603,
+      "path": "resource/pipeline/task/instance.json",
+      "sha256": "f1c724dc562af86209a741c917083a0d9e3bbecb174878bd7bab59f740a143a7"
+    },
+    {
+      "bytes": 719,
+      "path": "resource/pipeline/task/journey_highlights_notification.json",
+      "sha256": "46d620e0d0c1ba006d09b0d8db42ecffd0a4e4c0b702b953db717408e13ca362"
+    },
+    {
+      "bytes": 640,
+      "path": "resource/pipeline/task/mail.json",
+      "sha256": "1be076dde6359ae080d8fca119ceb3212ac631037cd815dd2aa379c8386a532e"
+    },
+    {
+      "bytes": 631,
+      "path": "resource/pipeline/task/memoryofchaos.json",
+      "sha256": "91f6d47b8602d9b32c7b65dd95fc1d12e2ec19bf9bacea4d34205e65bc8598cb"
+    },
+    {
+      "bytes": 615,
+      "path": "resource/pipeline/task/memoryone.json",
+      "sha256": "a7edeb84cfa9571d9840b7dc00ed65196206e68b711f2f4e6ec8574358a8e33e"
+    },
+    {
+      "bytes": 625,
+      "path": "resource/pipeline/task/message.json",
+      "sha256": "f4ddb16cf1a44f6be84d91f7cf062ac78bc6d44bcd222299b20a2d413da81095"
+    },
+    {
+      "bytes": 591,
+      "path": "resource/pipeline/task/photo.json",
+      "sha256": "aefcdbcced0ed08e8ee422ab3c6db24b0ffe12fcdc8d0d76226ab5967c61b67b"
+    },
+    {
+      "bytes": 592,
+      "path": "resource/pipeline/task/power.json",
+      "sha256": "051474340073143b027e30e48a126a93ccbe95f6a0d55ed180609220d8c8b1bc"
+    },
+    {
+      "bytes": 623,
+      "path": "resource/pipeline/task/purefiction.json",
+      "sha256": "f5a8c4c236dc86a928aeb0a2eddbfe6d41e4a57a27f0f0e935ea3f94b8b0da15"
+    },
+    {
+      "bytes": 595,
+      "path": "resource/pipeline/task/quest.json",
+      "sha256": "280d7fe66e12d736114de94fb66df7e8932ac6396c59f5a851a681410f040f4f"
+    },
+    {
+      "bytes": 624,
+      "path": "resource/pipeline/task/redemption.json",
+      "sha256": "7a4b977bfcaf28c03bc8f895978ce037417a8b55130638acaa283609af7539de"
+    },
+    {
+      "bytes": 621,
+      "path": "resource/pipeline/task/relicset.json",
+      "sha256": "5b857d3aa31f47dc8a10a09918b6f667efef1a5836401530acb229807c44489b"
+    },
+    {
+      "bytes": 594,
+      "path": "resource/pipeline/task/srpass.json",
+      "sha256": "f6e8d700ad157ca481c68dfa0c474180671ac212bd80dcf89338e32d17c7e3f2"
+    },
+    {
+      "bytes": 616,
+      "path": "resource/pipeline/task/synthesis.json",
+      "sha256": "35360ae574d4655009aacbfe8ef904a60ab09555c80bf019b749aeaa1056f059"
+    },
+    {
+      "bytes": 609,
+      "path": "resource/pipeline/task/team.json",
+      "sha256": "59e7817ac20b5773a2996a32f4cb8eae5b5c4535d8c030434519cd05832261f7"
+    },
+    {
+      "bytes": 630,
+      "path": "resource/pipeline/task/universe.json",
+      "sha256": "905fa2a1df40627ce09e15801e11e2daf702b210d9d675b4f0dcc4aa3410c29d"
+    },
+    {
+      "bytes": 670,
+      "path": "resource/pipeline/task/weekly_relic_cleanup.json",
+      "sha256": "9425dcb74a87039e8eb1f66cdfd97e347ffe6665ddf8fbabb124cbd7854d1a4a"
+    }
+  ],
+  "pipeline_node_names": {
+    "dangling_references": [],
+    "duplicates": [],
+    "total": 368
+  },
+  "schema_validation": {
+    "interface": {
+      "checked": 1,
+      "errors": [],
+      "ok": true,
+      "schema": "D:\\Trea\\二游自动化\\_research\\maafw_dev\\tools\\interface.schema.json",
+      "unresolved_refs": []
+    },
+    "ok": true,
+    "performed": true,
+    "pipeline": {
+      "checked": 87,
+      "errors": [],
+      "ok": true,
+      "schema": "D:\\Trea\\二游自动化\\_research\\maafw_dev\\tools\\pipeline.schema.json",
+      "unresolved_refs": [
+        "./custom.action.schema.json",
+        "./custom.recognition.schema.json"
+      ]
+    },
+    "schema_dir": "D:\\Trea\\二游自动化\\_research\\maafw_dev\\tools"
+  },
+  "schema_version": 1,
+  "screen_graph": {
+    "adjacency": {
+      "achievement": [
+        "menu"
+      ],
+      "activity": [
+        "menu",
+        "reward_guide"
+      ],
+      "apocalyptic": [
+        "main"
+      ],
+      "bag_consumables": [
+        "menu"
+      ],
+      "bag_lc": [
+        "menu"
+      ],
+      "bag_relicset": [
+        "menu"
+      ],
+      "camera": [
+        "main"
+      ],
+      "character_warp": [
+        "menu"
+      ],
+      "click_enter": [
+        "main"
+      ],
+      "configure_team": [
+        "main"
+      ],
+      "consumables": [
+        "menu",
+        "material"
+      ],
+      "currency_wars_homepage": [
+        "main",
+        "currency_wars_mode_select"
+      ],
+      "currency_wars_mode_select": [
+        "currency_wars_homepage",
+        "currency_wars_mode_select_normal",
+        "currency_wars_mode_select_overclock"
+      ],
+      "currency_wars_mode_select_normal": [
+        "currency_wars_mode_select"
+      ],
+      "currency_wars_mode_select_overclock": [
+        "currency_wars_mode_select"
+      ],
+      "dispatch": [
+        "menu"
+      ],
+      "divergent_main": [
+        "main",
+        "divergent_mode_select"
+      ],
+      "divergent_mode_select": [
+        "divergent_main",
+        "divergent_mode_select_normal",
+        "divergent_mode_select_cycle"
+      ],
+      "divergent_mode_select_cycle": [
+        "divergent_mode_select"
+      ],
+      "divergent_mode_select_normal": [
+        "divergent_mode_select"
+      ],
+      "enter_cloud_game": [
+        "click_enter"
+      ],
+      "fight_exit": [
+        "main"
+      ],
+      "guide2": [
+        "menu",
+        "guide3",
+        "guide4",
+        "guide5"
+      ],
+      "guide3": [
+        "menu",
+        "guide2",
+        "guide4",
+        "guide5"
+      ],
+      "guide4": [
+        "menu",
+        "guide2",
+        "guide3",
+        "guide5",
+        "memory_of_chaos",
+        "purefiction",
+        "apocalyptic"
+      ],
+      "guide5": [
+        "menu",
+        "guide2",
+        "guide3",
+        "guide4",
+        "currency_wars_homepage",
+        "divergent_main",
+        "universe_main"
+      ],
+      "himeko_prepare": [
+        "himeko_try"
+      ],
+      "himeko_try": [
+        "stellar_warp",
+        "himeko_try_banner"
+      ],
+      "himeko_try_banner": [
+        "himeko_prepare"
+      ],
+      "incoming_message": [
+        "main"
+      ],
+      "leave_temporarily": [
+        "main"
+      ],
+      "mail": [
+        "menu"
+      ],
+      "main": [
+        "menu",
+        "map",
+        "stellar_warp",
+        "incoming_message"
+      ],
+      "map": [
+        "main"
+      ],
+      "map3d": [
+        "map"
+      ],
+      "material": [
+        "menu",
+        "consumables"
+      ],
+      "memory": [
+        "main"
+      ],
+      "memory_of_chaos": [
+        "main",
+        "memory"
+      ],
+      "menu": [
+        "main",
+        "guide2",
+        "guide3",
+        "guide4",
+        "guide5",
+        "mail",
+        "visa",
+        "redemption",
+        "camera",
+        "dispatch",
+        "pass1",
+        "consumables",
+        "bag_consumables",
+        "bag_relicset",
+        "bag_lc",
+        "configure_team",
+        "activity",
+        "achievement"
+      ],
+      "monthly_card": [
+        "main"
+      ],
+      "pass1": [
+        "menu",
+        "pass2"
+      ],
+      "pass2": [
+        "menu",
+        "pass1"
+      ],
+      "photo_preview": [
+        "camera"
+      ],
+      "prepare_fight": [
+        "memory_of_chaos"
+      ],
+      "purefiction": [
+        "main"
+      ],
+      "redemption": [
+        "menu"
+      ],
+      "retreat": [
+        "main"
+      ],
+      "reward_guide": [
+        "activity"
+      ],
+      "start_game": [
+        "click_enter"
+      ],
+      "start_srpass": [
+        "pass1"
+      ],
+      "stellar_warp": [
+        "main",
+        "himeko_try"
+      ],
+      "universe_expansion": [
+        "main",
+        "universe_main"
+      ],
+      "universe_main": [
+        "main",
+        "universe_expansion"
+      ],
+      "universe_map": [
+        "leave_temporarily"
+      ],
+      "universe_report": [
+        "universe_main"
+      ],
+      "visa": [
+        "menu"
+      ]
+    },
+    "edges": [
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "main",
+        "index": 0,
+        "target_screen": "menu"
+      },
+      {
+        "actions_list": [
+          "auto.press_key(cfg.get_value('hotkey_map', 'm'))",
+          "time.sleep(2)",
+          "auto.click_element('./assets/images/zh_CN/map/back.png', 'image', 0.9)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "main",
+        "index": 1,
+        "target_screen": "map"
+      },
+      {
+        "actions_list": [
+          "auto.press_key(cfg.get_value('hotkey_warp', 'f3'))",
+          "time.sleep(2)",
+          "auto.click_element('./assets/images/share/warp/stellar_warp.png', 'image', 0.9)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "main",
+        "index": 2,
+        "target_screen": "stellar_warp"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('p')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "main",
+        "index": 3,
+        "target_screen": "incoming_message"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "menu",
+        "index": 0,
+        "target_screen": "main"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/share/menu/guide.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+          "time.sleep(2)",
+          "auto.click_element('./assets/images/screen/guide/enter_guide2.png', 'image', 0.9)",
+          "time.sleep(1)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "menu",
+        "index": 1,
+        "target_screen": "guide2"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/share/menu/guide.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+          "time.sleep(2)",
+          "auto.click_element('./assets/images/screen/guide/enter_guide3.png', 'image', 0.9)",
+          "time.sleep(1)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "menu",
+        "index": 2,
+        "target_screen": "guide3"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/share/menu/guide.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+          "time.sleep(2)",
+          "auto.click_element('./assets/images/screen/guide/enter_guide4.png', 'image', 0.9)",
+          "time.sleep(1)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "menu",
+        "index": 3,
+        "target_screen": "guide4"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/share/menu/guide.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+          "time.sleep(2)",
+          "auto.click_element('./assets/images/screen/guide/enter_guide5.png', 'image', 0.9)",
+          "time.sleep(1)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "menu",
+        "index": 4,
+        "target_screen": "guide5"
+      },
+      {
+        "actions_list": [
+          "auto.click_element((1846 / 1920, 253 / 1080, 43 / 1920, 37 / 1080), 'crop')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "menu",
+        "index": 5,
+        "target_screen": "mail"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/share/menu/more.png', 'image', 0.9)",
+          "time.sleep(2)",
+          "auto.click_element('漫游签证', 'text', None, 2, crop=(1261.0 / 1920, 1.0 / 1080, 552.0 / 1920, 346.0 / 1080))"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "menu",
+        "index": 6,
+        "target_screen": "visa"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/share/menu/more.png', 'image', 0.9)",
+          "time.sleep(2)",
+          "auto.click_element('兑换码', 'text', None, 2, crop=(1261.0 / 1920, 1.0 / 1080, 552.0 / 1920, 420.0 / 1080))"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "menu",
+        "index": 7,
+        "target_screen": "redemption"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/share/menu/camera.png', 'image', 0.8, crop=(0.95, 0.1, 0.05, 0.6))"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "menu",
+        "index": 8,
+        "target_screen": "camera"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/share/menu/dispatch.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "menu",
+        "index": 9,
+        "target_screen": "dispatch"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/share/menu/pass.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "menu",
+        "index": 10,
+        "target_screen": "pass1"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/share/menu/synthesis.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "menu",
+        "index": 11,
+        "target_screen": "consumables"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/share/menu/bag.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+          "time.sleep(2)",
+          "auto.click_element('./assets/images/share/menu/bag_consumables.png', 'image', 0.9, 2)"
+        ],
+        "actions_list_on_timeout": [
+          "auto.click_element('./assets/images/zh_CN/base/confirm.png', 'image', 0.9)",
+          "time.sleep(2)",
+          "auto.click_element('./assets/images/share/menu/bag_consumables.png', 'image', 0.9, 2)"
+        ],
+        "from": "menu",
+        "index": 12,
+        "target_screen": "bag_consumables"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/share/menu/bag.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+          "time.sleep(2)",
+          "auto.click_element('./assets/images/share/menu/bag_relicset.png', 'image', 0.9, 2)"
+        ],
+        "actions_list_on_timeout": [
+          "auto.click_element('./assets/images/zh_CN/base/confirm.png', 'image', 0.9)",
+          "time.sleep(2)",
+          "auto.click_element('./assets/images/share/menu/bag_relicset.png', 'image', 0.9, 2)"
+        ],
+        "from": "menu",
+        "index": 13,
+        "target_screen": "bag_relicset"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/share/menu/bag.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+          "time.sleep(2)",
+          "auto.click_element('./assets/images/share/menu/bag_lc.png', 'image', 0.9, 2)"
+        ],
+        "actions_list_on_timeout": [
+          "auto.click_element('./assets/images/zh_CN/base/confirm.png', 'image', 0.9)",
+          "time.sleep(2)",
+          "auto.click_element('./assets/images/share/menu/bag_lc.png', 'image', 0.9, 2)"
+        ],
+        "from": "menu",
+        "index": 14,
+        "target_screen": "bag_lc"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/share/menu/configure_team.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "menu",
+        "index": 15,
+        "target_screen": "configure_team"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/share/menu/activity.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+          "auto.click_element('./assets/images/share/menu/activity_2nd.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "menu",
+        "index": 16,
+        "target_screen": "activity"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/share/menu/achievement.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "menu",
+        "index": 17,
+        "target_screen": "achievement"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "map",
+        "index": 0,
+        "target_screen": "main"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/share/map/back.png', 'image', 0.9)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "map3d",
+        "index": 0,
+        "target_screen": "map"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/screen/monthly_card.png', 'image', 0.88, 10)",
+          "time.sleep(4)",
+          "auto.click_element('./assets/images/screen/monthly_card.png', 'image', 0.88, 10)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "monthly_card",
+        "index": 0,
+        "target_screen": "main"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/screen/cloud/enter_cloud_game.png', 'image', 0.9)",
+          "time.sleep(6)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "enter_cloud_game",
+        "index": 0,
+        "target_screen": "click_enter"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/screen/start_game.png', 'image', 0.9)",
+          "time.sleep(4)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "start_game",
+        "index": 0,
+        "target_screen": "click_enter"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/screen/click_enter.png', 'image', 0.9)",
+          "time.sleep(6)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "click_enter",
+        "index": 0,
+        "target_screen": "main"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/screen/universe/leave_temporarily.png', 'image', 0.9)",
+          "time.sleep(1)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "leave_temporarily",
+        "index": 0,
+        "target_screen": "main"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "universe_report",
+        "index": 0,
+        "target_screen": "universe_main"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')",
+          "time.sleep(1)",
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "universe_map",
+        "index": 0,
+        "target_screen": "leave_temporarily"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/zh_CN/fight/retreat.png', 'image', 0.9)",
+          "time.sleep(2)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "retreat",
+        "index": 0,
+        "target_screen": "main"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/zh_CN/fight/fight_exit.png', 'image', 0.9)",
+          "time.sleep(2)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "fight_exit",
+        "index": 0,
+        "target_screen": "main"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "guide2",
+        "index": 0,
+        "target_screen": "menu"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/screen/guide/enter_guide3.png', 'image', 0.9)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "guide2",
+        "index": 1,
+        "target_screen": "guide3"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/screen/guide/enter_guide4.png', 'image', 0.9)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "guide2",
+        "index": 2,
+        "target_screen": "guide4"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/screen/guide/enter_guide5.png', 'image', 0.9)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "guide2",
+        "index": 3,
+        "target_screen": "guide5"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "guide3",
+        "index": 0,
+        "target_screen": "menu"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/screen/guide/enter_guide2.png', 'image', 0.9)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "guide3",
+        "index": 1,
+        "target_screen": "guide2"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/screen/guide/enter_guide4.png', 'image', 0.9)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "guide3",
+        "index": 2,
+        "target_screen": "guide4"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/screen/guide/enter_guide5.png', 'image', 0.9)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "guide3",
+        "index": 3,
+        "target_screen": "guide5"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "guide4",
+        "index": 0,
+        "target_screen": "menu"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/screen/guide/enter_guide2.png', 'image', 0.9)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "guide4",
+        "index": 1,
+        "target_screen": "guide2"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/screen/guide/enter_guide3.png', 'image', 0.9)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "guide4",
+        "index": 2,
+        "target_screen": "guide3"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/screen/guide/enter_guide5.png', 'image', 0.9)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "guide4",
+        "index": 3,
+        "target_screen": "guide5"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('忘却之庭', 'text', None, 10, crop=(231.0 / 1920, 420.0 / 1080, 450.0 / 1920, 536.0 / 1080))",
+          "time.sleep(1)",
+          "auto.click_element('传送', 'text', None, 10, crop=(689.0 / 1920, 285.0 / 1080, 970.0 / 1920, 474.0 / 1080))"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "guide4",
+        "index": 4,
+        "target_screen": "memory_of_chaos"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('虚构叙事', 'text', None, 10, crop=(231.0 / 1920, 420.0 / 1080, 450.0 / 1920, 536.0 / 1080))",
+          "time.sleep(1)",
+          "auto.click_element('传送', 'text', None, 10, crop=(689.0 / 1920, 285.0 / 1080, 970.0 / 1920, 474.0 / 1080))"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "guide4",
+        "index": 5,
+        "target_screen": "purefiction"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('日幻影', 'text', max_retries=10, crop=(274.0 / 1920, 419.0 / 1080, (670.0) / 1920, (419.0+322.0) / 1080), include=True)",
+          "time.sleep(1)",
+          "auto.click_element('传送', 'text', None, 10, crop=(689.0 / 1920, 285.0 / 1080, 970.0 / 1920, 474.0 / 1080))"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "guide4",
+        "index": 6,
+        "target_screen": "apocalyptic"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "guide5",
+        "index": 0,
+        "target_screen": "menu"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/screen/guide/enter_guide2.png', 'image', 0.9)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "guide5",
+        "index": 1,
+        "target_screen": "guide2"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/screen/guide/enter_guide3.png', 'image', 0.9)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "guide5",
+        "index": 2,
+        "target_screen": "guide3"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/screen/guide/enter_guide4.png', 'image', 0.9)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "guide5",
+        "index": 3,
+        "target_screen": "guide4"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('货币战争', 'text', None, 10, crop=(238.0 / 1920, 257.0 / 1080, 449.0 / 1920, 525.0 / 1080))",
+          "time.sleep(1)",
+          "auto.click_element('前往参与', 'text', None, 10, crop=(684.0 / 1920, 278.0 / 1080, 981.0 / 1920, 656.0 / 1080))"
+        ],
+        "actions_list_on_timeout": [
+          "auto.press_key('f')"
+        ],
+        "from": "guide5",
+        "index": 4,
+        "target_screen": "currency_wars_homepage"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('差分宇宙', 'text', None, 10, crop=(238.0 / 1920, 257.0 / 1080, 449.0 / 1920, 525.0 / 1080))",
+          "time.sleep(1)",
+          "auto.click_element('前往参与', 'text', None, 10, crop=(684.0 / 1920, 278.0 / 1080, 981.0 / 1920, 656.0 / 1080))"
+        ],
+        "actions_list_on_timeout": [
+          "auto.press_key('f')"
+        ],
+        "from": "guide5",
+        "index": 5,
+        "target_screen": "divergent_main"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('差分宇宙', 'text', None, 10, crop=(238.0 / 1920, 257.0 / 1080, 449.0 / 1920, 525.0 / 1080))",
+          "time.sleep(1)",
+          "auto.click_element('前往模拟宇宙', 'text', None, 10, crop=(698.0 / 1920, 340.0 / 1080, 203.0 / 1920, 60.0 / 1080))"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "guide5",
+        "index": 6,
+        "target_screen": "universe_main"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "mail",
+        "index": 0,
+        "target_screen": "menu"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "visa",
+        "index": 0,
+        "target_screen": "menu"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "redemption",
+        "index": 0,
+        "target_screen": "menu"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "camera",
+        "index": 0,
+        "target_screen": "main"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "photo_preview",
+        "index": 0,
+        "target_screen": "camera"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "universe_main",
+        "index": 0,
+        "target_screen": "main"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/screen/universe/switch.png', 'image', 0.9, 10)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "universe_main",
+        "index": 1,
+        "target_screen": "universe_expansion"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "universe_expansion",
+        "index": 0,
+        "target_screen": "main"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/screen/universe/switch.png', 'image', 0.9, 10)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "universe_expansion",
+        "index": 1,
+        "target_screen": "universe_main"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "divergent_main",
+        "index": 0,
+        "target_screen": "main"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/screen/universe/homepage.png', 'image', 0.9, 10)",
+          "time.sleep(2)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "divergent_main",
+        "index": 1,
+        "target_screen": "divergent_mode_select"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "divergent_mode_select",
+        "index": 0,
+        "target_screen": "divergent_main"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('常规演算', 'text', None, 10, crop=(39 / 1920, 291 / 1080, 672 / 1920, 431 / 1080))"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "divergent_mode_select",
+        "index": 1,
+        "target_screen": "divergent_mode_select_normal"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('周期演算', 'text', None, 10, crop=(39 / 1920, 291 / 1080, 672 / 1920, 431 / 1080))"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "divergent_mode_select",
+        "index": 2,
+        "target_screen": "divergent_mode_select_cycle"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "divergent_mode_select_normal",
+        "index": 0,
+        "target_screen": "divergent_mode_select"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "divergent_mode_select_cycle",
+        "index": 0,
+        "target_screen": "divergent_mode_select"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "currency_wars_homepage",
+        "index": 0,
+        "target_screen": "main"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/screen/currency_wars/homepage.png', 'image', 0.9, 10)",
+          "time.sleep(2)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "currency_wars_homepage",
+        "index": 1,
+        "target_screen": "currency_wars_mode_select"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "currency_wars_mode_select",
+        "index": 0,
+        "target_screen": "currency_wars_homepage"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('标准博弈', 'text', None, 10, crop=(38.0 / 1920, 111.0 / 1080, 490.0 / 1920, 807.0 / 1080))",
+          "time.sleep(1)",
+          "auto.click_element('进入标准博弈', 'text', None, 10, crop=(1396.0 / 1920, 917.0 / 1080, 476.0 / 1920, 75.0 / 1080))"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "currency_wars_mode_select",
+        "index": 1,
+        "target_screen": "currency_wars_mode_select_normal"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('超频博弈', 'text', None, 10, crop=(38.0 / 1920, 111.0 / 1080, 490.0 / 1920, 807.0 / 1080))",
+          "time.sleep(1)",
+          "auto.click_element('进入超频博弈', 'text', None, 10, crop=(1396.0 / 1920, 917.0 / 1080, 476.0 / 1920, 75.0 / 1080))"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "currency_wars_mode_select",
+        "index": 2,
+        "target_screen": "currency_wars_mode_select_overclock"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "currency_wars_mode_select_normal",
+        "index": 0,
+        "target_screen": "currency_wars_mode_select"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "currency_wars_mode_select_overclock",
+        "index": 0,
+        "target_screen": "currency_wars_mode_select"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "dispatch",
+        "index": 0,
+        "target_screen": "menu"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/screen/start_srpass.png', 'image', 0.9, 10)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "start_srpass",
+        "index": 0,
+        "target_screen": "pass1"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "pass1",
+        "index": 0,
+        "target_screen": "menu"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/share/reward/pass/enter_pass2.png', 'image', 0.9)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "pass1",
+        "index": 1,
+        "target_screen": "pass2"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "pass2",
+        "index": 0,
+        "target_screen": "menu"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/share/reward/pass/enter_pass1.png', 'image', 0.9)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "pass2",
+        "index": 1,
+        "target_screen": "pass1"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "consumables",
+        "index": 0,
+        "target_screen": "menu"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/share/synthesis/enter_material.png', 'image', 0.9)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "consumables",
+        "index": 1,
+        "target_screen": "material"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "material",
+        "index": 0,
+        "target_screen": "menu"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/share/synthesis/enter_consumables.png', 'image', 0.9)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "material",
+        "index": 1,
+        "target_screen": "consumables"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "bag_consumables",
+        "index": 0,
+        "target_screen": "menu"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "bag_relicset",
+        "index": 0,
+        "target_screen": "menu"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "bag_lc",
+        "index": 0,
+        "target_screen": "menu"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "memory_of_chaos",
+        "index": 0,
+        "target_screen": "main"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/forgottenhall/memory.png', 'image', 0.9)",
+          "auto.click_element('./assets/images/forgottenhall/memory-fin.png', 'image', 0.9)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "memory_of_chaos",
+        "index": 1,
+        "target_screen": "memory"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "memory",
+        "index": 0,
+        "target_screen": "main"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')",
+          "time.sleep(1)",
+          "auto.click_element('./assets/images/zh_CN/base/confirm.png', 'image', 0.9, 2)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "prepare_fight",
+        "index": 0,
+        "target_screen": "memory_of_chaos"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "purefiction",
+        "index": 0,
+        "target_screen": "main"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "apocalyptic",
+        "index": 0,
+        "target_screen": "main"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "configure_team",
+        "index": 0,
+        "target_screen": "main"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "activity",
+        "index": 0,
+        "target_screen": "menu"
+      },
+      {
+        "actions_list": [
+          "time.sleep(1)",
+          "auto.click_element('./assets/images/screen/activity.png', 'image', 0.9, 5)",
+          "auto.click_element('./assets/images/screen/activity_2.png', 'image', 0.9, 1)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "activity",
+        "index": 1,
+        "target_screen": "reward_guide"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "character_warp",
+        "index": 0,
+        "target_screen": "menu"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "stellar_warp",
+        "index": 0,
+        "target_screen": "main"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/zh_CN/warp/character_trial.png', 'image', 0.9)",
+          "time.sleep(2)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "stellar_warp",
+        "index": 1,
+        "target_screen": "himeko_try"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "himeko_try",
+        "index": 0,
+        "target_screen": "stellar_warp"
+      },
+      {
+        "actions_list": [
+          "auto.click_element('./assets/images/zh_CN/warp/start_trial.png', 'image', 0.9)",
+          "time.sleep(2)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "himeko_try",
+        "index": 1,
+        "target_screen": "himeko_try_banner"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "himeko_try_banner",
+        "index": 0,
+        "target_screen": "himeko_prepare"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')",
+          "time.sleep(1)",
+          "auto.click_element('./assets/images/zh_CN/base/confirm.png', 'image', 0.9, 10)"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "himeko_prepare",
+        "index": 0,
+        "target_screen": "himeko_try"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "achievement",
+        "index": 0,
+        "target_screen": "menu"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "incoming_message",
+        "index": 0,
+        "target_screen": "main"
+      },
+      {
+        "actions_list": [
+          "auto.press_key('esc')"
+        ],
+        "actions_list_on_timeout": [],
+        "from": "reward_guide",
+        "index": 0,
+        "target_screen": "activity"
+      }
+    ],
+    "screens": [
+      {
+        "id": "main",
+        "image_path": "./assets/images/screen/main.png",
+        "name": "主界面",
+        "node": "Screen_main"
+      },
+      {
+        "id": "menu",
+        "image_path": "./assets/images/share/menu/more.png",
+        "name": "手机菜单",
+        "node": "Screen_menu"
+      },
+      {
+        "id": "map",
+        "image_path": "./assets/images/screen/map.png",
+        "name": "地图",
+        "node": "Screen_map"
+      },
+      {
+        "id": "map3d",
+        "image_path": "./assets/images/screen/map3d.png",
+        "name": "3D地图",
+        "node": "Screen_map3d"
+      },
+      {
+        "id": "monthly_card",
+        "image_path": "./assets/images/screen/monthly_card.png",
+        "name": "月卡",
+        "node": "Screen_monthly_card"
+      },
+      {
+        "id": "enter_cloud_game",
+        "image_path": "./assets/images/screen/cloud/enter_cloud_game.png",
+        "name": "进入云游戏",
+        "node": "Screen_enter_cloud_game"
+      },
+      {
+        "id": "start_game",
+        "image_path": "./assets/images/screen/start_game.png",
+        "name": "启动游戏",
+        "node": "Screen_start_game"
+      },
+      {
+        "id": "click_enter",
+        "image_path": "./assets/images/screen/click_enter.png",
+        "name": "点击进入",
+        "node": "Screen_click_enter"
+      },
+      {
+        "id": "leave_temporarily",
+        "image_path": "./assets/images/screen/universe/leave_temporarily.png",
+        "name": "退出「模拟宇宙」",
+        "node": "Screen_leave_temporarily"
+      },
+      {
+        "id": "universe_report",
+        "image_path": "./assets/images/screen/universe/universe_report.png",
+        "name": "模拟宇宙-分析报告",
+        "node": "Screen_universe_report"
+      },
+      {
+        "id": "universe_map",
+        "image_path": "./assets/images/screen/universe/universe_map.png",
+        "name": "模拟宇宙-地图",
+        "node": "Screen_universe_map"
+      },
+      {
+        "id": "retreat",
+        "image_path": "./assets/images/zh_CN/fight/retreat.png",
+        "name": "撤退",
+        "node": "Screen_retreat"
+      },
+      {
+        "id": "fight_exit",
+        "image_path": "./assets/images/zh_CN/fight/fight_exit.png",
+        "name": "退出关卡",
+        "node": "Screen_fight_exit"
+      },
+      {
+        "id": "guide2",
+        "image_path": "./assets/images/screen/guide/guide2.png",
+        "name": "星际和平指南-每日实训",
+        "node": "Screen_guide2"
+      },
+      {
+        "id": "guide3",
+        "image_path": "./assets/images/screen/guide/guide3.png",
+        "name": "星际和平指南-生存索引",
+        "node": "Screen_guide3"
+      },
+      {
+        "id": "guide4",
+        "image_path": "./assets/images/screen/guide/guide4.png",
+        "name": "星际和平指南-逐光捡金",
+        "node": "Screen_guide4"
+      },
+      {
+        "id": "guide5",
+        "image_path": "./assets/images/screen/guide/guide5.png",
+        "name": "星际和平指南-旷宇纷争",
+        "node": "Screen_guide5"
+      },
+      {
+        "id": "mail",
+        "image_path": "./assets/images/screen/mail.png",
+        "name": "邮箱",
+        "node": "Screen_mail"
+      },
+      {
+        "id": "visa",
+        "image_path": "./assets/images/screen/visa.png",
+        "name": "漫游签证",
+        "node": "Screen_visa"
+      },
+      {
+        "id": "redemption",
+        "image_path": "./assets/images/screen/redemption.png",
+        "name": "兑换码",
+        "node": "Screen_redemption"
+      },
+      {
+        "id": "camera",
+        "image_path": "./assets/images/screen/camera.png",
+        "name": "相机",
+        "node": "Screen_camera"
+      },
+      {
+        "id": "photo_preview",
+        "image_path": "./assets/images/screen/photo_preview.png",
+        "name": "照片预览",
+        "node": "Screen_photo_preview"
+      },
+      {
+        "id": "universe_main",
+        "image_path": "./assets/images/screen/universe/universe_main.png",
+        "name": "模拟宇宙-主界面",
+        "node": "Screen_universe_main"
+      },
+      {
+        "id": "universe_expansion",
+        "image_path": "./assets/images/screen/universe/universe_expansion.png",
+        "name": "模拟宇宙-扩展装置",
+        "node": "Screen_universe_expansion"
+      },
+      {
+        "id": "divergent_main",
+        "image_path": "./assets/images/screen/universe/divergent_main.png",
+        "name": "差分宇宙-主界面",
+        "node": "Screen_divergent_main"
+      },
+      {
+        "id": "divergent_mode_select",
+        "image_path": "./assets/images/screen/universe/divergent_mode_select.png",
+        "name": "差分宇宙-模式选择",
+        "node": "Screen_divergent_mode_select"
+      },
+      {
+        "id": "divergent_mode_select_normal",
+        "image_path": "./assets/images/screen/universe/mode_select_normal.png",
+        "name": "差分宇宙-常规演算",
+        "node": "Screen_divergent_mode_select_normal"
+      },
+      {
+        "id": "divergent_mode_select_cycle",
+        "image_path": [
+          "./assets/images/screen/universe/mode_select_cycle.png",
+          "./assets/images/screen/universe/mode_select_cycle2.png"
+        ],
+        "name": "差分宇宙-周期演算",
+        "node": "Screen_divergent_mode_select_cycle"
+      },
+      {
+        "id": "currency_wars_homepage",
+        "image_path": "./assets/images/screen/currency_wars/homepage.png",
+        "name": "货币战争-主界面",
+        "node": "Screen_currency_wars_homepage"
+      },
+      {
+        "id": "currency_wars_mode_select",
+        "image_path": "./assets/images/screen/currency_wars/mode_select.png",
+        "name": "货币战争-模式选择",
+        "node": "Screen_currency_wars_mode_select"
+      },
+      {
+        "id": "currency_wars_mode_select_normal",
+        "image_path": "./assets/images/screen/currency_wars/mode_select_normal.png",
+        "name": "货币战争-标准博弈",
+        "node": "Screen_currency_wars_mode_select_normal"
+      },
+      {
+        "id": "currency_wars_mode_select_overclock",
+        "image_path": "./assets/images/screen/currency_wars/mode_select_overclock.png",
+        "name": "货币战争-超频博弈",
+        "node": "Screen_currency_wars_mode_select_overclock"
+      },
+      {
+        "id": "dispatch",
+        "image_path": "./assets/images/screen/dispatch.png",
+        "name": "委托",
+        "node": "Screen_dispatch"
+      },
+      {
+        "id": "start_srpass",
+        "image_path": "./assets/images/screen/start_srpass.png",
+        "name": "开启无名勋礼",
+        "node": "Screen_start_srpass"
+      },
+      {
+        "id": "pass1",
+        "image_path": "./assets/images/screen/pass/pass1.png",
+        "name": "无名勋礼-奖励",
+        "node": "Screen_pass1"
+      },
+      {
+        "id": "pass2",
+        "image_path": "./assets/images/screen/pass/pass2.png",
+        "name": "无名勋礼-任务",
+        "node": "Screen_pass2"
+      },
+      {
+        "id": "consumables",
+        "image_path": "./assets/images/screen/synthesis/consumables.png",
+        "name": "合成-消耗品合成",
+        "node": "Screen_consumables"
+      },
+      {
+        "id": "material",
+        "image_path": "./assets/images/screen/synthesis/material.png",
+        "name": "合成-材料合成",
+        "node": "Screen_material"
+      },
+      {
+        "id": "bag_consumables",
+        "image_path": "./assets/images/screen/bag/bag_consumables.png",
+        "name": "背包-消耗品",
+        "node": "Screen_bag_consumables"
+      },
+      {
+        "id": "bag_relicset",
+        "image_path": "./assets/images/screen/bag/bag_relicset.png",
+        "name": "背包-遗器",
+        "node": "Screen_bag_relicset"
+      },
+      {
+        "id": "bag_lc",
+        "image_path": "./assets/images/screen/bag/bag_lc.png",
+        "name": "背包-光锥",
+        "node": "Screen_bag_lc"
+      },
+      {
+        "id": "memory_of_chaos",
+        "image_path": "./assets/images/screen/forgottenhall/memory_of_chaos.png",
+        "name": "忘却之庭-混沌回忆",
+        "node": "Screen_memory_of_chaos"
+      },
+      {
+        "id": "memory",
+        "image_path": "./assets/images/screen/forgottenhall/memory.png",
+        "name": "忘却之庭-回忆",
+        "node": "Screen_memory"
+      },
+      {
+        "id": "prepare_fight",
+        "image_path": "./assets/images/forgottenhall/prepare_fight.png",
+        "name": "忘却之庭-准备战斗",
+        "node": "Screen_prepare_fight"
+      },
+      {
+        "id": "purefiction",
+        "image_path": "./assets/images/screen/purefiction/purefiction.png",
+        "name": "虚构叙事",
+        "node": "Screen_purefiction"
+      },
+      {
+        "id": "apocalyptic",
+        "image_path": "./assets/images/screen/apocalyptic/apocalyptic.png",
+        "name": "末日幻影",
+        "node": "Screen_apocalyptic"
+      },
+      {
+        "id": "configure_team",
+        "image_path": "./assets/images/screen/configure_team.png",
+        "name": "队伍",
+        "node": "Screen_configure_team"
+      },
+      {
+        "id": "activity",
+        "image_path": [
+          "./assets/images/screen/activity.png",
+          "./assets/images/screen/activity_2.png"
+        ],
+        "name": "活动",
+        "node": "Screen_activity"
+      },
+      {
+        "id": "character_warp",
+        "image_path": "./assets/images/screen/warp/character_warp.png",
+        "name": "角色活动跃迁",
+        "node": "Screen_character_warp"
+      },
+      {
+        "id": "stellar_warp",
+        "image_path": "./assets/images/screen/warp/stellar_warp.png",
+        "name": "常驻跃迁",
+        "node": "Screen_stellar_warp"
+      },
+      {
+        "id": "himeko_try",
+        "image_path": "./assets/images/screen/warp/himeko_try.png",
+        "name": "姬子试用",
+        "node": "Screen_himeko_try"
+      },
+      {
+        "id": "himeko_try_banner",
+        "image_path": "./assets/images/screen/warp/himeko_try_banner.png",
+        "name": "姬子试用-弹窗",
+        "node": "Screen_himeko_try_banner"
+      },
+      {
+        "id": "himeko_prepare",
+        "image_path": "./assets/images/screen/warp/himeko_prepare.png",
+        "name": "姬子试用-准备战斗",
+        "node": "Screen_himeko_prepare"
+      },
+      {
+        "id": "achievement",
+        "image_path": "./assets/images/screen/achievement.png",
+        "name": "成就",
+        "node": "Screen_achievement"
+      },
+      {
+        "id": "incoming_message",
+        "image_path": "./assets/images/screen/incoming_message.png",
+        "name": "新消息通知",
+        "node": "Screen_incoming_message"
+      },
+      {
+        "id": "reward_guide",
+        "image_path": "./assets/images/screen/reward_guide.png",
+        "name": "奖励指南",
+        "node": "Screen_reward_guide"
+      }
+    ]
+  },
+  "screen_threshold": 0.8,
+  "source": {
+    "git_head": "5bbe11c4a1e799b89258dd01cf8d30837eadb32f",
+    "path": "D:\\Trea\\二游自动化\\refs\\March7thAssistant",
+    "screens_json": {
+      "bytes": 39397,
+      "method": "git show HEAD:assets/config/screens.json",
+      "sha256": "42338c87b6d6cd738aecaa5cca72a2479ed0ede961f726ae3243c900edb29782"
+    }
+  },
+  "tasks": [
+    {
+      "confidence": "medium",
+      "entry": "Task_daily",
+      "entry_screen": "main",
+      "group": "daily",
+      "label": "日常",
+      "name": "daily",
+      "rationale": "Daily 本身没有单一 change_to；它是调度器，把工作分给 buildtarget/fight/synthesis 等子模块（tasks/daily/daily.py:131 currency_wars_homepage、:142 divergent_main、:222 guide2 都是交接点）。入口取 main 是因为所有子任务都从主界面出发。",
+      "source_module": "tasks/daily/daily.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_buildtarget",
+      "entry_screen": "guide3",
+      "group": "daily",
+      "label": "刷历战余响/凝滞虚影",
+      "name": "buildtarget",
+      "rationale": "tasks/daily/buildtarget.py:545 显式 screen.change_to('guide3')。",
+      "source_module": "tasks/daily/buildtarget.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_ember_exchange",
+      "entry_screen": "menu",
+      "group": "daily",
+      "label": "余烬兑换",
+      "name": "ember_exchange",
+      "rationale": "tasks/daily/ember_exchange.py:128 显式 screen.change_to('menu')；:414 回到 main。",
+      "source_module": "tasks/daily/ember_exchange.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_fight",
+      "entry_screen": "main",
+      "group": "daily",
+      "label": "战斗",
+      "name": "fight",
+      "rationale": "tasks/daily/fight.py:102 显式 screen.change_to('main')（:98 先切到配队界面）。",
+      "source_module": "tasks/daily/fight.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_himekotry",
+      "entry_screen": "himeko_prepare",
+      "group": "daily",
+      "label": "姬子试用",
+      "name": "himekotry",
+      "rationale": "tasks/daily/himekotry.py:11/22 显式 screen.change_to('himeko_prepare')。",
+      "source_module": "tasks/daily/himekotry.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_photo",
+      "entry_screen": "camera",
+      "group": "daily",
+      "label": "拍照",
+      "name": "photo",
+      "rationale": "tasks/daily/photo.py:14 显式 screen.change_to('camera')。",
+      "source_module": "tasks/daily/photo.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_redemption",
+      "entry_screen": "redemption",
+      "group": "daily",
+      "label": "兑换码",
+      "name": "redemption",
+      "rationale": "tasks/daily/redemption.py:197 显式 screen.change_to('redemption')。",
+      "source_module": "tasks/daily/redemption.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_synthesis",
+      "entry_screen": "material",
+      "group": "daily",
+      "label": "合成",
+      "name": "synthesis",
+      "rationale": "tasks/daily/synthesis.py:17/50 显式 screen.change_to('material')。",
+      "source_module": "tasks/daily/synthesis.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_power",
+      "entry_screen": "guide3",
+      "group": "power",
+      "label": "清体力",
+      "name": "power",
+      "rationale": "tasks/power/power.py:244 显式 screen.change_to('guide3')。",
+      "source_module": "tasks/power/power.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_instance",
+      "entry_screen": "guide3",
+      "group": "power",
+      "label": "副本",
+      "name": "instance",
+      "rationale": "tasks/power/instance.py:88 显式 screen.change_to('guide3')。",
+      "source_module": "tasks/power/instance.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_relicset",
+      "entry_screen": "bag_relicset",
+      "group": "power",
+      "label": "遗器套装",
+      "name": "relicset",
+      "rationale": "tasks/power/relicset.py:43 显式 screen.change_to('bag_relicset')。",
+      "source_module": "tasks/power/relicset.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_weekly_relic_cleanup",
+      "entry_screen": "bag_relicset",
+      "group": "power",
+      "label": "每周遗器清理",
+      "name": "weekly_relic_cleanup",
+      "rationale": "tasks/power/weekly_relic_cleanup.py:123 显式 screen.change_to('bag_relicset')。",
+      "source_module": "tasks/power/weekly_relic_cleanup.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_mail",
+      "entry_screen": "mail",
+      "group": "reward",
+      "label": "邮件",
+      "name": "mail",
+      "rationale": "RewardManager 构造 Mail('邮件', …, 'mail')，第三参数即入口屏幕（tasks/reward/__init__.py）。",
+      "source_module": "tasks/reward/__init__.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_assist",
+      "entry_screen": "visa",
+      "group": "reward",
+      "label": "支援",
+      "name": "assist",
+      "rationale": "RewardManager 构造 Assist('支援', …, 'visa')。",
+      "source_module": "tasks/reward/__init__.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_dispatch",
+      "entry_screen": "dispatch",
+      "group": "reward",
+      "label": "委托",
+      "name": "dispatch",
+      "rationale": "RewardManager 构造 Dispatch('委托', …, 'dispatch')。",
+      "source_module": "tasks/reward/__init__.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_quest",
+      "entry_screen": "guide2",
+      "group": "reward",
+      "label": "每日实训",
+      "name": "quest",
+      "rationale": "RewardManager 构造 Quest('每日实训', …, 'guide2')。",
+      "source_module": "tasks/reward/__init__.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_srpass",
+      "entry_screen": "pass1",
+      "group": "reward",
+      "label": "无名勋礼",
+      "name": "srpass",
+      "rationale": "tasks/reward/srpass.py:14 显式 screen.change_to('pass1')。",
+      "source_module": "tasks/reward/srpass.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_achievement",
+      "entry_screen": "achievement",
+      "group": "reward",
+      "label": "成就",
+      "name": "achievement",
+      "rationale": "RewardManager 构造 Achievement('成就', …, 'achievement')。",
+      "source_module": "tasks/reward/__init__.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_message",
+      "entry_screen": "incoming_message",
+      "group": "reward",
+      "label": "短信",
+      "name": "message",
+      "rationale": "RewardManager 构造 Message('短信', …, 'incoming_message')。",
+      "source_module": "tasks/reward/__init__.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_currency_wars",
+      "entry_screen": "currency_wars_homepage",
+      "group": "weekly",
+      "label": "货币战争",
+      "name": "currency_wars",
+      "rationale": "tasks/weekly/currency_wars.py:2977 check_screen('currency_wars_homepage')（:317 先 change_to('guide3')）。",
+      "source_module": "tasks/weekly/currency_wars.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_divergent_universe",
+      "entry_screen": "divergent_mode_select",
+      "group": "weekly",
+      "label": "差分宇宙",
+      "name": "divergent_universe",
+      "rationale": "tasks/weekly/divergent_universe.py:178 显式 screen.change_to('divergent_mode_select')。",
+      "source_module": "tasks/weekly/divergent_universe.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_echoofwar",
+      "entry_screen": "guide3",
+      "group": "weekly",
+      "label": "历战余响",
+      "name": "echoofwar",
+      "rationale": "tasks/weekly/echoofwar.py:16 显式 screen.change_to('guide3')。",
+      "source_module": "tasks/weekly/echoofwar.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_universe",
+      "entry_screen": "divergent_main",
+      "group": "weekly",
+      "label": "模拟宇宙",
+      "name": "universe",
+      "rationale": "tasks/weekly/universe.py:184 显式 screen.change_to('divergent_main')。",
+      "source_module": "tasks/weekly/universe.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_apocalyptic",
+      "entry_screen": "guide4",
+      "group": "challenge",
+      "label": "末日幻影",
+      "name": "apocalyptic",
+      "rationale": "tasks/challenge/apocalyptic.py:29 显式 screen.change_to('guide4')。",
+      "source_module": "tasks/challenge/apocalyptic.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_memoryofchaos",
+      "entry_screen": "guide4",
+      "group": "challenge",
+      "label": "混沌回忆",
+      "name": "memoryofchaos",
+      "rationale": "tasks/challenge/memoryofchaos.py:29 显式 screen.change_to('guide4')。",
+      "source_module": "tasks/challenge/memoryofchaos.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_memoryone",
+      "entry_screen": "memory",
+      "group": "challenge",
+      "label": "单层忘却之庭",
+      "name": "memoryone",
+      "rationale": "tasks/challenge/memoryone.py:31 显式 screen.change_to('memory')。",
+      "source_module": "tasks/challenge/memoryone.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_purefiction",
+      "entry_screen": "guide4",
+      "group": "challenge",
+      "label": "虚构叙事",
+      "name": "purefiction",
+      "rationale": "tasks/challenge/purefiction.py:29 显式 screen.change_to('guide4')。",
+      "source_module": "tasks/challenge/purefiction.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_activity",
+      "entry_screen": "activity",
+      "group": "activity",
+      "label": "活动",
+      "name": "activity",
+      "rationale": "tasks/activity/__init__.py:58 与 tasks/activity/activitytemplate.py:23 都显式 screen.change_to('activity')。",
+      "source_module": "tasks/activity/__init__.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_journey_highlights_notification",
+      "entry_screen": "reward_guide",
+      "group": "activity",
+      "label": "旅程回顾通知",
+      "name": "journey_highlights_notification",
+      "rationale": "tasks/activity/journey_highlights_notification.py:16 显式 screen.change_to('reward_guide')。",
+      "source_module": "tasks/activity/journey_highlights_notification.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_team",
+      "entry_screen": "configure_team",
+      "group": "base",
+      "label": "配队",
+      "name": "team",
+      "rationale": "tasks/base/team.py:18 显式 screen.change_to('configure_team')。",
+      "source_module": "tasks/base/team.py"
+    }
+  ],
+  "tasks_skipped": [
+    {
+      "module": "tasks/daily/tasks.py",
+      "reason": "纯配置/OCR 归并工具类（class Tasks），不含任何屏幕导航调用。"
+    },
+    {
+      "module": "tasks/power/character.py",
+      "reason": "支援角色选择辅助类（class Character），不含屏幕导航调用。"
+    },
+    {
+      "module": "tasks/base/base.py",
+      "reason": "抽象基类，无导航。"
+    },
+    {
+      "module": "tasks/base/tasks.py",
+      "reason": "子进程启动器（class Tasks），无导航。"
+    },
+    {
+      "module": "tasks/base/download.py",
+      "reason": "下载工具，无导航。"
+    },
+    {
+      "module": "tasks/base/fastest_mirror.py",
+      "reason": "测速工具（class FastestMirror），无导航。"
+    },
+    {
+      "module": "tasks/base/genshin_starRail_fps_unlocker.py",
+      "reason": "Windows 帧率解锁，纯桌面侧行为，Android 上无对应物。"
+    },
+    {
+      "module": "tasks/base/pythonchecker.py",
+      "reason": "Python 环境自检，桌面侧行为。"
+    },
+    {
+      "module": "tasks/base/screen_test.py",
+      "reason": "开发者用的屏幕切换冒烟测试（tasks/base/screen_test.py:32/42），不是玩家功能。"
+    },
+    {
+      "module": "tasks/game/starrailcontroller.py",
+      "reason": "Windows 分辨率/HDR 控制（class StarRailController(LocalGameController)），不是导航，Android 上无对应物。"
+    },
+    {
+      "module": "tasks/tool/screenshot.py",
+      "reason": "631 行的 PySide6 截图 GUI 工具，桌面侧。"
+    },
+    {
+      "module": "tasks/tool/autoplot/*",
+      "reason": "地图自动标点开发工具（_config/_detector/_engine），依赖 PC 截图，不是玩家功能。"
+    },
+    {
+      "module": "tasks/version/app_update.py",
+      "reason": "自身更新器，与本资源包无关。"
+    },
+    {
+      "module": "tasks/activity/activitytemplate.py",
+      "reason": "Activity 的抽象基类，其导航已并入 activity 任务。"
+    }
+  ],
+  "totals": {
+    "files_written": 90,
+    "generated_bytes": 256114,
+    "image_bytes": 3883745
+  },
+  "underscore_dirs": [],
+  "unmapped_expressions": [
+    {
+      "origin": {
+        "edge": 6,
+        "from": "menu",
+        "kind": "actions_list"
+      },
+      "planned_handling": "DoNothing 占位节点，名字以 __UNMAPPED_<n> 结尾",
+      "planned_recognition": "recognition: \"OCR\" + expected='漫游签证' + roi=[1261, 1, 552, 346]",
+      "raw": "auto.click_element('漫游签证', 'text', None, 2, crop=(1261.0 / 1920, 1.0 / 1080, 552.0 / 1920, 346.0 / 1080))",
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "origin": {
+        "edge": 7,
+        "from": "menu",
+        "kind": "actions_list"
+      },
+      "planned_handling": "DoNothing 占位节点，名字以 __UNMAPPED_<n> 结尾",
+      "planned_recognition": "recognition: \"OCR\" + expected='兑换码' + roi=[1261, 1, 552, 420]",
+      "raw": "auto.click_element('兑换码', 'text', None, 2, crop=(1261.0 / 1920, 1.0 / 1080, 552.0 / 1920, 420.0 / 1080))",
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "origin": {
+        "edge": 4,
+        "from": "guide4",
+        "kind": "actions_list"
+      },
+      "planned_handling": "DoNothing 占位节点，名字以 __UNMAPPED_<n> 结尾",
+      "planned_recognition": "recognition: \"OCR\" + expected='忘却之庭' + roi=[231, 420, 450, 536]",
+      "raw": "auto.click_element('忘却之庭', 'text', None, 10, crop=(231.0 / 1920, 420.0 / 1080, 450.0 / 1920, 536.0 / 1080))",
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "origin": {
+        "edge": 4,
+        "from": "guide4",
+        "kind": "actions_list"
+      },
+      "planned_handling": "DoNothing 占位节点，名字以 __UNMAPPED_<n> 结尾",
+      "planned_recognition": "recognition: \"OCR\" + expected='传送' + roi=[689, 285, 970, 474]",
+      "raw": "auto.click_element('传送', 'text', None, 10, crop=(689.0 / 1920, 285.0 / 1080, 970.0 / 1920, 474.0 / 1080))",
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "origin": {
+        "edge": 5,
+        "from": "guide4",
+        "kind": "actions_list"
+      },
+      "planned_handling": "DoNothing 占位节点，名字以 __UNMAPPED_<n> 结尾",
+      "planned_recognition": "recognition: \"OCR\" + expected='虚构叙事' + roi=[231, 420, 450, 536]",
+      "raw": "auto.click_element('虚构叙事', 'text', None, 10, crop=(231.0 / 1920, 420.0 / 1080, 450.0 / 1920, 536.0 / 1080))",
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "origin": {
+        "edge": 5,
+        "from": "guide4",
+        "kind": "actions_list"
+      },
+      "planned_handling": "DoNothing 占位节点，名字以 __UNMAPPED_<n> 结尾",
+      "planned_recognition": "recognition: \"OCR\" + expected='传送' + roi=[689, 285, 970, 474]",
+      "raw": "auto.click_element('传送', 'text', None, 10, crop=(689.0 / 1920, 285.0 / 1080, 970.0 / 1920, 474.0 / 1080))",
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "origin": {
+        "edge": 6,
+        "from": "guide4",
+        "kind": "actions_list"
+      },
+      "planned_handling": "DoNothing 占位节点，名字以 __UNMAPPED_<n> 结尾",
+      "planned_recognition": "recognition: \"OCR\" + expected='日幻影' + roi=[274, 419, 670, 661]",
+      "raw": "auto.click_element('日幻影', 'text', max_retries=10, crop=(274.0 / 1920, 419.0 / 1080, (670.0) / 1920, (419.0+322.0) / 1080), include=True)",
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "origin": {
+        "edge": 6,
+        "from": "guide4",
+        "kind": "actions_list"
+      },
+      "planned_handling": "DoNothing 占位节点，名字以 __UNMAPPED_<n> 结尾",
+      "planned_recognition": "recognition: \"OCR\" + expected='传送' + roi=[689, 285, 970, 474]",
+      "raw": "auto.click_element('传送', 'text', None, 10, crop=(689.0 / 1920, 285.0 / 1080, 970.0 / 1920, 474.0 / 1080))",
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "origin": {
+        "edge": 4,
+        "from": "guide5",
+        "kind": "actions_list"
+      },
+      "planned_handling": "DoNothing 占位节点，名字以 __UNMAPPED_<n> 结尾",
+      "planned_recognition": "recognition: \"OCR\" + expected='货币战争' + roi=[238, 257, 449, 525]",
+      "raw": "auto.click_element('货币战争', 'text', None, 10, crop=(238.0 / 1920, 257.0 / 1080, 449.0 / 1920, 525.0 / 1080))",
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "origin": {
+        "edge": 4,
+        "from": "guide5",
+        "kind": "actions_list"
+      },
+      "planned_handling": "DoNothing 占位节点，名字以 __UNMAPPED_<n> 结尾",
+      "planned_recognition": "recognition: \"OCR\" + expected='前往参与' + roi=[684, 278, 981, 656]",
+      "raw": "auto.click_element('前往参与', 'text', None, 10, crop=(684.0 / 1920, 278.0 / 1080, 981.0 / 1920, 656.0 / 1080))",
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "origin": {
+        "edge": 5,
+        "from": "guide5",
+        "kind": "actions_list"
+      },
+      "planned_handling": "DoNothing 占位节点，名字以 __UNMAPPED_<n> 结尾",
+      "planned_recognition": "recognition: \"OCR\" + expected='差分宇宙' + roi=[238, 257, 449, 525]",
+      "raw": "auto.click_element('差分宇宙', 'text', None, 10, crop=(238.0 / 1920, 257.0 / 1080, 449.0 / 1920, 525.0 / 1080))",
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "origin": {
+        "edge": 5,
+        "from": "guide5",
+        "kind": "actions_list"
+      },
+      "planned_handling": "DoNothing 占位节点，名字以 __UNMAPPED_<n> 结尾",
+      "planned_recognition": "recognition: \"OCR\" + expected='前往参与' + roi=[684, 278, 981, 656]",
+      "raw": "auto.click_element('前往参与', 'text', None, 10, crop=(684.0 / 1920, 278.0 / 1080, 981.0 / 1920, 656.0 / 1080))",
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "origin": {
+        "edge": 6,
+        "from": "guide5",
+        "kind": "actions_list"
+      },
+      "planned_handling": "DoNothing 占位节点，名字以 __UNMAPPED_<n> 结尾",
+      "planned_recognition": "recognition: \"OCR\" + expected='差分宇宙' + roi=[238, 257, 449, 525]",
+      "raw": "auto.click_element('差分宇宙', 'text', None, 10, crop=(238.0 / 1920, 257.0 / 1080, 449.0 / 1920, 525.0 / 1080))",
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "origin": {
+        "edge": 6,
+        "from": "guide5",
+        "kind": "actions_list"
+      },
+      "planned_handling": "DoNothing 占位节点，名字以 __UNMAPPED_<n> 结尾",
+      "planned_recognition": "recognition: \"OCR\" + expected='前往模拟宇宙' + roi=[698, 340, 203, 60]",
+      "raw": "auto.click_element('前往模拟宇宙', 'text', None, 10, crop=(698.0 / 1920, 340.0 / 1080, 203.0 / 1920, 60.0 / 1080))",
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "origin": {
+        "edge": 1,
+        "from": "divergent_mode_select",
+        "kind": "actions_list"
+      },
+      "planned_handling": "DoNothing 占位节点，名字以 __UNMAPPED_<n> 结尾",
+      "planned_recognition": "recognition: \"OCR\" + expected='常规演算' + roi=[39, 291, 672, 431]",
+      "raw": "auto.click_element('常规演算', 'text', None, 10, crop=(39 / 1920, 291 / 1080, 672 / 1920, 431 / 1080))",
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "origin": {
+        "edge": 2,
+        "from": "divergent_mode_select",
+        "kind": "actions_list"
+      },
+      "planned_handling": "DoNothing 占位节点，名字以 __UNMAPPED_<n> 结尾",
+      "planned_recognition": "recognition: \"OCR\" + expected='周期演算' + roi=[39, 291, 672, 431]",
+      "raw": "auto.click_element('周期演算', 'text', None, 10, crop=(39 / 1920, 291 / 1080, 672 / 1920, 431 / 1080))",
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "origin": {
+        "edge": 1,
+        "from": "currency_wars_mode_select",
+        "kind": "actions_list"
+      },
+      "planned_handling": "DoNothing 占位节点，名字以 __UNMAPPED_<n> 结尾",
+      "planned_recognition": "recognition: \"OCR\" + expected='标准博弈' + roi=[38, 111, 490, 807]",
+      "raw": "auto.click_element('标准博弈', 'text', None, 10, crop=(38.0 / 1920, 111.0 / 1080, 490.0 / 1920, 807.0 / 1080))",
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "origin": {
+        "edge": 1,
+        "from": "currency_wars_mode_select",
+        "kind": "actions_list"
+      },
+      "planned_handling": "DoNothing 占位节点，名字以 __UNMAPPED_<n> 结尾",
+      "planned_recognition": "recognition: \"OCR\" + expected='进入标准博弈' + roi=[1396, 917, 476, 75]",
+      "raw": "auto.click_element('进入标准博弈', 'text', None, 10, crop=(1396.0 / 1920, 917.0 / 1080, 476.0 / 1920, 75.0 / 1080))",
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "origin": {
+        "edge": 2,
+        "from": "currency_wars_mode_select",
+        "kind": "actions_list"
+      },
+      "planned_handling": "DoNothing 占位节点，名字以 __UNMAPPED_<n> 结尾",
+      "planned_recognition": "recognition: \"OCR\" + expected='超频博弈' + roi=[38, 111, 490, 807]",
+      "raw": "auto.click_element('超频博弈', 'text', None, 10, crop=(38.0 / 1920, 111.0 / 1080, 490.0 / 1920, 807.0 / 1080))",
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "origin": {
+        "edge": 2,
+        "from": "currency_wars_mode_select",
+        "kind": "actions_list"
+      },
+      "planned_handling": "DoNothing 占位节点，名字以 __UNMAPPED_<n> 结尾",
+      "planned_recognition": "recognition: \"OCR\" + expected='进入超频博弈' + roi=[1396, 917, 476, 75]",
+      "raw": "auto.click_element('进入超频博弈', 'text', None, 10, crop=(1396.0 / 1920, 917.0 / 1080, 476.0 / 1920, 75.0 / 1080))",
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    }
+  ],
+  "unmapped_nodes": [
+    {
+      "expression": "auto.click_element('漫游签证', 'text', None, 2, crop=(1261.0 / 1920, 1.0 / 1080, 552.0 / 1920, 346.0 / 1080))",
+      "node": "menu__visa__2__UNMAPPED_1",
+      "origin": {
+        "from": "menu",
+        "index": 2,
+        "to": "visa"
+      },
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "expression": "auto.click_element('兑换码', 'text', None, 2, crop=(1261.0 / 1920, 1.0 / 1080, 552.0 / 1920, 420.0 / 1080))",
+      "node": "menu__redemption__2__UNMAPPED_2",
+      "origin": {
+        "from": "menu",
+        "index": 2,
+        "to": "redemption"
+      },
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "expression": "auto.click_element('忘却之庭', 'text', None, 10, crop=(231.0 / 1920, 420.0 / 1080, 450.0 / 1920, 536.0 / 1080))",
+      "node": "guide4__memory_of_chaos__0__UNMAPPED_3",
+      "origin": {
+        "from": "guide4",
+        "index": 0,
+        "to": "memory_of_chaos"
+      },
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "expression": "auto.click_element('传送', 'text', None, 10, crop=(689.0 / 1920, 285.0 / 1080, 970.0 / 1920, 474.0 / 1080))",
+      "node": "guide4__memory_of_chaos__2__UNMAPPED_4",
+      "origin": {
+        "from": "guide4",
+        "index": 2,
+        "to": "memory_of_chaos"
+      },
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "expression": "auto.click_element('虚构叙事', 'text', None, 10, crop=(231.0 / 1920, 420.0 / 1080, 450.0 / 1920, 536.0 / 1080))",
+      "node": "guide4__purefiction__0__UNMAPPED_5",
+      "origin": {
+        "from": "guide4",
+        "index": 0,
+        "to": "purefiction"
+      },
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "expression": "auto.click_element('传送', 'text', None, 10, crop=(689.0 / 1920, 285.0 / 1080, 970.0 / 1920, 474.0 / 1080))",
+      "node": "guide4__purefiction__2__UNMAPPED_6",
+      "origin": {
+        "from": "guide4",
+        "index": 2,
+        "to": "purefiction"
+      },
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "expression": "auto.click_element('日幻影', 'text', max_retries=10, crop=(274.0 / 1920, 419.0 / 1080, (670.0) / 1920, (419.0+322.0) / 1080), include=True)",
+      "node": "guide4__apocalyptic__0__UNMAPPED_7",
+      "origin": {
+        "from": "guide4",
+        "index": 0,
+        "to": "apocalyptic"
+      },
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "expression": "auto.click_element('传送', 'text', None, 10, crop=(689.0 / 1920, 285.0 / 1080, 970.0 / 1920, 474.0 / 1080))",
+      "node": "guide4__apocalyptic__2__UNMAPPED_8",
+      "origin": {
+        "from": "guide4",
+        "index": 2,
+        "to": "apocalyptic"
+      },
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "expression": "auto.click_element('货币战争', 'text', None, 10, crop=(238.0 / 1920, 257.0 / 1080, 449.0 / 1920, 525.0 / 1080))",
+      "node": "guide5__currency_wars_homepage__0__UNMAPPED_9",
+      "origin": {
+        "from": "guide5",
+        "index": 0,
+        "to": "currency_wars_homepage"
+      },
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "expression": "auto.click_element('前往参与', 'text', None, 10, crop=(684.0 / 1920, 278.0 / 1080, 981.0 / 1920, 656.0 / 1080))",
+      "node": "guide5__currency_wars_homepage__2__UNMAPPED_10",
+      "origin": {
+        "from": "guide5",
+        "index": 2,
+        "to": "currency_wars_homepage"
+      },
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "expression": "auto.click_element('差分宇宙', 'text', None, 10, crop=(238.0 / 1920, 257.0 / 1080, 449.0 / 1920, 525.0 / 1080))",
+      "node": "guide5__divergent_main__0__UNMAPPED_11",
+      "origin": {
+        "from": "guide5",
+        "index": 0,
+        "to": "divergent_main"
+      },
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "expression": "auto.click_element('前往参与', 'text', None, 10, crop=(684.0 / 1920, 278.0 / 1080, 981.0 / 1920, 656.0 / 1080))",
+      "node": "guide5__divergent_main__2__UNMAPPED_12",
+      "origin": {
+        "from": "guide5",
+        "index": 2,
+        "to": "divergent_main"
+      },
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "expression": "auto.click_element('差分宇宙', 'text', None, 10, crop=(238.0 / 1920, 257.0 / 1080, 449.0 / 1920, 525.0 / 1080))",
+      "node": "guide5__universe_main__0__UNMAPPED_13",
+      "origin": {
+        "from": "guide5",
+        "index": 0,
+        "to": "universe_main"
+      },
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "expression": "auto.click_element('前往模拟宇宙', 'text', None, 10, crop=(698.0 / 1920, 340.0 / 1080, 203.0 / 1920, 60.0 / 1080))",
+      "node": "guide5__universe_main__2__UNMAPPED_14",
+      "origin": {
+        "from": "guide5",
+        "index": 2,
+        "to": "universe_main"
+      },
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "expression": "auto.click_element('常规演算', 'text', None, 10, crop=(39 / 1920, 291 / 1080, 672 / 1920, 431 / 1080))",
+      "node": "divergent_mode_select__divergent_mode_select_normal__0__UNMAPPED_15",
+      "origin": {
+        "from": "divergent_mode_select",
+        "index": 0,
+        "to": "divergent_mode_select_normal"
+      },
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "expression": "auto.click_element('周期演算', 'text', None, 10, crop=(39 / 1920, 291 / 1080, 672 / 1920, 431 / 1080))",
+      "node": "divergent_mode_select__divergent_mode_select_cycle__0__UNMAPPED_16",
+      "origin": {
+        "from": "divergent_mode_select",
+        "index": 0,
+        "to": "divergent_mode_select_cycle"
+      },
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "expression": "auto.click_element('标准博弈', 'text', None, 10, crop=(38.0 / 1920, 111.0 / 1080, 490.0 / 1920, 807.0 / 1080))",
+      "node": "currency_wars_mode_select__currency_wars_mode_select_normal__0__UNMAPPED_17",
+      "origin": {
+        "from": "currency_wars_mode_select",
+        "index": 0,
+        "to": "currency_wars_mode_select_normal"
+      },
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "expression": "auto.click_element('进入标准博弈', 'text', None, 10, crop=(1396.0 / 1920, 917.0 / 1080, 476.0 / 1920, 75.0 / 1080))",
+      "node": "currency_wars_mode_select__currency_wars_mode_select_normal__2__UNMAPPED_18",
+      "origin": {
+        "from": "currency_wars_mode_select",
+        "index": 2,
+        "to": "currency_wars_mode_select_normal"
+      },
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "expression": "auto.click_element('超频博弈', 'text', None, 10, crop=(38.0 / 1920, 111.0 / 1080, 490.0 / 1920, 807.0 / 1080))",
+      "node": "currency_wars_mode_select__currency_wars_mode_select_overclock__0__UNMAPPED_19",
+      "origin": {
+        "from": "currency_wars_mode_select",
+        "index": 0,
+        "to": "currency_wars_mode_select_overclock"
+      },
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    },
+    {
+      "expression": "auto.click_element('进入超频博弈', 'text', None, 10, crop=(1396.0 / 1920, 917.0 / 1080, 476.0 / 1920, 75.0 / 1080))",
+      "node": "currency_wars_mode_select__currency_wars_mode_select_overclock__2__UNMAPPED_20",
+      "origin": {
+        "from": "currency_wars_mode_select",
+        "index": 2,
+        "to": "currency_wars_mode_select_overclock"
+      },
+      "reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。"
+    }
+  ]
+}

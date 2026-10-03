@@ -1,0 +1,72 @@
+{
+  "area_patrol": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                148,
+                714,
+                1512,
+                68
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1525,
+                1000,
+                125,
+                55
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "area_patrol__副本名称列表",
+      "area_patrol__电量"
+    ]
+  },
+  "area_patrol__副本名称列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          148,
+          714,
+          1512,
+          68
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "area_patrol__电量": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1525,
+          1000,
+          125,
+          55
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

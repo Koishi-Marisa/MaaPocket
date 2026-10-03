@@ -1,0 +1,229 @@
+{
+  "battle_menu": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "menu/back/raw.png"
+              ],
+              "roi": [
+                82,
+                12,
+                68,
+                78
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "设置"
+              ],
+              "roi": [
+                1646,
+                26,
+                180,
+                50
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "战况"
+              ],
+              "roi": [
+                1450,
+                26,
+                150,
+                50
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "battle_menu__菜单-返回",
+      "battle_menu__按钮-设置",
+      "battle_menu__按钮-战况",
+      "battle_menu__按钮-退出战斗",
+      "battle_menu__按钮-退出战斗-确认",
+      "battle_menu__按钮-重新开始",
+      "battle_menu__按钮-脱离卡死",
+      "battle_menu__按钮-脱离卡死-确认"
+    ]
+  },
+  "battle_menu__菜单-返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          82,
+          12,
+          68,
+          78
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "battle_menu__按钮-设置": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "设置"
+        ],
+        "roi": [
+          1646,
+          26,
+          180,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "battle_menu__按钮-战况": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "战况"
+        ],
+        "roi": [
+          1450,
+          26,
+          150,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "battle_menu__按钮-退出战斗": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "退出战斗"
+        ],
+        "roi": [
+          1616,
+          1006,
+          216,
+          46
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "battle_menu__按钮-退出战斗-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1038,
+          600,
+          186,
+          54
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "battle_menu__按钮-重新开始": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "重新开始"
+        ],
+        "roi": [
+          1288,
+          1002,
+          226,
+          52
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "battle_menu__按钮-脱离卡死": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "脱离卡死"
+        ],
+        "roi": [
+          1616,
+          1006,
+          216,
+          46
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "battle_menu__按钮-脱离卡死-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1038,
+          600,
+          186,
+          54
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

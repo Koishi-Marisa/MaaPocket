@@ -1,0 +1,77 @@
+{
+  "Screen_divergent_mode_select_normal": {
+    "recognition": "TemplateMatch",
+    "template": "screen/universe/mode_select_normal.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [],
+    "attach": {
+      "march7th:kind": "screen-anchor",
+      "march7th:screen_id": "divergent_mode_select_normal",
+      "march7th:screen_name": "差分宇宙-常规演算",
+      "march7th:source_image_path": "./assets/images/screen/universe/mode_select_normal.png",
+      "march7th:note": "模板是 1920x1080 PC 客户端截图的小块裁剪，手机上必须重新采集，见 RECAPTURE.md"
+    }
+  },
+  "divergent_mode_select_normal__divergent_mode_select__0": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 111,
+    "next": [
+      "Screen_divergent_mode_select"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "divergent_mode_select_normal",
+        "divergent_mode_select"
+      ],
+      "march7th:edge_index": 0,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.press_key('esc')",
+      "march7th:kind": "press_key",
+      "march7th:upstream_key": "esc",
+      "march7th:android_keycode": 111
+    }
+  },
+  "Nav_divergent_mode_select_normal_from_divergent_mode_select": {
+    "recognition": "TemplateMatch",
+    "template": "screen/universe/divergent_mode_select.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "divergent_mode_select__divergent_mode_select_normal__0__UNMAPPED_15"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 divergent_mode_select 上时，沿上游第一条 divergent_mode_select -> divergent_mode_select_normal 边前进"
+    }
+  },
+  "NavTo_divergent_mode_select_normal": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Nav_divergent_mode_select_normal_from_divergent_mode_select",
+      "Screen_divergent_mode_select_normal"
+    ],
+    "attach": {
+      "march7th:kind": "nav-router",
+      "march7th:target_screen": "divergent_mode_select_normal",
+      "march7th:predecessors": [
+        "divergent_mode_select"
+      ],
+      "march7th:note": "DirectHit 进入：先按顺序试探各前驱屏幕守卫节点（TemplateMatch 前驱屏幕锚点），命中则沿那条上游边导航；全部未命中则回退到 Screen_divergent_mode_select_normal 锚点——若此时已经在 divergent_mode_select_normal 上即成功，否则本节点识别失败（诚实失败，不静默跳过）。只覆盖单跳。"
+    }
+  }
+}

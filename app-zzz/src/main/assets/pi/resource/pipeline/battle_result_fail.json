@@ -1,0 +1,88 @@
+{
+  "battle_result_fail": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "挑战结果"
+              ],
+              "roi": [
+                624,
+                144,
+                644,
+                130
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "退出"
+              ],
+              "roi": [
+                1570,
+                1004,
+                258,
+                48
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "battle_result_fail__标题-挑战结果",
+      "battle_result_fail__按钮-退出"
+    ]
+  },
+  "battle_result_fail__标题-挑战结果": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "挑战结果"
+        ],
+        "roi": [
+          624,
+          144,
+          644,
+          130
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "battle_result_fail__按钮-退出": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "退出"
+        ],
+        "roi": [
+          1570,
+          1004,
+          258,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

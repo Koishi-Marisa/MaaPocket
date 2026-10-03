@@ -1,0 +1,130 @@
+{
+  "menu_more": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "更多功能"
+              ],
+              "roi": [
+                522,
+                210,
+                144,
+                56
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "menu/btn_close/raw.png"
+              ],
+              "roi": [
+                1302,
+                166,
+                142,
+                116
+              ],
+              "threshold": 0.7
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "menu_more__标题-更多功能",
+      "menu_more__按钮-关闭",
+      "menu_more__按钮-预备编队",
+      "menu_more__按钮-兑换码"
+    ]
+  },
+  "menu_more__标题-更多功能": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "更多功能"
+        ],
+        "roi": [
+          522,
+          210,
+          144,
+          56
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "menu_more__按钮-关闭": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/btn_close/raw.png"
+        ],
+        "roi": [
+          1302,
+          166,
+          142,
+          116
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "menu_more__按钮-预备编队": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "预备编队"
+        ],
+        "roi": [
+          478,
+          282,
+          964,
+          626
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "menu_more__按钮-兑换码": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "兑换码"
+        ],
+        "roi": [
+          478,
+          282,
+          964,
+          626
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

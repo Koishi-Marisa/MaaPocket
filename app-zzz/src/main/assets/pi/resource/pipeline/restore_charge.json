@@ -1,0 +1,204 @@
+{
+  "restore_charge": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "恢复电量"
+              ],
+              "roi": [
+                824,
+                348,
+                252,
+                42
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "restore_charge__类型",
+      "restore_charge__确认",
+      "restore_charge__取消",
+      "restore_charge__兑换数量-数字输入框",
+      "restore_charge__兑换数量-加",
+      "restore_charge__当前数量",
+      "restore_charge__标题-恢复电量",
+      "restore_charge__标题-快捷使用",
+      "restore_charge__标题-获得"
+    ]
+  },
+  "restore_charge__类型": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          776,
+          606,
+          368,
+          28
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "restore_charge__确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          720,
+          650,
+          480,
+          150
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "restore_charge__取消": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "取消"
+        ],
+        "roi": [
+          720,
+          650,
+          480,
+          150
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "restore_charge__兑换数量-数字输入框": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          976,
+          610,
+          46,
+          28
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "restore_charge__兑换数量-加": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1250,
+          656,
+          48,
+          49
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "restore_charge__当前数量": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          942,
+          431,
+          78,
+          41
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "restore_charge__标题-恢复电量": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "恢复电量"
+        ],
+        "roi": [
+          824,
+          348,
+          252,
+          42
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "restore_charge__标题-快捷使用": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "快捷使用"
+        ],
+        "roi": [
+          584,
+          300,
+          143,
+          53
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "restore_charge__标题-获得": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "获得"
+        ],
+        "roi": [
+          860,
+          386,
+          200,
+          70
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

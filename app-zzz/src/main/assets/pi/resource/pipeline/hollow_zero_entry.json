@@ -1,0 +1,324 @@
+{
+  "hollow_zero_entry": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "街区"
+              ],
+              "roi": [
+                236,
+                26,
+                158,
+                54
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1128,
+                184,
+                476,
+                720
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "下一步"
+              ],
+              "roi": [
+                1584,
+                1002,
+                240,
+                52
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "出战"
+              ],
+              "roi": [
+                1628,
+                1002,
+                198,
+                48
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                1036,
+                604,
+                194,
+                48
+              ],
+              "threshold": 1.0
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                884,
+                606,
+                190,
+                48
+              ],
+              "threshold": 1.0
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                68,
+                946,
+                118,
+                114
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "悬赏委托"
+              ],
+              "roi": [
+                1548,
+                0,
+                284,
+                138
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "全部领取"
+              ],
+              "roi": [
+                1586,
+                1002,
+                244,
+                50
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "hollow_zero_entry__街区",
+      "hollow_zero_entry__副本列表",
+      "hollow_zero_entry__下一步",
+      "hollow_zero_entry__出战",
+      "hollow_zero_entry__继续-确认",
+      "hollow_zero_entry__行动中-确认",
+      "hollow_zero_entry__奖励入口",
+      "hollow_zero_entry__悬赏委托",
+      "hollow_zero_entry__全部领取"
+    ]
+  },
+  "hollow_zero_entry__街区": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "街区"
+        ],
+        "roi": [
+          236,
+          26,
+          158,
+          54
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_entry__副本列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1128,
+          184,
+          476,
+          720
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_entry__下一步": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "下一步"
+        ],
+        "roi": [
+          1584,
+          1002,
+          240,
+          52
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "hollow_zero_entry__出战": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "出战"
+        ],
+        "roi": [
+          1628,
+          1002,
+          198,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_entry__继续-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1036,
+          604,
+          194,
+          48
+        ],
+        "threshold": 1.0
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "hollow_zero_entry__行动中-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          884,
+          606,
+          190,
+          48
+        ],
+        "threshold": 1.0
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "hollow_zero_entry__奖励入口": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          68,
+          946,
+          118,
+          114
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "hollow_zero_entry__悬赏委托": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "悬赏委托"
+        ],
+        "roi": [
+          1548,
+          0,
+          284,
+          138
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "hollow_zero_entry__全部领取": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "全部领取"
+        ],
+        "roi": [
+          1586,
+          1002,
+          244,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

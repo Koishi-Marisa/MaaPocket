@@ -1,0 +1,416 @@
+{
+  "news_stand": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "刮刮卡"
+              ],
+              "roi": [
+                94,
+                956,
+                78,
+                94
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "每日可刮取一次"
+              ],
+              "roi": [
+                704,
+                656,
+                428,
+                36
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                780,
+                522,
+                354,
+                34
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                782,
+                556,
+                356,
+                32
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                788,
+                590,
+                346,
+                42
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "叫醒他"
+              ],
+              "roi": [
+                1434,
+                638,
+                186,
+                56
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "嗷呜被你叫醒了"
+              ],
+              "roi": [
+                780,
+                518,
+                358,
+                68
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "嗷呜睡得很香甜要不要惊动它呢"
+              ],
+              "roi": [
+                686,
+                830,
+                586,
+                194
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "嗷呜"
+              ],
+              "roi": [
+                890,
+                792,
+                152,
+                36
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "叫醒嗷呜"
+              ],
+              "roi": [
+                1434,
+                638,
+                186,
+                56
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1438,
+                560,
+                424,
+                216
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                882,
+                602,
+                200,
+                52
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "news_stand__刮刮卡",
+      "news_stand__每日可刮取一次",
+      "news_stand__刮层-1",
+      "news_stand__刮层-2",
+      "news_stand__刮层-3",
+      "news_stand__叫醒他",
+      "news_stand__嗷呜被你叫醒了",
+      "news_stand__嗷呜对话",
+      "news_stand__嗷呜标题",
+      "news_stand__叫醒嗷呜",
+      "news_stand__对话选项",
+      "news_stand__按钮-同类型确认"
+    ]
+  },
+  "news_stand__刮刮卡": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "刮刮卡"
+        ],
+        "roi": [
+          94,
+          956,
+          78,
+          94
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "news_stand__每日可刮取一次": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "每日可刮取一次"
+        ],
+        "roi": [
+          704,
+          656,
+          428,
+          36
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "news_stand__刮层-1": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          780,
+          522,
+          354,
+          34
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "news_stand__刮层-2": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          782,
+          556,
+          356,
+          32
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "news_stand__刮层-3": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          788,
+          590,
+          346,
+          42
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "news_stand__叫醒他": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "叫醒他"
+        ],
+        "roi": [
+          1434,
+          638,
+          186,
+          56
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "news_stand__嗷呜被你叫醒了": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "嗷呜被你叫醒了"
+        ],
+        "roi": [
+          780,
+          518,
+          358,
+          68
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "news_stand__嗷呜对话": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "嗷呜睡得很香甜要不要惊动它呢"
+        ],
+        "roi": [
+          686,
+          830,
+          586,
+          194
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "news_stand__嗷呜标题": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "嗷呜"
+        ],
+        "roi": [
+          890,
+          792,
+          152,
+          36
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "news_stand__叫醒嗷呜": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "叫醒嗷呜"
+        ],
+        "roi": [
+          1434,
+          638,
+          186,
+          56
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "news_stand__对话选项": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1438,
+          560,
+          424,
+          216
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "news_stand__按钮-同类型确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          882,
+          602,
+          200,
+          52
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "Task_redemption": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "NavTo_redemption"
+    ],
+    "attach": {
+      "march7th:kind": "task-entry",
+      "march7th:task_id": "redemption",
+      "march7th:entry_screen": "redemption",
+      "march7th:source_module": "tasks/daily/redemption.py",
+      "march7th:confidence": "high",
+      "march7th:rationale": "tasks/daily/redemption.py:197 显式 screen.change_to('redemption')。",
+      "march7th:note": "本节点只负责把游戏导航到该功能所在的界面；上游任务的采集/战斗循环逻辑没有迁移。"
+    }
+  }
+}

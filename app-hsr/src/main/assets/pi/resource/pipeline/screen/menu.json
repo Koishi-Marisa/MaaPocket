@@ -1,0 +1,1184 @@
+{
+  "Screen_menu": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/more.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [],
+    "attach": {
+      "march7th:kind": "screen-anchor",
+      "march7th:screen_id": "menu",
+      "march7th:screen_name": "手机菜单",
+      "march7th:source_image_path": "./assets/images/share/menu/more.png",
+      "march7th:note": "模板是 1920x1080 PC 客户端截图的小块裁剪，手机上必须重新采集，见 RECAPTURE.md"
+    }
+  },
+  "menu__main__0": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 111,
+    "next": [
+      "Screen_main"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "main"
+      ],
+      "march7th:edge_index": 0,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.press_key('esc')",
+      "march7th:kind": "press_key",
+      "march7th:upstream_key": "esc",
+      "march7th:android_keycode": 111
+    }
+  },
+  "menu__guide2__0": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/guide.png",
+    "threshold": 0.7,
+    "roi": [
+      1264,
+      286,
+      546,
+      746
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "menu__guide2__1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "guide2"
+      ],
+      "march7th:edge_index": 1,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.click_element('./assets/images/share/menu/guide.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 2000000,
+      "march7th:masked_template": true,
+      "march7th:normalised_crop": [
+        0.6583333333333333,
+        0.26481481481481484,
+        0.284375,
+        0.6907407407407408
+      ],
+      "march7th:approximation": "上游对带真实 alpha 的模板使用 cv2.TM_SQDIFF + mask（分数越低越像，阈值 2000000 等于“接受任意位置”）。这里退化为普通 TM_CCOEFF_NORMED 且阈值降到 0.7。"
+    }
+  },
+  "menu__guide2__1": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 2000,
+    "next": [
+      "menu__guide2__2"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "guide2"
+      ],
+      "march7th:edge_index": 1,
+      "march7th:action_index": 1,
+      "march7th:expression": "time.sleep(2)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "menu__guide2__2": {
+    "recognition": "TemplateMatch",
+    "template": "screen/guide/enter_guide2.png",
+    "threshold": 0.9,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "menu__guide2__3"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "guide2"
+      ],
+      "march7th:edge_index": 1,
+      "march7th:action_index": 2,
+      "march7th:expression": "auto.click_element('./assets/images/screen/guide/enter_guide2.png', 'image', 0.9)",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 0.9,
+      "march7th:masked_template": false
+    }
+  },
+  "menu__guide2__3": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 1000,
+    "next": [
+      "Screen_guide2"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "guide2"
+      ],
+      "march7th:edge_index": 1,
+      "march7th:action_index": 3,
+      "march7th:expression": "time.sleep(1)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "menu__guide3__0": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/guide.png",
+    "threshold": 0.7,
+    "roi": [
+      1264,
+      286,
+      546,
+      746
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "menu__guide3__1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "guide3"
+      ],
+      "march7th:edge_index": 2,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.click_element('./assets/images/share/menu/guide.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 2000000,
+      "march7th:masked_template": true,
+      "march7th:normalised_crop": [
+        0.6583333333333333,
+        0.26481481481481484,
+        0.284375,
+        0.6907407407407408
+      ],
+      "march7th:approximation": "上游对带真实 alpha 的模板使用 cv2.TM_SQDIFF + mask（分数越低越像，阈值 2000000 等于“接受任意位置”）。这里退化为普通 TM_CCOEFF_NORMED 且阈值降到 0.7。"
+    }
+  },
+  "menu__guide3__1": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 2000,
+    "next": [
+      "menu__guide3__2"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "guide3"
+      ],
+      "march7th:edge_index": 2,
+      "march7th:action_index": 1,
+      "march7th:expression": "time.sleep(2)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "menu__guide3__2": {
+    "recognition": "TemplateMatch",
+    "template": "screen/guide/enter_guide3.png",
+    "threshold": 0.9,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "menu__guide3__3"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "guide3"
+      ],
+      "march7th:edge_index": 2,
+      "march7th:action_index": 2,
+      "march7th:expression": "auto.click_element('./assets/images/screen/guide/enter_guide3.png', 'image', 0.9)",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 0.9,
+      "march7th:masked_template": false
+    }
+  },
+  "menu__guide3__3": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 1000,
+    "next": [
+      "Screen_guide3"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "guide3"
+      ],
+      "march7th:edge_index": 2,
+      "march7th:action_index": 3,
+      "march7th:expression": "time.sleep(1)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "menu__guide4__0": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/guide.png",
+    "threshold": 0.7,
+    "roi": [
+      1264,
+      286,
+      546,
+      746
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "menu__guide4__1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "guide4"
+      ],
+      "march7th:edge_index": 3,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.click_element('./assets/images/share/menu/guide.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 2000000,
+      "march7th:masked_template": true,
+      "march7th:normalised_crop": [
+        0.6583333333333333,
+        0.26481481481481484,
+        0.284375,
+        0.6907407407407408
+      ],
+      "march7th:approximation": "上游对带真实 alpha 的模板使用 cv2.TM_SQDIFF + mask（分数越低越像，阈值 2000000 等于“接受任意位置”）。这里退化为普通 TM_CCOEFF_NORMED 且阈值降到 0.7。"
+    }
+  },
+  "menu__guide4__1": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 2000,
+    "next": [
+      "menu__guide4__2"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "guide4"
+      ],
+      "march7th:edge_index": 3,
+      "march7th:action_index": 1,
+      "march7th:expression": "time.sleep(2)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "menu__guide4__2": {
+    "recognition": "TemplateMatch",
+    "template": "screen/guide/enter_guide4.png",
+    "threshold": 0.9,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "menu__guide4__3"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "guide4"
+      ],
+      "march7th:edge_index": 3,
+      "march7th:action_index": 2,
+      "march7th:expression": "auto.click_element('./assets/images/screen/guide/enter_guide4.png', 'image', 0.9)",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 0.9,
+      "march7th:masked_template": false
+    }
+  },
+  "menu__guide4__3": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 1000,
+    "next": [
+      "Screen_guide4"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "guide4"
+      ],
+      "march7th:edge_index": 3,
+      "march7th:action_index": 3,
+      "march7th:expression": "time.sleep(1)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "menu__guide5__0": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/guide.png",
+    "threshold": 0.7,
+    "roi": [
+      1264,
+      286,
+      546,
+      746
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "menu__guide5__1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "guide5"
+      ],
+      "march7th:edge_index": 4,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.click_element('./assets/images/share/menu/guide.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 2000000,
+      "march7th:masked_template": true,
+      "march7th:normalised_crop": [
+        0.6583333333333333,
+        0.26481481481481484,
+        0.284375,
+        0.6907407407407408
+      ],
+      "march7th:approximation": "上游对带真实 alpha 的模板使用 cv2.TM_SQDIFF + mask（分数越低越像，阈值 2000000 等于“接受任意位置”）。这里退化为普通 TM_CCOEFF_NORMED 且阈值降到 0.7。"
+    }
+  },
+  "menu__guide5__1": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 2000,
+    "next": [
+      "menu__guide5__2"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "guide5"
+      ],
+      "march7th:edge_index": 4,
+      "march7th:action_index": 1,
+      "march7th:expression": "time.sleep(2)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "menu__guide5__2": {
+    "recognition": "TemplateMatch",
+    "template": "screen/guide/enter_guide5.png",
+    "threshold": 0.9,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "menu__guide5__3"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "guide5"
+      ],
+      "march7th:edge_index": 4,
+      "march7th:action_index": 2,
+      "march7th:expression": "auto.click_element('./assets/images/screen/guide/enter_guide5.png', 'image', 0.9)",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 0.9,
+      "march7th:masked_template": false
+    }
+  },
+  "menu__guide5__3": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 1000,
+    "next": [
+      "Screen_guide5"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "guide5"
+      ],
+      "march7th:edge_index": 4,
+      "march7th:action_index": 3,
+      "march7th:expression": "time.sleep(1)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "menu__mail__0": {
+    "recognition": "DirectHit",
+    "action": "Click",
+    "target": [
+      1846,
+      253,
+      43,
+      37
+    ],
+    "next": [
+      "Screen_mail"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "mail"
+      ],
+      "march7th:edge_index": 5,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.click_element((1846 / 1920, 253 / 1080, 43 / 1920, 37 / 1080), 'crop')",
+      "march7th:kind": "click-crop",
+      "march7th:normalised_rect": [
+        0.9614583333333333,
+        0.23425925925925925,
+        0.022395833333333334,
+        0.03425925925925926
+      ],
+      "march7th:note": "上游 find_type='crop' 不做识别，直接点归一化矩形。"
+    }
+  },
+  "menu__visa__0": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/more.png",
+    "threshold": 0.9,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "menu__visa__1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "visa"
+      ],
+      "march7th:edge_index": 6,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.click_element('./assets/images/share/menu/more.png', 'image', 0.9)",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 0.9,
+      "march7th:masked_template": false
+    }
+  },
+  "menu__visa__1": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 2000,
+    "next": [
+      "menu__visa__2__UNMAPPED_1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "visa"
+      ],
+      "march7th:edge_index": 6,
+      "march7th:action_index": 1,
+      "march7th:expression": "time.sleep(2)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "menu__visa__2__UNMAPPED_1": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_visa"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "visa"
+      ],
+      "march7th:edge_index": 6,
+      "march7th:action_index": 2,
+      "march7th:unmapped_expression": "auto.click_element('漫游签证', 'text', None, 2, crop=(1261.0 / 1920, 1.0 / 1080, 552.0 / 1920, 346.0 / 1080))",
+      "march7th:unmapped_reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。",
+      "march7th:planned_recognition": "OCR (recognition:\"OCR\" + expected + roi)",
+      "march7th:parsed": true,
+      "march7th:find_type": "text"
+    }
+  },
+  "menu__redemption__0": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/more.png",
+    "threshold": 0.9,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "menu__redemption__1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "redemption"
+      ],
+      "march7th:edge_index": 7,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.click_element('./assets/images/share/menu/more.png', 'image', 0.9)",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 0.9,
+      "march7th:masked_template": false
+    }
+  },
+  "menu__redemption__1": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 2000,
+    "next": [
+      "menu__redemption__2__UNMAPPED_2"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "redemption"
+      ],
+      "march7th:edge_index": 7,
+      "march7th:action_index": 1,
+      "march7th:expression": "time.sleep(2)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "menu__redemption__2__UNMAPPED_2": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_redemption"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "redemption"
+      ],
+      "march7th:edge_index": 7,
+      "march7th:action_index": 2,
+      "march7th:unmapped_expression": "auto.click_element('兑换码', 'text', None, 2, crop=(1261.0 / 1920, 1.0 / 1080, 552.0 / 1920, 420.0 / 1080))",
+      "march7th:unmapped_reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。",
+      "march7th:planned_recognition": "OCR (recognition:\"OCR\" + expected + roi)",
+      "march7th:parsed": true,
+      "march7th:find_type": "text"
+    }
+  },
+  "menu__camera__0": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/camera.png",
+    "threshold": 0.8,
+    "roi": [
+      1824,
+      108,
+      96,
+      648
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "Screen_camera"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "camera"
+      ],
+      "march7th:edge_index": 8,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.click_element('./assets/images/share/menu/camera.png', 'image', 0.8, crop=(0.95, 0.1, 0.05, 0.6))",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 0.8,
+      "march7th:masked_template": false,
+      "march7th:normalised_crop": [
+        0.95,
+        0.1,
+        0.05,
+        0.6
+      ]
+    }
+  },
+  "menu__dispatch__0": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/dispatch.png",
+    "threshold": 0.7,
+    "roi": [
+      1264,
+      286,
+      546,
+      746
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "Screen_dispatch"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "dispatch"
+      ],
+      "march7th:edge_index": 9,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.click_element('./assets/images/share/menu/dispatch.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 2000000,
+      "march7th:masked_template": true,
+      "march7th:normalised_crop": [
+        0.6583333333333333,
+        0.26481481481481484,
+        0.284375,
+        0.6907407407407408
+      ],
+      "march7th:approximation": "上游对带真实 alpha 的模板使用 cv2.TM_SQDIFF + mask（分数越低越像，阈值 2000000 等于“接受任意位置”）。这里退化为普通 TM_CCOEFF_NORMED 且阈值降到 0.7。"
+    }
+  },
+  "menu__pass1__0": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/pass.png",
+    "threshold": 0.7,
+    "roi": [
+      1264,
+      286,
+      546,
+      746
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "Screen_pass1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "pass1"
+      ],
+      "march7th:edge_index": 10,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.click_element('./assets/images/share/menu/pass.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 2000000,
+      "march7th:masked_template": true,
+      "march7th:normalised_crop": [
+        0.6583333333333333,
+        0.26481481481481484,
+        0.284375,
+        0.6907407407407408
+      ],
+      "march7th:approximation": "上游对带真实 alpha 的模板使用 cv2.TM_SQDIFF + mask（分数越低越像，阈值 2000000 等于“接受任意位置”）。这里退化为普通 TM_CCOEFF_NORMED 且阈值降到 0.7。"
+    }
+  },
+  "menu__consumables__0": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/synthesis.png",
+    "threshold": 0.7,
+    "roi": [
+      1264,
+      286,
+      546,
+      746
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "Screen_consumables"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "consumables"
+      ],
+      "march7th:edge_index": 11,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.click_element('./assets/images/share/menu/synthesis.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 2000000,
+      "march7th:masked_template": true,
+      "march7th:normalised_crop": [
+        0.6583333333333333,
+        0.26481481481481484,
+        0.284375,
+        0.6907407407407408
+      ],
+      "march7th:approximation": "上游对带真实 alpha 的模板使用 cv2.TM_SQDIFF + mask（分数越低越像，阈值 2000000 等于“接受任意位置”）。这里退化为普通 TM_CCOEFF_NORMED 且阈值降到 0.7。"
+    }
+  },
+  "menu__bag_consumables__0": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/bag.png",
+    "threshold": 0.7,
+    "roi": [
+      1264,
+      286,
+      546,
+      746
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "menu__bag_consumables__1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "bag_consumables"
+      ],
+      "march7th:edge_index": 12,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.click_element('./assets/images/share/menu/bag.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 2000000,
+      "march7th:masked_template": true,
+      "march7th:normalised_crop": [
+        0.6583333333333333,
+        0.26481481481481484,
+        0.284375,
+        0.6907407407407408
+      ],
+      "march7th:approximation": "上游对带真实 alpha 的模板使用 cv2.TM_SQDIFF + mask（分数越低越像，阈值 2000000 等于“接受任意位置”）。这里退化为普通 TM_CCOEFF_NORMED 且阈值降到 0.7。"
+    }
+  },
+  "menu__bag_consumables__1": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 2000,
+    "next": [
+      "menu__bag_consumables__2"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "bag_consumables"
+      ],
+      "march7th:edge_index": 12,
+      "march7th:action_index": 1,
+      "march7th:expression": "time.sleep(2)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "menu__bag_consumables__2": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/bag_consumables.png",
+    "threshold": 0.9,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "Screen_bag_consumables"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "bag_consumables"
+      ],
+      "march7th:edge_index": 12,
+      "march7th:action_index": 2,
+      "march7th:expression": "auto.click_element('./assets/images/share/menu/bag_consumables.png', 'image', 0.9, 2)",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 0.9,
+      "march7th:masked_template": false,
+      "march7th:max_retries": 2
+    },
+    "rate_limit": 1000,
+    "timeout": 20000
+  },
+  "menu__bag_relicset__0": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/bag.png",
+    "threshold": 0.7,
+    "roi": [
+      1264,
+      286,
+      546,
+      746
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "menu__bag_relicset__1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "bag_relicset"
+      ],
+      "march7th:edge_index": 13,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.click_element('./assets/images/share/menu/bag.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 2000000,
+      "march7th:masked_template": true,
+      "march7th:normalised_crop": [
+        0.6583333333333333,
+        0.26481481481481484,
+        0.284375,
+        0.6907407407407408
+      ],
+      "march7th:approximation": "上游对带真实 alpha 的模板使用 cv2.TM_SQDIFF + mask（分数越低越像，阈值 2000000 等于“接受任意位置”）。这里退化为普通 TM_CCOEFF_NORMED 且阈值降到 0.7。"
+    }
+  },
+  "menu__bag_relicset__1": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 2000,
+    "next": [
+      "menu__bag_relicset__2"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "bag_relicset"
+      ],
+      "march7th:edge_index": 13,
+      "march7th:action_index": 1,
+      "march7th:expression": "time.sleep(2)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "menu__bag_relicset__2": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/bag_relicset.png",
+    "threshold": 0.9,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "Screen_bag_relicset"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "bag_relicset"
+      ],
+      "march7th:edge_index": 13,
+      "march7th:action_index": 2,
+      "march7th:expression": "auto.click_element('./assets/images/share/menu/bag_relicset.png', 'image', 0.9, 2)",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 0.9,
+      "march7th:masked_template": false,
+      "march7th:max_retries": 2
+    },
+    "rate_limit": 1000,
+    "timeout": 20000
+  },
+  "menu__bag_lc__0": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/bag.png",
+    "threshold": 0.7,
+    "roi": [
+      1264,
+      286,
+      546,
+      746
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "menu__bag_lc__1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "bag_lc"
+      ],
+      "march7th:edge_index": 14,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.click_element('./assets/images/share/menu/bag.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 2000000,
+      "march7th:masked_template": true,
+      "march7th:normalised_crop": [
+        0.6583333333333333,
+        0.26481481481481484,
+        0.284375,
+        0.6907407407407408
+      ],
+      "march7th:approximation": "上游对带真实 alpha 的模板使用 cv2.TM_SQDIFF + mask（分数越低越像，阈值 2000000 等于“接受任意位置”）。这里退化为普通 TM_CCOEFF_NORMED 且阈值降到 0.7。"
+    }
+  },
+  "menu__bag_lc__1": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 2000,
+    "next": [
+      "menu__bag_lc__2"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "bag_lc"
+      ],
+      "march7th:edge_index": 14,
+      "march7th:action_index": 1,
+      "march7th:expression": "time.sleep(2)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "menu__bag_lc__2": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/bag_lc.png",
+    "threshold": 0.9,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "Screen_bag_lc"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "bag_lc"
+      ],
+      "march7th:edge_index": 14,
+      "march7th:action_index": 2,
+      "march7th:expression": "auto.click_element('./assets/images/share/menu/bag_lc.png', 'image', 0.9, 2)",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 0.9,
+      "march7th:masked_template": false,
+      "march7th:max_retries": 2
+    },
+    "rate_limit": 1000,
+    "timeout": 20000
+  },
+  "menu__configure_team__0": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/configure_team.png",
+    "threshold": 0.7,
+    "roi": [
+      1264,
+      286,
+      546,
+      746
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "Screen_configure_team"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "configure_team"
+      ],
+      "march7th:edge_index": 15,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.click_element('./assets/images/share/menu/configure_team.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 2000000,
+      "march7th:masked_template": true,
+      "march7th:normalised_crop": [
+        0.6583333333333333,
+        0.26481481481481484,
+        0.284375,
+        0.6907407407407408
+      ],
+      "march7th:approximation": "上游对带真实 alpha 的模板使用 cv2.TM_SQDIFF + mask（分数越低越像，阈值 2000000 等于“接受任意位置”）。这里退化为普通 TM_CCOEFF_NORMED 且阈值降到 0.7。"
+    }
+  },
+  "menu__activity__0": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/activity.png",
+    "threshold": 0.7,
+    "roi": [
+      1264,
+      286,
+      546,
+      746
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "menu__activity__1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "activity"
+      ],
+      "march7th:edge_index": 16,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.click_element('./assets/images/share/menu/activity.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 2000000,
+      "march7th:masked_template": true,
+      "march7th:normalised_crop": [
+        0.6583333333333333,
+        0.26481481481481484,
+        0.284375,
+        0.6907407407407408
+      ],
+      "march7th:approximation": "上游对带真实 alpha 的模板使用 cv2.TM_SQDIFF + mask（分数越低越像，阈值 2000000 等于“接受任意位置”）。这里退化为普通 TM_CCOEFF_NORMED 且阈值降到 0.7。"
+    }
+  },
+  "menu__activity__1": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/activity_2nd.png",
+    "threshold": 0.7,
+    "roi": [
+      1264,
+      286,
+      546,
+      746
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "Screen_activity"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "activity"
+      ],
+      "march7th:edge_index": 16,
+      "march7th:action_index": 1,
+      "march7th:expression": "auto.click_element('./assets/images/share/menu/activity_2nd.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 2000000,
+      "march7th:masked_template": true,
+      "march7th:normalised_crop": [
+        0.6583333333333333,
+        0.26481481481481484,
+        0.284375,
+        0.6907407407407408
+      ],
+      "march7th:approximation": "上游对带真实 alpha 的模板使用 cv2.TM_SQDIFF + mask（分数越低越像，阈值 2000000 等于“接受任意位置”）。这里退化为普通 TM_CCOEFF_NORMED 且阈值降到 0.7。"
+    }
+  },
+  "menu__achievement__0": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/achievement.png",
+    "threshold": 0.7,
+    "roi": [
+      1264,
+      286,
+      546,
+      746
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "Screen_achievement"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "menu",
+        "achievement"
+      ],
+      "march7th:edge_index": 17,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.click_element('./assets/images/share/menu/achievement.png', 'image', 2000000, crop=(1264.0 / 1920, 286.0 / 1080, 546.0 / 1920, 746.0 / 1080))",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 2000000,
+      "march7th:masked_template": true,
+      "march7th:normalised_crop": [
+        0.6583333333333333,
+        0.26481481481481484,
+        0.284375,
+        0.6907407407407408
+      ],
+      "march7th:approximation": "上游对带真实 alpha 的模板使用 cv2.TM_SQDIFF + mask（分数越低越像，阈值 2000000 等于“接受任意位置”）。这里退化为普通 TM_CCOEFF_NORMED 且阈值降到 0.7。"
+    }
+  },
+  "Nav_menu_from_main": {
+    "recognition": "TemplateMatch",
+    "template": "screen/main.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "main__menu__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 main 上时，沿上游第一条 main -> menu 边前进"
+    }
+  },
+  "NavTo_menu": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Nav_menu_from_main",
+      "Screen_menu"
+    ],
+    "attach": {
+      "march7th:kind": "nav-router",
+      "march7th:target_screen": "menu",
+      "march7th:predecessors": [
+        "achievement",
+        "activity",
+        "bag_consumables",
+        "bag_lc",
+        "bag_relicset",
+        "character_warp",
+        "consumables",
+        "dispatch",
+        "guide2",
+        "guide3",
+        "guide4",
+        "guide5",
+        "mail",
+        "main",
+        "material",
+        "pass1",
+        "pass2",
+        "redemption",
+        "visa"
+      ],
+      "march7th:note": "DirectHit 进入：先按顺序试探各前驱屏幕守卫节点（TemplateMatch 前驱屏幕锚点），命中则沿那条上游边导航；全部未命中则回退到 Screen_menu 锚点——若此时已经在 menu 上即成功，否则本节点识别失败（诚实失败，不静默跳过）。只覆盖单跳。"
+    }
+  }
+}

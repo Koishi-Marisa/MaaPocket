@@ -1,0 +1,88 @@
+{
+  "lost_void_route_change": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "menu/back/raw.png"
+              ],
+              "roi": [
+                58,
+                10,
+                106,
+                80
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "图例详情"
+              ],
+              "roi": [
+                86,
+                1006,
+                212,
+                48
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "lost_void_route_change__按钮-返回",
+      "lost_void_route_change__按钮-图例详情"
+    ]
+  },
+  "lost_void_route_change__按钮-返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          58,
+          10,
+          106,
+          80
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "lost_void_route_change__按钮-图例详情": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "图例详情"
+        ],
+        "roi": [
+          86,
+          1006,
+          212,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

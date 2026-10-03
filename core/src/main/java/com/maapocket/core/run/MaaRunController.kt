@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
+import com.maapocket.core.pi.AgentRuntimeCatalog
+import com.maapocket.core.pi.AgentWorkspace
 import com.maapocket.core.pi.PiInstaller
 import com.maapocket.core.pi.PiRepository
 import com.maapocket.core.pi.PiSelection
@@ -111,6 +113,19 @@ class MaaRunController(private val context: Context) {
         val taskIndex: Int = 0,
         val taskCount: Int = 0,
         val lastError: String? = null,
+
+        /**
+         * agent 的工作目录是否**全部**准备就绪。
+         *
+         * 语义刻意收窄：只有「我们自己准备失败」（复制失败、缺 .so、目录不可写）才置 false 并
+         * 阻止 [runTasks]；「资源包声明了 agent 但设备上没有对应产物」不算失败，只告警
+         * （docs/agents.md §7.3 的降级策略）——否则 MaaEnd 会因为暂时没有安卓产物的
+         * `agent/cpp-algo` 被整体卡死，比让它跑到第一个 Custom 节点再失败更糟。
+         */
+        val agentsReady: Boolean = false,
+
+        /** 准备失败的 agent 声明（`child_exec`），供 UI 醒目提示。 */
+        val agentFailures: List<String> = emptyList(),
     ) {
         val busy: Boolean get() = phase == Phase.EXTRACTING || phase == Phase.PREPARING ||
             phase == Phase.RUNNING || phase == Phase.STOPPING
@@ -145,6 +160,28 @@ class MaaRunController(private val context: Context) {
 
     @Volatile
     private var stopRequested = false
+
+    /**
+     * 已备好工作目录、但**尚未启动**的 agent（见 [prepareAgentWorkspaces]）。
+     *
+     * 真正握手（`MaaAgentClient.create / bindResource / connect`）必须发生在持有 `MaaResource`
+     * 的特权 helper 进程里 —— 见 `com.maapocket.core.pi.AgentLauncher` 的类注释。App 进程在这里
+     * 只负责把工作目录（可执行文件 + `maafw/` + `debug/` + `locales/`）铺好，因为那只需要普通
+     * 文件权限，不需要 MaaFramework。
+     *
+     * 公开只读：helper 侧的命令一旦落地，启动方需要拿到这份「可执行文件 + args + 工作目录」清单。
+     */
+    var preparedAgents: List<AgentWorkspace.Prepared> = emptyList()
+        private set
+
+    /**
+     * 由**本进程**持有的 agent 句柄，[shutdown] 时统一 `close()`。
+     *
+     * 目前恒为空：MaaEnd 的 agent 必须由 helper 进程启动，App 进程拿不到可用的 `MaaAgentClient`。
+     * 保留这个列表是为了让「谁启动谁负责关」的收尾语义现在就位，而不是等 helper 侧的
+     * `agent.start` 落地后再回来补清理逻辑（那时很容易漏）。
+     */
+    private val agentHandles = mutableListOf<AutoCloseable>()
 
     // ------------------------------------------------------------------ 日志
 
@@ -317,12 +354,95 @@ class MaaRunController(private val context: Context) {
             _state.update { it.copy(resourceLoaded = true, phase = Phase.IDLE) }
 
             plan.warnings.forEach { log("警告: $it") }
-            // 不致命的提醒：agent 不在包内
-            plan.agents.filterNot { it.runnableOnDevice }.forEach {
-                log("提示: agent「${it.declared}」未随包提供，依赖它的任务会失败")
-            }
+
+            // 5. agent：只准备运行环境，不启动。
+            //    启动（握手）必须由持有 MaaResource 的特权 helper 进程做，而 RemoteProtocol
+            //    目前还没有 agent.start 命令；详见 prepareAgentWorkspaces() 的注释。
+            prepareAgentWorkspaces(plan)
         } catch (t: Throwable) {
             fail("准备失败", t)
+        }
+    }
+
+    /**
+     * 为 [plan] 里声明的每个 agent 准备运行环境，并更新 [State.agentsReady] / [State.agentFailures]。
+     *
+     * ## 为什么「只准备、不启动」
+     * 上游契约要求 `create → identifier → 起子进程 → bindResource → connect` 这一串必须作用在
+     * **同一个** `MaaResource` 上（见 `MaaAgentClient.kt` 的文档）。本模块所在的 App 进程刻意不加载
+     * `libMaaFramework.so`（资源和控制器都活在特权 helper 进程里，见本文件类注释），因此 App 进程
+     * 根本没有可用的 `MaaApi` / `MaaResource` 可以传进去。在 App 进程里另建一个 MaaResource 不只是
+     * 浪费，还会让 agent 把自定义动作注册到一个**没人在跑 pipeline 的**资源上，静默失效。
+     *
+     * 所以这里只做「铺目录」这一半：[AgentLauncher] 已经把另外一半（`launch()`）实现好了，
+     * helper 侧实现 `agent.start` 时直接调它即可。工作目录是幂等的，重复准备不会重复解包。
+     *
+     * ## 失败语义（对应 docs/agents.md §7.3）
+     * - 设备上没有产物（如 `agent/cpp-algo`）→ 只告警、跳过，**不算失败**；
+     * - 我们自己准备失败（复制失败、缺 `maafw/` 里的 .so、目录不可写）→ 置 `agentsReady = false`
+     *   并写入 `lastError`。**不**在这里 `fail()`：`prepare()` 的其余部分（controller / resource）
+     *   仍然可用，用户还能手工重试，把 phase 打成 FAILED 只会让 UI 显得整个准备都挂了。
+     *   真正的阻断放在 [runTasks] 的入口检查上。
+     */
+    private suspend fun prepareAgentWorkspaces(plan: PiSelection.PiRunPlan) = withContext(Dispatchers.IO) {
+        val agents = plan.agents
+        preparedAgents = emptyList()
+        if (agents.isEmpty()) {
+            _state.update { it.copy(agentsReady = true, agentFailures = emptyList()) }
+            return@withContext
+        }
+
+        // 资源包自己带的 agent（runnableOnDevice）由 PiSelection 标好；其余的走 APK 里的产物映射。
+        agents.filterNot { it.runnableOnDevice }.forEach {
+            log("提示: agent「${it.declared}」未随资源包提供，将按 APK 内的产物查找")
+        }
+
+        val batch = try {
+            AgentWorkspace(context).prepareAll(agents, AgentRuntimeCatalog(context))
+        } catch (t: Throwable) {
+            val names = agents.joinToString { it.declared }
+            log("✗ agent 工作目录准备失败（$names）：${t.message}")
+            _state.update {
+                it.copy(
+                    agentsReady = false,
+                    agentFailures = agents.map { a -> a.declared },
+                    lastError = "agent 工作目录准备失败：${t.message}",
+                )
+            }
+            return@withContext
+        }
+
+        batch.prepared.forEach { p ->
+            // bundleFileCount == 0 表示幂等命中、本次没重新解包（见 AgentWorkspace.Prepared）。
+            val bundleNote = when {
+                !p.bundleInstalled ->
+                    "（**没有** assets bundle：agent 很可能因缺 locales/go-service/zh_cn.json 而退出）"
+                p.bundleFileCount > 0 -> "（bundle ${p.bundleFileCount} 个文件 -> locales/）"
+                else -> "（bundle 复用上次解包结果）"
+            }
+            log("agent「${p.declared}」环境就绪 → ${p.workspace.absolutePath}$bundleNote")
+        }
+        batch.skipped.forEach { r -> log("警告: 跳过 agent「${r.declared}」：${r.detail}") }
+        batch.failed.forEach { f -> log("✗ agent「${f.declared}」环境准备失败：${f.reason}") }
+
+        preparedAgents = batch.prepared
+        if (batch.prepared.isNotEmpty()) {
+            // 说清楚当前的真实边界：目录铺好了，但进程还没起。
+            // agent 的握手（bindResource/connect）必须在持有 MaaResource 的 helper 进程里做，
+            // 而 RemoteProtocol 目前没有对应的命令，所以这里只能到此为止。
+            log("注意: agent 环境已就绪但**尚未启动** —— 握手需要 helper 进程支持 agent.start，MaaEnd 的 Custom 节点在该命令落地前仍会失败")
+        }
+        val failures = batch.failed.map { it.declared }
+        _state.update {
+            it.copy(
+                agentsReady = failures.isEmpty(),
+                agentFailures = failures,
+                lastError = if (failures.isEmpty()) {
+                    it.lastError
+                } else {
+                    "agent 准备失败：${failures.joinToString()}（Custom 节点会失败，详见日志）"
+                },
+            )
         }
     }
 
@@ -341,6 +461,13 @@ class MaaRunController(private val context: Context) {
         }
         if (runJob?.isActive == true) {
             log("已有任务在跑")
+            return
+        }
+        // agent 环境没准备好就拒绝启动：MaaEnd 约 40% 的 pipeline 节点是 Custom 类型，
+        // 缺了 agent 跑到一半才失败的体验（截图停在某个界面、报一堆看不懂的字）比直接拦住更糟。
+        // 注意这里**只**拦「我们准备失败」；「设备上没有该 agent 的产物」在 prepare 阶段只告警。
+        if (!s0.agentsReady) {
+            fail("agent 未就绪，已拒绝启动任务：${s0.agentFailures.joinToString()}（详见日志）", null)
             return
         }
 
@@ -434,13 +561,27 @@ class MaaRunController(private val context: Context) {
 
     /** 彻底收尾：停预览、断会话。 */
     fun shutdown() {
+        // agent 子进程必须先于 helper 会话退掉：它们是通过 helper 的 socket 跟 MaaAgentClient
+        // 配对的，helper 先死会让 agent 卡在 recv 上不退（`AgentHandle.close()` 内部有 2s 宽限 + 强杀）。
+        agentHandles.forEach { handle -> runCatching { handle.close() } }
+        agentHandles.clear()
+        preparedAgents = emptyList()
         runCatching { session?.notify("capture.preview", buildJsonObject { put("enable", false) }) }
         runCatching { session?.notify(RemoteProtocol.Cmd.SHUTDOWN) }
         runCatching { session?.stop() }
         session = null
         eventJob?.cancel()
         eventJob = null
-        _state.update { it.copy(phase = Phase.IDLE, controllerReady = false, resourceLoaded = false, engineReady = false) }
+        _state.update {
+            it.copy(
+                phase = Phase.IDLE,
+                controllerReady = false,
+                resourceLoaded = false,
+                engineReady = false,
+                agentsReady = false,
+                agentFailures = emptyList(),
+            )
+        }
     }
 
     // ------------------------------------------------------------------ 事件汇聚

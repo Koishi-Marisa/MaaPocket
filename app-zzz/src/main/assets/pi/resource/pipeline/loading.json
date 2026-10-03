@@ -1,0 +1,52 @@
+{
+  "loading": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "NOW\\ LOADING"
+              ],
+              "roi": [
+                1161,
+                724,
+                759,
+                331
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "loading__加载中"
+    ]
+  },
+  "loading__加载中": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "NOW\\ LOADING"
+        ],
+        "roi": [
+          1161,
+          724,
+          759,
+          331
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

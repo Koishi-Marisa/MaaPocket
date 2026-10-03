@@ -1,0 +1,119 @@
+{
+  "Screen_divergent_mode_select": {
+    "recognition": "TemplateMatch",
+    "template": "screen/universe/divergent_mode_select.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [],
+    "attach": {
+      "march7th:kind": "screen-anchor",
+      "march7th:screen_id": "divergent_mode_select",
+      "march7th:screen_name": "差分宇宙-模式选择",
+      "march7th:source_image_path": "./assets/images/screen/universe/divergent_mode_select.png",
+      "march7th:note": "模板是 1920x1080 PC 客户端截图的小块裁剪，手机上必须重新采集，见 RECAPTURE.md"
+    }
+  },
+  "divergent_mode_select__divergent_main__0": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 111,
+    "next": [
+      "Screen_divergent_main"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "divergent_mode_select",
+        "divergent_main"
+      ],
+      "march7th:edge_index": 0,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.press_key('esc')",
+      "march7th:kind": "press_key",
+      "march7th:upstream_key": "esc",
+      "march7th:android_keycode": 111
+    }
+  },
+  "divergent_mode_select__divergent_mode_select_normal__0__UNMAPPED_15": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_divergent_mode_select_normal"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "divergent_mode_select",
+        "divergent_mode_select_normal"
+      ],
+      "march7th:edge_index": 1,
+      "march7th:action_index": 0,
+      "march7th:unmapped_expression": "auto.click_element('常规演算', 'text', None, 10, crop=(39 / 1920, 291 / 1080, 672 / 1920, 431 / 1080))",
+      "march7th:unmapped_reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。",
+      "march7th:planned_recognition": "OCR (recognition:\"OCR\" + expected + roi)",
+      "march7th:parsed": true,
+      "march7th:find_type": "text"
+    }
+  },
+  "divergent_mode_select__divergent_mode_select_cycle__0__UNMAPPED_16": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_divergent_mode_select_cycle"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "divergent_mode_select",
+        "divergent_mode_select_cycle"
+      ],
+      "march7th:edge_index": 2,
+      "march7th:action_index": 0,
+      "march7th:unmapped_expression": "auto.click_element('周期演算', 'text', None, 10, crop=(39 / 1920, 291 / 1080, 672 / 1920, 431 / 1080))",
+      "march7th:unmapped_reason": "find_type='text' 需要 MaaFramework 的 OCR 识别模型资源，本资源包未附带，且中文 UI 文本在 PC/手机客户端间会变。",
+      "march7th:planned_recognition": "OCR (recognition:\"OCR\" + expected + roi)",
+      "march7th:parsed": true,
+      "march7th:find_type": "text"
+    }
+  },
+  "Nav_divergent_mode_select_from_divergent_main": {
+    "recognition": "TemplateMatch",
+    "template": "screen/universe/divergent_main.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "divergent_main__divergent_mode_select__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 divergent_main 上时，沿上游第一条 divergent_main -> divergent_mode_select 边前进"
+    }
+  },
+  "NavTo_divergent_mode_select": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Nav_divergent_mode_select_from_divergent_main",
+      "Screen_divergent_mode_select"
+    ],
+    "attach": {
+      "march7th:kind": "nav-router",
+      "march7th:target_screen": "divergent_mode_select",
+      "march7th:predecessors": [
+        "divergent_main",
+        "divergent_mode_select_cycle",
+        "divergent_mode_select_normal"
+      ],
+      "march7th:note": "DirectHit 进入：先按顺序试探各前驱屏幕守卫节点（TemplateMatch 前驱屏幕锚点），命中则沿那条上游边导航；全部未命中则回退到 Screen_divergent_mode_select 锚点——若此时已经在 divergent_mode_select 上即成功，否则本节点识别失败（诚实失败，不静默跳过）。只覆盖单跳。"
+    }
+  }
+}

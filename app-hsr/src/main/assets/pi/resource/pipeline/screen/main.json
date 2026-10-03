@@ -1,0 +1,237 @@
+{
+  "Screen_main": {
+    "recognition": "TemplateMatch",
+    "template": "screen/main.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [],
+    "attach": {
+      "march7th:kind": "screen-anchor",
+      "march7th:screen_id": "main",
+      "march7th:screen_name": "主界面",
+      "march7th:source_image_path": "./assets/images/screen/main.png",
+      "march7th:note": "模板是 1920x1080 PC 客户端截图的小块裁剪，手机上必须重新采集，见 RECAPTURE.md"
+    }
+  },
+  "main__menu__0": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 111,
+    "next": [
+      "Screen_menu"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "main",
+        "menu"
+      ],
+      "march7th:edge_index": 0,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.press_key('esc')",
+      "march7th:kind": "press_key",
+      "march7th:upstream_key": "esc",
+      "march7th:android_keycode": 111
+    }
+  },
+  "main__map__0": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 41,
+    "next": [
+      "main__map__1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "main",
+        "map"
+      ],
+      "march7th:edge_index": 1,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.press_key(cfg.get_value('hotkey_map', 'm'))",
+      "march7th:kind": "press_key",
+      "march7th:upstream_key": "m",
+      "march7th:config_dependency": {
+        "section": "hotkey_map",
+        "key": "m",
+        "note": "静态资源包读不到用户的 config.yaml，已常量折叠为默认热键。"
+      },
+      "march7th:android_keycode": 41
+    }
+  },
+  "main__map__1": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 2000,
+    "next": [
+      "main__map__2"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "main",
+        "map"
+      ],
+      "march7th:edge_index": 1,
+      "march7th:action_index": 1,
+      "march7th:expression": "time.sleep(2)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "main__map__2": {
+    "recognition": "TemplateMatch",
+    "template": "zh_CN/map/back.png",
+    "threshold": 0.9,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "Screen_map"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "main",
+        "map"
+      ],
+      "march7th:edge_index": 1,
+      "march7th:action_index": 2,
+      "march7th:expression": "auto.click_element('./assets/images/zh_CN/map/back.png', 'image', 0.9)",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 0.9,
+      "march7th:masked_template": false
+    }
+  },
+  "main__stellar_warp__0": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 133,
+    "next": [
+      "main__stellar_warp__1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "main",
+        "stellar_warp"
+      ],
+      "march7th:edge_index": 2,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.press_key(cfg.get_value('hotkey_warp', 'f3'))",
+      "march7th:kind": "press_key",
+      "march7th:upstream_key": "f3",
+      "march7th:config_dependency": {
+        "section": "hotkey_warp",
+        "key": "f3",
+        "note": "静态资源包读不到用户的 config.yaml，已常量折叠为默认热键。"
+      },
+      "march7th:android_keycode": 133
+    }
+  },
+  "main__stellar_warp__1": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 2000,
+    "next": [
+      "main__stellar_warp__2"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "main",
+        "stellar_warp"
+      ],
+      "march7th:edge_index": 2,
+      "march7th:action_index": 1,
+      "march7th:expression": "time.sleep(2)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "main__stellar_warp__2": {
+    "recognition": "TemplateMatch",
+    "template": "share/warp/stellar_warp.png",
+    "threshold": 0.9,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "Screen_stellar_warp"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "main",
+        "stellar_warp"
+      ],
+      "march7th:edge_index": 2,
+      "march7th:action_index": 2,
+      "march7th:expression": "auto.click_element('./assets/images/share/warp/stellar_warp.png', 'image', 0.9)",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 0.9,
+      "march7th:masked_template": false
+    }
+  },
+  "main__incoming_message__0": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 44,
+    "next": [
+      "Screen_incoming_message"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "main",
+        "incoming_message"
+      ],
+      "march7th:edge_index": 3,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.press_key('p')",
+      "march7th:kind": "press_key",
+      "march7th:upstream_key": "p",
+      "march7th:android_keycode": 44
+    }
+  },
+  "NavTo_main": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main"
+    ],
+    "attach": {
+      "march7th:kind": "nav-router",
+      "march7th:target_screen": "main",
+      "march7th:predecessors": [
+        "apocalyptic",
+        "camera",
+        "click_enter",
+        "configure_team",
+        "currency_wars_homepage",
+        "divergent_main",
+        "fight_exit",
+        "incoming_message",
+        "leave_temporarily",
+        "map",
+        "memory",
+        "memory_of_chaos",
+        "menu",
+        "monthly_card",
+        "purefiction",
+        "retreat",
+        "stellar_warp",
+        "universe_expansion",
+        "universe_main"
+      ],
+      "march7th:note": "DirectHit 进入：先按顺序试探各前驱屏幕守卫节点（TemplateMatch 前驱屏幕锚点），命中则沿那条上游边导航；全部未命中则回退到 Screen_main 锚点——若此时已经在 main 上即成功，否则本节点识别失败（诚实失败，不静默跳过）。只覆盖单跳。"
+    }
+  }
+}

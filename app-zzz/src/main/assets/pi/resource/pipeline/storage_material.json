@@ -1,0 +1,140 @@
+{
+  "storage_material": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "材料道具"
+              ],
+              "roi": [
+                70,
+                116,
+                100,
+                48
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "storage_material__标题-材料道具",
+      "storage_material__按钮-返回",
+      "storage_material__按钮-道具处理",
+      "storage_material__TAB-音擎",
+      "storage_material__TAB-驱动盘"
+    ]
+  },
+  "storage_material__标题-材料道具": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "材料道具"
+        ],
+        "roi": [
+          70,
+          116,
+          100,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "storage_material__按钮-返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          82,
+          13,
+          68,
+          77
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "menu"
+    ]
+  },
+  "storage_material__按钮-道具处理": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "道具处理"
+        ],
+        "roi": [
+          40,
+          860,
+          390,
+          120
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "item_processing"
+    ]
+  },
+  "storage_material__TAB-音擎": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1412,
+          126,
+          78,
+          84
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "storage_wengine"
+    ]
+  },
+  "storage_material__TAB-驱动盘": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1510,
+          126,
+          78,
+          84
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "storage_drive_disc"
+    ]
+  }
+}

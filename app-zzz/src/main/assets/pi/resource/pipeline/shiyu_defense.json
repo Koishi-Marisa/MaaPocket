@@ -1,0 +1,608 @@
+{
+  "shiyu_defense": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "战报"
+              ],
+              "roi": [
+                1521,
+                27,
+                227,
+                47
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "shiyu_defense__节点区域",
+      "shiyu_defense__节点-01",
+      "shiyu_defense__节点-02",
+      "shiyu_defense__战报",
+      "shiyu_defense__弱点-1-1",
+      "shiyu_defense__弱点-1-2",
+      "shiyu_defense__弱点-2-1",
+      "shiyu_defense__弱点-2-2",
+      "shiyu_defense__抗性-1-1",
+      "shiyu_defense__抗性-1-2",
+      "shiyu_defense__抗性-2-1",
+      "shiyu_defense__抗性-2-2",
+      "shiyu_defense__角色头像",
+      "shiyu_defense__下一步",
+      "shiyu_defense__退出战斗",
+      "shiyu_defense__退出战斗-确认",
+      "shiyu_defense__战斗结束-下一防线",
+      "shiyu_defense__战斗结束-退出",
+      "shiyu_defense__战斗结束-撤退",
+      "shiyu_defense__节点-03",
+      "shiyu_defense__节点-04",
+      "shiyu_defense__节点-05",
+      "shiyu_defense__奖励入口",
+      "shiyu_defense__全部领取",
+      "shiyu_defense__领取奖励-界面",
+      "shiyu_defense__领取奖励-确认",
+      "shiyu_defense__领取奖励-关闭",
+      "shiyu_defense__前次行动最佳记录",
+      "shiyu_defense__前次-关闭",
+      "shiyu_defense__剧变节点进度"
+    ]
+  },
+  "shiyu_defense__节点区域": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          100,
+          174,
+          1706,
+          546
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "shiyu_defense__节点-01": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "shiyu_defense/node_01/raw.png"
+        ],
+        "roi": [
+          100,
+          174,
+          1706,
+          546
+        ],
+        "threshold": 0.9
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "shiyu_defense__节点-02": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "shiyu_defense/node_02/raw.png"
+        ],
+        "roi": [
+          100,
+          174,
+          1706,
+          546
+        ],
+        "threshold": 0.9
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "shiyu_defense__战报": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "战报"
+        ],
+        "roi": [
+          1521,
+          27,
+          227,
+          47
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "shiyu_defense__弱点-1-1": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          850,
+          520,
+          130,
+          50
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "shiyu_defense__弱点-1-2": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1080,
+          520,
+          130,
+          50
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "shiyu_defense__弱点-2-1": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1390,
+          520,
+          130,
+          50
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "shiyu_defense__弱点-2-2": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1620,
+          520,
+          130,
+          50
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "shiyu_defense__抗性-1-1": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          850,
+          645,
+          130,
+          50
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "shiyu_defense__抗性-1-2": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1080,
+          645,
+          130,
+          50
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "shiyu_defense__抗性-2-1": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1390,
+          645,
+          130,
+          50
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "shiyu_defense__抗性-2-2": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1620,
+          645,
+          130,
+          50
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "shiyu_defense__角色头像": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          768,
+          738,
+          118,
+          110
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "shiyu_defense__下一步": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "下一步"
+        ],
+        "roi": [
+          1570,
+          1004,
+          264,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "shiyu_defense__退出战斗": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "退出战斗"
+        ],
+        "roi": [
+          1614,
+          1004,
+          216,
+          44
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "shiyu_defense__退出战斗-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1034,
+          604,
+          192,
+          44
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "shiyu_defense__战斗结束-下一防线": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "下一防线"
+        ],
+        "roi": [
+          1242,
+          1006,
+          252,
+          44
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "shiyu_defense__战斗结束-退出": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "退出"
+        ],
+        "roi": [
+          1566,
+          1006,
+          262,
+          44
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "shiyu_defense__战斗结束-撤退": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "撤退"
+        ],
+        "roi": [
+          532,
+          848,
+          206,
+          68
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "shiyu_defense__节点-03": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "shiyu_defense/node_03/raw.png"
+        ],
+        "roi": [
+          100,
+          174,
+          1706,
+          546
+        ],
+        "threshold": 0.9
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "shiyu_defense__节点-04": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "shiyu_defense/node_04/raw.png"
+        ],
+        "roi": [
+          100,
+          174,
+          1706,
+          546
+        ],
+        "threshold": 0.9
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "shiyu_defense__节点-05": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "shiyu_defense/node_05/raw.png"
+        ],
+        "roi": [
+          100,
+          174,
+          1706,
+          546
+        ],
+        "threshold": 0.9
+      }
+    },
+    "action": {
+      "type": "Click"
+    },
+    "next": [
+      "shiyu_defense_select_3"
+    ]
+  },
+  "shiyu_defense__奖励入口": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          66,
+          948,
+          112,
+          114
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "shiyu_defense__全部领取": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "全部领取"
+        ],
+        "roi": [
+          1274,
+          328,
+          170,
+          44
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "shiyu_defense__领取奖励-界面": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "剧变节点奖励领取"
+        ],
+        "roi": [
+          426,
+          207,
+          264,
+          64
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "shiyu_defense__领取奖励-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          878,
+          706,
+          194,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "shiyu_defense__领取奖励-关闭": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1434,
+          196,
+          50,
+          48
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "shiyu_defense__前次行动最佳记录": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "前次行动最佳记录"
+        ],
+        "roi": [
+          500,
+          234,
+          300,
+          106
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "shiyu_defense__前次-关闭": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1310,
+          228,
+          108,
+          67
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "shiyu_defense__剧变节点进度": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          529,
+          846,
+          112,
+          99
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "map": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                70,
+                1000,
+                1778,
+                58
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                1024,
+                600,
+                208,
+                108
+              ],
+              "threshold": 0.1
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "menu/back/raw.png"
+              ],
+              "roi": [
+                82,
+                13,
+                68,
+                77
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                0,
+                90,
+                1920,
+                840
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "map__传送点名称",
+      "map__确认",
+      "map__左上角返回",
+      "map__主区域名称"
+    ]
+  },
+  "map__传送点名称": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          70,
+          1000,
+          1778,
+          58
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "map__确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1024,
+          600,
+          208,
+          108
+        ],
+        "threshold": 0.1
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "map__左上角返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          82,
+          13,
+          68,
+          77
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "map__主区域名称": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          90,
+          1920,
+          840
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

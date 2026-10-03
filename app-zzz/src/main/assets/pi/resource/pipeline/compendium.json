@@ -1,0 +1,520 @@
+{
+  "compendium": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                708,
+                140,
+                928,
+                80
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                164,
+                287,
+                265,
+                583
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                498,
+                308,
+                350,
+                576
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                1030,
+                602,
+                200,
+                48
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "compendium/completed/raw.png"
+              ],
+              "roi": [
+                1532,
+                250,
+                70,
+                100
+              ],
+              "threshold": 0.7
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "确认"
+              ],
+              "roi": [
+                882,
+                704,
+                204,
+                50
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "奖励预览"
+              ],
+              "roi": [
+                429,
+                195,
+                226,
+                108
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "今日最大活跃度"
+              ],
+              "roi": [
+                417,
+                250,
+                229,
+                70
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1721,
+                229,
+                78,
+                78
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1312,
+                334,
+                334,
+                556
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1254,
+                376,
+                58,
+                518
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1254,
+                552,
+                58,
+                342
+              ]
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "每日怪物卡双倍掉落次数"
+              ],
+              "roi": [
+                1000,
+                346,
+                400,
+                40
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1270,
+                346,
+                110,
+                40
+              ]
+            }
+          },
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1220,
+                35,
+                550,
+                75
+              ]
+            }
+          },
+          {
+            "type": "TemplateMatch",
+            "param": {
+              "template": [
+                "compendium/battery/raw.png"
+              ],
+              "roi": [
+                1220,
+                35,
+                550,
+                75
+              ],
+              "threshold": 0.7
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "compendium__TAB列表",
+      "compendium__分类列表",
+      "compendium__副本列表",
+      "compendium__传送确认",
+      "compendium__活跃度奖励-4",
+      "compendium__活跃度奖励-确认",
+      "compendium__活跃度奖励-奖励预览",
+      "compendium__今日最大活跃度",
+      "compendium__按钮-退出",
+      "compendium__前往列表",
+      "compendium__目标列表-训练",
+      "compendium__目标列表-训练-恶名狩猎",
+      "compendium__每日怪物卡双倍掉落次数",
+      "compendium__怪物卡双倍剩余次数",
+      "compendium__资源栏",
+      "compendium__以太电池"
+    ]
+  },
+  "compendium__TAB列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          708,
+          140,
+          928,
+          80
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "compendium__分类列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          164,
+          287,
+          265,
+          583
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "compendium__副本列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          498,
+          308,
+          350,
+          576
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "compendium__传送确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          1030,
+          602,
+          200,
+          48
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "compendium__活跃度奖励-4": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "compendium/completed/raw.png"
+        ],
+        "roi": [
+          1532,
+          250,
+          70,
+          100
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "compendium__活跃度奖励-确认": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确认"
+        ],
+        "roi": [
+          882,
+          704,
+          204,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "compendium__活跃度奖励-奖励预览": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "奖励预览"
+        ],
+        "roi": [
+          429,
+          195,
+          226,
+          108
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "compendium__今日最大活跃度": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "今日最大活跃度"
+        ],
+        "roi": [
+          417,
+          250,
+          229,
+          70
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "compendium__按钮-退出": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1721,
+          229,
+          78,
+          78
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "compendium__前往列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1312,
+          334,
+          334,
+          556
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "compendium__目标列表-训练": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1254,
+          376,
+          58,
+          518
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "compendium__目标列表-训练-恶名狩猎": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1254,
+          552,
+          58,
+          342
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "compendium__每日怪物卡双倍掉落次数": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "每日怪物卡双倍掉落次数"
+        ],
+        "roi": [
+          1000,
+          346,
+          400,
+          40
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "compendium__怪物卡双倍剩余次数": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1270,
+          346,
+          110,
+          40
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "compendium__资源栏": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1220,
+          35,
+          550,
+          75
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "compendium__以太电池": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "compendium/battery/raw.png"
+        ],
+        "roi": [
+          1220,
+          35,
+          550,
+          75
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "trigrams_collection": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "DirectHit",
+            "param": {
+              "roi": [
+                1318,
+                298,
+                332,
+                342
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "trigrams_collection__区域-获取卦象"
+    ]
+  },
+  "trigrams_collection__区域-获取卦象": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1318,
+          298,
+          332,
+          342
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  }
+}

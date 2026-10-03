@@ -1,0 +1,136 @@
+{
+  "lost_void_battle_result": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "挑战结果"
+              ],
+              "roi": [
+                581,
+                24,
+                773,
+                265
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "lost_void_battle_result__标题-挑战结果",
+      "lost_void_battle_result__按钮-确定",
+      "lost_void_battle_result__按钮-完成",
+      "lost_void_battle_result__奖励-零号业绩",
+      "lost_void_battle_result__奖励-丁尼"
+    ]
+  },
+  "lost_void_battle_result__标题-挑战结果": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "挑战结果"
+        ],
+        "roi": [
+          581,
+          24,
+          773,
+          265
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_battle_result__按钮-确定": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "确定"
+        ],
+        "roi": [
+          936,
+          855,
+          402,
+          142
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "lost_void_battle_result__按钮-完成": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "完成"
+        ],
+        "roi": [
+          1566,
+          1002,
+          264,
+          50
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "lost_void_battle_result__奖励-零号业绩": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "hollow/challenge_reward_eval/raw.png"
+        ],
+        "roi": [
+          1312,
+          486,
+          522,
+          348
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "lost_void_battle_result__奖励-丁尼": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "hollow/critical_reward_money/raw.png"
+        ],
+        "roi": [
+          1312,
+          486,
+          522,
+          348
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}

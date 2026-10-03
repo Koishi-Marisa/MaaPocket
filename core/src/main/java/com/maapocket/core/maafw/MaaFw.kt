@@ -86,6 +86,7 @@ object MaaFw {
             )
             instance = Native.load(LIBRARY_NAME, MaaFrameworkApi::class.java)
             Log.i(TAG, "lib$LIBRARY_NAME.so loaded, version=${MaaVersion()}")
+            Unit
         }.onFailure {
             loadFailure = it
             Log.e(TAG, "failed to load lib$LIBRARY_NAME.so", it)

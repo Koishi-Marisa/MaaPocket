@@ -1,0 +1,304 @@
+{
+  "suibian_temple_yumchaxian": {
+    "recognition": {
+      "type": "Or",
+      "param": {
+        "any_of": [
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "定期采办"
+              ],
+              "roi": [
+                1560,
+                110,
+                270,
+                55
+              ],
+              "threshold": 0.5
+            }
+          },
+          {
+            "type": "OCR",
+            "param": {
+              "expected": [
+                "邻里心愿"
+              ],
+              "roi": [
+                1278,
+                110,
+                268,
+                55
+              ],
+              "threshold": 0.5
+            }
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "suibian_temple_yumchaxian__按钮-定期采办",
+      "suibian_temple_yumchaxian__按钮-邻里心愿",
+      "suibian_temple_yumchaxian__区域-任务列表",
+      "suibian_temple_yumchaxian__按钮-定期采办-刷新",
+      "suibian_temple_yumchaxian__按钮-定期采办-提交",
+      "suibian_temple_yumchaxian__区域-材料-1",
+      "suibian_temple_yumchaxian__区域-材料-2",
+      "suibian_temple_yumchaxian__区域-材料-3",
+      "suibian_temple_yumchaxian__区域-材料数量",
+      "suibian_temple_yumchaxian__按钮-制造",
+      "suibian_temple_yumchaxian__按钮-游历",
+      "suibian_temple_yumchaxian__按钮-返回",
+      "suibian_temple_yumchaxian__区域-材料名称",
+      "suibian_temple_yumchaxian__文本-已达上限"
+    ]
+  },
+  "suibian_temple_yumchaxian__按钮-定期采办": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "定期采办"
+        ],
+        "roi": [
+          1560,
+          110,
+          270,
+          55
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "suibian_temple_yumchaxian__按钮-邻里心愿": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "邻里心愿"
+        ],
+        "roi": [
+          1278,
+          110,
+          268,
+          55
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_yumchaxian__区域-任务列表": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1365,
+          264,
+          297,
+          486
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_yumchaxian__按钮-定期采办-刷新": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          834,
+          942,
+          262,
+          48
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "suibian_temple_yumchaxian__按钮-定期采办-提交": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1446,
+          944,
+          252,
+          46
+        ]
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "suibian_temple_yumchaxian__区域-材料-1": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          800,
+          570,
+          45,
+          45
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_yumchaxian__区域-材料-2": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          800,
+          625,
+          45,
+          40
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_yumchaxian__区域-材料-3": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          800,
+          675,
+          45,
+          40
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_yumchaxian__区域-材料数量": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          852,
+          570,
+          270,
+          150
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_yumchaxian__按钮-制造": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "\\[获取\\]经营\\-制造"
+        ],
+        "roi": [
+          632,
+          536,
+          618,
+          54
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "suibian_temple_yumchaxian__按钮-游历": {
+    "recognition": {
+      "type": "OCR",
+      "param": {
+        "expected": [
+          "\\[材料\\]游历\\-"
+        ],
+        "roi": [
+          630,
+          682,
+          620,
+          52
+        ],
+        "threshold": 0.5
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "suibian_temple_yumchaxian__按钮-返回": {
+    "recognition": {
+      "type": "TemplateMatch",
+      "param": {
+        "template": [
+          "menu/back/raw.png"
+        ],
+        "roi": [
+          82,
+          13,
+          68,
+          77
+        ],
+        "threshold": 0.7
+      }
+    },
+    "action": {
+      "type": "Click"
+    }
+  },
+  "suibian_temple_yumchaxian__区域-材料名称": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          625,
+          288,
+          440,
+          49
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  },
+  "suibian_temple_yumchaxian__文本-已达上限": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          1435,
+          891,
+          269,
+          43
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    }
+  }
+}
