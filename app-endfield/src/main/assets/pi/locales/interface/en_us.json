@@ -1,4 +1,5 @@
 {
+    "group.startup.label": "Startup",
     "option.ExportInventory.label": "Export essence inventory",
     "option.ExportInventory.description": "Scan flawless essences that are not marked as discarded, including locked ones, and export EssenceInventory.json. Discarded essences are skipped without OCR. Match all supported 4- to 6-star weapons without changing any marks. Other filter options are hidden while enabled. Turn this off to show the original filter options again. Game language is detected automatically from the UI.",
     "global.region.ValleyIV": "Valley IV",

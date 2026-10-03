@@ -11,8 +11,9 @@
                 "PlayCover"
             ],
             "group": [
-                "other_menu"
+                "startup"
             ],
+            "default_check": true,
             "option": [
                 "ClientVersion",
                 "ClientVersionCloudLocked"

@@ -27,6 +27,11 @@
   ],
   "group": [
     {
+      "name": "startup",
+      "label": "$group.startup.label",
+      "default_expand": true
+    },
+    {
       "name": "one_dragon",
       "label": "$group.one_dragon.label"
     },
@@ -56,6 +61,19 @@
     }
   ],
   "task": [
+    {
+      "name": "start_up_game",
+      "label": "$task.start_up_game.label",
+      "entry": "Task_start_up_game",
+      "group": [
+        "startup"
+      ],
+      "description": "$task.start_up_game.description",
+      "default_check": true,
+      "option": [
+        "ClientVersion"
+      ]
+    },
     {
       "name": "TaskAutoBattle",
       "label": "$task.TaskAutoBattle.label",
@@ -345,6 +363,19 @@
         "world_patrol"
       ],
       "description": "$task.TaskWorldPatrol.description"
+    },
+    {
+      "name": "close_game",
+      "label": "$task.close_game.label",
+      "entry": "Task_close_game",
+      "group": [
+        "standalone"
+      ],
+      "description": "$task.close_game.description",
+      "default_check": false,
+      "option": [
+        "ClientVersion"
+      ]
     }
   ],
   "option": {
@@ -907,6 +938,58 @@
           "pipeline_override": {
             "suibian_temple_boobox__按钮-聘用": {
               "enabled": false
+            }
+          }
+        }
+      ]
+    },
+    "ClientVersion": {
+      "type": "select",
+      "label": "$option.ClientVersion.label",
+      "description": "$option.ClientVersion.description",
+      "default_case": "Official",
+      "cases": [
+        {
+          "name": "Official",
+          "label": "$option.ClientVersion.cases.Official.label",
+          "pipeline_override": {
+            "StartUpGame": {
+              "action": {
+                "type": "StartApp",
+                "param": {
+                  "package": "com.miHoYo.Nap"
+                }
+              }
+            },
+            "CloseGame": {
+              "action": {
+                "type": "StopApp",
+                "param": {
+                  "package": "com.miHoYo.Nap"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Bilibili",
+          "label": "$option.ClientVersion.cases.Bilibili.label",
+          "pipeline_override": {
+            "StartUpGame": {
+              "action": {
+                "type": "StartApp",
+                "param": {
+                  "package": "com.miHoYo.Nap.bilibili"
+                }
+              }
+            },
+            "CloseGame": {
+              "action": {
+                "type": "StopApp",
+                "param": {
+                  "package": "com.miHoYo.Nap.bilibili"
+                }
+              }
             }
           }
         }

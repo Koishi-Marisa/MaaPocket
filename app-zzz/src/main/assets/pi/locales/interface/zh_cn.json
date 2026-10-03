@@ -10,6 +10,9 @@
     }
   },
   "group": {
+    "startup": {
+      "label": "启动"
+    },
     "one_dragon": {
       "label": "一条龙"
     },
@@ -33,6 +36,10 @@
     }
   },
   "task": {
+    "start_up_game": {
+      "label": "启动游戏",
+      "description": "启动《绝区零》客户端并等待游戏加载完成；运行其他任务前应先执行本任务。"
+    },
     "TaskAutoBattle": {
       "label": "自动战斗",
       "description": "上游应用 自动战斗（包 battle_assistant，app_id=auto_battle）；迁移置信度：taxonomy-only-no-screens"
@@ -152,6 +159,10 @@
     "TaskWorldPatrol": {
       "label": "锄大地",
       "description": "上游应用 锄大地（包 world_patrol，app_id=world_patrol）；迁移置信度：navigation-stub-package-known"
+    },
+    "close_game": {
+      "label": "关闭游戏",
+      "description": "关闭《绝区零》客户端；适合放在任务列表最后，跑完自动化后释放手机内存。"
     }
   },
   "option": {
@@ -269,6 +280,26 @@
         },
         "Off": {
           "label": "关闭"
+        }
+      }
+    },
+    "ClientVersion": {
+      "label": "客户端 / 服务器",
+      "description": "选择要启动/关闭的《绝区零》客户端包名。国服 com.miHoYo.Nap，B服 com.miHoYo.Nap.bilibili。",
+      "case": {
+        "Official": {
+          "label": "国服"
+        },
+        "Bilibili": {
+          "label": "B服"
+        }
+      },
+      "cases": {
+        "Official": {
+          "label": "国服"
+        },
+        "Bilibili": {
+          "label": "B服（哔哩哔哩）"
         }
       }
     }

@@ -4,6 +4,7 @@ import android.app.Application
 import android.graphics.Bitmap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.maapocket.core.pi.PiInstalledPackages
 import com.maapocket.core.pi.PiOption
 import com.maapocket.core.pi.PiRepository
 import com.maapocket.core.pi.PiSelection
@@ -28,6 +29,12 @@ import kotlinx.serialization.json.contentOrNull
 class MaaPocketViewModel(application: Application) : AndroidViewModel(application) {
 
     private val controller = MaaRunController(application)
+
+    /**
+     * 「这个客户端包名装在本机吗」探针。`PiSelection.resolve` 拿它把写死的国服默认值
+     * 自动换成用户真装了的那个（B服 / 国际服）。见 `PiInstalledPackages`。
+     */
+    private val installedPackages = PiInstalledPackages.of(application)
 
     // ---------------------------------------------------------------- 直通状态
 
@@ -351,6 +358,7 @@ class MaaPocketViewModel(application: Application) : AndroidViewModel(applicatio
                 resourceName = _resourceName.value,
                 taskNames = selected,
                 optionValues = options,
+                installedPackages = installedPackages,
             )
         }.getOrElse { t ->
             _uiError.value = "无法解算运行计划：${t.javaClass.simpleName}: ${t.message}"

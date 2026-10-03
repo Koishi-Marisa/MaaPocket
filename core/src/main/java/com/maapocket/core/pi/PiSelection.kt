@@ -1,9 +1,11 @@
 package com.maapocket.core.pi
 
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.isString
 import kotlinx.serialization.json.jsonPrimitive
 import timber.log.Timber
 import java.io.File
@@ -19,6 +21,21 @@ object PiSelection {
 
     /** 选项取值：option 名 -> case 名（switch）/ 原始文本（input / hotkey）。 */
     typealias OptionValues = Map<String, String>
+
+    /**
+     * 「这个包名真的装在本机吗」探针。
+     *
+     * 之所以需要它：崩铁 / 绝区零 / 终末地都有国服与 B服 两套包名，而资源包里的
+     * `default_case` 写死其中一个。用户只装了另一个时，`StartApp` 会指向一个不存在的包，
+     * `PackageManager.getLaunchIntentForPackage` 返回 null，表现为「点了开始游戏却没起来」。
+     *
+     * 默认实现一律返回 true（= 不做任何猜测），这样 [PiSelection] 不依赖 Android，
+     * 单测与命令行排查都能直接调。真机路径见 `PiInstalledPackages.of(context)`。
+     */
+    typealias PackageInstalled = (String) -> Boolean
+
+    /** 不做探测的 [PackageInstalled]：永远认为装好了。 */
+    val NO_PACKAGE_PROBE: PackageInstalled = { true }
 
     data class ResolvedAgent(
         /** PI 里声明的 `child_exec`，例如 `agent/go-service`。 */
@@ -56,6 +73,8 @@ object PiSelection {
      * @param resourceName 选中的 resource 项
      * @param taskNames 勾选的 task 名
      * @param optionValues 所有生效的选项取值（global_option + 各 task 的 option + 子选项）
+     * @param installedPackages 判断某个客户端包名是否真的装在本机；见 [PackageInstalled]。
+     *   默认不探测，因此调用方不传时行为与以前完全一致。
      */
     fun resolve(
         repo: PiRepository,
@@ -64,6 +83,7 @@ object PiSelection {
         resourceName: String,
         taskNames: Collection<String>,
         optionValues: OptionValues = emptyMap(),
+        installedPackages: PackageInstalled = NO_PACKAGE_PROBE,
     ): PiRunPlan {
         val warnings = mutableListOf<String>()
 
@@ -103,7 +123,7 @@ object PiSelection {
         val defs = repo.optionDefs()
         val visited = HashSet<String>()
         for (name in resolvedOptions) {
-            applyOption(defs, name, optionValues, overrides, visited, warnings)
+            applyOption(defs, name, optionValues, overrides, visited, warnings, installedPackages)
         }
 
         // ---- 3. agent / pretask
@@ -144,6 +164,7 @@ object PiSelection {
         out: MutableList<JsonObject>,
         visited: MutableSet<String>,
         warnings: MutableList<String>,
+        installedPackages: PackageInstalled,
     ) {
         if (!visited.add(name)) return // 防环
         val def = defs[name] ?: run {
@@ -154,10 +175,17 @@ object PiSelection {
         // 选项自带的 override 永远生效（不分 case）
         (def as? PiOption)?.let { }
 
-        val chosen = values[name] ?: def.defaultCase ?: def.cases.firstOrNull()?.name
+        val picked = values[name]
+        // 用户没显式选过时才自动探测：默认 case 对应的客户端没装、而另一个 case 的装了。
+        val auto = if (picked == null) autoCase(def, installedPackages) else null
+        val chosen = picked ?: auto ?: def.defaultCase ?: def.cases.firstOrNull()?.name
         if (def.cases.isEmpty()) {
             // input / hotkey 形态：没有 case，没有 pipeline_override，交给上层处理取值本身。
             return
+        }
+        if (auto != null && auto != def.defaultCase) {
+            warnings += "选项「$name」的默认值「${def.defaultCase ?: "-"}」在本机没有对应安装包，" +
+                "已自动改用「$auto」。"
         }
 
         val case = def.cases.firstOrNull { it.name == chosen } ?: def.cases.first()
@@ -168,7 +196,63 @@ object PiSelection {
 
         // 子选项
         (case.option + def.option).forEach { sub ->
-            applyOption(defs, sub, values, out, visited, warnings)
+            applyOption(defs, sub, values, out, visited, warnings, installedPackages)
+        }
+    }
+
+    /**
+     * 把 case 的 `pipeline_override` 里出现的所有 `package` 值挖出来（任意深度）。
+     *
+     * 两种写法都要能认：
+     * - V1：`{"StartUpGame": {"action": "StartApp", "package": "com.miHoYo.hkrpg"}}`
+     * - V2：`{"StartUpGame": {"action": {"type": "StartApp", "param": {"package": "..."}}}}`
+     *
+     * 返回空列表表示「这个 case 压根不提包名」（例如只是想调个 `rate_limit`），
+     * 此时调用方不应据此做任何判断。
+     */
+    private fun casePackages(case: PiOptionCase): List<String> {
+        val root = case.pipelineOverride ?: return emptyList()
+        val found = LinkedHashSet<String>()
+        fun walk(el: JsonElement, key: String?) {
+            when (el) {
+                is JsonObject -> el.forEach { (k, v) -> walk(v, k) }
+                is JsonArray -> el.forEach { walk(it, null) }
+                is JsonPrimitive -> {
+                    if (key == "package" && el.isString) {
+                        val v = el.contentOrNull?.trim().orEmpty()
+                        if (v.isNotEmpty()) found += v
+                    }
+                }
+                else -> Unit
+            }
+        }
+        walk(root, null)
+        return found.toList()
+    }
+
+    /**
+     * 未显式选择时，挑一个「包真的装在设备上」的 case；不该插手时返回 null。
+     *
+     * 只在下面这条极窄的情形下改写取值：默认 case 提到的包**一个都没装**，
+     * 且另有某个 case 提到的包**确实装了**。其余情况一律返回 null，让调用方
+     * 继续走「默认值 / 第一个 case」的老路，避免把用户可见的行为改得不可预测。
+     */
+    private fun autoCase(def: PiOption, installedPackages: PackageInstalled): String? {
+        val pkgsOf = { c: PiOptionCase? ->
+            c?.let { casePackages(it) }.orEmpty()
+        }
+        // 三态：true = 装了；false = 都没装；null = 这个 case 没提包名，别乱猜。
+        fun verdict(c: PiOptionCase?): Boolean? {
+            val pkgs = pkgsOf(c)
+            if (pkgs.isEmpty()) return null
+            return pkgs.any { installedPackages(it) }
+        }
+
+        val defaultCase = def.cases.firstOrNull { it.name == def.defaultCase } ?: def.cases.firstOrNull()
+        return when (verdict(defaultCase)) {
+            true -> null   // 默认那个就装好了，保持原样
+            null -> null   // 判不出来（没写包名 / 没有 case），不要自作主张
+            false -> def.cases.firstOrNull { verdict(it) == true }?.name
         }
     }
 

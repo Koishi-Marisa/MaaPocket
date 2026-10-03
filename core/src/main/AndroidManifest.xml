@@ -23,6 +23,26 @@
         <intent>
             <action android:name="moe.shizuku.api.BIND_SHIZUKU_SERVICE" />
         </intent>
+
+        <!--
+            三款游戏已知的客户端包名。同样是 Android 11+ 包可见性要求：
+            `PiInstalledPackages` 要靠 PackageManager 判断用户装的是国服还是 B服，
+            好把资源包里写死的 `default_case`（崩铁/终末地都是国服）自动换成真装了那个，
+            否则 StartApp 会指向不存在的包、表现为「点了开始游戏却没起来」。
+            漏列只会让某款游戏探测不出来（保持旧行为），不会误判成「没装」。
+        -->
+        <!-- 崩坏：星穹铁道 -->
+        <package android:name="com.miHoYo.hkrpg" />
+        <package android:name="com.miHoYo.hkrpg.bilibili" />
+        <!-- 绝区零 -->
+        <package android:name="com.miHoYo.Nap" />
+        <package android:name="com.miHoYo.Nap.bilibili" />
+        <!-- 明日方舟：终末地 -->
+        <package android:name="com.hypergryph.endfield" />
+        <package android:name="com.hypergryph.endfield.bilibili" />
+        <package android:name="com.hypergryph.endfield.vn" />
+        <package android:name="com.gryphline.endfield.gp" />
+        <package android:name="com.hypergryph.cloud.endfield" />
     </queries>
 
     <application

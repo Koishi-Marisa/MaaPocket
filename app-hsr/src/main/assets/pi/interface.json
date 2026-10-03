@@ -38,6 +38,11 @@
   },
   "group": [
     {
+      "name": "startup",
+      "label": "启动",
+      "default_expand": true
+    },
+    {
       "name": "daily",
       "label": "日常",
       "default_expand": true
@@ -74,6 +79,20 @@
     }
   ],
   "task": [
+    {
+      "name": "start_up_game",
+      "label": "启动游戏",
+      "entry": "Task_start_up_game",
+      "description": "必须先运行：它会 StartApp 把游戏拉到后台虚拟屏，其余任务都依赖它。tasks/game/__init__.py:71 start_game() 是上游唯一的游戏启动入口；:186 用 check_and_click_enter() 轮询点击『进入』。迁移为 StartApp（包名可由 Server 选项覆盖）→ 等待加载 → 找『进入』→ 导航到主界面。",
+      "default_check": true,
+      "group": [
+        "startup"
+      ],
+      "option": [
+        "Server",
+        "StartupWait"
+      ]
+    },
     {
       "name": "daily",
       "label": "日常",
@@ -381,20 +400,6 @@
       "default_check": false,
       "group": [
         "base"
-      ]
-    },
-    {
-      "name": "start_up_game",
-      "label": "启动游戏",
-      "entry": "Task_start_up_game",
-      "description": "tasks/game/__init__.py:71 start_game() 是上游唯一的游戏启动入口；:186 用 check_and_click_enter() 轮询点击『进入』。迁移为 StartApp（包名可由 Server 选项覆盖）→ 等待加载 → 找『进入』→ 导航到主界面。",
-      "default_check": false,
-      "group": [
-        "base"
-      ],
-      "option": [
-        "Server",
-        "StartupWait"
       ]
     },
     {

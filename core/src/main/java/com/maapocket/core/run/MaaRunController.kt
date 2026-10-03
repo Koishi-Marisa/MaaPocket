@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import com.maapocket.core.pi.AgentRuntimeCatalog
 import com.maapocket.core.pi.AgentWorkspace
+import com.maapocket.core.pi.PiInstalledPackages
 import com.maapocket.core.pi.PiInstaller
 import com.maapocket.core.pi.PiRepository
 import com.maapocket.core.pi.PiSelection
@@ -74,6 +75,12 @@ import java.util.ArrayDeque
  * 事件（`log` / `job.progress` / `frame` / `display.changed`）从 `session.events` 汇聚到这里。
  */
 class MaaRunController(private val context: Context) {
+
+    /**
+     * 「这个客户端包名装在本机吗」探针，交给 [PiSelection.resolve] 自动挑国服 / B服。
+     * 见 `PiInstalledPackages`。
+     */
+    private val installedPackages = PiInstalledPackages.of(context)
 
     // ------------------------------------------------------------------ 对外状态
 
@@ -882,6 +889,7 @@ class MaaRunController(private val context: Context) {
                 resourceName = _resourceName,
                 taskNames = listOf(task.name),
                 optionValues = optionValues,
+                installedPackages = installedPackages,
             ).overrides,
         ).flatten()
 

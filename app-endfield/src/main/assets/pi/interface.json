@@ -50,6 +50,11 @@
     ],
     "group": [
         {
+            "name": "startup",
+            "label": "$group.startup.label",
+            "default_expand": true
+        },
+        {
             "name": "regional_development",
             "label": "$group.regional_development.label",
             "default_expand": true

@@ -1,0 +1,61 @@
+{
+  "Task_start_up_game": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "StartUpGame"
+    ]
+  },
+  "StartUpGame": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "StartApp",
+      "param": {
+        "package": "com.miHoYo.Nap"
+      }
+    },
+    "next": [
+      "WaitGameReady"
+    ]
+  },
+  "WaitGameReady": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "post_delay": 20000,
+    "next": []
+  }
+}

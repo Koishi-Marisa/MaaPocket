@@ -42,6 +42,12 @@ class PiRepository private constructor(
         private const val MAX_IMPORT_DEPTH = 8
 
         /**
+         * 「先启动游戏」这一组的分组名。三大游戏（崩铁 / 绝区零 / 终末地）的资源包
+         * 都用这个名字，核心层据此把它提到最前。
+         */
+        const val STARTUP_GROUP = "startup"
+
+        /**
          * @param root pi pack 根目录
          * @param locale 语言代码，如 `zh_cn`；为空时取 `languages` 的第一项
          */
@@ -49,9 +55,33 @@ class PiRepository private constructor(
             val main = File(root, "interface.json")
             require(main.isFile) { "pi pack 缺少 interface.json: ${main.absolutePath}" }
 
-            val repo = PiRepository(root, readAndMerge(root, main, 0, HashSet()))
+            val repo = PiRepository(root, promoteStartup(readAndMerge(root, main, 0, HashSet())))
             repo.attachLocale(locale)
             return repo
+        }
+
+        /**
+         * 把 [STARTUP_GROUP] 这一组、以及属于它的 task 提到最前；其余保持原相对顺序。
+         *
+         * 为什么要在核心层兜这一手：MaaFramework 的 PI **没有执行优先级**这个东西，
+         * 一轮跑的先后顺序就是合并后的 `task` 数组顺序（`PiSelection.resolve` 按这个顺序
+         * 产出 `plan.tasks`，`MaaRunController.runTasks` 再照单执行）。而 import 的合并规则是
+         * `imported + base`（见 [mergeInto]），所以像终末地那样有 66 个 import 的包，
+         * **光靠 interface.json 里的书写位置根本没法把某个 task 排到最前面**。
+         *
+         * 「先启动游戏，再干别的」是三款游戏共同的硬需求，写在核心层比每个包各想一套靠谱。
+         * 没有 `startup` 组的包会原样返回，其它游戏不受影响。
+         */
+        private fun promoteStartup(pi: PiInterface): PiInterface {
+            val isStartupGroup = { name: String -> name == STARTUP_GROUP }
+            val isStartupTask = { t: PiTask -> t.group.any(isStartupGroup) }
+            if (pi.group.none { isStartupGroup(it.name) } && pi.task.none(isStartupTask)) return pi
+            return pi.copy(
+                // 两个列表分别做一次稳定分区：true 的在前，其余相对顺序不变。
+                group = pi.group.filter { isStartupGroup(it.name) } +
+                    pi.group.filterNot { isStartupGroup(it.name) },
+                task = pi.task.filter(isStartupTask) + pi.task.filterNot(isStartupTask),
+            )
         }
 
         private fun readAndMerge(

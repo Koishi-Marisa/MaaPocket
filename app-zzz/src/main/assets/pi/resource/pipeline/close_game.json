@@ -1,0 +1,41 @@
+{
+  "Task_close_game": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "DoNothing"
+    },
+    "next": [
+      "CloseGame"
+    ]
+  },
+  "CloseGame": {
+    "recognition": {
+      "type": "DirectHit",
+      "param": {
+        "roi": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "action": {
+      "type": "StopApp",
+      "param": {
+        "package": "com.miHoYo.Nap"
+      }
+    },
+    "next": []
+  }
+}
