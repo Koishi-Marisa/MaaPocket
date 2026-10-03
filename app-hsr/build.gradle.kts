@@ -36,10 +36,26 @@ android {
         jniLibs { useLegacyPackaging = true }
     }
 
+    // 固定签名。CI 每次 run 都会重新生成 ~/.android/debug.keystore，用它签出的同包名新版
+    // APK 装不上旧版（真机实测：INSTALL_FAILED_UPDATE_INCOMPATIBLE: Existing package
+    // com.maapocket.hsr signatures do not match newer version; ignoring!），用户每次升级
+    // 都得先卸载。改用仓库内固定的 keystore。
+    // 口令是公开的 —— 这个 key 只用于侧载分发，不是上架用的发布密钥；要上架请替换它，
+    // 或用 GitHub Secrets 覆盖下面四个值。
+    signingConfigs {
+        create("maapocket") {
+            storeFile = rootProject.file("keystore/maapocket.jks")
+            storeType = "PKCS12"
+            storePassword = "maapocket"
+            keyAlias = "maapocket"
+            keyPassword = "maapocket"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("maapocket")
         }
     }
 

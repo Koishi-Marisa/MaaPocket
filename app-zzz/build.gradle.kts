@@ -35,10 +35,21 @@ android {
         jniLibs { useLegacyPackaging = true }
     }
 
+    // 见 app-hsr/build.gradle.kts 的说明：固定签名，否则同包名的新版 APK 装不上旧版。
+    signingConfigs {
+        create("maapocket") {
+            storeFile = rootProject.file("keystore/maapocket.jks")
+            storeType = "PKCS12"
+            storePassword = "maapocket"
+            keyAlias = "maapocket"
+            keyPassword = "maapocket"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("maapocket")
         }
     }
 
