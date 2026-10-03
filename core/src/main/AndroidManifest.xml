@@ -8,9 +8,22 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-    <!-- 调试期读设备日志；release 里由用户显式授权 -->
+
+    <!-- 只在 debug 构建里用来读特权进程的日志；release 下由用户显式授权（开发者选项 / adb）。 -->
     <uses-permission android:name="android.permission.READ_LOGS"
         tools:ignore="ProtectedPermissions" />
+
+    <!--
+        查询 Shizuku / 系统设置等外部包。Android 11+ 的包可见性限制要求显式声明，
+        否则 PackageManager.getPackageInfo("moe.shizuku.privileged.api") 会抛 NameNotFound，
+        UI 就没法判断「Shizuku 装了没有」。
+    -->
+    <queries>
+        <package android:name="moe.shizuku.privileged.api" />
+        <intent>
+            <action android:name="moe.shizuku.api.BIND_SHIZUKU_SERVICE" />
+        </intent>
+    </queries>
 
     <application
         android:name="com.maapocket.core.MaaPocketApp"
