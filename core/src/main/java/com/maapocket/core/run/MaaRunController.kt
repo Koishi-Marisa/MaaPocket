@@ -13,6 +13,7 @@ import com.maapocket.core.privilege.PrivilegeAvailability
 import com.maapocket.core.privilege.PrivilegeKind
 import com.maapocket.core.privilege.PrivilegeStatus
 import com.maapocket.core.privilege.PrivilegedSession
+import com.maapocket.core.privilege.ProcessSpawner
 import com.maapocket.core.privilege.RemoteFrame
 import com.maapocket.core.privilege.RemoteProtocol
 import com.maapocket.core.privilege.RemoteRequestException
@@ -232,13 +233,59 @@ class MaaRunController(private val context: Context) {
 
     // ------------------------------------------------------------------ 权限
 
-    /** 重新探测可用的提权后端（root / Shizuku）。 */
-    fun refreshPrivilegeOptions() {
+    /**
+     * 重新探测可用的提权后端（root / Shizuku）。
+     *
+     * **必须切 IO**：`PrivilegeBackends.availability()` 会走 libsu（fork `su` 探根）与
+     * Shizuku 的 `pingBinder()` / `checkSelfPermission()`（跨进程 binder）。真机 logcat 实测
+     * Shizuku 服务进程会被系统冻结（`EventType:FREEZE para:moe.shizuku.privileged.api`），
+     * 此时 binder 调用会一直阻塞到超时（约 5s）：
+     * `ANR in com.maapocket.hsr ... Reason:Input dispatching timed out (... Waited 5001ms for MotionEvent ...)`。
+     * 之前这里是个普通函数、由 ViewModel 的 `init` 直接同步调，直接把主线程拖进了 ANR。
+     *
+     * 日志只在「探测结果相对上一次有变化」时打一行，避免每刷新一次就刷出一串看着像报错的
+     * `privilege root: unsupported` / `privilege shizuku: permission required`。
+     */
+    suspend fun refreshPrivilegeOptions() = withContext(Dispatchers.IO) {
         val options = com.maapocket.core.privilege.PrivilegeBackends.availability(context)
         _state.update { it.copy(privilegeOptions = options) }
-        options.forEach { (kind, availability) ->
-            log("privilege ${kind.label}: ${describe(availability)}")
+        if (options.isEmpty()) return@withContext
+        val line = options.joinToString(" · ") { (kind, availability) ->
+            "${kind.label} ${describe(availability)}"
         }
+        if (line != lastPrivilegeLine) {
+            lastPrivilegeLine = line
+            log("提权后端：$line")
+        }
+    }
+
+    /** 上一次打过的提权探测结果，用来去重日志。见 [refreshPrivilegeOptions]。 */
+    @Volatile
+    private var lastPrivilegeLine: String? = null
+
+    /**
+     * 只申请授权、**不跑任务** —— 给 UI 上的「授权」按钮用。
+     *
+     * 存在的理由：Shizuku 未授权时 [PrivilegedSession.start] 会**直接返回**（连系统弹窗都不弹），
+     * 界面上只会看到一句「特权进程未连上」。真机实测设备侧 Shizuku 明明在跑、权限卡也写着
+     * 「可用」，但 App 从来没被授权过 —— 而 `requestPermission` 在整个 UI 里没有任何入口。
+     *
+     * [PrivilegedSession.requestPermission] 内部用 latch 等异步回调，**必须**切 IO。
+     */
+    suspend fun requestPrivilege(
+        kind: PrivilegeKind,
+        timeoutMs: Long = 30_000L,
+    ): PrivilegeAvailability = withContext(Dispatchers.IO) {
+        val s = session?.takeIf { it.kind == kind }
+            ?: PrivilegedSession(context, kind).also { session = it }
+        var result = s.availability()
+        if (result is PrivilegeAvailability.PermissionRequired) {
+            log("${kind.label} 发起授权请求（请留意系统弹窗）…")
+            s.requestPermission(timeoutMs) { result = it }
+        }
+        _state.update { it.copy(privilege = s.status.value) }
+        log("${kind.label} 授权结果：${describe(result)}")
+        result
     }
 
     private fun describe(a: PrivilegeAvailability): String = when (a) {
@@ -319,6 +366,28 @@ class MaaRunController(private val context: Context) {
         kind: PrivilegeKind,
         displayWidth: Int? = null,
         displayHeight: Int? = null,
+    ) = withContext(Dispatchers.IO) {
+        prepareInner(plan, kind, displayWidth, displayHeight)
+    }
+
+    /**
+     * [prepare] 的正体。**只能**从 [prepare] 进入 —— 里面几乎全是阻塞调用：
+     * `PrivilegeBackends.availability()`（libsu 会 fork `su` 探根）、`backend.spawn()`（Shizuku 的
+     * `IRemoteProcess` binder）、`RemoteConnector.connect()`（最长 18s 轮询等待 socket）。
+     *
+     * 之前没有 [withContext]，而 `MaaPocketViewModel.prepare()` 由 `viewModelScope.launch` 在
+     * **Main** 上发起，于是点一下「准备」就把主线程按住不动 —— 真机 logcat 实证：
+     * `ANR in com.maapocket.hsr (...) Reason:Input dispatching timed out (... Waited 5001ms for MotionEvent ...)`。
+     * 那一下正好撞上系统冻结 Shizuku（`EventType:FREEZE para:moe.shizuku.privileged.api`），
+     * binder 要等到超时才返回。
+     *
+     * 失败**不抛**：全部经由 [fail] 写进 [State.lastError] 与日志。
+     */
+    private suspend fun prepareInner(
+        plan: PiSelection.PiRunPlan,
+        kind: PrivilegeKind,
+        displayWidth: Int?,
+        displayHeight: Int?,
     ) {
         if (_state.value.busy) {
             log("已有任务在跑，忽略 prepare()")
@@ -334,10 +403,36 @@ class MaaRunController(private val context: Context) {
             }
             hookEvents(s)
 
-            val status = s.start()
+            var status = s.start()
             _state.update { it.copy(privilege = status) }
+
+            // Shizuku 没授权时 start() 会**直接返回**（根本不会去 spawn），此时如果只报一句
+            // 「特权进程未连上」，用户拿到的是一句和真实原因无关的话。这里主动申请一次授权再重试。
+            // requestPermission 内部用 CountDownLatch 等异步回调，**不能**在主线程调 ——
+            // prepareInner 已经整体跑在 Dispatchers.IO 上，所以这里是安全的。
+            if (!s.isConnected && status.availability is PrivilegeAvailability.PermissionRequired) {
+                log("${kind.label} 尚未授权，发起授权请求（请留意系统弹窗）…")
+                var granted: PrivilegeAvailability? = null
+                s.requestPermission(timeoutMs = 30_000L) { granted = it }
+                status = s.status.value
+                _state.update { it.copy(privilege = status) }
+                if (granted?.isReady == true) {
+                    log("${kind.label} 已授权，重新拉起特权进程")
+                    status = s.start()
+                    _state.update { it.copy(privilege = status) }
+                }
+            }
+
             if (!s.isConnected) {
-                fail("特权进程未连上（kind=${kind.label}, uid=${status.uid}, state=${status.state}）", null)
+                // 把 backend 给出的**真实原因**（availability / spawn / connect 的 detail）带出来，
+                // 并指明 launcher 日志的确切位置。之前这里只有一句笼统的「特权进程未连上」，
+                // 用户按它去排查什么都找不到 —— 这正是「先处理日志报错」要修的东西。
+                val why = status.detail?.takeIf { it.isNotBlank() } ?: status.state.name
+                fail(
+                    "特权进程未连上（${kind.label} uid=${status.uid}）：$why" +
+                        "；launcher 日志 ${ProcessSpawner.launcherLogFile(context, kind).absolutePath}",
+                    null,
+                )
                 return
             }
             log("privileged session up: kind=${kind.label} token=${s.token}")

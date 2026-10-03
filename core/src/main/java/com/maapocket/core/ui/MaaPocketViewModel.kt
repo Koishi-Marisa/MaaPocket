@@ -117,24 +117,43 @@ class MaaPocketViewModel(application: Application) : AndroidViewModel(applicatio
             }
             .launchIn(viewModelScope)
 
-        refreshPrivilegeOptions()
+        // 提权探测会走 libsu（fork su）与 Shizuku binder，Shizuku 被系统冻结时能卡满 5s；
+        // 以前这里是同步调用，真机上直接把主线程拖进 ANR（Input dispatching timed out, 5001ms）。
+        viewModelScope.launch { refreshPrivilegeOptions() }
     }
 
     // ------------------------------------------------------------------ 权限
 
     fun refreshPrivilegeOptions() {
-        controller.refreshPrivilegeOptions()
-        if (!kindPickedByUser) {
-            val ready = controller.state.value.privilegeOptions
-                .firstOrNull { it.second.isReady }
-                ?.first
-            if (ready != null) _privilegeKind.value = ready
+        viewModelScope.launch {
+            controller.refreshPrivilegeOptions()
+            if (!kindPickedByUser) {
+                val ready = controller.state.value.privilegeOptions
+                    .firstOrNull { it.second.isReady }
+                    ?.first
+                if (ready != null) _privilegeKind.value = ready
+            }
         }
     }
 
     fun selectPrivilegeKind(kind: PrivilegeKind) {
         kindPickedByUser = true
         _privilegeKind.value = kind
+    }
+
+    /**
+     * 申请一次提权授权（Shizuku 会弹授权框）。
+     *
+     * 之前 UI 上没有任何入口能触发 `Shizuku.requestPermission`，而没授权时
+     * `PrivilegedSession.start()` 会直接返回，用户只能看到「特权进程未连上」。
+     */
+    fun requestPrivilege() {
+        viewModelScope.launch {
+            val kind = _privilegeKind.value
+            val result = controller.requestPrivilege(kind)
+            // 授权成功后顺手把后端状态刷新成 ready。
+            if (result.isReady) refreshPrivilegeOptions()
+        }
     }
 
     // ---------------------------------------------------------------- 资源包

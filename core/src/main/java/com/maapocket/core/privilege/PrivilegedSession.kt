@@ -144,11 +144,12 @@ class PrivilegedSession(
             )
         }
 
+        val launcherLog = ProcessSpawner.launcherLogFile(appContext, kind)
         val inv = ProcessSpawner.build(
             context = appContext,
             suffix = kind.processSuffix,
             token = token,
-            logFileName = kind.logFileName,
+            logFile = launcherLog,
             debug = debug,
         )
         invocation = inv
@@ -192,7 +193,7 @@ class PrivilegedSession(
                 append(e.message)
                 if (exit != null) append(" (launcher already exited code=$exit)")
                 append("; see ")
-                append(java.io.File(appContext.applicationInfo.dataDir, "debug/${kind.logFileName}"))
+                append(launcherLog.absolutePath)
             }
             Ln.e("PrivilegedSession: $detail", e)
             teardownConnection()

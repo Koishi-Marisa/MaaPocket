@@ -123,18 +123,46 @@ object ProcessSpawner {
     fun launcherFile(context: Context): File =
         File(context.applicationInfo.nativeLibraryDir, LAUNCHER_SO_NAME)
 
+    /** Shizuku 后端下 launcher 日志的落盘目录：shell(2000) 唯一稳定可写、且 adb 能读的地方。 */
+    const val SHIZUKU_LOG_DIR = "/data/local/tmp/maapocket"
+
+    /**
+     * launcher **自身**日志（`--log-file`）的落盘位置。
+     *
+     * 这里有个真机上踩过的坑：launcher 是在 `execv` **之前**、以**宿主身份** `open()` 这个日志文件的。
+     * root 后端是 uid 0，写哪儿都行；但 Shizuku 后端是 shell(2000)，而它**写不了** app 私有目录 ——
+     * 真机实测 `ls: /data/data/com.maapocket.hsr: Permission denied`，命令里那句
+     * `mkdir -p <dataDir>/debug` 同样失败。结果是 launcher 早期失败的**全部原因都看不到**，
+     * 界面上只剩一句干巴巴的「特权进程未连上」。
+     *
+     * 所以按后端分目录：
+     * - [PrivilegeKind.ROOT]   → `/data/data/<pkg>/debug/`（app 自己读得到，可以直接显示到界面）
+     * - [PrivilegeKind.SHIZUKU] → [SHIZUKU_LOG_DIR]（shell 可写；诊断时 `adb shell cat` 直接看）
+     *
+     * 注意 [PrivilegeKind.logFileName] 两个后端本来就不同，这也是必需的 —— launcher 用
+     * `O_TRUNC` 打开日志，同名会互相清空。
+     */
+    fun launcherLogFile(context: Context, kind: PrivilegeKind): File {
+        val dir = if (kind == PrivilegeKind.ROOT) {
+            File(context.applicationInfo.dataDir, "debug")
+        } else {
+            File(SHIZUKU_LOG_DIR)
+        }
+        return File(dir, kind.logFileName)
+    }
+
     /**
      * 生成一次 [LauncherInvocation]。
      *
      * @param suffix        进程名后缀（`root_service` / `shizuku_service`），最终进程名为
      *                      `"<app 包名>:<suffix>"`，与 MAA-Meow 的命名保持一致。
-     * @param logFileName   日志文件名。**两个后端必须传不同的名字**，因为 launcher 用 O_TRUNC。
+     * @param logFile       launcher 自身的日志文件。由 [launcherLogFile] 决定，调用方不要自己拼。
      */
     fun build(
         context: Context,
         suffix: String,
         token: String,
-        logFileName: String,
+        logFile: File,
         debug: Boolean = false,
     ): LauncherInvocation {
         val launcher = launcherFile(context)
@@ -145,12 +173,11 @@ object ProcessSpawner {
 
         val processName = "${context.packageName}:$suffix"
         val apkPath = context.applicationInfo.sourceDir
-        val logFile = File(context.applicationInfo.dataDir, "debug/$logFileName")
 
         val keepRoot = keepRootForInputInjection
 
         val sb = StringBuilder()
-        // 日志目录先建好：launcher 以 root 打开日志文件时目录不存在会静默丢日志。
+        // 日志目录先建好：launcher 打开日志文件时目录不存在会静默丢日志。
         sb.append("mkdir -p ").append(shellQuote(logFile.parentFile?.absolutePath ?: "."))
             .append(" 2>/dev/null; ")
         sb.append(shellQuote(launcher.absolutePath))
