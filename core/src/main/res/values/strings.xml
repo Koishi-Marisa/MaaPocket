@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 通知渠道 -->
+    <string name="channel_running">自动化运行中</string>
+    <string name="channel_running_desc">显示当前正在执行的游戏与任务</string>
+    <string name="channel_alerts">异常与提醒</string>
+    <string name="channel_alerts_desc">特权进程掉线、资源加载失败等需要处理的问题</string>
+</resources>

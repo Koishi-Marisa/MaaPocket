@@ -32,7 +32,8 @@ permissions:
 jobs:
   # 把 workflow_dispatch 的 abis 输入（或 push/pr 的默认值）变成矩阵。
   # 单独一个 job 是因为 strategy.matrix 不能直接消费 shell，需要 fromJSON 一个真实数组。
-  matrix:
+  # job id 用下划线不用连字符：`needs.<id>` 里的 `-` 会被表达式解析成减号。
+  resolve_abis:
     name: resolve abi matrix
     runs-on: ubuntu-latest
     outputs:
@@ -52,26 +53,31 @@ jobs:
 
   build:
     name: build ${{ matrix.abi }}
-    needs: matrix
+    needs: resolve_abis
     runs-on: ubuntu-latest
     timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
-        abi: ${{ fromJSON(needs.matrix.outputs.abis) }}
+        abi: ${{ fromJSON(needs.resolve_abis.outputs.abis) }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
 
+      # 注意：不能省 packages。setup-android 的默认值是 `tools platform-tools`，
+      # 但新版 cmdline-tools(16.0) 的 sdkmanager 里已经没有 `tools` 这个包了，
+      # 会以 `Warning: Failed to find package 'tools'` 直接 exit 1（run 37124614990 的根因）。
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools'
 
       - name: Install NDK and CMake
         shell: bash

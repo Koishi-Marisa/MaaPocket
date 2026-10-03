@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -60,8 +62,13 @@ android {
     }
 }
 
+// 不用 kotlin { jvmToolchain(17) }：本仓 settings.gradle.kts 没有装 foojay-resolver，
+// 显式声明 toolchain 会让 Gradle 去下载 JDK 17，CI 上直接失败。
+// 改成「用跑 Gradle 的那个 JDK 编译、字节码目标锁 17」，与 compileOptions 保持一致。
 kotlin {
-    jvmToolchain(17)
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
 }
 
 dependencies {

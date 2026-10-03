@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -43,7 +45,8 @@ android {
     lint { abortOnError = false }
 }
 
-kotlin { jvmToolchain(17) }
+// 见 core/build.gradle.kts 里的说明：不用 jvmToolchain，只锁字节码目标。
+kotlin { compilerOptions { jvmTarget.set(JvmTarget.JVM_17) } }
 
 dependencies {
     implementation(project(":core"))
