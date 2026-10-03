@@ -57,7 +57,7 @@
   "ClickEnter": {
     "recognition": "TemplateMatch",
     "template": "screen/click_enter.png",
-    "threshold": 0.9,
+    "threshold": 0.85,
     "roi": [
       0,
       0,
@@ -78,7 +78,7 @@
   "ClickStartGame": {
     "recognition": "TemplateMatch",
     "template": "screen/start_game.png",
-    "threshold": 0.9,
+    "threshold": 0.85,
     "roi": [
       0,
       0,

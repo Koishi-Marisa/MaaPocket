@@ -100,13 +100,13 @@ class PrivilegedSession(
      * `[helper]` / `[maa]` 行）。现在改成先把 [RemoteConnector.events] 桥接进一个
      * 进程级 [MutableSharedFlow]，订阅者什么时候来都能收到后续事件。
      */
-    val events: Flow<RemoteFrame> = _events.asSharedFlow()
-
     private val _events = MutableSharedFlow<RemoteFrame>(
         replay = 0,
         extraBufferCapacity = RemoteProtocol.EVENT_BUFFER,
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
+
+    val events: Flow<RemoteFrame> = _events.asSharedFlow()
 
     private var eventForwardJob: Job? = null
 
