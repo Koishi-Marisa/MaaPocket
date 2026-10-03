@@ -86,6 +86,20 @@ class RemoteConnector(
 
     private val pending = ConcurrentHashMap<Long, CompletableDeferred<RemoteFrame>>()
 
+    /**
+     * [notify] 用掉、但我们**故意不等**响应的 id。
+     *
+     * 为什么需要它：协议是「每帧都带 id、服务端一定回一帧响应」，`notify`（heartbeat /
+     * capture.preview）也照样拿一个 id 发出去。服务端会老实地回一帧，而这帧在
+     * [pending] 里找不到等待者 —— 于是每次心跳都打一条
+     * `RemoteConnector: late response for id=N dropped`，纯噪音（真机实测每 5 秒一条）。
+     * 记在这里就能把「有意不等」和「真的迟到」区分开，后者才值得记日志。
+     *
+     * 上限兜底：正常情况下响应毫秒级回来，集合里最多一两条；万一服务端不回，
+     * 也不能无限涨，超过 [NOTIFY_ID_MAX] 就整体清空（最坏退化成多打几条日志）。
+     */
+    private val notifyIds = java.util.concurrent.ConcurrentHashMap.newKeySet<Long>()
+
     private val closed = AtomicBoolean(false)
 
     private val _events = MutableSharedFlow<RemoteFrame>(
@@ -187,6 +201,8 @@ class RemoteConnector(
                         waiter.complete(frame)
                         continue
                     }
+                    // [notify] 用掉的 id：我们本来就没等，这帧是预期的，静默丢掉。
+                    if (notifyIds.remove(id)) continue
                     // 迟到的响应（调用方已经超时放弃）：丢掉即可，连接继续用。
                     Ln.d("RemoteConnector: late response for id=$id dropped")
                     continue
@@ -234,10 +250,13 @@ class RemoteConnector(
 
     /**
      * 发一帧但不关心响应（`heartbeat` / `capture.preview` 这类单向通知）。
-     * 响应仍然会由服务端发出，只是会被当作“迟到响应”丢掉。
+     *
+     * 服务端仍然会回一帧，那帧由读循环按 [notifyIds] 静默丢掉——**不是**“迟到响应”。
      */
     fun notify(cmd: String, params: JsonObject? = null) {
         val id = nextId.getAndIncrement()
+        if (notifyIds.size > NOTIFY_ID_MAX) notifyIds.clear()
+        notifyIds.add(id)
         writeFrame(RemoteFrame(id = id, cmd = cmd, params = params))
     }
 
@@ -285,6 +304,9 @@ class RemoteConnector(
     }
 
     companion object {
+        /** [notifyIds] 的容量上限；正常情况远达不到，纯粹防服务端不回响应时无限增长。 */
+        private const val NOTIFY_ID_MAX = 256
+
         /** `hello` 用的参数。见 `RemoteServer` 的鉴权。 */
         fun helloParams(token: String, appPid: Int, version: Int): JsonObject = jsonObjectOf(
             "token" to token,
