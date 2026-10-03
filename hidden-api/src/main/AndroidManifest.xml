@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    compileOnly 的 stub 模块：没有任何组件、权限或 provider，只需要一个合法的 manifest
+    让 AGP 能建出 library variant。参考 refs/MAA-Meow/hidden-api/src/main/AndroidManifest.xml。
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" />

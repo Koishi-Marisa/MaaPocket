@@ -77,6 +77,11 @@ kotlin {
 }
 
 dependencies {
+    // 隐藏 API 的编译期占位（IContentProvider / IPackageManager / IDeviceIdleController /
+    // IAppOpsService）。**必须是 compileOnly**：这些类在设备上是系统提供的，
+    // 打进去会变成 dex 里的重复定义 + 运行时冲突。参考 refs/MAA-Meow/app/build.gradle.kts:202。
+    compileOnly(project(":hidden-api"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.runtime.ktx)
