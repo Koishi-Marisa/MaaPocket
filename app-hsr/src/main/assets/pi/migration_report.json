@@ -218,44 +218,44 @@
       "sha256": "89a97e60acf426f16ee77bd2dcda31bd83bc85e201252bf591727807fc04920f"
     },
     {
-      "bytes": 2229,
+      "bytes": 2535,
       "path": "resource/pipeline/screen/achievement.json",
-      "sha256": "324e74d6bf91151b3247a22c52bd2f25c46f0f5e12ab8779c6ceeffa0c67e27d"
+      "sha256": "0535a194c244bcb05f3075efef6413822338e5145261445e3deab15ef0e190f8"
     },
     {
-      "bytes": 4787,
+      "bytes": 5093,
       "path": "resource/pipeline/screen/activity.json",
-      "sha256": "053fe6b436ae8080987bb73079c65eb4caf9000daa9b29c663e9801ae753f674"
+      "sha256": "80e24c81c26e4936aa70fcd55af51fed927f49a982867e630f2ed91d30c49b75"
     },
     {
-      "bytes": 2289,
+      "bytes": 2595,
       "path": "resource/pipeline/screen/apocalyptic.json",
-      "sha256": "54ee127e5d56b3be8f2b9800442ef5859864a77862437d366ea99524c41cde1b"
+      "sha256": "37d24f513acf816e439102e3f86c89ebe2aee8ca7c804fd01abd37bea63934c1"
     },
     {
-      "bytes": 2307,
+      "bytes": 2613,
       "path": "resource/pipeline/screen/bag_consumables.json",
-      "sha256": "313c2694d9bd228a165ee1bebcef4df05addb34b6af3ec6b407d1ab4a1f2b217"
+      "sha256": "6ddadadbe16c00afafc0a44a676765b22e43a0d6b52adae8db30a5917b0afa67"
     },
     {
-      "bytes": 2169,
+      "bytes": 2475,
       "path": "resource/pipeline/screen/bag_lc.json",
-      "sha256": "ef20d225685e8843bda3e757bd391645d404763409809d2ad1e4b12b756c1265"
+      "sha256": "aff406850a777930ec87e28da949b56b0a270a34b785bc25b922ea06ca78d7f3"
     },
     {
-      "bytes": 2259,
+      "bytes": 2565,
       "path": "resource/pipeline/screen/bag_relicset.json",
-      "sha256": "fb6a39a469e639f7e4f0785a0f177f6e8b7059617b62fea39b2a8285f82aecdc"
+      "sha256": "30651636efbb03309bfe10ff7b93c758145aa66384786bc7323d6fc254a7915d"
     },
     {
-      "bytes": 2686,
+      "bytes": 2992,
       "path": "resource/pipeline/screen/camera.json",
-      "sha256": "086165bd83041ab880cc7ae4b98f988f676f6412004323b29673f397a9a16097"
+      "sha256": "500e849f462fb2a13d95ac5f7776d96f979b8f4bc53d9f87db0b20e4c2d50006"
     },
     {
-      "bytes": 1788,
+      "bytes": 2094,
       "path": "resource/pipeline/screen/character_warp.json",
-      "sha256": "8f192da165a0e728a9c908334adbc4814aec7feb0ac9a4d03d3acb6d3f8d1d6f"
+      "sha256": "101ac9b8b5d5ba0e00dd6ecbc90774b4f3c51a3a2cb81518c46f234e877b6d98"
     },
     {
       "bytes": 3449,
@@ -263,59 +263,59 @@
       "sha256": "0dae38797dd28a428f6779131fec57acd88fca979d60256e4e54e14b0c32d61e"
     },
     {
-      "bytes": 2274,
+      "bytes": 2580,
       "path": "resource/pipeline/screen/configure_team.json",
-      "sha256": "61140afdda1a3e7776a925b9fd1d9e3e6ad2e7d0365094bcddec7c27e000bd1f"
+      "sha256": "53e982148972be60ecef85ef9e8951872eed5f84e4b14dcc48bac10e3dc3f6a1"
     },
     {
-      "bytes": 3482,
+      "bytes": 3788,
       "path": "resource/pipeline/screen/consumables.json",
-      "sha256": "464fbb7ce11a7655aec849c63546a8bc4e0b588299d3287bee8970dd30f9b9f6"
+      "sha256": "d39781c523eea11d54c4e06bf16ebfa7717122c3ac555241ceb979b94d9cf440"
     },
     {
-      "bytes": 4481,
+      "bytes": 4787,
       "path": "resource/pipeline/screen/currency_wars_homepage.json",
-      "sha256": "5dfe5a7e1fd729c60b4057994afaa9f9f6fefe0d194266afafa830e281b556f0"
+      "sha256": "438adc74664fb7fd5eee2f2ec0973b2ef03773030fb39e058dae907b3ebae792"
     },
     {
-      "bytes": 8987,
+      "bytes": 9293,
       "path": "resource/pipeline/screen/currency_wars_mode_select.json",
-      "sha256": "0e6a6ece2c5a81d12125beb4da51d3823d440e34e27b44baa52acf42c40d33b3"
+      "sha256": "8614b5c00ebf4e3f11084d5276842315a51f01b4fa76b39c4e12e3996769bfdf"
     },
     {
-      "bytes": 2803,
+      "bytes": 3109,
       "path": "resource/pipeline/screen/currency_wars_mode_select_normal.json",
-      "sha256": "85e540adc6f9fc12f59dcf1fc09a24db8ee9e5bf039cfd2258a766b9f4d85f99"
+      "sha256": "3b3b2928f6aadcf0c9c3c6e41ffb5970cd05b932a9e59eb929b7d1843ae43dc5"
     },
     {
-      "bytes": 2848,
+      "bytes": 3154,
       "path": "resource/pipeline/screen/currency_wars_mode_select_overclock.json",
-      "sha256": "26333eee0b2be6f3d3eff4a862c19ffc68357c79136cd2eb772f9d5c6aa5f573"
+      "sha256": "5e4f2f4924eeb547810ed3295bb3d9a5cde7781f4073ec72ce80d5f19cf9d42d"
     },
     {
-      "bytes": 2184,
+      "bytes": 2490,
       "path": "resource/pipeline/screen/dispatch.json",
-      "sha256": "b56ca6c84babe4225b61b8814db5165f7574b7290d2b2a61f3ce09871b7be8d4"
+      "sha256": "7718cc6b757ad7b7dc0f0396dc95c64798fc916e2332db4aec6bf97cd1a772ee"
     },
     {
-      "bytes": 4251,
+      "bytes": 4557,
       "path": "resource/pipeline/screen/divergent_main.json",
-      "sha256": "38908cd25bed3f092874fdcc45e0794a33f8a7c46160feee3599dda56137fdaf"
+      "sha256": "fbf8d75775010e463f2ba4f760c4bf74a013893873e480aba3d71bb09a09ce1e"
     },
     {
-      "bytes": 5783,
+      "bytes": 6089,
       "path": "resource/pipeline/screen/divergent_mode_select.json",
-      "sha256": "8264d81398e3a956b9014ffd3e30d23e0226ba5a7b28b0df38f50a153b24885e"
+      "sha256": "17bc53b354418db6bc6d24dc2d72de811a213a221f7665385e2f3a476fb3f200"
     },
     {
-      "bytes": 2862,
+      "bytes": 3168,
       "path": "resource/pipeline/screen/divergent_mode_select_cycle.json",
-      "sha256": "ae6f2120de7535d956f09a0afe2bed58603ff6add466c9b6af38a12705159b78"
+      "sha256": "4133c067fe0c9dfa8952d4566502a29545b25dfadf867af05a606fd080ed7bfd"
     },
     {
-      "bytes": 2706,
+      "bytes": 3012,
       "path": "resource/pipeline/screen/divergent_mode_select_normal.json",
-      "sha256": "a1938438295189b6c76832c3970c92d4b9a2bfeec91e5e41ddd28909c30bbb3f"
+      "sha256": "c596459acb747c9dd939259763b9062f71556b0a642eba02c30c94f91094c6bf"
     },
     {
       "bytes": 2476,
@@ -328,44 +328,44 @@
       "sha256": "f31dea66923deddf9aa1f44b36119edf409e4b653d1c6e87b1ac52c8a200954e"
     },
     {
-      "bytes": 5644,
+      "bytes": 5950,
       "path": "resource/pipeline/screen/guide2.json",
-      "sha256": "303888bcf8f96ceadb7c8acd3ce58f0cc6b7c11f62d17e93e7f340bc0bda4db0"
+      "sha256": "d68af3a107b3ceb963cc8eec408dd76a112410a767812f4d993617120fc655fc"
     },
     {
-      "bytes": 5644,
+      "bytes": 5950,
       "path": "resource/pipeline/screen/guide3.json",
-      "sha256": "7e9f1dc0ac32b40cac5afd1c242a98d6239a2e44b81ae14318723ea391433276"
+      "sha256": "7ee78dd1623118bce65df56326c9db617e77f99891f81ca02d1f1f47084b03fe"
     },
     {
-      "bytes": 11788,
+      "bytes": 12094,
       "path": "resource/pipeline/screen/guide4.json",
-      "sha256": "cbfe7c49a206288263d8af37761ac4f2f030a24478fddf995360ceb877332948"
+      "sha256": "7448618721933527f05d40657530442d11d7192679e06f5f07f5b18f9dd5d98d"
     },
     {
-      "bytes": 11900,
+      "bytes": 12206,
       "path": "resource/pipeline/screen/guide5.json",
-      "sha256": "94664a729a0a7ce2c191204a759ca79125966ad79232a5f84eb58e0ab01b15da"
+      "sha256": "5b55bc50fc1ed9c67f4e8e4305570f4ccb56a55469cd913ff5337e7c65b10166"
     },
     {
-      "bytes": 3635,
+      "bytes": 3941,
       "path": "resource/pipeline/screen/himeko_prepare.json",
-      "sha256": "59e0469119cc2cf88cdb6265c3b86dc07977b45e108071dbf6be4ae829c596c2"
+      "sha256": "cfc4adba39a0804fd2e772df8328b3c509914960b9c171beeb417fc3d9a5e157"
     },
     {
-      "bytes": 4023,
+      "bytes": 4329,
       "path": "resource/pipeline/screen/himeko_try.json",
-      "sha256": "652354622e3534f1b4b771905d4e5fb1ee183addfb4f25e914e928b24487d83a"
+      "sha256": "5929ec0513973cb5fff969f086ca99be4591d493e132c4d98db3fbdb23ab17ed"
     },
     {
-      "bytes": 2421,
+      "bytes": 2727,
       "path": "resource/pipeline/screen/himeko_try_banner.json",
-      "sha256": "ce2dafd7ed40b5255a1b42d3ee37ff08c8d0e94f5d0544c2af5caaf97f34e726"
+      "sha256": "bac36cdb1b4bb82c017d8a572bb61d07b041c641fe441ec1c6d6f43bdeca9c04"
     },
     {
-      "bytes": 2309,
+      "bytes": 2615,
       "path": "resource/pipeline/screen/incoming_message.json",
-      "sha256": "8a09020922ac10d45a1375b93f6354cfd4e021d34ffd844a1aabfbfc3cfe7407"
+      "sha256": "94b5f58d505414bc67b6d9ca61a4e146ebc7357c41a86b1ee641636a0d636df4"
     },
     {
       "bytes": 3060,
@@ -373,19 +373,19 @@
       "sha256": "30c24f334a2eb2c1d916a4c29f827712adc063b351af4144a15072e83ebfc88f"
     },
     {
-      "bytes": 2124,
+      "bytes": 2430,
       "path": "resource/pipeline/screen/mail.json",
-      "sha256": "350d419aac3e0fcb9aa63f78de0ad99d9734f129b03e05d785e3f4749cc58eeb"
+      "sha256": "92c7314b5cfd6077be090dc78b8222c3d7dc98fc42a00d0f829b9816e531ce26"
     },
     {
-      "bytes": 15520,
+      "bytes": 16191,
       "path": "resource/pipeline/screen/main.json",
-      "sha256": "08f7164e75daf101db23431851b5d9234c7220480f097e730d237719185df2b0"
+      "sha256": "eb3c2554037da30566ed509986a142c4d7ca76c15935d972742c3e2b8f05732c"
     },
     {
-      "bytes": 2561,
+      "bytes": 2867,
       "path": "resource/pipeline/screen/map.json",
-      "sha256": "0258626138223c1205f69fb865c0998fd4696c8a36dfd280e3c9368aed4ba6e4"
+      "sha256": "f76bab4d7f038756fdf65d10ddc928919a017f3656e02d0433202fd080ff5e45"
     },
     {
       "bytes": 1843,
@@ -393,24 +393,24 @@
       "sha256": "3d74e1e8955a38ac9ab2394b730260f4c49d34f4c2efbf37e8e8ebe092192ef1"
     },
     {
-      "bytes": 2983,
+      "bytes": 3289,
       "path": "resource/pipeline/screen/material.json",
-      "sha256": "b41ab7fd55c55d343a58029ade99ddb69b12c811edaacbbf2f141b20d5b083e1"
+      "sha256": "23881db96ebd8684603c7337235b22a2635498869b43e012f17aad8e40ff2cfb"
     },
     {
-      "bytes": 2293,
+      "bytes": 2599,
       "path": "resource/pipeline/screen/memory.json",
-      "sha256": "bc66375cf8cf5927f552b76a76623798aa66df24c9aba389ea0a706db81952c7"
+      "sha256": "f3e837c54f78648b444acbadb7ccb3172f234f05c418024be28cfca4c54dc645"
     },
     {
-      "bytes": 4316,
+      "bytes": 4622,
       "path": "resource/pipeline/screen/memory_of_chaos.json",
-      "sha256": "15760104e57f21bcfd42f8345260c2d8335da431582afac819507213da8602f3"
+      "sha256": "0055d14d83b06b0271bb084672e9ae8f66c4858eb8a5be64443705f4a73b7bc2"
     },
     {
-      "bytes": 41125,
+      "bytes": 41431,
       "path": "resource/pipeline/screen/menu.json",
-      "sha256": "c99d2221d801d257f1986d5162eb4a3cbd9af8ab91f037653a2cd4205a11dcd3"
+      "sha256": "2d2e7953a258edc850622dac1bb472444cea9cb958fa81c822436cb072a94e19"
     },
     {
       "bytes": 3184,
@@ -418,34 +418,34 @@
       "sha256": "46cfb10e6b17b54c475be3e3f56fe40ab1686484e03b6cd1b3fb6874921330fe"
     },
     {
-      "bytes": 3823,
+      "bytes": 4129,
       "path": "resource/pipeline/screen/pass1.json",
-      "sha256": "5c907dedb3af4791f156fee1311fe3f923de2728c2dc057f2060e8fffdd00da8"
+      "sha256": "9101337ad34f18e049440030bdd19f71d7fcc7d5b15a964b1b72b901e2e63baa"
     },
     {
-      "bytes": 2843,
+      "bytes": 3149,
       "path": "resource/pipeline/screen/pass2.json",
-      "sha256": "23269b655127984f7807862fb94c60539d22c59aea42f259b2eef6604434d70e"
+      "sha256": "2fafb3630c15bb80cd1302264e5e93194043946c460f920b32a5e0c9d5aa1fe5"
     },
     {
-      "bytes": 1767,
+      "bytes": 2073,
       "path": "resource/pipeline/screen/photo_preview.json",
-      "sha256": "ad5f864286ad0f1a114362c45a2176bd7bfc8ce47e4c2e515bd29e08ac283b33"
+      "sha256": "fc496c10e2382e01af727056a995575d237bfecc123b7fb57ea4bc867f403d6a"
     },
     {
-      "bytes": 3052,
+      "bytes": 3358,
       "path": "resource/pipeline/screen/prepare_fight.json",
-      "sha256": "d7a8e566e7f5e62ed2158815b342c88dfceea32cf0ce439850d07df1e20e8abc"
+      "sha256": "7aade27f6d7852c5c63342fed088492ebc3c7ef9dddb7ca48cb234e544173ed6"
     },
     {
-      "bytes": 2289,
+      "bytes": 2595,
       "path": "resource/pipeline/screen/purefiction.json",
-      "sha256": "09c2bddbce4b4ddbe9cbb81954e89c574a827dc906405ad98a4087d8c5671a4f"
+      "sha256": "1591697298253b5e8fa03e59369b0e2808262078aa1244e456cf6fc2ad21c683"
     },
     {
-      "bytes": 2217,
+      "bytes": 2523,
       "path": "resource/pipeline/screen/redemption.json",
-      "sha256": "f7c19d836ed3168a7d23b0bf40c44bff0d7d00d3ee8fd07af1771f5f1e58f3c2"
+      "sha256": "7e549d841e415d060df1264661198a2d154067505dd774c704ecbe5896229cd6"
     },
     {
       "bytes": 2277,
@@ -453,9 +453,9 @@
       "sha256": "68ff174386775be9b2216f43e2dc1795028d67a8de62646087cd486e400421a9"
     },
     {
-      "bytes": 2360,
+      "bytes": 2666,
       "path": "resource/pipeline/screen/reward_guide.json",
-      "sha256": "e4aa566e03af5fff0ffa87529ce43840c0e2b95468e87905ad82d92bb58142f1"
+      "sha256": "eaf4de45cd400fb2a87cfd396e699e4bd38887941c2532de3965a5b3a5c9a9c5"
     },
     {
       "bytes": 2353,
@@ -468,34 +468,34 @@
       "sha256": "1c8c6e2218de9d72b311952575ce6f01b12daa7a53ef9a89e21eb9d855d3fcee"
     },
     {
-      "bytes": 3912,
+      "bytes": 4218,
       "path": "resource/pipeline/screen/stellar_warp.json",
-      "sha256": "2362ea5b0c10701adf4d41edbc6822a728758091db7c0979ec849938fbb14d99"
+      "sha256": "f2b7d9166c3b704396c55ce3882d61b413cc3c1967204b63a425061e3bdb355b"
     },
     {
-      "bytes": 3240,
+      "bytes": 3546,
       "path": "resource/pipeline/screen/universe_expansion.json",
-      "sha256": "172f70a77621ae09d6935e4e74e052247cd06131f7376916b1726ae2b84dd376"
+      "sha256": "fe9970d2b3d5f8b98fdf471371687049dc58915c10fe29a65e7032854a91faff"
     },
     {
-      "bytes": 4315,
+      "bytes": 4621,
       "path": "resource/pipeline/screen/universe_main.json",
-      "sha256": "a1347e475d7416484bd21b334a6beb897654d4d3e8c0d3a1b519fa17540d3bb1"
+      "sha256": "1e56d336e84a91ddb6a6f963c6a6f1bc28690746be2c3ab42ee427d3bcdd579c"
     },
     {
-      "bytes": 2784,
+      "bytes": 3396,
       "path": "resource/pipeline/screen/universe_map.json",
-      "sha256": "a8a1795bf6e11fee7e4f7e946682c8897874292cdf5ae8d8de4b2d39db45a21b"
+      "sha256": "e3c0a48177382548e6885521ec618cf444f5cd21041333abdc352621b4e4af5f"
     },
     {
-      "bytes": 1841,
+      "bytes": 2147,
       "path": "resource/pipeline/screen/universe_report.json",
-      "sha256": "8ae1eb2dab52b41d98de516dc4f3c218a694899ac6d0efdc9dc0f4f8102f8bd8"
+      "sha256": "40e624f06aeae52682970cad3d53af16bb0841e8d07b8a8b53ec1034b4ff932b"
     },
     {
-      "bytes": 2130,
+      "bytes": 2436,
       "path": "resource/pipeline/screen/visa.json",
-      "sha256": "7f0b3df79f2c0e55ba3305e19eabf6120ef9ead313c9c50dd890fe78a59dd476"
+      "sha256": "42f44eac635ae467be2506359d8558e5553cfaebefe9d8af8a8960e46f8ec132"
     },
     {
       "bytes": 622,
@@ -2690,7 +2690,7 @@
   ],
   "totals": {
     "files_written": 90,
-    "generated_bytes": 289741,
+    "generated_bytes": 304794,
     "image_bytes": 3883745
   },
   "underscore_dirs": [],

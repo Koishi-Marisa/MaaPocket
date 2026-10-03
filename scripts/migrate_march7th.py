@@ -1803,6 +1803,18 @@ def build_action_node(info, nxt, sid, target, edge_idx, action_index):
             node = dh_node(nxt, attach, action="DoNothing")
             return node
         attach["march7th:android_keycode"] = code
+        # The mechanical mapping above is "same character, Android keycode".
+        # For the keys this corpus actually uses that mapping is *not* what the
+        # phone client needs, so carry the required re-capture action in the node.
+        if key in ("esc", "escape"):
+            attach["march7th:recapture_note"] = (
+                "上游按 esc 打开/关闭暂停菜单（49 次中的 48 次）。Android 客户端没有键盘，"
+                "esc 不会到达游戏；手机上应改为 Android KEYCODE_BACK(4)，即把 key 由 111 改成 4，"
+                "或改成点击屏幕上的返回/暂停按钮的模板匹配节点。")
+        elif info.get("source") == "config":
+            attach["march7th:recapture_note"] = (
+                "上游是键盘热键（%s），手机端没有任何键盘热键；这一跳必须改成点击屏幕上"
+                "对应功能入口的模板匹配节点。" % (info.get("key") or ""))
         return dh_node(nxt, attach, action="ClickKey", action_params={"key": code})
 
     if kind == "click":

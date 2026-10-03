@@ -36,7 +36,8 @@
       "march7th:expression": "auto.press_key('esc')",
       "march7th:kind": "press_key",
       "march7th:upstream_key": "esc",
-      "march7th:android_keycode": 111
+      "march7th:android_keycode": 111,
+      "march7th:recapture_note": "上游按 esc 打开/关闭暂停菜单（49 次中的 48 次）。Android 客户端没有键盘，esc 不会到达游戏；手机上应改为 Android KEYCODE_BACK(4)，即把 key 由 111 改成 4，或改成点击屏幕上的返回/暂停按钮的模板匹配节点。"
     }
   },
   "menu__guide2__0": {
