@@ -36,7 +36,23 @@ public final class ActivityManager {
             Method getDefaultMethod = cls.getDeclaredMethod("getDefault");
             IInterface am = (IInterface) getDefaultMethod.invoke(null);
             return new ActivityManager(am);
-        } catch (ReflectiveOperationException e) {
+        } catch (Throwable e) {
+            // Android 9 以后 ActivityManagerNative 已从 boot classpath 移除（Android 15 上
+            // Class.forName 抛 ClassNotFoundException）。直接拿 IActivityManager 这个 binder，
+            // 效果等价：ActivityManagerNative.getDefault() 内部本来也只是
+            // ServiceManager.getService("activity") 的 asInterface。
+            //
+            // 这条路是 MaaPocket 新加的：原来只有 MAA-Meow 那套 binder 回传，从没在
+            // Android 15 上跑过 ActivityManager.create()，真机上第一次用就撞上了。
+            try {
+                IInterface am = ServiceManager.getService("activity", "android.app.IActivityManager");
+                if (am != null) {
+                    Ln.d("ActivityManager: IActivityManager via ServiceManager (ActivityManagerNative unavailable)");
+                    return new ActivityManager(am);
+                }
+            } catch (Throwable t) {
+                e.addSuppressed(t);
+            }
             throw new AssertionError(e);
         }
     }

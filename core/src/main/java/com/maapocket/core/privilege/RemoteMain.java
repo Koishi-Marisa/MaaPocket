@@ -53,17 +53,19 @@
  *   （没有 Context 时只有「建虚拟屏」和「输入注入」会退化，ServiceManager 反射路径仍然可用），
  *   并如实通过 `Event.FATAL`/日志告知。
  *
- * ## 需求 4：为什么主线程进 `Looper.loop()`，socket 循环放后台线程？
+ * ## 需求 4：为什么主线程进 `Looper.loop()`，管道引导线程放后台？
  *
  * - `Workarounds` 的静态初始化本身要 `prepareMainLooper()`；`DisplaySession` 的
  *   `DisplayListener` 也要一个 `Handler(Looper.getMainLooper())`；框架（Binder、DisplayManager）
  *   都假设主 Looper 在跑。**主线程返回就会让 app_process 直接结束进程**，所以主线程只能
  *   待在 `Looper.loop()` 里，这既是需求也是平台约束。
- * - `LocalServerSocket.accept()` 是个阻塞循环，必须放独立线程；它一旦返回（收到远端
- *   `shutdown`、socket 被关、或 bind 失败）就由**那个线程**执行清理并退出进程。
+ * - 引导线程要做两件会阻塞的事：`BootstrapClient.attach(...)`（最多重试 10 次 × 500ms，
+ *   等 app 把 `BootstrapProvider` publish 出来）和 `RemoteServer.awaitTermination()`
+ *   （等到明确停机）。这两段必须放独立线程；它们一旦返回（收到远端 `shutdown`、管道断开、
+ *   或引导失败）就由**那个线程**执行清理并退出进程。
  *   注意 `Looper.prepareMainLooper()` 建出来的 looper 是 **non-quittable** 的
  *   （`quit()` 会抛 "Main thread not allowed to quit"），所以不能靠「让 loop() 返回」
- *   来收尾——这也是为什么退出动作放在 accept 线程里。
+ *   来收尾——这也是为什么退出动作放在引导线程里。
  * - `Looper.prepareMainLooper()` 先调，`Workarounds.prepareMainLooper()` 看到
  *   `Looper.myLooper() != null` 就早退。这与 MAA-Meow 的真实流程一致：
  *   `root/RemoteServiceStarter.java:26-30` 也是先 `Looper.prepareMainLooper()`，
@@ -73,7 +75,7 @@
  *
  * ## 未捕获异常
  *
- * `Thread.setDefaultUncaughtExceptionHandler` 会：写日志 → 通过 socket 发一帧
+ * `Thread.setDefaultUncaughtExceptionHandler` 会：写日志 → 通过管道发一帧
  * `Event.FATAL`（尽力而为，对端没了就算了）→ 清理 → `System.exit(70)`。
  * 理由：`Looper.loop()` 里抛出的异常本来就会杀进程，与其带着未知状态苟活，
  * 不如明确地把死因送到 app 端。注意单个命令处理函数抛异常**不会**走到这里——
@@ -92,6 +94,7 @@ package com.maapocket.core.privilege;
 
 import android.content.Context;
 import android.os.Looper;
+import android.os.ParcelFileDescriptor;
 import android.os.Process;
 import android.os.SystemClock;
 import android.system.Os;
@@ -172,9 +175,8 @@ public final class RemoteMain {
         // 4) 假 Context：scrcpy 路线（见文件头）。不是 RootUserService 那套。
         prepareFakeContext();
 
-        // 5) 起服务端。
-        final String socketName = RemoteProtocol.SOCKET_PREFIX + a.token;
-        final RemoteServer srv = new RemoteServer(a.token, socketName, RemoteProtocol.MAX_LINE_BYTES);
+        // 5) 起服务端（不再监听任何东西：管道由引导线程交进来，见下面的引导线程）。
+        final RemoteServer srv = new RemoteServer(a.token, RemoteProtocol.MAX_LINE_BYTES);
         srv.setLogFileName(a.debugName != null ? a.debugName : a.packageName);
         server = srv;
 
@@ -201,21 +203,67 @@ public final class RemoteMain {
 
         startWatchdog();
 
-        // 6) accept 循环放后台线程，主线程进 Looper（理由见文件头）。
-        final Thread acceptor = new Thread(() -> {
+        // 6) 管道引导放后台线程，主线程进 Looper（理由见文件头）。
+        final Thread bootstrapper = new Thread(() -> {
+            ParcelFileDescriptor[] up = null;          // 特权进程 → app
+            ParcelFileDescriptor[] down = null;        // app → 特权进程
+            ParcelFileDescriptor fromRemote = null;    // 交给 app 的读端
+            ParcelFileDescriptor toRemote = null;      // 交给 app 的写端
             try {
-                srv.serve();
-                Ln.i(TAG + ": accept loop returned");
+                up = ParcelFileDescriptor.createPipe();
+                down = ParcelFileDescriptor.createPipe();
+                // up[1] 我们留着写；down[0] 我们留着读。
+                fromRemote = up[0];
+                toRemote = down[1];
+
+                final BootstrapClient.Result r = BootstrapClient.attach(
+                        a.packageName, a.uid, a.token, fromRemote, toRemote);
+                if (r == null) {
+                    Ln.e(TAG + ": bootstrap attach failed; exiting");
+                    closeQuietly(fromRemote);
+                    closeQuietly(toRemote);
+                    closeQuietly(up[1]);
+                    closeQuietly(down[0]);
+                    cleanupAndExit(6);
+                    return;
+                }
+
+                // FD 已经交出去（binder 传的是 dup），本进程不再需要这两端。
+                closeQuietly(fromRemote);
+                closeQuietly(toRemote);
+                fromRemote = null;
+                toRemote = null;
+
+                // 用 app 回包里的真实 pid，而不是 a.uid（--uid= 传的是 app 的 uid，不是 pid）。
+                appPid = r.appPid > 0 ? r.appPid : appPid;
+                Ln.i(TAG + ": bootstrap attached appPid=" + r.appPid + " appUid=" + r.appUid);
+
+                if (!srv.attachClient(up[1], down[0])) {
+                    Ln.e(TAG + ": server refused client attach; exiting");
+                    closeQuietly(up[1]);
+                    closeQuietly(down[0]);
+                    cleanupAndExit(7);
+                    return;
+                }
+                up[1] = null;
+                down[0] = null;   // 所有权已交给 RemoteServer
+
+                srv.awaitTermination();
+                Ln.i(TAG + ": transport closed");
             } catch (Throwable t) {
-                Ln.e(TAG + ": accept loop failed", t);
+                Ln.e(TAG + ": transport setup failed", t);
             } finally {
-                // 走到这里说明没人会再来连我们了（shutdown 命令 / bind 失败 / socket 被关）。
+                closeQuietly(fromRemote);
+                closeQuietly(toRemote);
+                if (up != null) closeQuietly(up[1]);
+                if (down != null) closeQuietly(down[0]);
+                // 走到这里说明传输已经结束（shutdown 命令 / 管道断开 / 引导失败）。
                 // 主 Looper 是 non-quittable，不能靠 loop() 返回来收尾，所以在这里主动退出。
                 cleanupAndExit(0);
             }
-        }, "maapocket-accept");
-        acceptor.setDaemon(false);
-        acceptor.start();
+        }, "maapocket-bootstrap");
+        bootstrapper.setDaemon(false);
+        bootstrapper.start();
 
         Ln.i(TAG + ": entering main looper");
         Looper.loop();
@@ -300,7 +348,7 @@ public final class RemoteMain {
         });
     }
 
-    /** 尽力而为地把死因通过 socket 送出去；对端已经没了就直接放弃。 */
+    /** 尽力而为地把死因通过管道送出去；对端已经没了就直接放弃。 */
     private static void reportFatalToClient(Thread thread, Throwable throwable) {
         final RemoteServer srv = server;
         if (srv == null) return;
@@ -308,7 +356,7 @@ public final class RemoteMain {
             srv.event(RemoteProtocol.Event.FATAL, RemoteProtocol.fatalData(thread.getName(), throwable));
         } catch (Throwable t) {
             try {
-                Ln.w(TAG + ": could not report fatal error over socket: " + t);
+                Ln.w(TAG + ": could not report fatal error over the pipe: " + t);
             } catch (Throwable ignored) {
                 // ignore
             }
@@ -327,7 +375,10 @@ public final class RemoteMain {
      * 3. 从来没有客户端连上、或连上后断了，超过 [ORPHAN_TIMEOUT_MS]。
      *
      * 第 3 条替代了 MAA-Meow 的 binder death recipient——它原来的载体
-     * （`RootServiceBootstrapRegistry` 里那个 app 生命周期 Binder）在 LocalSocket 设计里没有了。
+     * （`RootServiceBootstrapRegistry` 里那个 app 生命周期 Binder）在我们的设计里没有了。
+     * 现在的引导通道虽然是 binder（`BootstrapClient` → `BootstrapProvider.call`），
+     * 但那条 binder 只在 attach 那一瞬间存在，拿不到能长期用的 death recipient，
+     * 所以这一轮仍然只靠看门狗。
      */
     private static void startWatchdog() {
         final long startedAt = SystemClock.elapsedRealtime();
@@ -387,7 +438,7 @@ public final class RemoteMain {
      * 幂等清理。顺序有讲究：
      * 1. `RemoteEngine.shutdown()` 先关 native 预览并释放 Surface——MAA-Meow 的教训是
      *    Surface 不关会让**下一个**特权进程 `eglCreateWindowSurface` 报 "already connected"；
-     * 2. 再关服务端（`RemoteServer.close()` 会关 socket、关 worker）；
+     * 2. 再关服务端（`RemoteServer.close()` 会关两端流、关 worker）；
      * 3. 最后 `Runtime.getRuntime().halt()` 不作为默认路径：`System.exit` 会跑 shutdown hook，
      *    而 hook 里又调回本方法，靠 [cleaned] 防重入。
      */
@@ -476,6 +527,16 @@ public final class RemoteMain {
     private static String shortToken(String token) {
         if (token == null) return "<null>";
         return token.length() <= 8 ? token : token.substring(0, 8) + "...";
+    }
+
+    /** `ParcelFileDescriptor.close()` 会抛 IOException；清理路径上不该因此中断退出流程。 */
+    private static void closeQuietly(ParcelFileDescriptor fd) {
+        if (fd == null) return;
+        try {
+            fd.close();
+        } catch (Throwable t) {
+            Ln.d(TAG + ": closeQuietly failed: " + t);
+        }
     }
 
     private static int readInt(Object element) {

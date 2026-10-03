@@ -34,6 +34,43 @@ object MaaFw {
     /** The external-lib name our own `core/src/main/cpp` builds, referenced by the controller config. */
     const val BRIDGE_LIBRARY_NAME = "bridge"
 
+    /**
+     * `libMaaFramework.so`'s `DT_NEEDED` closure, in load order (dependencies first).
+     *
+     * ### Why we load these by absolute path before the framework itself
+     *
+     * Upstream builds `libMaaFramework.so` with **no `RPATH` and no `RUNPATH`** (verified by parsing
+     * the dynamic section of the shipped `.so` — only `libonnxruntime.so` and `libopencv_world4.so`
+     * carry `RUNPATH=$ORIGIN`). Its dynamic section reads:
+     *
+     * ```
+     * NEEDED = [libfastdeploy_ppocr.so, libonnxruntime.so, libMaaUtils.so,
+     *           libopencv_world4.so, libm.so, libdl.so, libc.so]
+     * ```
+     *
+     * The helper process is a bare `app_process` whose default linker namespace holds only
+     * `/system/lib64` and `/vendor/lib64`, so none of those four names resolve. Android's linker
+     * resolves `DT_NEEDED` **eagerly** and fails the whole `dlopen` with
+     * `dlopen failed: library "libMaaUtils.so" not found` — naming the *dependency*, which makes it
+     * look like the framework itself is missing.
+     *
+     * Loading each one first with an absolute path puts it into the same namespace's loaded-library
+     * list; the linker then satisfies the later `DT_NEEDED` entries by SONAME instead of searching
+     * the filesystem. This is more robust than relying on `LD_LIBRARY_PATH`, which Android stops
+     * honouring once a classloader namespace exists.
+     */
+    private val NATIVE_PRELOAD = listOf(
+        // libc++_shared must come first: opencv/onnxruntime both NEEDED it.
+        "libc++_shared.so",
+        // These two carry RUNPATH=$ORIGIN, so their own NEEDED resolve next to them, but they still
+        // have to be reachable by name for libMaaFramework/libMaaUtils.
+        "libonnxruntime.so",
+        "libopencv_world4.so",
+        // Hard DT_NEEDED of libMaaFramework.so — not a desktop-only extra.
+        "libfastdeploy_ppocr.so",
+        "libMaaUtils.so",
+    )
+
     @Volatile private var instance: MaaFrameworkApi? = null
     @Volatile private var loadFailure: Throwable? = null
 
@@ -79,6 +116,9 @@ object MaaFw {
                     }
                 }
             }
+            if (nativeLibraryDir != null && nativeLibraryDir.isDirectory) {
+                preloadNativeDependencies(nativeLibraryDir)
+            }
             Log.i(
                 TAG,
                 "loading lib$LIBRARY_NAME.so (jna.tmpdir=${System.getProperty("jna.tmpdir")}, " +
@@ -90,6 +130,29 @@ object MaaFw {
         }.onFailure {
             loadFailure = it
             Log.e(TAG, "failed to load lib$LIBRARY_NAME.so", it)
+        }
+    }
+
+    /**
+     * Loads [NATIVE_PRELOAD] out of [dir] by absolute path, in order.
+     *
+     * Best-effort: a missing file is logged and skipped, because the authoritative failure will be
+     * reported by the `Native.load` that follows. Loading a library that is already loaded is a
+     * no-op (the linker returns the existing handle when the SONAME matches), so re-entrancy is safe.
+     */
+    private fun preloadNativeDependencies(dir: File) {
+        for (name in NATIVE_PRELOAD) {
+            val file = File(dir, name)
+            if (!file.isFile) {
+                Log.w(TAG, "preload: $name missing from ${dir.absolutePath}; relying on the linker")
+                continue
+            }
+            runCatching {
+                System.load(file.absolutePath)
+                Log.i(TAG, "preload: loaded $name")
+            }.onFailure {
+                Log.w(TAG, "preload: failed to load $name: ${it.message}")
+            }
         }
     }
 

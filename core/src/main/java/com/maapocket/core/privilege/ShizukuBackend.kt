@@ -24,9 +24,12 @@ import java.util.concurrent.atomic.AtomicReference
  * ## 命令包装
  *
  * ```
- * test -x '<liblauncher.so>' || exit 126; exec <raw> </dev/null >/dev/null 2>&1
+ * mkdir -p '<logDir>' 2>/dev/null; test -x '<liblauncher.so>' || exit 126; exec <raw> </dev/null >/dev/null 2>&1
  * ```
  *
+ * - `mkdir` 必须在 `exec` **之前**单独成句。`exec` 会把 shell 替换成紧随其后的那一条命令，
+ *   所以任何前置命令一旦被写进 `<raw>` 就会顶替掉 launcher —— 见
+ *   [LauncherInvocation.rawCommand] 里那段真机踩坑记录。
  * - `test -x` 是必须的：如果 `.so` 没有可执行位，`exec` 会失败但 `sh` 会退化成
  *   “继续执行后面的东西”或者直接卡住，而 `exit 126` 让失败立刻可见。
  * - `</dev/null >/dev/null 2>&1` 把 stdio 摘掉：服务进程的 stdout 一旦没人读，

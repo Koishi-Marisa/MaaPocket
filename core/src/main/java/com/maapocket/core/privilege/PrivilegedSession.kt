@@ -38,22 +38,26 @@ class RemoteRequestException(
  *
  * 对应 MAA-Meow 的 `ProcessServiceConnectorBackend` + `ShizukuManager`/`RootManager`，
  * 但把「起进程 → 连 binder → 等 attach」那套换成了
- * 「起进程 → 连 LocalSocket → `hello` 鉴权」。
+ * 「起进程 → 等特权进程把管道送回来 → `hello` 鉴权」。
  *
  * ## 一次完整启动
  * 1. [PrivilegeBackend.availability] 判定后端是否就绪（Shizuku 权限 / root）；
- * 2. 生成一次性 [token]，[ProcessSpawner.build] 拼出 `liblauncher.so` 命令行（socket 名 = `maapocket.<token>`）；
- * 3. 后端 `spawn`：Shizuku 走 `IShizukuService.newProcess`，root 走 `libsu Shell`；
- * 4. [RemoteConnector.connect] 在 [RemoteProtocol.CONNECT_TIMEOUT_MS] 内重试连接——
- *    特权进程从 fork 到 ART 起 main 通常要几百毫秒，第一次必然失败；
+ * 2. 生成一次性 [token]，`BootstrapRegistry.register(token)` **先挂号**（必须早于 spawn，
+ *    否则特权进程调回 `BootstrapProvider` 时找不到 token 槽位）；
+ * 3. [ProcessSpawner.build] 拼出 `liblauncher.so` 命令行，后端 `spawn`：
+ *    Shizuku 走 `IShizukuService.newProcess`，root 走 `libsu Shell`；
+ * 4. [RemoteConnector.connect] 等那个槽位被 `attach` 完成，最多
+ *    [RemoteProtocol.CONNECT_TIMEOUT_MS]——特权进程从 fork 到 ART 起 main 通常几百毫秒；
  * 5. 发 `hello`（连同本进程 pid），成功后进 [PrivilegeState.READY]，并每
  *    [HEARTBEAT_INTERVAL_MS] 发一次 `heartbeat`。
  *
- * ## 为什么 socket 名带 token
- * Abstract namespace 是全局的：如果名字固定，任何 app 都能猜到并抢注，
- * 或者 app 自己重启后把旧特权进程的 socket 当成自己的。token 每会话随机，
- * 旧进程因为 `hello` 永远等不到匹配的 token（它的 socket 名不同，也没人来连）
- * 会由自己的看门狗收尸。
+ * ## 为什么 token 必须是一次性的
+ *
+ * 引导阶段特权进程要靠 token 在 app 的 `BootstrapRegistry` 里认领槽位，
+ * 而 `BootstrapProvider` 是 `exported` 的（不然 `getContentProviderExternal` 找不到它）。
+ * token 每会话随机 + 只在内存里，别的 app 猜不出来就等于拿不到管道；
+ * 同时它也让「app 重启后留下的旧特权进程」自然出局：旧进程手上的 token
+ * 在新进程的注册表里不存在，`BootstrapClient` 会直接失败退出，由它自己的看门狗收尸。
  *
  * ## 状态
  * [status] 是唯一的对外状态源；[events] 透传特权进程的主动事件（帧、日志、致命错误）。
@@ -160,26 +164,31 @@ class PrivilegedSession(
                 availability = availability,
                 runsAsRoot = runsAsRoot,
                 uid = backendUid(),
-                detail = "launcher=${inv.launcherPath} socket=${inv.socketName}",
+                detail = "launcher=${inv.launcherPath} token=${BootstrapRegistry.short(token)}",
             )
         }
+
+        // 关键顺序：必须先挂号再 spawn。特权进程一起来就会调 BootstrapProvider，
+        // 槽位不存在它会立刻判失败并退出进程，这一轮会话就白跑了。
+        val slot = BootstrapRegistry.register(token)
 
         handle = try {
             backend.spawn(inv)
         } catch (e: Throwable) {
             Ln.e("PrivilegedSession: spawn failed for $kind", e)
+            BootstrapRegistry.unregister(token)
             return update { it.copy(state = PrivilegeState.DEAD, detail = "spawn failed: ${e.message}") }
         }
 
         update { it.copy(state = PrivilegeState.CONNECTING) }
-        val conn = RemoteConnector(inv.socketName, token)
+        val conn = RemoteConnector(token, slot)
         connector = conn
         conn.onClosed = { cause ->
             // 连上之后断的（app 主动 close 不会走到这里）。
             update {
                 it.copy(
                     state = PrivilegeState.DEAD,
-                    detail = cause?.let { c -> "socket closed: ${c.javaClass.simpleName}: ${c.message}" } ?: "socket closed",
+                    detail = cause?.let { c -> "pipe closed: ${c.javaClass.simpleName}: ${c.message}" } ?: "pipe closed",
                 )
             }
         }
@@ -327,6 +336,10 @@ class PrivilegedSession(
         connector?.close()
         connector = null
         handle = null
+        // 槽位必须摘掉：不然「等待管道」的 deferred 会一直挂在注册表里，
+        // 之后某次迟到的 attach 会被它接住、写出两个没人读的 FD。
+        // 已被 connector 接管的槽位在这里只是被移除，不会重复关闭 FD。
+        BootstrapRegistry.unregister(token)
     }
 
     /** 后端的真实 uid：root 后端恒 0，Shizuku 后端是 Shizuku 服务自己的 uid（0=root，2000=shell）。 */

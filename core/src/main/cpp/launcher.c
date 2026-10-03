@@ -141,7 +141,71 @@ static char *format_arg(const char *prefix, const char *value) {
     return out;
 }
 
-static void exec_app_process(const LauncherArgs *args) {
+/*
+ * 把 launcher 自己所在的目录（= APK 解出来的 nativeLibraryDir）塞进 LD_LIBRARY_PATH。
+ *
+ * 为什么必须在 launcher 里做、而不是在 spawn 命令里做：
+ *   - Shizuku 后端用 `sh -c` 包一条命令，还能拼 `LD_LIBRARY_PATH=... exec ...`；但 root
+ *     （libsu）后端走的是另一条路径，两边各拼一次容易走偏。launcher 是两个后端**共同**的
+ *     最后一跳，且此时它自己已经加载成功，改环境不会影响自身。
+ *
+ * 为什么必须做：
+ *   libMaaFramework.so 没有 RPATH/RUNPATH，DT_NEEDED 里带着 libMaaUtils.so /
+ *   libonnxruntime.so / libopencv_world4.so / libfastdeploy_ppocr.so 四个名字。helper 是裸
+ *   `app_process`，默认 linker namespace 只有 /system/lib64 与 /vendor/lib64，不认这些名字，
+ *   dlopen 直接 `library "libMaaUtils.so" not found`。ADB shell 没有 classloader namespace，
+ *   所以这里设的 LD_LIBRARY_PATH 是被 linker 认的。
+ *
+ *   调用方（ProcessSpawner）已经把这些 .so 解到 nativeLibraryDir，所以这里只补路径。
+ */
+static void set_library_path_from_exe(const char *argv0) {
+    char buffer[4096];
+    const char *source = NULL;
+    ssize_t n;
+
+    n = readlink("/proc/self/exe", buffer, sizeof(buffer) - 1);
+    if (n > 0 && (size_t) n < sizeof(buffer)) {
+        buffer[n] = '\0';
+        source = buffer;
+    } else if (argv0 != NULL && strchr(argv0, '/') != NULL) {
+        snprintf(buffer, sizeof(buffer), "%s", argv0);
+        source = buffer;
+    }
+
+    if (source == NULL) {
+        LOGW("setenv(LD_LIBRARY_PATH): cannot resolve launcher dir; native deps may not resolve");
+        return;
+    }
+
+    {
+        char value[4096];
+        char *slash;
+        const char *existing;
+
+        /* 就地截断成目录名。 */
+        slash = strrchr(buffer, '/');
+        if (slash == NULL) {
+            LOGW("setenv(LD_LIBRARY_PATH): no '/' in \"%s\"", buffer);
+            return;
+        }
+        *slash = '\0';
+
+        existing = getenv("LD_LIBRARY_PATH");
+        if (existing != NULL && existing[0] != '\0') {
+            snprintf(value, sizeof(value), "%s:%s", buffer, existing);
+        } else {
+            snprintf(value, sizeof(value), "%s", buffer);
+        }
+
+        if (setenv("LD_LIBRARY_PATH", value, 1) != 0) {
+            LOGW("setenv(LD_LIBRARY_PATH=%s) failed: %s", value, strerror(errno));
+        } else {
+            LOGI("setenv(LD_LIBRARY_PATH=%s)", value);
+        }
+    }
+}
+
+static void exec_app_process(const LauncherArgs *args, const char *argv0) {
     char uid_text[32];
     char *nice_name_arg = NULL, *token_arg = NULL, *package_arg = NULL;
     char *service_arg = NULL, *uid_arg = NULL, *debug_arg = NULL;
@@ -173,6 +237,8 @@ static void exec_app_process(const LauncherArgs *args) {
         LOGFE("setenv(CLASSPATH) failed: %s", strerror(errno));
         exit(1);
     }
+
+    set_library_path_from_exe(argv0);
 
     exec_args[index++] = (char *) kAppProcessPath;
     exec_args[index++] = (char *) "/system/bin";
@@ -264,7 +330,7 @@ int main(int argc, char **argv) {
             LOGFI("setresuid(%u): ok — exec app_process", (unsigned) kShellUid);
         }
 
-        exec_app_process(&args);
+        exec_app_process(&args, argv[0]);
         _exit(1);
     }
 

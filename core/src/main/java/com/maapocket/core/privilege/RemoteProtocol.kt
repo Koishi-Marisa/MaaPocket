@@ -18,11 +18,28 @@ import java.nio.charset.StandardCharsets
  * ## 为什么不是 AIDL
  *
  * MAA-Meow 用「AIDL `RemoteService` + ContentProvider 引导 + binder 回传」把特权进程接回 app。
- * 那条链路里 ContentProvider 只负责把 binder 运回去（Shizuku 的 binder 只能 app→Shizuku，
- * 不能反过来），代价是 `RootServiceBootstrapProvider/Client/Registry` +
- * `RootIContentProviderCompat` 四个文件加一段 `enableContentProviderExternal` 前的
- * `getContentProviderExternal` 舞步。改成 LocalSocket 后这些全部消失，协议本身变成自描述的
- * JSON 行，调试时 `nc` 就能手工敲。
+ * 那条链路里 ContentProvider 只负责把 binder 运回去。本移植把**业务协议**换成了自描述的
+ * JSON 行（不定义 AIDL 接口、不加 `Stub`），但**引导通道仍然是 ContentProvider**。
+ *
+ * ## 传输层：ContentProvider 引导 + binder 传管道
+ *
+ * 中间试过「抽象命名空间的 `LocalSocket`，app 当客户端」，在真机上死路一条：
+ *
+ * ```
+ * PrivilegedSession: connect failed: ... Caused by: java.io.IOException: Permission denied
+ *     at android.net.LocalSocketImpl.connectLocal(Native Method)
+ * avc: denied { connectto } for path=006D6161706F636B65742E... \
+ *     scontext=u:r:untrusted_app:s0:c41,c257,c512,c768 tcontext=u:r:shell:s0 \
+ *     tclass=unix_stream_socket permissive=0
+ * ```
+ *
+ * app（`untrusted_app`）与特权进程（`shell`）分属不同 SELinux 域，Enforcing 下 `connectto`
+ * 被直接拒绝，换名字/换 namespace 都无效。现在的做法是**方向反过来**：app 提供
+ * `BootstrapProvider`，特权进程用 `getContentProviderExternal` 主动调进来，把两条
+ * `ParcelFileDescriptor` 单向管道交回来。详见 `BootstrapProtocol` / `BootstrapRegistry`。
+ *
+ * 好处是协议层完全没动：连接一旦建好，字节流从哪来对上面这些帧毫无影响，
+ * `RemoteServer` / `RemoteConnector` 的读写循环仍拿 `InputStream` / `OutputStream`。
  *
  * ## 帧类型
  *
@@ -46,16 +63,11 @@ object RemoteProtocol {
     /** 协议版本。改动不兼容语义时 +1；对端比本端低时至少要能回 `E_PROTOCOL`。 */
     const val VERSION = 1
 
-    /** 抽象命名空间里 socket 名的前缀，完整名 = `maapocket.<token>`；见 [socketNameFor]。 */
-    const val SOCKET_PREFIX = "maapocket."
-
     /** 单行上限 1 MiB。`capture.frame` 的 base64 图片可能到几百 KB，留够余量。 */
     const val MAX_LINE_BYTES = 1 shl 20
 
-    /** 连接重试节奏：特权进程从 fork 到 `app_process` 起 ART 通常 200ms~2s。 */
-    const val CONNECT_RETRY_INTERVAL_MS = 200L
-
-    /** 连不上就放弃的总时长。MAA-Meow 是 spawnTimeout 15s + 3s 余量。 */
+    /** 管道引导的等待总时长。特权进程从 fork 到 `app_process` 起 ART 通常 200ms~2s，
+     *  之后还要等 app 的 `BootstrapProvider` 被 publish。 */
     const val CONNECT_TIMEOUT_MS = 18_000L
 
     /** 默认请求超时；长任务（`display.start`、`engine.setup`）自己传更大的值。 */
@@ -65,18 +77,14 @@ object RemoteProtocol {
      *  保证读线程永远不被慢消费者阻塞。 */
     const val EVENT_BUFFER = 256
 
-    /** 抽象命名空间不落文件系统，因此不受目录 0700 限制，也不用操心 socket 文件的属主，
-     *  只受 SELinux `unix_stream_socket connectto` 约束（见 RemoteConnector 的说明）。*/
+    /** JSON 编解码器。`encodeDefaults=false` 让帧里只出现真正有值的字段（协议靠这一点做区分：
+     *  请求看 `cmd`、响应看 `ok`、事件看 `event`）。 */
     val json: Json = Json {
         encodeDefaults = false
         explicitNulls = false
         ignoreUnknownKeys = true
         isLenient = false
     }
-
-    /** 抽象 socket 名由 token 推导，双方分别从 `--token=` argv 和 spawn 时的本地 token 得到，
-     *  不需要任何额外握手。token 是 32 位十六进制 UUID，长度远低于 sun_path 上限。 */
-    fun socketNameFor(token: String): String = SOCKET_PREFIX + token
 
     /**
      * `RemoteMain.java` 用的 [Event.FATAL] 载荷构造器。

@@ -95,10 +95,19 @@ KEEP_SO = [
     # Go binding）在 `internal/native/native.go` 的 `Initialize()` 里**无条件**依次 open
     # libMaaFramework / libMaaToolkit / libMaaAgentServer / libMaaAgentClient 四个库并对每个
     # 导出符号做 resolve 预检，少一个就直接 `LibraryLoadError` 退出。
-    # 实测消耗：上游 v5.14.2 Android zip 里 libMaaToolkit.so 约 1.1 MB，代价可接受。
+    # 实测消耗：上游 v5.14.2 Android zip 里 libMaaToolkit.so 是 5,228,776 B（约 5 MB），代价可接受。
     "libMaaToolkit.so",                # maa-framework-go 的 Initialize() 硬依赖
     "libonnxruntime.so",               # NeuralNetworkDetect / 部分 OCR 后端
     "libopencv_world4.so",             # 模板匹配、颜色匹配、图像处理
+    # 注意：**也不能丢 libfastdeploy_ppocr.so**。它的名字听起来像纯桌面件（FastDeploy 的 PPOCR
+    # 后端），但 `libMaaFramework.so` 的动态段里它是**硬 DT_NEEDED**：
+    #   NEEDED = [libfastdeploy_ppocr.so, libonnxruntime.so, libMaaUtils.so, libopencv_world4.so, ...]
+    # 而 `libMaaFramework.so` 自己 RPATH/RUNPATH 都是空，Android linker 对 DT_NEEDED 是**急加载**，
+    # 少一个就直接 `dlopen failed: library "libfastdeploy_ppocr.so" not found`，
+    # 并且报的是**被依赖方**的名字，很容易误判成「框架缺件」。
+    # 实测（`_research/elf_deps.py` 解 CI 产出 APK）确认上游没有把它做成可选 dlopen。
+    # 代价：上游 v5.14.2 Android zip 里 22,986,073 B（约 23 MB），可接受。
+    "libfastdeploy_ppocr.so",          # libMaaFramework.so 的硬 DT_NEEDED，不是桌面专属
 ]
 
 # 明确排除的条目 -> 原因。**每一个都写清楚，避免以后有人"顺手都拷过去"。**
@@ -106,9 +115,10 @@ EXCLUDED_SO = {
     "libc++_shared.so":
         "NDK 自带的 libc++_shared —— core/build.gradle.kts 用 -DANDROID_STL=c++_shared 让 CMake "
         "产出/链接我们自己那份；再塞一份上游 NDK 编的进 jniLibs，等于同一进程里混两套 libc++。",
-    "libfastdeploy_ppocr.so":
-        "桌面端的 FastDeploy PPOCR 后端。Android 上 OCR 走 libonnxruntime.so + 内建模型，"
-        "这个是纯桌面产物，带进 APK 只会白占约 23 MB。",
+    "libfastdeploy_ppocr.so.bak":
+        "已废弃条目占位：原先把 libfastdeploy_ppocr.so 排在这里，理由是「Android 上 OCR 走 "
+        "libonnxruntime.so + 内建模型，这个是纯桌面产物」。该判断是错的 —— 它是 "
+        "libMaaFramework.so 的硬 DT_NEEDED（见 KEEP_SO 里的长注释），删掉整个 native 侧都起不来。",
     "libMaaCustomControlUnit.so.bak":
         "已废弃条目占位：原先把 libMaaToolkit.so 排在这里，理由是「桌面工具箱 Android 用不到」。"
         "该判断是错的 —— maa-framework-go 的 Initialize() 无条件加载它，见 KEEP_SO 里的长注释。",
@@ -134,6 +144,8 @@ REQUIRED_SO = [
     "libMaaFramework.so",
     "libMaaUtils.so",
     "libMaaAndroidNativeControlUnit.so",
+    # libMaaFramework.so 的硬 DT_NEEDED，缺了 dlopen 直接失败（见 KEEP_SO 注释）
+    "libfastdeploy_ppocr.so",
 ]
 
 SCHEMA_MEMBERS = [

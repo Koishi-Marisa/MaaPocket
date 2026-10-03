@@ -56,6 +56,24 @@
             android:exported="true"
             android:multiprocess="false"
             android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+
+        <!--
+            特权进程 → app 的 binder 引导通道。
+            app_process 起的特权进程（uid 2000 / 0）用 getContentProviderExternal 调进来，
+            把两条管道 FD 交给我们。作者身份校验在 BootstrapProvider.call() 里按 callingUid 做，
+            另外还要求 Bundle 里带一个当前在 BootstrapRegistry 里挂着的 token。
+            这条通道取代了 LocalSocket：Android 上 SELinux 禁止 untrusted_app 连 shell 域建的抽象
+            socket（真机 Enforcing 下 avc: denied { connectto } ... tclass=unix_stream_socket）。
+
+            必须 exported=true：getContentProviderExternal 是跨 uid 访问，exported=false 会被 AMS 拒。
+            multiprocess=false：注册表在内存里，provider 必须和 UI 同进程，否则 token 找不到。
+        -->
+        <provider
+            android:name="com.maapocket.core.privilege.BootstrapProvider"
+            android:authorities="${applicationId}.maapocket.bootstrap"
+            android:enabled="true"
+            android:exported="true"
+            android:multiprocess="false" />
     </application>
 
 </manifest>

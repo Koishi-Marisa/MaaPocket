@@ -1,13 +1,12 @@
 package com.maapocket.core.privilege
 
-import android.net.LocalSocket
-import android.net.LocalSocketAddress
 import com.maapocket.core.third.Ln
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.JsonObject
 import java.io.BufferedInputStream
@@ -20,11 +19,23 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 
-/** socket 连不上/握手失败。携带最后一次的真实原因，便于区分 EACCES 和“还没起来”。 */
+/** 管道迟迟没送回来/建立失败。携带最后一次的真实原因，便于区分「app 没接住」和「特权进程没起来」。 */
 class RemoteConnectException(message: String, cause: Throwable? = null) : IOException(message, cause)
 
 /**
  * 特权通道的**客户端**（跑在 app 进程）。
+ *
+ * ## 连接是怎么建立的
+ *
+ * 不再是自己去 `connect()` 某个地址，而是**等特权进程把管道送回来**：
+ *
+ * 1. `PrivilegedSession.start()` 先 `BootstrapRegistry.register(token)` 挂号，再 spawn；
+ * 2. 特权进程起来后用 `getContentProviderExternal` 调 app 的 `BootstrapProvider`，
+ *    在 `Bundle` 里塞两个 `ParcelFileDescriptor`；
+ * 3. [connect] 阻塞等那个槽位（`CompletableDeferred`），拿到后把自己的
+ *    [InputStream]/[OutputStream] 指过去，剩下的读循环与多路复用一行没变。
+ *
+ * 为什么不用 LocalSocket 见 `BootstrapProtocol` 的类注释（SELinux `connectto` 拒绝）。
  *
  * ## 多路复用（需求 7）
  *
@@ -43,25 +54,30 @@ class RemoteConnectException(message: String, cause: Throwable? = null) : IOExce
  * 保证一帧不会被两条线程写交叉。服务端不同：它面向的是可能卡住的 app，所以用独立写线程 +
  * 有界队列丢事件（见 [RemoteServer]）。
  *
- * ## 连接与重连
+ * ## FD 所有权
  *
- * [connect] 会在 [RemoteProtocol.CONNECT_TIMEOUT_MS] 内按
- * [RemoteProtocol.CONNECT_RETRY_INTERVAL_MS] 重试：特权进程从 fork 到 ART 起来通常要
- * 几百毫秒到两秒，第一次必然连不上。断开后 [onClosed] 会被回调一次，由
- * [PrivilegedSession] 决定是重连还是报错。
+ * [connect] 一旦从槽位拿到值就**立刻** `BootstrapRegistry.consume(token)` 声明接管，
+ * 此后两个 FD 的生命周期完全归本类：无论是 [connect] 中途失败、读循环结束还是本地
+ * [close]，都由这里负责关掉。注册表那边的兜底关闭因此不会重复关（见 `BootstrapRegistry`）。
+ *
+ * ## 断开
+ *
+ * 断开后 [onClosed] 会被回调一次（本地主动 [close] 不算），由 [PrivilegedSession] 决定
+ * 是重连还是报错。
  */
 class RemoteConnector(
-    val socketName: String,
-    /** 与特权进程共享的 token，用于 `hello` 鉴权。 */
+    /** 与特权进程共享的 token：既用于 `hello` 鉴权，也用于从注册表认领管道。 */
     private val token: String,
-    private val namespace: LocalSocketAddress.Namespace = LocalSocketAddress.Namespace.ABSTRACT,
+    /** `BootstrapRegistry.register(token)` 返回的槽位；特权进程 attach 进来后才会完成。 */
+    private val slot: CompletableDeferred<RemoteStreams>,
     private val maxLineBytes: Int = RemoteProtocol.MAX_LINE_BYTES,
 ) : Closeable {
 
-    private val socket = AtomicReferenceHolder<LocalSocket>()
-
     private var input: InputStream? = null
     private var output: OutputStream? = null
+
+    /** 是否已经拿到 FD。读循环/写入都要求它为 true。 */
+    private val attached = AtomicBoolean(false)
 
     /** 写锁：保证一帧的字节不会被两条线程交叉写入。 */
     private val writeLock = Any()
@@ -81,51 +97,52 @@ class RemoteConnector(
     /** 服务端推来的所有**非响应**帧（含 `ready` / `log` / `frame` / `display.changed`）。 */
     val events: SharedFlow<RemoteFrame> = _events.asSharedFlow()
 
-    /** 连接断开（EOF、socket 异常、本地 [close]）。参数为 null 表示是本地主动关的。 */
+    /** 连接断开（EOF、管道异常、本地 [close]）。参数为 null 表示是本地主动关的。 */
     var onClosed: ((Throwable?) -> Unit)? = null
 
-    val isConnected: Boolean get() = socket.get() != null && !closed.get()
+    val isConnected: Boolean get() = attached.get() && !closed.get()
 
     private var reader: Thread? = null
 
     // ------------------------------------------------------------------ 连接
 
     /**
-     * 阻塞式连接 + 重试，直到 [timeoutMs] 用完。
+     * 阻塞等待管道送回来，最多 [timeoutMs]。
      * 成功返回后读循环已经在跑；`hello` 由 [PrivilegedSession] 负责发。
+     *
+     * 为什么是 `runBlocking`：槽位由 binder 线程完成，这里必须**同步**等——调用方
+     * （`PrivilegedSession.start`）之后的每一步都假设连接已就绪。原来的 LocalSocket 版本
+     * 也是一个带 `Thread.sleep` 的阻塞重试循环，阻塞语义没有变。
      */
     fun connect(timeoutMs: Long = RemoteProtocol.CONNECT_TIMEOUT_MS) {
-        val deadline = System.currentTimeMillis() + timeoutMs
-        var lastError: Throwable? = null
-        var attempt = 0
-        while (System.currentTimeMillis() < deadline) {
-            attempt++
-            try {
-                val s = LocalSocket()
-                s.connect(LocalSocketAddress(socketName, namespace))
-                socket.set(s)
-                input = BufferedInputStream(s.inputStream, 16 * 1024)
-                output = BufferedOutputStream(s.outputStream, 16 * 1024)
-                closed.set(false)
-                Ln.i("RemoteConnector: connected to $socketName (namespace=$namespace, attempt=$attempt)")
-                startReader()
-                return
-            } catch (e: IOException) {
-                lastError = e
-                Ln.d("RemoteConnector: connect attempt $attempt failed: ${e.message}")
-                runCatching { socket.getAndSet(null)?.close() }
-                try {
-                    Thread.sleep(RemoteProtocol.CONNECT_RETRY_INTERVAL_MS)
-                } catch (ie: InterruptedException) {
-                    Thread.currentThread().interrupt()
-                    break
-                }
-            }
+        val streams = try {
+            runBlocking { withTimeout(timeoutMs) { slot.await() } }
+        } catch (e: Throwable) {
+            // 超时（TimeoutCancellationException）/ 槽位被 unregister 取消 / 其它异常
+            // 都归一到同一个类型，上层只管报「连不上」。
+            throw RemoteConnectException(
+                "privileged pipe not delivered within ${timeoutMs}ms (token=${BootstrapRegistry.short(token)})",
+                e,
+            )
         }
-        throw RemoteConnectException(
-            "could not connect to $socketName within ${timeoutMs}ms after $attempt attempt(s)",
-            lastError,
+
+        // 拿到就立刻声明接管：从这一行起，两个 FD 由本类负责关闭。
+        BootstrapRegistry.consume(token)
+
+        if (closed.get()) {
+            // 等待期间上层已经 close() 了：直接归还资源，别把连接建起来。
+            closeStreams(streams)
+            throw RemoteConnectException("connector already closed (token=${BootstrapRegistry.short(token)})")
+        }
+
+        input = BufferedInputStream(android.os.ParcelFileDescriptor.AutoCloseInputStream(streams.fromRemote), 16 * 1024)
+        output = BufferedOutputStream(android.os.ParcelFileDescriptor.AutoCloseOutputStream(streams.toRemote), 16 * 1024)
+        attached.set(true)
+        Ln.i(
+            "RemoteConnector: pipe attached (remotePid=${streams.remotePid}, " +
+                "remoteUid=${streams.remoteUid}, token=${BootstrapRegistry.short(token)})",
         )
+        startReader()
     }
 
     private fun startReader() {
@@ -227,11 +244,13 @@ class RemoteConnector(
     /** 读循环结束/本地关闭的统一出口。幂等。 */
     private fun teardown(cause: Throwable?) {
         val wasClosedByUs = closed.getAndSet(true)
-        socket.getAndSet(null)?.let { runCatching { it.close() } }
+        attached.set(false)
+        closeQuietly(input)
+        closeQuietly(output)
         input = null
         output = null
 
-        val error = RemoteConnectException("connection to $socketName lost", cause)
+        val error = RemoteConnectException("privileged pipe to ${BootstrapRegistry.short(token)} lost", cause)
         for ((_, waiter) in pending) waiter.completeExceptionally(error)
         pending.clear()
 
@@ -241,33 +260,28 @@ class RemoteConnector(
     }
 
     override fun close() {
-        // 先置 closed 再关 socket：teardown 里靠它区分主动/被动断开。
+        // 先置 closed 再关流：teardown 里靠它区分主动/被动断开。
         closed.set(true)
-        socket.getAndSet(null)?.let { runCatching { it.close() } }
-        reader?.interrupt()
-        reader = null
+        attached.set(false)
+        closeQuietly(input)
+        closeQuietly(output)
         input = null
         output = null
+        reader?.interrupt()
+        reader = null
         for ((_, waiter) in pending) waiter.cancel()
         pending.clear()
     }
 
-    /** 只需要一个可空原子引用；JDK 的 AtomicReference 也行，这里避免多一个 import 面。 */
-    private class AtomicReferenceHolder<T> {
-        @Volatile
-        private var value: T? = null
+    /** 拿完槽位但决定不建连接时（上层已 close）把 FD 还回去。 */
+    private fun closeStreams(streams: RemoteStreams) {
+        runCatching { streams.fromRemote.close() }
+        runCatching { streams.toRemote.close() }
+    }
 
-        fun get(): T? = value
-
-        fun set(v: T?) {
-            value = v
-        }
-
-        fun getAndSet(v: T?): T? {
-            val old = value
-            value = v
-            return old
-        }
+    private fun closeQuietly(stream: Closeable?) {
+        if (stream == null) return
+        runCatching { stream.close() }.onFailure { Ln.d("RemoteConnector: close failed: ${it.message}") }
     }
 
     companion object {

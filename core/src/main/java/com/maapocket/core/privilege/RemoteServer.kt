@@ -1,7 +1,6 @@
 package com.maapocket.core.privilege
 
-import android.net.LocalServerSocket
-import android.net.LocalSocket
+import android.os.ParcelFileDescriptor
 import com.maapocket.core.privilege.RemoteProtocol.Cmd
 import com.maapocket.core.privilege.RemoteProtocol.ErrorCode
 import com.maapocket.core.privilege.RemoteProtocol.Event
@@ -13,6 +12,7 @@ import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.Closeable
 import java.io.IOException
+import java.io.InputStream
 import java.io.OutputStream
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
@@ -26,10 +26,20 @@ import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 
 /**
- * 特权进程里的 **LocalSocket 服务端**。
+ * 特权进程里的**协议服务端**。
  *
- * 生命周期：`RemoteMain` 先在后台线程调 [serve]（阻塞在 `accept()`），主线程再进
- * `Looper.loop()`。这样框架回调（DisplayListener、Binder 死亡通知）仍有主 Looper 可投递。
+ * ## 传输是「app 主动送回来的管道」，不是监听 socket
+ *
+ * 这里**不监听任何东西**：app 提供 `BootstrapProvider`，本进程的 `RemoteMain` 用
+ * `BootstrapClient` 调过去，把两条 `ParcelFileDescriptor` 单向管道交出去，
+ * 自己留下「读端 + 写端」，然后调 [attachClient] 把这两端交给本类。
+ * 于是本类拿到的就是一个普通的 [InputStream] / [OutputStream]，与当初的
+ * `LocalSocket` 唯一区别是**没有 accept 循环、没有第二次连接的机会**。
+ *
+ * 为什么不能用 LocalSocket 见 `BootstrapProtocol` 的类注释（SELinux `connectto` 拒绝）。
+ *
+ * 生命周期：`RemoteMain` 在后台线程 `attachClient(...)` 之后调 [awaitTermination]（阻塞），
+ * 主线程进 `Looper.loop()`。这样框架回调（DisplayListener、Binder 死亡通知）仍有主 Looper 可投递。
  *
  * ## 多路复用（需求 7）
  *
@@ -46,12 +56,10 @@ import java.util.concurrent.atomic.AtomicLong
  *
  * 每个请求都在 `try/catch(Throwable)` 里跑，异常被翻译成 `ok=false` 的错误帧；
  * 单帧过大、JSON 非法、缺 `cmd`、版本不符都只丢/回错那一帧，读循环继续；
- * 连 `hello` 都爆掉的连接直接关掉，accept 循环继续等下一个。
+ * 连 `hello` 都爆掉的连接直接关掉。
  */
 class RemoteServer(
     private val token: String,
-    /** 必须与 `RemoteProtocol.socketNameFor(token)` 一致。 */
-    val socketName: String = RemoteProtocol.socketNameFor(token),
     private val maxLineBytes: Int = RemoteProtocol.MAX_LINE_BYTES,
 ) : Closeable {
 
@@ -64,8 +72,6 @@ class RemoteServer(
 
     /** 事件订阅者（`RemoteMain` / `RemoteEngine` 用它把日志、帧、生命周期事件推给 app）。 */
     private val listeners = CopyOnWriteArrayList<(String, JsonObject?) -> Unit>()
-
-    private val serverSocket = AtomicReferenceHolder<LocalServerSocket>()
 
     private val closed = AtomicBoolean(false)
 
@@ -123,13 +129,15 @@ class RemoteServer(
     val droppedEventCount: Int get() = droppedEvents.get()
 
     /**
-     * 请求 accept 循环退出并关闭当前连接。幂等，可从任意线程调用。
-     * 主要给 `shutdown` 命令和 `RemoteMain` 的异常处理器用。
+     * 请求退出并关闭当前连接。幂等，可从任意线程调用。
+     * 主要给 `shutdown` 命令、`RemoteMain` 的异常处理器和 [close] 用。
      */
     fun requestShutdown(reason: String? = null) {
         if (!closed.getAndSet(true)) Ln.i("RemoteServer: shutdown requested (${reason ?: "no reason"})")
-        runCatching { serverSocket.getAndSet(null)?.close() }
         active.getAndSet(null)?.close(null)
+        // 没有 accept 循环可以打断了：attachClient 之后一直阻塞在 awaitTermination 的那位
+        // （RemoteMain 的引导线程）靠这个闩离开。
+        terminated.countDown()
     }
 
     override fun close() {
@@ -137,7 +145,12 @@ class RemoteServer(
         workers.shutdownNow()
     }
 
-    /** 阻塞直到 accept 循环结束（正常退出或被 [requestShutdown] 打断）。 */
+    /**
+     * 阻塞直到 [requestShutdown] / [close] 发生（正常退出或被主动打断）。
+     *
+     * 原来是「等 accept 循环结束」，现在没有循环了，等的是同一个闩：只有明确要求停机
+     * 才会返回。客户端反向消失（app 被杀）不走这条路，由 `RemoteMain` 的看门狗负责收尸。
+     */
     fun awaitTermination(timeoutMs: Long = 0L): Boolean = terminated.await(
         if (timeoutMs <= 0) Long.MAX_VALUE else timeoutMs,
         TimeUnit.MILLISECONDS,
@@ -145,73 +158,43 @@ class RemoteServer(
 
     private val terminated = CountDownLatch(1)
 
-    // ------------------------------------------------------------------ accept 循环
+    // ------------------------------------------------------------------ 管道接入
 
-    /** 阻塞式 accept 循环。正常只在 [close]/[requestShutdown] 后返回。 */
-    fun serve() {
-        var listener: LocalServerSocket? = null
-        try {
-            listener = LocalServerSocket(socketName)
-            serverSocket.set(listener)
-            Ln.i("RemoteServer: listening on abstract socket '$socketName' (uid=${android.os.Process.myUid()})")
-        } catch (e: IOException) {
-            Ln.e("RemoteServer: cannot bind '$socketName'", e)
-            terminated.countDown()
-            throw e
+    /**
+     * 把特权进程自己留下的两条管道端交给服务端。**由 `RemoteMain` 的引导线程调用**，
+     * 替代了原来的 `serve()` + `LocalServerSocket.accept()`。
+     *
+     * 只允许一个客户端（语义与原来的 accept 循环一致）：已经有一个非空连接时直接返回 false，
+     * 调用方应当关掉这两端并退出——只要能走到这里，说明 app 侧已经认过 token 了，
+     * 第二条只可能是陈旧进程或者出 bug 的重试。
+     *
+     * FD 的所有权在这里转移：成功时由 [Connection] 的读/写循环（以及 [Connection.close]）
+     * 负责关闭从这两个 FD 包出来的流；失败时调用方负责关原始 FD。
+     */
+    fun attachClient(fromRemote: ParcelFileDescriptor, toRemote: ParcelFileDescriptor): Boolean {
+        if (closed.get()) {
+            Ln.w("RemoteServer: 服务端已停机，拒绝管道接入")
+            return false
         }
-
-        try {
-            while (!closed.get()) {
-                val client = try {
-                    listener.accept()
-                } catch (e: IOException) {
-                    if (closed.get()) break
-                    // 单个 accept 失败不该终止整个服务端。
-                    Ln.w("RemoteServer: accept failed: ${e.message}")
-                    continue
-                }
-                runCatching { onNewConnection(client) }
-                    .onFailure {
-                        Ln.w("RemoteServer: connection setup failed: ${it.message}")
-                        runCatching { client.close() }
-                    }
-            }
-        } finally {
-            runCatching { listener.close() }
-            terminated.countDown()
-            Ln.i("RemoteServer: accept loop exited (droppedEvents=$droppedEvents)")
+        if (active.get() != null || isClientReady) {
+            Ln.w("RemoteServer: rejected extra pipe (already serving a client)")
+            return false
         }
-    }
-
-    private fun onNewConnection(socket: LocalSocket) {
-        // 只允许一个已鉴权客户端：迟到的第二条连接（比如 app 重启后的旧连接、或别的 app
-        // 碰巧猜到 socket 名）直接 bye 掉，避免两个客户端抢同一个特权进程。
-        if (isClientReady) {
-            val data = buildJsonObject {
-                put("reason", "busy")
-                put("message", "another client is already connected")
-            }
-            runCatching {
-                BufferedOutputStream(socket.outputStream).also {
-                    it.write(RemoteFrame(event = Event.BYE, data = data).encodeLine())
-                    it.write('\n'.code)
-                    it.flush()
-                }
-            }
-            runCatching { socket.close() }
-            Ln.w("RemoteServer: rejected extra connection (already serving a client)")
-            return
-        }
-        val conn = Connection(socket)
+        val conn = Connection(
+            ParcelFileDescriptor.AutoCloseInputStream(fromRemote),
+            ParcelFileDescriptor.AutoCloseOutputStream(toRemote),
+        )
         active.set(conn)
         conn.start()
+        Ln.i("RemoteServer: pipe attached (uid=${android.os.Process.myUid()})")
+        return true
     }
 
     // ------------------------------------------------------------------ 连接
 
     private lateinit var logFileNameHolder: String
 
-    /** 由 `RemoteMain` 在 [serve] 前告知，仅用于 `ready` 事件回传日志路径。 */
+    /** 由 `RemoteMain` 在 [attachClient] 之前告知，仅用于 `ready` 事件回传日志路径。 */
     fun setLogFileName(name: String) {
         logFileNameHolder = name
     }
@@ -219,7 +202,18 @@ class RemoteServer(
     private val logFileName: String
         get() = if (::logFileNameHolder.isInitialized) logFileNameHolder else "unknown"
 
-    private inner class Connection(private val socket: LocalSocket) {
+    /**
+     * 一条已接入的管道连接。
+     *
+     * 持有的是**已经包好的两端流**（由 [attachClient] 从两个 `ParcelFileDescriptor`
+     * 包成 `AutoClose*Stream`）；本类只负责读写与关闭，不再关心 FD 从哪来。
+     */
+    private inner class Connection(
+        /** 特权进程**读**的那一端（app → 特权进程）。 */
+        private val rawInput: InputStream,
+        /** 特权进程**写**的那一端（特权进程 → app）。 */
+        private val rawOutput: OutputStream,
+    ) {
 
         private val authed = AtomicBoolean(false)
 
@@ -249,7 +243,7 @@ class RemoteServer(
         private fun readLoop() {
             var cause: Throwable? = null
             try {
-                val src = BufferedInputStream(socket.inputStream, 16 * 1024)
+                val src = BufferedInputStream(rawInput, 16 * 1024)
                 while (!done.get()) {
                     var line: String? = null
                     try {
@@ -359,7 +353,7 @@ class RemoteServer(
 
             val result = buildJsonObject {
                 put("version", RemoteProtocol.VERSION)
-                put("socket", socketName)
+                put("transport", "pipe")
                 put("pid", android.os.Process.myPid())
                 put("uid", android.os.Process.myUid())
                 put("sdk", android.os.Build.VERSION.SDK_INT)
@@ -398,7 +392,7 @@ class RemoteServer(
         private fun writeLoop() {
             var out: OutputStream? = null
             try {
-                out = BufferedOutputStream(socket.outputStream, 16 * 1024)
+                out = BufferedOutputStream(rawOutput, 16 * 1024)
                 while (!done.get()) {
                     // 优先响应；没有响应再发事件。带超时是为了能周期性地检查 done。
                     var line: ByteArray? = responseQueue.poll(200, TimeUnit.MILLISECONDS)
@@ -417,10 +411,11 @@ class RemoteServer(
 
         // ------------------------------ 关闭
 
-        /** 幂等关闭。cause=null 表示本端主动关。 */
+        /** 幂等关闭。cause=null 表示本端主动关。两端流各自 try/catch。 */
         fun close(cause: Throwable?) {
             if (!done.compareAndSet(false, true)) return
-            runCatching { socket.close() }
+            runCatching { rawInput.close() }
+            runCatching { rawOutput.close() }
             reader.interrupt()
             writer.interrupt()
             responseQueue.clear()

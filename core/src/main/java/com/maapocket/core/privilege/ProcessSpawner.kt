@@ -32,8 +32,6 @@ data class LauncherInvocation(
     /** `进程名 = "<app 包名>:<suffix>"`，用于 app_process 的 `--nice-name=`，也用于兜底 kill。 */
     val processName: String,
     val token: String,
-    /** 特权进程据此创建/连接 LocalSocket；由 token 推导，双方无需额外握手。 */
-    val socketName: String,
     /**
      * 未包装的**纯 launcher 命令行**，第一个词就是 `liblauncher.so` 的路径。
      *
@@ -90,7 +88,8 @@ data class LauncherInvocation(
  * ## `--class=` 在本移植里是“必填但不用”的占位
  *
  * MAA-Meow 用 `--class=` 让 `RootUserService` 反射实例化一个绑定式 AIDL Service。
- * 我们改成了 LocalSocket，`RemoteMain` 不需要实例化任何 Service，但 launcher.c 的
+ * 本移植的传输层是「ContentProvider 引导 + binder 传管道」（见 `BootstrapProtocol`），
+ * `RemoteMain` 不需要实例化任何 Service，但 launcher.c 的
  * `parse_args()` 强制要求该参数存在，所以这里塞 [SERVICE_CLASS_PLACEHOLDER]，
  * 由 `RemoteMain` 解析后忽略。
  *
@@ -98,7 +97,8 @@ data class LauncherInvocation(
  *
  * MAA-Meow 的命令拼装在 `ProcessServiceConnectorBackend.buildStartCommand()`
  * （ProcessServiceConnectorBackend.kt:136-157），本对象是它的等价物，但没有 SDK 探测、
- * 没有 binder 回调，多了 [socketName]（协议从 binder 换成 LocalSocket）。
+ * 没有 binder 回调。`--token=` 仍然必传：它既用于「同一 token 只有一个服务进程」的语义，
+ * 也是特权进程回调 app 的 `BootstrapProvider` 时用来认领槽位的凭证。
  */
 object ProcessSpawner {
 
@@ -210,7 +210,6 @@ object ProcessSpawner {
             launcherPath = launcher.absolutePath,
             processName = processName,
             token = token,
-            socketName = RemoteProtocol.socketNameFor(token),
             rawCommand = raw,
             logDir = logFile.parentFile?.absolutePath ?: ".",
             keepRoot = keepRoot,

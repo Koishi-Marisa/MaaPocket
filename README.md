@@ -65,17 +65,47 @@ MaaPocket 把这三个方案的任务定义**迁移**成 MaaFramework 资源包�
 `PointerProperties`/`PointerCoords` 组装。**每次 `ACTION_DOWN` 用 `WAIT_FOR_FINISH` 模式**，
 其余用 `ASYNC`，避免手势被截断。
 
-> Android 14+ 上注入事件需要 **root uid**，Shizuku 的 adb 身份不够 —— 见 `PrivilegedSession`。
-> 手机需要在开发者选项里打开「USB 调试（安全设置）」，否则 `INJECT_EVENTS permission` 会一直失败。
+> **实测修正**：MAA-Meow 的注释说 Android 14+ 注入需要 root uid，但在 HONOR AGI-AN00
+> （Android 15 / MagicOS / 未 root / Shizuku）上 `dumpsys package com.android.shell` 显示
+> uid 2000 已 **granted** `INJECT_EVENTS`、`CAPTURE_VIDEO_OUTPUT`、`READ_FRAME_BUFFER`、
+> `WRITE_SECURE_SETTINGS`、`MANAGE_ACTIVITY_TASKS`、`INTERNAL_SYSTEM_WINDOW`。
+> Shizuku 的 helper 就跑在 uid 2000，所以**不需要 root 也能注入**。
+> 若某台设备上注入报 `INJECT_EVENTS permission`，再去开发者选项里打开「USB 调试（安全设置）」。
 
 ### 特权进程
 
 `core/src/main/cpp/launcher.c` 编成一个**伪装成 `.so` 的可执行文件**（`liblauncher.so`）。
 它 fork 后 `setresuid` 到 shell uid，再 `execv("/system/bin/app_process", ...)` 带着 APK 的
-`CLASSPATH` 起一个裸 App 运行时，在里面跑 `RemoteMain` → `RemoteServer`（Unix domain socket）
-→ `RemoteEngine`。App 进程通过 socket 下发 `maa.controller.start` / `resource.load` /
-`task.run` 等命令，**MaaFramework 与 bridge 都在 helper 进程里加载**，因此 `dlopen`、
-`injectInputEvent`、`createVirtualDisplay` 全部跑在特权身份下。
+`CLASSPATH` 起一个裸 App 运行时，在里面跑 `RemoteMain` → `RemoteServer` → `RemoteEngine`。
+App 进程下发 `maa.controller.start` / `resource.load` / `task.run` 等命令，
+**MaaFramework 与 bridge 都在 helper 进程里加载**，因此 `dlopen`、`injectInputEvent`、
+`createVirtualDisplay` 全部跑在特权身份下。
+
+#### 传输层：ContentProvider 引导 + binder 传管道 FD
+
+helper 与 App 之间是一条 **JSON 行协议**，但字节流的来源不是 socket，而是两条
+`ParcelFileDescriptor` 单向管道：
+
+1. App 先把 token 注册进 `BootstrapRegistry`，**然后**才 spawn helper；
+2. helper 用 `createPipe()` 建两条管道，通过
+   `IActivityManager.getContentProviderExternal("<pkg>.maapocket.bootstrap")` 反向调用 App 的
+   `BootstrapProvider.call()`，把两端 FD 塞进 Bundle 递回来；
+3. `BootstrapProvider` 校验 `Binder.getCallingUid()` 必须是 `2000`（shell）或 `0`（root），
+   否则直接拒绝；
+4. 双方各持有管道的一端，`RemoteServer` / `RemoteConnector` 用 `AutoCloseInputStream` /
+   `AutoCloseOutputStream` 包起来当普通流用 —— 协议本身一行没改。
+
+**为什么不用 `LocalSocket`**：Android 上 App 是 `untrusted_app` 域、helper 是 `shell` 域，
+SELinux 直接拒绝前者连后者的抽象 socket：
+
+```
+avc: denied { connectto } for path=maapocket.<token>
+  scontext=u:r:untrusted_app:s0:c41,c257,c512,c768 tcontext=u:r:shell:s0
+  tclass=unix_stream_socket permissive=0
+```
+
+管道是**继承来的 FD**，SELinux 不对它做对端域检查，所以这条路在未 root 设备上也通。
+（MAA-Meow 用 binder 而不是 socket 的原因就是这个。）
 
 helper 每 5s 做一轮看门狗：App 进程消失 / 心跳超 20s / 无客户端超 60s → 自行退出。
 
@@ -92,7 +122,10 @@ helper 每 5s 做一轮看门狗：App 进程消失 / 心跳超 20s / 无客户�
 3. `./gradlew :app-hsr:assembleRelease :app-zzz:assembleRelease :app-endfield:assembleRelease`
 4. 上传 `MaaPocket-apks-<abi>.zip`
 
-矩阵：`arm64-v8a`（真机）与 `x86_64`（模拟器）。产物用 debug key 签名，可直接 sideload。
+矩阵：`arm64-v8a`（真机）与 `x86_64`（模拟器）。产物用**仓库内固定 keystore**
+（`keystore/maapocket.jks`，口令 `maapocket`）签名 —— 不能再用每次 CI 重新生成的 debug key，
+否则同包名的新版 APK 会 `INSTALL_FAILED_UPDATE_INCOMPATIBLE: signatures do not match`，
+只能卸载重装（`/data/local/tmp` 外的解包目录与 Shizuku 授权都会跟着丢）。
 
 `.github/workflows/prepare-packs.yml` 是**手动触发**的资源包重生成流程：
 
@@ -188,10 +221,10 @@ CI 构建时下载，**不提交进仓库**。
 
 ## 已知问题
 
-- **未 root 的手机必须开「USB 调试（安全设置）」**，否则 Shizuku 拿不到 `INJECT_EVENTS`，
-  表现是截屏正常但所有点击静默失败。开发者选项 → 「USB 调试（安全设置）」→ 重启。
-  实测设备 HONOR AGI-AN00 / Android 15 的 Shizuku 以 `shell`(uid 2000) 运行，
-  而 Android 14+ 起注入事件在部分机型上要求 root uid。
+- **未 root 的手机一般不需要额外设置**：实测 HONOR AGI-AN00 / Android 15 的 `com.android.shell`
+  已 granted `INJECT_EVENTS`，而 Shizuku 的 helper 就跑在 `shell`(uid 2000)，注入直接可用。
+  若换到别的机型后出现「截屏正常但所有点击静默失败」，那是 Shizuku 拿不到 `INJECT_EVENTS`
+  （部分 ROM 上 Android 14+ 注入要求 root uid），去开发者选项打开「USB 调试（安全设置）」并重启。
 - **APK 体积**（实测）：hsr 76.2 MB、zzz 72.7 MB、endfield 102.8 MB。`useLegacyPackaging = true`
   是承重的（`dlopen` 与 `liblauncher.so` 需要真实文件而非 APK 内压缩项）。侧载没问题，
   上架 Play 会撞 200 MB 上限。
