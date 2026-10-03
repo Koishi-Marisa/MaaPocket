@@ -308,3 +308,51 @@ jobs:
             /home/runner/.gradle/daemon/**/*.log
           if-no-files-found: warn
           retention-days: 7
+
+  # 把两个 ABI 的 APK 汇总成一个 **GitHub Release**。
+  # 为什么不是只留 actions artifact：artifact 下载必须带 token 走 api.github.com，
+  # 在国内常被限速到几十 KB/s（一个 150 MB 的包要十几分钟）；release asset 是
+  # 普通 CDN 文件，可以直接走 gh-proxy 之类的镜像，也能让用户不登录就下载。
+  # tag 固定成 v0.1.0：URL 可预测，重新发布时 --clobber 覆盖同名资产。
+  release:
+    name: publish release
+    needs: [resolve_abis, build]
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Download APK artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: MaaPocket-apks-*
+          path: dist
+          merge-multiple: true
+
+      - name: List collected APKs
+        shell: bash
+        run: |
+          set -euo pipefail
+          ls -l dist
+          count=$(find dist -maxdepth 1 -name '*.apk' | wc -l)
+          echo "APK 数量: $count"
+          [ "$count" -gt 0 ] || { echo "::error::没有任何 APK 可发布"; exit 1; }
+
+      - name: Create or update release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: v0.1.0
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
+            echo "release $TAG 已存在，覆盖资产"
+          else
+            gh release create "$TAG" --repo "$REPO" \
+              --title "MaaPocket v0.1.0" \
+              --notes "自动构建：崩铁 / 绝区零 / 终末地的 MaaFramework-Android 迁移版 APK。每个 ABI 三个 APK（hsr / zzz / endfield）。内置 MaaFramework 原生库与 MaaEnd Go agent，约 40–60 MB/个。"
+          fi
+          gh release upload "$TAG" --repo "$REPO" --clobber dist/*.apk
+          gh release view "$TAG" --repo "$REPO" --json assets --jq '.assets[] | "\(.name)  \(.size) bytes"'

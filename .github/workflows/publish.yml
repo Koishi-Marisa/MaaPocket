@@ -1,0 +1,95 @@
+name: publish
+
+# 把某次 build run 产出的 APK artifact 汇总成 GitHub Release，不重新编译。
+# 用途：APK 已经构建好了，只想换一个可公开下载的地址（release asset 能走 gh-proxy，
+# actions artifact 必须带 token 走 api.github.com，国内常被限速）。
+# build.yml 末尾的 release job 会在每次成功构建后自动做同一件事，本 workflow 是补历史 run 用的。
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: '要发布的 build run id（留空 = 最近一次成功的 build run）'
+        required: false
+        type: string
+        default: ''
+      tag:
+        description: 'release tag'
+        required: false
+        type: string
+        default: 'v0.1.0'
+      include_x86_64:
+        description: '同时发布 x86_64 包（体积翻倍，模拟器才需要）'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    name: publish release from run
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Resolve run id
+        id: resolve
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          INPUT_RUN_ID: ${{ inputs.run_id }}
+        run: |
+          set -euo pipefail
+          if [ -n "$INPUT_RUN_ID" ]; then
+            run_id="$INPUT_RUN_ID"
+          else
+            run_id="$(gh run list --repo "$REPO" --workflow build.yml --status success \
+                        --limit 1 --json databaseId --jq '.[0].databaseId')"
+          fi
+          [ -n "$run_id" ] && [ "$run_id" != "null" ] || { echo "::error::找不到可用的 build run"; exit 1; }
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+          echo "发布 run: $run_id"
+
+      - name: Download APK artifacts
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ steps.resolve.outputs.run_id }}
+          INCLUDE_X86: ${{ inputs.include_x86_64 }}
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          abis="arm64-v8a"
+          [ "$INCLUDE_X86" = "true" ] && abis="arm64-v8a x86_64"
+          for abi in $abis; do
+            gh run download "$RUN_ID" --repo "$REPO" -n "MaaPocket-apks-${abi}" -D dist || \
+              echo "::warning::run $RUN_ID 没有 MaaPocket-apks-${abi}"
+          done
+          # download-artifact 会把每个 artifact 放进自己的子目录，拍平
+          find dist -mindepth 2 -name '*.apk' -exec mv -f {} dist/ \;
+          ls -l dist
+          count=$(find dist -maxdepth 1 -name '*.apk' | wc -l)
+          [ "$count" -gt 0 ] || { echo "::error::没有下载到任何 APK"; exit 1; }
+
+      - name: Create or update release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ steps.resolve.outputs.run_id }}
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
+            echo "release $TAG 已存在，覆盖资产"
+          else
+            gh release create "$TAG" --repo "$REPO" \
+              --title "MaaPocket v0.1.0" \
+              --notes "由 build run ${RUN_ID} 的产物发布。三款游戏（崩铁 / 绝区零 / 终末地）的 MaaFramework-Android 迁移版 APK；内置 MaaFramework 原生库与 MaaEnd Go agent，release 签名（debug key，可直接 sideload）。"
+          fi
+          gh release upload "$TAG" --repo "$REPO" --clobber dist/*.apk
+          gh release view "$TAG" --repo "$REPO" --json assets --jq '.assets[] | "\(.name)  \(.size) bytes"'
