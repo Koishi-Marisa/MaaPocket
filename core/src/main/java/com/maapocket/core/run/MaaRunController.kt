@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
+import com.maapocket.core.constant.DefaultDisplayConfig
 import com.maapocket.core.pi.AgentRuntimeCatalog
 import com.maapocket.core.pi.AgentWorkspace
 import com.maapocket.core.pi.PiInstalledPackages
@@ -63,12 +64,17 @@ import java.util.ArrayDeque
  * ```
  * PrivilegedSession.start()                     // su/Shizuku 拉起 liblauncher.so → app_process
  *   engine.setup     { userDir, nativeLibraryDir, requireMaa: true }
+ *   display.start    { mode: "virtual", width, height }  // 先建虚拟屏，拿到 displayId
  *   maa.controller.start { displayId, width, height }   // 内部 dlopen <nativeLibraryDir>/libbridge.so
  *   resource.load    { paths: [...低优先级 → 高优先级...] }
  *   agent.start      { executable, args, workingDir, env: PI_* }   // 每个 PI 声明的 agent 一条
  *   task.run         { entry, pipelineOverride }        // 每个选中的 task 一条，串行
  *   task.stop                                            // 用户按停止时
  * ```
+ *
+ * `display.start` 必须在 `maa.controller.start` 之前，而且它的 `displayId` 要显式传给
+ * controller：没有虚拟屏时 helper 侧会退化成主屏（displayId=0），游戏就会被拉到前台，
+ * 「后台运行」这件事根本不成立。
  *
  * ## 线程模型
  * 所有 `exec` 都是挂起调用，由 [RemoteConnector] 的 reader 线程按 frame id 唤醒，不阻塞 UI。
@@ -512,10 +518,35 @@ class MaaRunController(private val context: Context) {
             }
             _state.update { it.copy(engineReady = true, maaVersion = null) }
 
-            // 3. controller（内部 dlopen <nativeLibraryDir>/libbridge.so）
+            // 3. display（必须在 controller 之前：controller 要连的就是这块屏）
+            //
+            // 这一步以前漏了，后果正是 m03108 报的「启动后游戏没有后台运行」：
+            // 没人调 display.start 时，`RemoteEngine.currentDisplayId()` 会退化成 0
+            // （主屏），于是 StartApp 把游戏拉在主屏前台，MaaFramework 拿到的也是主屏画面。
+            // 建了虚拟屏之后 displayId != 0，StartApp 才会 launchDisplayId 到那块屏上，
+            // 游戏就在后台跑，用户自己的手机前台不受影响。
+            val disp = s.exec(
+                RemoteProtocol.Cmd.DISPLAY_START,
+                buildJsonObject {
+                    put("mode", "virtual")
+                    displayWidth?.let { put("width", it) }
+                    displayHeight?.let { put("height", it) }
+                },
+                timeoutMs = 60_000L,
+            )
+            log("display.start → $disp")
+            val virtualDisplayId = disp["displayId"]?.jsonPrimitive?.contentOrNull?.toIntOrNull()
+                ?: DefaultDisplayConfig.DISPLAY_NONE
+            if (virtualDisplayId == DefaultDisplayConfig.DISPLAY_NONE) {
+                fail("虚拟屏没建起来（display.start 返回 displayId=$virtualDisplayId）", null)
+                return
+            }
+
+            // 4. controller（内部 dlopen <nativeLibraryDir>/libbridge.so）
             val ctrl = s.exec(
                 "maa.controller.start",
                 buildJsonObject {
+                    put("displayId", virtualDisplayId)
                     displayWidth?.let { put("width", it) }
                     displayHeight?.let { put("height", it) }
                 },
@@ -525,11 +556,12 @@ class MaaRunController(private val context: Context) {
             _state.update {
                 it.copy(
                     controllerReady = true,
-                    displayId = ctrl["displayId"]?.jsonPrimitive?.contentOrNull?.toIntOrNull(),
+                    displayId = ctrl["displayId"]?.jsonPrimitive?.contentOrNull?.toIntOrNull()
+                        ?: virtualDisplayId,
                 )
             }
 
-            // 4. resource.load（顺序 = 优先级，低到高）
+            // 5. resource.load（顺序 = 优先级，低到高）
             val paths = buildJsonArray { plan.bundlePaths.forEach { add(JsonPrimitive(it)) } }
             val loaded = s.exec(
                 "resource.load",
@@ -545,7 +577,7 @@ class MaaRunController(private val context: Context) {
 
             plan.warnings.forEach { log("警告: $it") }
 
-            // 5. agent：App 进程只铺工作目录（普通文件权限就够），握手（`create / identifier /
+            // 6. agent：App 进程只铺工作目录（普通文件权限就够），握手（`create / identifier /
             //    起子进程 / bindResource / connect`）必须由持有 MaaResource 的 helper 进程做，
             //    所以这里铺完目录紧接着发 `agent.start`，由 helper 侧的 AgentLauncher 完成握手。
             prepareAgentWorkspaces(plan)
