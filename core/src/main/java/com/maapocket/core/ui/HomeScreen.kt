@@ -900,14 +900,35 @@ private fun PreviewCard(
                 // 帧画进这块窗口的 BufferQueue。像素不经过 JSON / base64 / 文件，所以既不卡也不掉帧。
                 AndroidView(
                     factory = { ctx ->
+                        // SurfaceView **不缩放**缓冲区内容，只是把缓冲区按自己的位置摆上去。
+                        // 所以缓冲区绝不能设成虚拟屏分辨率（1920x1080）——在 ~340px 宽的卡片里
+                        // 就只会露出左上角那一小块（实测如此）。缓冲区必须是**视图自己的像素尺寸**，
+                        // 原生侧 `AttachWindow` 会按 surface 尺寸 `glViewport(0,0,w,h)`，
+                        // 全屏四边形把整帧缩放着画满；这里再按画面宽高比内接，避免拉伸。
+                        var desiredWidth = 0
+                        var desiredHeight = 0
+
                         SurfaceView(ctx).apply {
                             // RGBA_8888 与原生侧 `RenderLoop` 的 EGL 配置一致。
                             holder.setFormat(PixelFormat.RGBA_8888)
-                            holder.addCallback(object : SurfaceHolder.Callback {
-                                override fun surfaceCreated(holder: SurfaceHolder) {
-                                    // 尺寸必须固定成虚拟屏分辨率，否则画面会被拉伸。
-                                    holder.setFixedSize(previewWidth, previewHeight)
+
+                            addOnLayoutChangeListener { v, left, top, right, bottom, _, _, _, _ ->
+                                val viewWidth = right - left
+                                val viewHeight = bottom - top
+                                if (viewWidth <= 0 || viewHeight <= 0 || previewWidth <= 0 || previewHeight <= 0) {
+                                    return@addOnLayoutChangeListener
                                 }
+                                val scale = minOf(
+                                    viewWidth.toFloat() / previewWidth,
+                                    viewHeight.toFloat() / previewHeight,
+                                )
+                                desiredWidth = (previewWidth * scale).toInt().coerceAtLeast(1)
+                                desiredHeight = (previewHeight * scale).toInt().coerceAtLeast(1)
+                                runCatching { holder.setFixedSize(desiredWidth, desiredHeight) }
+                            }
+
+                            holder.addCallback(object : SurfaceHolder.Callback {
+                                override fun surfaceCreated(holder: SurfaceHolder) = Unit
 
                                 override fun surfaceChanged(
                                     holder: SurfaceHolder,
@@ -915,11 +936,12 @@ private fun PreviewCard(
                                     width: Int,
                                     height: Int,
                                 ) {
-                                    // 只有尺寸已经是我们要求的那一版才交出去：SurfaceView 会先
-                                    // 用默认尺寸创建，那时交过去原生侧会把画面画进一块
-                                    // 尺寸不对的窗口。
-                                    if (width == previewWidth && height == previewHeight) {
+                                    // 布局监听器还没跑时，SurfaceView 会先用默认尺寸回调一次；
+                                    // 那一版交出去只会让原生侧画进一块尺寸不对的窗口，所以先摘掉。
+                                    if (desiredWidth > 0 && width == desiredWidth && height == desiredHeight) {
                                         onSurface(holder.surface)
+                                    } else {
+                                        onSurface(null)
                                     }
                                 }
 
