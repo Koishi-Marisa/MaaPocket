@@ -188,13 +188,27 @@ CI 构建时下载，**不提交进仓库**。
 
 ## 已知问题
 
-- **APK 体积**：`useLegacyPackaging = true` 是承重的（`dlopen` 与 `liblauncher.so` 需要真实
-  文件而非 APK 内压缩项），代价是每个 APK ≈ 120–200 MB。侧载没问题，上架 Play 会撞 200 MB 上限。
+- **未 root 的手机必须开「USB 调试（安全设置）」**，否则 Shizuku 拿不到 `INJECT_EVENTS`，
+  表现是截屏正常但所有点击静默失败。开发者选项 → 「USB 调试（安全设置）」→ 重启。
+  实测设备 HONOR AGI-AN00 / Android 15 的 Shizuku 以 `shell`(uid 2000) 运行，
+  而 Android 14+ 起注入事件在部分机型上要求 root uid。
+- **APK 体积**（实测）：hsr 76.2 MB、zzz 72.7 MB、endfield 102.8 MB。`useLegacyPackaging = true`
+  是承重的（`dlopen` 与 `liblauncher.so` 需要真实文件而非 APK 内压缩项）。侧载没问题，
+  上架 Play 会撞 200 MB 上限。
 - **模板需实机重拍**（见上）。
 - **`agent/cpp-algo` 未移植**：终末地的地图导航、AutoEcoFarm 等 6 个任务依赖它。
 - **多跳导航未实现**：星铁包只支持屏幕状态图的单跳跳转，全覆盖需要 2313 条路径。
 - **`Scroll` 动作在 Android Native controller 上不存在**：MaaFramework 的
   `AndroidNativeControlUnitAPI` 不带 `ScrollableUnit`，只能用 `Swipe` 近似。
+- **APK 用仓库内固定 keystore 签名**（`keystore/maapocket.jks`，口令 `maapocket`）。早期版本用
+  CI 每次重新生成的 debug keystore，后果是**新版装不上旧版**：`adb install -r` 报
+  `INSTALL_FAILED_UPDATE_INCOMPATIBLE: ... signatures do not match`，用户必须先卸载。
+  这个 keystore 只用于侧载分发，**不是上架密钥**。
+- **排查特权进程**：启动器的日志按后端分两处 —— root 走
+  `/data/user/0/<pkg>/debug/maapocket-root-launcher.log`，Shizuku 走
+  `/data/local/tmp/maapocket/maapocket-shizuku-launcher.log`（`/data/data/<pkg>/` 对
+  `adb shell` 不可读，所以才挪到 `/data/local/tmp`）。同一条日志还会以
+  `RootLauncher` 这个 tag 打到 logcat。
 
 ---
 
