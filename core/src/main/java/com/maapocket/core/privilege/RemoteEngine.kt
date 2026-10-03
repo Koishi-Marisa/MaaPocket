@@ -31,7 +31,9 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.lang.reflect.Field
 import java.util.Base64
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 
@@ -164,6 +166,9 @@ class RemoteEngine(
      * `maa.state` / `task.stop` 一起堵住。所以取快照 → 出锁 → 逐个关。
      */
     private val agents = LinkedHashMap<String, AgentHandle>()
+
+    /** 见 [pidOf]：按 `Process` 的具体类缓存反射到的 `pid` 字段；查不到时存 [MISSING] 哨兵。 */
+    private val pidFieldCache = ConcurrentHashMap<Class<*>, Any>()
 
     /**
      * MaaFramework 是否真的加载好了。**运行时真实判定**，不再是常量——
@@ -958,7 +963,7 @@ class RemoteEngine(
         // 已经有活着的同名 agent：直接复用，不要再 execve 一个。
         val existing = synchronized(maaLock) { agents[label] }
         if (existing != null && existing.alive) {
-            val pid = runCatching { existing.process.pid() }.getOrNull()
+            val pid = pidOf(existing.process)
             Ln.i("RemoteEngine: agent '$label' already running (pid=$pid), reusing")
             return describeAgent(label, existing) + buildJsonObject { put("reused", true) }
         }
@@ -1046,7 +1051,7 @@ class RemoteEngine(
         }
 
         Ln.i(
-            "RemoteEngine: agent '$label' ready pid=${runCatching { handle.process.pid() }.getOrNull()} " +
+            "RemoteEngine: agent '$label' ready pid=${pidOf(handle.process)} " +
                 "identifier=${runCatching { handle.client.identifier() }.getOrDefault("")} env=${applied.sorted()}",
         )
         return describeAgent(label, handle) + buildJsonObject {
@@ -1089,7 +1094,7 @@ class RemoteEngine(
             picked
         }
         snapshot.forEach { (name, handle) ->
-            val pid = runCatching { handle.process.pid() }.getOrNull()
+            val pid = pidOf(handle.process)
             runCatching { handle.close() }
                 .onFailure { Ln.w("RemoteEngine: agent '$name' close failed: ${it.message}") }
             Ln.i("RemoteEngine: agent '$name' stopped (pid=$pid)")
@@ -1099,13 +1104,63 @@ class RemoteEngine(
 
     private fun releaseAgents(): List<String> = stopAgents(null)
 
+    /**
+     * `java.lang.Process` 在 Android 上**没有** `pid()` —— 那是 JDK 9+ 才加的 API，
+     * libcore 从未跟进。写 `process.pid()` 会直接编译失败：
+     * `Unresolved reference 'pid' on receiver of type 'Process'`（CI run 37126269339）。
+     *
+     * 这里改用反射读具体实现类（libcore 的 `java.lang.ProcessImpl`）里的 `pid` 字段；
+     * 反射失败就返回 null。`pid` 只用于日志与 `maa.state` 展示，没有任何控制流依赖它，
+     * 所以「拿不到」是可接受的降级，不是错误。
+     *
+     * 缓存按 `Class` 存：字段查找失败也缓存（`MISSING` 哨兵），避免每条 agent 都重试反射。
+     */
+    private fun pidOf(process: Process): Long? {
+        val cls = process.javaClass
+        val cached = pidFieldCache[cls]
+        val field: Field? = when {
+            cached === MISSING -> null
+            cached is Field -> cached
+            else -> {
+                var f: Field? = null
+                try {
+                    f = cls.getDeclaredField("pid")
+                } catch (_: Throwable) {
+                    // 不是 libcore 的实现类（或字段改了名）——再试一次标准实现类。
+                }
+                if (f == null) {
+                    try {
+                        f = Class.forName("java.lang.ProcessImpl").getDeclaredField("pid")
+                    } catch (_: Throwable) {
+                        // 连 ProcessImpl 都没有：放弃，返回值一律为 null。
+                    }
+                }
+                if (f != null) {
+                    try {
+                        f.isAccessible = true
+                    } catch (_: Throwable) {
+                        // 某些 ROM 上 setAccessible 会被拒；下面 field.get 仍可能抛，也会被吞。
+                    }
+                }
+                pidFieldCache[cls] = f ?: MISSING
+                f
+            }
+        }
+        if (field == null) return null
+        return try {
+            (field.get(process) as? Number)?.toLong()
+        } catch (_: Throwable) {
+            null
+        }
+    }
+
     private fun agentCount(): Int = synchronized(maaLock) { agents.size }
 
     /** 给 `maa.state` / `agent.start` 用的单条 agent 快照。可以在锁外调用（内部只读句柄）。 */
     private fun describeAgent(label: String, handle: AgentHandle): JsonObject = buildJsonObject {
         put("label", label)
         put("identifier", runCatching { handle.client.identifier() }.getOrDefault(""))
-        put("pid", runCatching { handle.process.pid() }.getOrNull())
+        put("pid", pidOf(handle.process))
         put("ready", handle.alive)
         put("alive", handle.alive)
         put("connected", runCatching { handle.client.connected }.getOrDefault(false))
@@ -1307,6 +1362,12 @@ class RemoteEngine(
         JsonObject(this.toMutableMap().apply { putAll(other) })
 
     companion object {
+        /**
+         * [pidFieldCache] 的「该 Class 上没有可用的 pid 字段」哨兵。用 `Any()` 而不是 null，
+         * 因为 `ConcurrentHashMap` 不允许 null 值，而「查过但没有」与「还没查过」必须区分开。
+         */
+        private val MISSING = Any()
+
         private const val FRAME_DIR_NAME = "frames"
 
         /** 外部库名：MaaFramework 靠它拿帧/注输入（与 `bridge` 同进程，见类注释）。 */

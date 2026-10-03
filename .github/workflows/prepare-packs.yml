@@ -50,7 +50,7 @@ env:
 
   # 迁移脚本（假设的 CLI：--source <checkout> --out <dir> [--schemas <dir>]）
   MIGRATE_HSR: scripts/migrate_march7th.py
-  MIGRATE_ZZZ: scripts/migrate_zzz_od.py
+  MIGRATE_ZZZ: scripts/migrate_onedragon_zzz.py
   MIGRATE_ENDFIELD: scripts/migrate_maaend.py
 
   SRC_HSR: build/pi-src/hsr
@@ -168,7 +168,7 @@ jobs:
             --out app-hsr/src/main/assets/pi --game hsr
 
       # ---------------- ZZZ ----------------
-      - name: Migrate ZZZ (needs scripts/migrate_zzz_od.py)
+      - name: Migrate ZZZ (needs scripts/migrate_onedragon_zzz.py)
         shell: bash
         run: |
           set -euo pipefail
