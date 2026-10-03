@@ -796,7 +796,9 @@ class RemoteEngine(
             ?: throw RemoteProtocolException(ErrorCode.BAD_PARAMS, "entry is required")
         val pipelineOverride = params?.get("pipelineOverride")?.let {
             if (it is JsonObject) it.toString() else null
-        }
+        } ?: "{}"
+        // 绝不能把 null 传下去：JNA 会把 Kotlin 的 null String 变成 NULL char*，
+        // MaaTaskerPostTask 内部直接 strlen 它 → 特权进程 SIGSEGV（真机 tombstone 见 MaaTasker.postTask）。
         val timeoutMs = params.long("timeoutMs") ?: DEFAULT_TASK_TIMEOUT_MS
 
         val currentResource = resource

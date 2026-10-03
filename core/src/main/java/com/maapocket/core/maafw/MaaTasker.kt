@@ -79,11 +79,31 @@ class MaaTasker internal constructor(
      * Posts a pipeline entry.
      *
      * [pipelineOverrideJson] is a `node -> partial node` patch scoped to this one task; pass `null`
-     * for none. Prefer [MaaResource.overridePipeline] for patches that should apply to every task,
-     * and this parameter for per-task tweaks.
+     * for none. It is normalised to the empty object `{}` before the call — see below. Prefer
+     * [MaaResource.overridePipeline] for patches that should apply to every task, and this
+     * parameter for per-task tweaks.
+     *
+     * **A `null` `String` must never reach JNA here.** JNA maps a null Kotlin `String` argument to
+     * a NULL `char*`. MaaFramework v5.14.2 `source/Common/MaaTasker.cpp:126-143` *does* guard every
+     * pointer, but the very first statement is the log line
+     * ```
+     * LogFunc << VAR_VOIDP(tasker) << VAR(entry) << VAR(pipeline_override);
+     * ```
+     * and `VAR(x)` is `#x << ":" << x`, so a NULL `const char*` is fed to
+     * `ostream::operator<<`, which calls `strlen` — straight into the segfault, before the
+     * `if (!pipeline_override)` guard can return `MaaInvalidId`. Real-device tombstone
+     * (HONOR AGI-AN00 / Android 15, helper uid 2000, 2026-10-04 00:02:43):
+     * ```
+     * signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x0  (Cause: null pointer dereference)
+     *   #00 __strlen_aarch64+16          libc.so
+     *   #01 (unnamed)                    libMaaFramework.so
+     *   #02 MaaTaskerPostTask+520        libMaaFramework.so
+     * ```
+     * `MaaTaskerOverridePipeline` / `MaaResourceOverridePipeline` are declared non-null for the
+     * same reason: keep every `const char*` parameter fed with a real pointer.
      */
     fun postTask(entry: String, pipelineOverrideJson: String? = null): Long =
-        api.MaaTaskerPostTask(handle, entry, pipelineOverrideJson)
+        api.MaaTaskerPostTask(handle, entry, pipelineOverrideJson ?: EMPTY_PIPELINE_OVERRIDE)
 
     /**
      * Posts [entry] and blocks until it settles.
@@ -159,6 +179,12 @@ class MaaTasker internal constructor(
     }
 
     companion object {
+        /**
+         * MaaFramework's "no per-task patch" spelling. `PostTask` expects a JSON object here; an
+         * empty object is a no-op and — unlike `null` — is a valid `char*`.
+         */
+        private const val EMPTY_PIPELINE_OVERRIDE = "{}"
+
         fun create(api: MaaFrameworkApi): MaaTasker {
             val handle = api.MaaTaskerCreate()
                 ?: throw IllegalStateException("MaaTaskerCreate() returned null")
