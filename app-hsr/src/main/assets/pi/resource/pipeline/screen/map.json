@@ -58,17 +58,41 @@
       "march7th:note": "在 main 上时，沿上游第一条 main -> map 边前进"
     }
   },
+  "Nav_map_from_map3d": {
+    "recognition": "TemplateMatch",
+    "template": "screen/map3d.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "map3d__map__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 map3d 上时，沿上游第一条 map3d -> map 边前进"
+    }
+  },
   "NavTo_map": {
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
       "Nav_map_from_main",
+      "Nav_map_from_map3d",
       "Screen_map"
     ],
     "attach": {
       "march7th:kind": "nav-router",
       "march7th:target_screen": "map",
       "march7th:predecessors": [
+        "main",
+        "map3d"
+      ],
+      "march7th:routed_predecessors": [
         "main",
         "map3d"
       ],

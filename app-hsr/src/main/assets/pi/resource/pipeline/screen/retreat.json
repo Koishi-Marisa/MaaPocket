@@ -75,6 +75,7 @@
       "march7th:kind": "nav-router",
       "march7th:target_screen": "retreat",
       "march7th:predecessors": [],
+      "march7th:routed_predecessors": [],
       "march7th:note": "DirectHit 进入：先按顺序试探各前驱屏幕守卫节点（TemplateMatch 前驱屏幕锚点），命中则沿那条上游边导航；全部未命中则回退到 Screen_retreat 锚点——若此时已经在 retreat 上即成功，否则本节点识别失败（诚实失败，不静默跳过）。只覆盖单跳。"
     }
   }

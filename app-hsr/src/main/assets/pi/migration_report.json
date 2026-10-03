@@ -168,10 +168,17 @@
     "source_files": 395
   },
   "interface_json_replacement": {
-    "bytes": 10138,
+    "bytes": 10116,
     "classification": "previous-run-output",
     "path": "MaaPocket/app-hsr/src/main/assets/pi/interface.json",
-    "sha256": "859a28aa83f945f215963a94c0505c6e6bc6a044a9fac8ae043d670f1ec2b307"
+    "sha256": "b445f6850f91a3b828fa8c0d73bc541572653c250717d891b8e306ac975e8d8a"
+  },
+  "nav_guard_coverage": {
+    "guards_emitted": 110,
+    "guards_expected": 110,
+    "missing": [],
+    "ok": true,
+    "unexpected": []
   },
   "omitted_edges": [],
   "options": {
@@ -211,284 +218,284 @@
       "sha256": "89a97e60acf426f16ee77bd2dcda31bd83bc85e201252bf591727807fc04920f"
     },
     {
-      "bytes": 2165,
+      "bytes": 2229,
       "path": "resource/pipeline/screen/achievement.json",
-      "sha256": "5741b40632445d3b770a989b3bc734eec48a7a37f45f32c65d7d16868ea5e532"
+      "sha256": "324e74d6bf91151b3247a22c52bd2f25c46f0f5e12ab8779c6ceeffa0c67e27d"
     },
     {
-      "bytes": 4215,
+      "bytes": 4787,
       "path": "resource/pipeline/screen/activity.json",
-      "sha256": "f984b6198026488858d295aefb52b3685f01c23fd8dd4e9da3bb96484ec2886b"
-    },
-    {
-      "bytes": 2223,
-      "path": "resource/pipeline/screen/apocalyptic.json",
-      "sha256": "2067200ea30b64e06354a408e174072be895653b340cef90ddc16b26b10c2949"
-    },
-    {
-      "bytes": 2243,
-      "path": "resource/pipeline/screen/bag_consumables.json",
-      "sha256": "3af2d6ee4ad644affe5d986e0d8b12efd9c2e13770ddc309b159f69aa05cff71"
-    },
-    {
-      "bytes": 2105,
-      "path": "resource/pipeline/screen/bag_lc.json",
-      "sha256": "d8fb885307b936e24883d9a1d0f2c8ce5ad666d69dbd75337a24e797ddd47276"
-    },
-    {
-      "bytes": 2195,
-      "path": "resource/pipeline/screen/bag_relicset.json",
-      "sha256": "107abce4e36a0dd419a2bb1ab57a22ac6208f10be8484d24b07366e58c9825f7"
-    },
-    {
-      "bytes": 2115,
-      "path": "resource/pipeline/screen/camera.json",
-      "sha256": "9973d133f31dcf3cae2ee0588e704617d53556b0734db37f28d9d7153a7e6b7b"
-    },
-    {
-      "bytes": 1746,
-      "path": "resource/pipeline/screen/character_warp.json",
-      "sha256": "ee83b3a197bd28852a8f93faf143477e99af8441edb1cc55242cbeea05c0ba68"
-    },
-    {
-      "bytes": 3351,
-      "path": "resource/pipeline/screen/click_enter.json",
-      "sha256": "0a562f05c8100b7e153f4a80b74bb839c13058a040661d1650f4fe3a6f67ac9f"
-    },
-    {
-      "bytes": 2210,
-      "path": "resource/pipeline/screen/configure_team.json",
-      "sha256": "de4b6fa0a3ed6e5961f741d4937ba0d4100952332651f6191539d46ace1dd580"
-    },
-    {
-      "bytes": 2916,
-      "path": "resource/pipeline/screen/consumables.json",
-      "sha256": "ddbe8426bb9f00609e922ae46a4c7288d761cd427932f97b770ec914f29ee2a8"
-    },
-    {
-      "bytes": 3760,
-      "path": "resource/pipeline/screen/currency_wars_homepage.json",
-      "sha256": "7b190167715113dee3f503326cef50bd1d18b2a73398268ffd41dc26fd8960d7"
-    },
-    {
-      "bytes": 7452,
-      "path": "resource/pipeline/screen/currency_wars_mode_select.json",
-      "sha256": "7e667a18402705101febd761804123319951162aa4687a82cb7826f84a2813b7"
-    },
-    {
-      "bytes": 2718,
-      "path": "resource/pipeline/screen/currency_wars_mode_select_normal.json",
-      "sha256": "dc7ab6ee8435e3d13a771c501192290cd8ff69d7d1c3dfc14cb4b1c9606eb8e8"
-    },
-    {
-      "bytes": 2763,
-      "path": "resource/pipeline/screen/currency_wars_mode_select_overclock.json",
-      "sha256": "ce9e5d7551e4096209f0738daecd3e1966840da4df770b2f27791c7fb300a547"
-    },
-    {
-      "bytes": 2120,
-      "path": "resource/pipeline/screen/dispatch.json",
-      "sha256": "22c5f871fff96f441a0d495054d580308b222caeeae8a1e7cc5ed3562325ef47"
-    },
-    {
-      "bytes": 3581,
-      "path": "resource/pipeline/screen/divergent_main.json",
-      "sha256": "c8fc2d12e1dd236ba7a82e02b1fd5692da917aee448a5cabc984274bda9ba511"
-    },
-    {
-      "bytes": 4287,
-      "path": "resource/pipeline/screen/divergent_mode_select.json",
-      "sha256": "9ceefc461349d1c96765d3fb84d78b4fc5936dee6654f07cae470dfdd1e06ea8"
-    },
-    {
-      "bytes": 2781,
-      "path": "resource/pipeline/screen/divergent_mode_select_cycle.json",
-      "sha256": "930a71363e0aebb66bd3b6d0904e4451b92200f2621420e92057c307848a6d60"
-    },
-    {
-      "bytes": 2625,
-      "path": "resource/pipeline/screen/divergent_mode_select_normal.json",
-      "sha256": "f7adceb0785e91f63b83d69414c6f62b0a922c19f737986fa85b0ef13989a783"
-    },
-    {
-      "bytes": 2434,
-      "path": "resource/pipeline/screen/enter_cloud_game.json",
-      "sha256": "027762abc1ed6583d3f7c4ae9dadc5c730305cb40a21232382cc105d7a240c13"
+      "sha256": "053fe6b436ae8080987bb73079c65eb4caf9000daa9b29c663e9801ae753f674"
     },
     {
       "bytes": 2289,
+      "path": "resource/pipeline/screen/apocalyptic.json",
+      "sha256": "54ee127e5d56b3be8f2b9800442ef5859864a77862437d366ea99524c41cde1b"
+    },
+    {
+      "bytes": 2307,
+      "path": "resource/pipeline/screen/bag_consumables.json",
+      "sha256": "313c2694d9bd228a165ee1bebcef4df05addb34b6af3ec6b407d1ab4a1f2b217"
+    },
+    {
+      "bytes": 2169,
+      "path": "resource/pipeline/screen/bag_lc.json",
+      "sha256": "ef20d225685e8843bda3e757bd391645d404763409809d2ad1e4b12b756c1265"
+    },
+    {
+      "bytes": 2259,
+      "path": "resource/pipeline/screen/bag_relicset.json",
+      "sha256": "fb6a39a469e639f7e4f0785a0f177f6e8b7059617b62fea39b2a8285f82aecdc"
+    },
+    {
+      "bytes": 2686,
+      "path": "resource/pipeline/screen/camera.json",
+      "sha256": "086165bd83041ab880cc7ae4b98f988f676f6412004323b29673f397a9a16097"
+    },
+    {
+      "bytes": 1788,
+      "path": "resource/pipeline/screen/character_warp.json",
+      "sha256": "8f192da165a0e728a9c908334adbc4814aec7feb0ac9a4d03d3acb6d3f8d1d6f"
+    },
+    {
+      "bytes": 3449,
+      "path": "resource/pipeline/screen/click_enter.json",
+      "sha256": "0dae38797dd28a428f6779131fec57acd88fca979d60256e4e54e14b0c32d61e"
+    },
+    {
+      "bytes": 2274,
+      "path": "resource/pipeline/screen/configure_team.json",
+      "sha256": "61140afdda1a3e7776a925b9fd1d9e3e6ad2e7d0365094bcddec7c27e000bd1f"
+    },
+    {
+      "bytes": 3482,
+      "path": "resource/pipeline/screen/consumables.json",
+      "sha256": "464fbb7ce11a7655aec849c63546a8bc4e0b588299d3287bee8970dd30f9b9f6"
+    },
+    {
+      "bytes": 4481,
+      "path": "resource/pipeline/screen/currency_wars_homepage.json",
+      "sha256": "5dfe5a7e1fd729c60b4057994afaa9f9f6fefe0d194266afafa830e281b556f0"
+    },
+    {
+      "bytes": 8987,
+      "path": "resource/pipeline/screen/currency_wars_mode_select.json",
+      "sha256": "0e6a6ece2c5a81d12125beb4da51d3823d440e34e27b44baa52acf42c40d33b3"
+    },
+    {
+      "bytes": 2803,
+      "path": "resource/pipeline/screen/currency_wars_mode_select_normal.json",
+      "sha256": "85e540adc6f9fc12f59dcf1fc09a24db8ee9e5bf039cfd2258a766b9f4d85f99"
+    },
+    {
+      "bytes": 2848,
+      "path": "resource/pipeline/screen/currency_wars_mode_select_overclock.json",
+      "sha256": "26333eee0b2be6f3d3eff4a862c19ffc68357c79136cd2eb772f9d5c6aa5f573"
+    },
+    {
+      "bytes": 2184,
+      "path": "resource/pipeline/screen/dispatch.json",
+      "sha256": "b56ca6c84babe4225b61b8814db5165f7574b7290d2b2a61f3ce09871b7be8d4"
+    },
+    {
+      "bytes": 4251,
+      "path": "resource/pipeline/screen/divergent_main.json",
+      "sha256": "38908cd25bed3f092874fdcc45e0794a33f8a7c46160feee3599dda56137fdaf"
+    },
+    {
+      "bytes": 5783,
+      "path": "resource/pipeline/screen/divergent_mode_select.json",
+      "sha256": "8264d81398e3a956b9014ffd3e30d23e0226ba5a7b28b0df38f50a153b24885e"
+    },
+    {
+      "bytes": 2862,
+      "path": "resource/pipeline/screen/divergent_mode_select_cycle.json",
+      "sha256": "ae6f2120de7535d956f09a0afe2bed58603ff6add466c9b6af38a12705159b78"
+    },
+    {
+      "bytes": 2706,
+      "path": "resource/pipeline/screen/divergent_mode_select_normal.json",
+      "sha256": "a1938438295189b6c76832c3970c92d4b9a2bfeec91e5e41ddd28909c30bbb3f"
+    },
+    {
+      "bytes": 2476,
+      "path": "resource/pipeline/screen/enter_cloud_game.json",
+      "sha256": "8c05fc9f44aac89a914d140bfb046f12e639974ed1bd6c1cc400621e47beb2c1"
+    },
+    {
+      "bytes": 2331,
       "path": "resource/pipeline/screen/fight_exit.json",
-      "sha256": "7d881f98b11aa16af31b77f9bea04113aa10c91d4b5248a3311a81080d26fd35"
+      "sha256": "f31dea66923deddf9aa1f44b36119edf409e4b653d1c6e87b1ac52c8a200954e"
     },
     {
-      "bytes": 4188,
+      "bytes": 5644,
       "path": "resource/pipeline/screen/guide2.json",
-      "sha256": "62acb2b310680409964413a53da4712773263994926b76c89c56120e69a1eaa5"
+      "sha256": "303888bcf8f96ceadb7c8acd3ce58f0cc6b7c11f62d17e93e7f340bc0bda4db0"
     },
     {
-      "bytes": 4634,
+      "bytes": 5644,
       "path": "resource/pipeline/screen/guide3.json",
-      "sha256": "ad1fbd112896ff9405719b81a048da6a7be4316de77488e35be0b2e8a0fda8c9"
+      "sha256": "7e9f1dc0ac32b40cac5afd1c242a98d6239a2e44b81ae14318723ea391433276"
     },
     {
-      "bytes": 11224,
+      "bytes": 11788,
       "path": "resource/pipeline/screen/guide4.json",
-      "sha256": "203f7976a7d24f5577d7c98fbecde9f812a3f287f4488936527ccecfdb955ce7"
+      "sha256": "cbfe7c49a206288263d8af37761ac4f2f030a24478fddf995360ceb877332948"
     },
     {
-      "bytes": 11782,
+      "bytes": 11900,
       "path": "resource/pipeline/screen/guide5.json",
-      "sha256": "4ec817381a687bd4268b8502863a6817b2f735443dfb48aaccf774d18396779d"
+      "sha256": "94664a729a0a7ce2c191204a759ca79125966ad79232a5f84eb58e0ab01b15da"
     },
     {
-      "bytes": 3558,
+      "bytes": 3635,
       "path": "resource/pipeline/screen/himeko_prepare.json",
-      "sha256": "40305a0a3043aa9669fce9365b74233949372a954e14da2c3aecde87564e06ec"
+      "sha256": "59e0469119cc2cf88cdb6265c3b86dc07977b45e108071dbf6be4ae829c596c2"
     },
     {
-      "bytes": 3416,
+      "bytes": 4023,
       "path": "resource/pipeline/screen/himeko_try.json",
-      "sha256": "c99d8fc1bc52dc0278dc32d59e6d8db824d0b86c1219d9229b870c1c09519d39"
+      "sha256": "652354622e3534f1b4b771905d4e5fb1ee183addfb4f25e914e928b24487d83a"
     },
     {
-      "bytes": 2351,
+      "bytes": 2421,
       "path": "resource/pipeline/screen/himeko_try_banner.json",
-      "sha256": "c26874fbe1ab6087f16825fbb613b20469dccf8331b8bacc8fdd38a4cc83f4c8"
+      "sha256": "ce2dafd7ed40b5255a1b42d3ee37ff08c8d0e94f5d0544c2af5caaf97f34e726"
     },
     {
-      "bytes": 2245,
+      "bytes": 2309,
       "path": "resource/pipeline/screen/incoming_message.json",
-      "sha256": "839bdb4ea6b3d5f416c825cb8f384ab72873e839ec341981eec19ba0226f1477"
+      "sha256": "8a09020922ac10d45a1375b93f6354cfd4e021d34ffd844a1aabfbfc3cfe7407"
     },
     {
-      "bytes": 2459,
+      "bytes": 3060,
       "path": "resource/pipeline/screen/leave_temporarily.json",
-      "sha256": "6f8eb5c3cb338b32b1f7fea22a3955a3a23f0a69955cc1a5e5a677cfc6676d5f"
+      "sha256": "30c24f334a2eb2c1d916a4c29f827712adc063b351af4144a15072e83ebfc88f"
     },
     {
-      "bytes": 2060,
+      "bytes": 2124,
       "path": "resource/pipeline/screen/mail.json",
-      "sha256": "179f5717dbc2f0bfe18fb3383cff81b9325e99a046bf827cf73784ff30f5ae96"
+      "sha256": "350d419aac3e0fcb9aa63f78de0ad99d9734f129b03e05d785e3f4749cc58eeb"
     },
     {
-      "bytes": 6059,
+      "bytes": 15520,
       "path": "resource/pipeline/screen/main.json",
-      "sha256": "4a98c652e9e347163f327b937428f21b0af0c2df6f0da3bc225c31bd2dc085ad"
+      "sha256": "08f7164e75daf101db23431851b5d9234c7220480f097e730d237719185df2b0"
     },
     {
-      "bytes": 2058,
+      "bytes": 2561,
       "path": "resource/pipeline/screen/map.json",
-      "sha256": "89f25226caadb0678b34e64e65672c36458b71ce645158d89379176680feebf9"
+      "sha256": "0258626138223c1205f69fb865c0998fd4696c8a36dfd280e3c9368aed4ba6e4"
     },
     {
-      "bytes": 1801,
+      "bytes": 1843,
       "path": "resource/pipeline/screen/map3d.json",
-      "sha256": "689d7f3e869579b39ae9dfc7ac1b90a65bfe751248af493e9b40a9b5ce02e490"
+      "sha256": "3d74e1e8955a38ac9ab2394b730260f4c49d34f4c2efbf37e8e8ebe092192ef1"
     },
     {
-      "bytes": 2912,
+      "bytes": 2983,
       "path": "resource/pipeline/screen/material.json",
-      "sha256": "2b18f53bf0324b9e03f62c8eb3aaabfaf1ffb774f0c4904e3f2c7e3362446f10"
+      "sha256": "b41ab7fd55c55d343a58029ade99ddb69b12c811edaacbbf2f141b20d5b083e1"
     },
     {
-      "bytes": 2218,
+      "bytes": 2293,
       "path": "resource/pipeline/screen/memory.json",
-      "sha256": "1f74fc0795b72a605564b7bee9adcedd78d111156cc7cb997b370b0e7dbaf316"
+      "sha256": "bc66375cf8cf5927f552b76a76623798aa66df24c9aba389ea0a706db81952c7"
     },
     {
-      "bytes": 3700,
+      "bytes": 4316,
       "path": "resource/pipeline/screen/memory_of_chaos.json",
-      "sha256": "4cae9603bab196f29950158d1594e52ce1d858d34c50418dcb9e4fa1d673a43b"
+      "sha256": "15760104e57f21bcfd42f8345260c2d8335da431582afac819507213da8602f3"
     },
     {
-      "bytes": 32561,
+      "bytes": 41125,
       "path": "resource/pipeline/screen/menu.json",
-      "sha256": "aa6a026525924cce59e217c11c0552f80bd6d5d82176e418ef8bc2f6a2476394"
+      "sha256": "c99d2221d801d257f1986d5162eb4a3cbd9af8ab91f037653a2cd4205a11dcd3"
     },
     {
-      "bytes": 3142,
+      "bytes": 3184,
       "path": "resource/pipeline/screen/monthly_card.json",
-      "sha256": "8abe1795e3e83bfd87b2913fb8fd1772e61935c532300a1e442c5341ca204170"
+      "sha256": "46cfb10e6b17b54c475be3e3f56fe40ab1686484e03b6cd1b3fb6874921330fe"
     },
     {
-      "bytes": 3283,
+      "bytes": 3823,
       "path": "resource/pipeline/screen/pass1.json",
-      "sha256": "fbd34f65ec8ff685290c9afb460a47e3d0c1272f1563d81bcecf8c8137928444"
+      "sha256": "5c907dedb3af4791f156fee1311fe3f923de2728c2dc057f2060e8fffdd00da8"
     },
     {
-      "bytes": 2778,
+      "bytes": 2843,
       "path": "resource/pipeline/screen/pass2.json",
-      "sha256": "d304d96d11e48475ec0f7741cd84060c06c120844870b57b85cc8dd6f125d344"
+      "sha256": "23269b655127984f7807862fb94c60539d22c59aea42f259b2eef6604434d70e"
     },
     {
-      "bytes": 1725,
+      "bytes": 1767,
       "path": "resource/pipeline/screen/photo_preview.json",
-      "sha256": "d2d00c5c5491e8a3c7e5e434b699287e753123d3e91215f78ab3cb45b4f5c7ad"
+      "sha256": "ad5f864286ad0f1a114362c45a2176bd7bfc8ce47e4c2e515bd29e08ac283b33"
     },
     {
-      "bytes": 3010,
+      "bytes": 3052,
       "path": "resource/pipeline/screen/prepare_fight.json",
-      "sha256": "a5b1efc9b6c524aec5e6ebf8c341915b889bf37af5d28841d2a074bd7dfb3bb9"
+      "sha256": "d7a8e566e7f5e62ed2158815b342c88dfceea32cf0ce439850d07df1e20e8abc"
     },
     {
-      "bytes": 2223,
+      "bytes": 2289,
       "path": "resource/pipeline/screen/purefiction.json",
-      "sha256": "92dbb88111ff448863bd30ba707ea65d45f5c5d1301b8c39f0117d3c762f36c2"
+      "sha256": "09c2bddbce4b4ddbe9cbb81954e89c574a827dc906405ad98a4087d8c5671a4f"
     },
     {
-      "bytes": 2153,
+      "bytes": 2217,
       "path": "resource/pipeline/screen/redemption.json",
-      "sha256": "c6815c76a52cc0605e1cd8a5636f683153b1193507475bc672f55516e6dbab54"
+      "sha256": "f7c19d836ed3168a7d23b0bf40c44bff0d7d00d3ee8fd07af1771f5f1e58f3c2"
     },
     {
-      "bytes": 2235,
+      "bytes": 2277,
       "path": "resource/pipeline/screen/retreat.json",
-      "sha256": "14aa91da1fb358ed92930e424f3047ae33283030187c4f2e6266501bafdb4c07"
+      "sha256": "68ff174386775be9b2216f43e2dc1795028d67a8de62646087cd486e400421a9"
     },
     {
-      "bytes": 2292,
+      "bytes": 2360,
       "path": "resource/pipeline/screen/reward_guide.json",
-      "sha256": "9ca03a91388cf91d7abc783402cdaa05519fdaa10d2489e88fbfb42c9ecef962"
+      "sha256": "e4aa566e03af5fff0ffa87529ce43840c0e2b95468e87905ad82d92bb58142f1"
     },
     {
-      "bytes": 2311,
+      "bytes": 2353,
       "path": "resource/pipeline/screen/start_game.json",
-      "sha256": "f1ded0f4b2f3283a3f32984e4df6ec3aec633a16ad0779c77bc7a8515f043b04"
+      "sha256": "9cfe2848889b15fb7a828a6d0570803d09dfb35c203fd7e7219536d1ff843799"
     },
     {
-      "bytes": 1988,
+      "bytes": 2030,
       "path": "resource/pipeline/screen/start_srpass.json",
-      "sha256": "e2604fb3d09f00a02d0e2aa30f5602c3bd635a0bcacd0680bdfdce4d09faf7b3"
+      "sha256": "1c8c6e2218de9d72b311952575ce6f01b12daa7a53ef9a89e21eb9d855d3fcee"
     },
     {
-      "bytes": 3333,
+      "bytes": 3912,
       "path": "resource/pipeline/screen/stellar_warp.json",
-      "sha256": "3b53f316e96c7cc9b6fcd63c44cb4dba8f3496461af5d5ac1e554f7a178367b7"
+      "sha256": "2362ea5b0c10701adf4d41edbc6822a728758091db7c0979ec849938fbb14d99"
     },
     {
-      "bytes": 3167,
+      "bytes": 3240,
       "path": "resource/pipeline/screen/universe_expansion.json",
-      "sha256": "ab2eeabf72d8a6a8172c43c59175d7b5dc8f0a852b793b4d8ef3982e5bd43747"
+      "sha256": "172f70a77621ae09d6935e4e74e052247cd06131f7376916b1726ae2b84dd376"
     },
     {
-      "bytes": 3643,
+      "bytes": 4315,
       "path": "resource/pipeline/screen/universe_main.json",
-      "sha256": "7d20891add7721ad7d2c7065a514557e44e2b71a98a89e191220ee790979d585"
+      "sha256": "a1347e475d7416484bd21b334a6beb897654d4d3e8c0d3a1b519fa17540d3bb1"
     },
     {
-      "bytes": 2742,
+      "bytes": 2784,
       "path": "resource/pipeline/screen/universe_map.json",
-      "sha256": "cd65f6a1290291c920bdac0632392374fe069f169605e1b302acd21c761ee8dc"
+      "sha256": "a8a1795bf6e11fee7e4f7e946682c8897874292cdf5ae8d8de4b2d39db45a21b"
     },
     {
-      "bytes": 1799,
+      "bytes": 1841,
       "path": "resource/pipeline/screen/universe_report.json",
-      "sha256": "4a396e9505bea2c6d4469faf4c0aa157cfaa1c222a18901eb6d2a54963fc0248"
+      "sha256": "8ae1eb2dab52b41d98de516dc4f3c218a694899ac6d0efdc9dc0f4f8102f8bd8"
     },
     {
-      "bytes": 2066,
+      "bytes": 2130,
       "path": "resource/pipeline/screen/visa.json",
-      "sha256": "0a58b936bf7a6caf7e89a4ff2789ee4691713ae16a5daf3221cdd00bb123b7e2"
+      "sha256": "7f0b3df79f2c0e55ba3305e19eabf6120ef9ead313c9c50dd890fe78a59dd476"
     },
     {
       "bytes": 622,
@@ -644,7 +651,7 @@
   "pipeline_node_names": {
     "dangling_references": [],
     "duplicates": [],
-    "total": 368
+    "total": 427
   },
   "schema_validation": {
     "interface": {
@@ -2683,7 +2690,7 @@
   ],
   "totals": {
     "files_written": 90,
-    "generated_bytes": 256114,
+    "generated_bytes": 289741,
     "image_bytes": 3883745
   },
   "underscore_dirs": [],

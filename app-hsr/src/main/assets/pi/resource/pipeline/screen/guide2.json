@@ -123,6 +123,63 @@
       "march7th:masked_template": false
     }
   },
+  "Nav_guide2_from_guide3": {
+    "recognition": "TemplateMatch",
+    "template": "screen/guide/guide3.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "guide3__guide2__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 guide3 上时，沿上游第一条 guide3 -> guide2 边前进"
+    }
+  },
+  "Nav_guide2_from_guide4": {
+    "recognition": "TemplateMatch",
+    "template": "screen/guide/guide4.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "guide4__guide2__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 guide4 上时，沿上游第一条 guide4 -> guide2 边前进"
+    }
+  },
+  "Nav_guide2_from_guide5": {
+    "recognition": "TemplateMatch",
+    "template": "screen/guide/guide5.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "guide5__guide2__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 guide5 上时，沿上游第一条 guide5 -> guide2 边前进"
+    }
+  },
   "Nav_guide2_from_menu": {
     "recognition": "TemplateMatch",
     "template": "share/menu/more.png",
@@ -146,6 +203,9 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
+      "Nav_guide2_from_guide3",
+      "Nav_guide2_from_guide4",
+      "Nav_guide2_from_guide5",
       "Nav_guide2_from_menu",
       "Screen_guide2"
     ],
@@ -153,6 +213,12 @@
       "march7th:kind": "nav-router",
       "march7th:target_screen": "guide2",
       "march7th:predecessors": [
+        "guide3",
+        "guide4",
+        "guide5",
+        "menu"
+      ],
+      "march7th:routed_predecessors": [
         "guide3",
         "guide4",
         "guide5",

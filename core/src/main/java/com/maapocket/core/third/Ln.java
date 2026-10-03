@@ -13,7 +13,8 @@ import java.io.PrintStream;
  */
 public final class Ln {
 
-    private static final String TAG = "MaaPocket";
+    /** Public so that Kotlin call sites in other packages can build `"${Ln.TAG}: ..."` prefixes. */
+    public static final String TAG = "MaaPocket";
     private static final String PREFIX = "[MP] ";
 
     private static final PrintStream CONSOLE_OUT = new PrintStream(new FileOutputStream(FileDescriptor.out));

@@ -89,6 +89,25 @@
       "march7th:note": "在 guide5 上时，沿上游第一条 guide5 -> universe_main 边前进"
     }
   },
+  "Nav_universe_main_from_universe_expansion": {
+    "recognition": "TemplateMatch",
+    "template": "screen/universe/universe_expansion.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "universe_expansion__universe_main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 universe_expansion 上时，沿上游第一条 universe_expansion -> universe_main 边前进"
+    }
+  },
   "Nav_universe_main_from_universe_report": {
     "recognition": "TemplateMatch",
     "template": "screen/universe/universe_report.png",
@@ -113,6 +132,7 @@
     "action": "DoNothing",
     "next": [
       "Nav_universe_main_from_guide5",
+      "Nav_universe_main_from_universe_expansion",
       "Nav_universe_main_from_universe_report",
       "Screen_universe_main"
     ],
@@ -120,6 +140,11 @@
       "march7th:kind": "nav-router",
       "march7th:target_screen": "universe_main",
       "march7th:predecessors": [
+        "guide5",
+        "universe_expansion",
+        "universe_report"
+      ],
+      "march7th:routed_predecessors": [
         "guide5",
         "universe_expansion",
         "universe_report"

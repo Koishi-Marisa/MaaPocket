@@ -67,6 +67,25 @@
       "march7th:masked_template": false
     }
   },
+  "Nav_consumables_from_material": {
+    "recognition": "TemplateMatch",
+    "template": "screen/synthesis/material.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "material__consumables__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 material 上时，沿上游第一条 material -> consumables 边前进"
+    }
+  },
   "Nav_consumables_from_menu": {
     "recognition": "TemplateMatch",
     "template": "share/menu/more.png",
@@ -90,6 +109,7 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
+      "Nav_consumables_from_material",
       "Nav_consumables_from_menu",
       "Screen_consumables"
     ],
@@ -97,6 +117,10 @@
       "march7th:kind": "nav-router",
       "march7th:target_screen": "consumables",
       "march7th:predecessors": [
+        "material",
+        "menu"
+      ],
+      "march7th:routed_predecessors": [
         "material",
         "menu"
       ],

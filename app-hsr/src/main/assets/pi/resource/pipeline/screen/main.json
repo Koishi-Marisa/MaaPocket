@@ -201,16 +201,417 @@
       "march7th:android_keycode": 44
     }
   },
+  "Nav_main_from_apocalyptic": {
+    "recognition": "TemplateMatch",
+    "template": "screen/apocalyptic/apocalyptic.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "apocalyptic__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 apocalyptic 上时，沿上游第一条 apocalyptic -> main 边前进"
+    }
+  },
+  "Nav_main_from_camera": {
+    "recognition": "TemplateMatch",
+    "template": "screen/camera.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "camera__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 camera 上时，沿上游第一条 camera -> main 边前进"
+    }
+  },
+  "Nav_main_from_click_enter": {
+    "recognition": "TemplateMatch",
+    "template": "screen/click_enter.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "click_enter__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 click_enter 上时，沿上游第一条 click_enter -> main 边前进"
+    }
+  },
+  "Nav_main_from_configure_team": {
+    "recognition": "TemplateMatch",
+    "template": "screen/configure_team.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "configure_team__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 configure_team 上时，沿上游第一条 configure_team -> main 边前进"
+    }
+  },
+  "Nav_main_from_currency_wars_homepage": {
+    "recognition": "TemplateMatch",
+    "template": "screen/currency_wars/homepage.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "currency_wars_homepage__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 currency_wars_homepage 上时，沿上游第一条 currency_wars_homepage -> main 边前进"
+    }
+  },
+  "Nav_main_from_divergent_main": {
+    "recognition": "TemplateMatch",
+    "template": "screen/universe/divergent_main.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "divergent_main__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 divergent_main 上时，沿上游第一条 divergent_main -> main 边前进"
+    }
+  },
+  "Nav_main_from_fight_exit": {
+    "recognition": "TemplateMatch",
+    "template": "zh_CN/fight/fight_exit.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "fight_exit__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 fight_exit 上时，沿上游第一条 fight_exit -> main 边前进"
+    }
+  },
+  "Nav_main_from_incoming_message": {
+    "recognition": "TemplateMatch",
+    "template": "screen/incoming_message.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "incoming_message__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 incoming_message 上时，沿上游第一条 incoming_message -> main 边前进"
+    }
+  },
+  "Nav_main_from_leave_temporarily": {
+    "recognition": "TemplateMatch",
+    "template": "screen/universe/leave_temporarily.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "leave_temporarily__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 leave_temporarily 上时，沿上游第一条 leave_temporarily -> main 边前进"
+    }
+  },
+  "Nav_main_from_map": {
+    "recognition": "TemplateMatch",
+    "template": "screen/map.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "map__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 map 上时，沿上游第一条 map -> main 边前进"
+    }
+  },
+  "Nav_main_from_memory": {
+    "recognition": "TemplateMatch",
+    "template": "screen/forgottenhall/memory.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "memory__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 memory 上时，沿上游第一条 memory -> main 边前进"
+    }
+  },
+  "Nav_main_from_memory_of_chaos": {
+    "recognition": "TemplateMatch",
+    "template": "screen/forgottenhall/memory_of_chaos.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "memory_of_chaos__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 memory_of_chaos 上时，沿上游第一条 memory_of_chaos -> main 边前进"
+    }
+  },
+  "Nav_main_from_menu": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/more.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "menu__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 menu 上时，沿上游第一条 menu -> main 边前进"
+    }
+  },
+  "Nav_main_from_monthly_card": {
+    "recognition": "TemplateMatch",
+    "template": "screen/monthly_card.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "monthly_card__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 monthly_card 上时，沿上游第一条 monthly_card -> main 边前进"
+    }
+  },
+  "Nav_main_from_purefiction": {
+    "recognition": "TemplateMatch",
+    "template": "screen/purefiction/purefiction.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "purefiction__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 purefiction 上时，沿上游第一条 purefiction -> main 边前进"
+    }
+  },
+  "Nav_main_from_retreat": {
+    "recognition": "TemplateMatch",
+    "template": "zh_CN/fight/retreat.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "retreat__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 retreat 上时，沿上游第一条 retreat -> main 边前进"
+    }
+  },
+  "Nav_main_from_stellar_warp": {
+    "recognition": "TemplateMatch",
+    "template": "screen/warp/stellar_warp.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "stellar_warp__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 stellar_warp 上时，沿上游第一条 stellar_warp -> main 边前进"
+    }
+  },
+  "Nav_main_from_universe_expansion": {
+    "recognition": "TemplateMatch",
+    "template": "screen/universe/universe_expansion.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "universe_expansion__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 universe_expansion 上时，沿上游第一条 universe_expansion -> main 边前进"
+    }
+  },
+  "Nav_main_from_universe_main": {
+    "recognition": "TemplateMatch",
+    "template": "screen/universe/universe_main.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "universe_main__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 universe_main 上时，沿上游第一条 universe_main -> main 边前进"
+    }
+  },
   "NavTo_main": {
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
+      "Nav_main_from_apocalyptic",
+      "Nav_main_from_camera",
+      "Nav_main_from_click_enter",
+      "Nav_main_from_configure_team",
+      "Nav_main_from_currency_wars_homepage",
+      "Nav_main_from_divergent_main",
+      "Nav_main_from_fight_exit",
+      "Nav_main_from_incoming_message",
+      "Nav_main_from_leave_temporarily",
+      "Nav_main_from_map",
+      "Nav_main_from_memory",
+      "Nav_main_from_memory_of_chaos",
+      "Nav_main_from_menu",
+      "Nav_main_from_monthly_card",
+      "Nav_main_from_purefiction",
+      "Nav_main_from_retreat",
+      "Nav_main_from_stellar_warp",
+      "Nav_main_from_universe_expansion",
+      "Nav_main_from_universe_main",
       "Screen_main"
     ],
     "attach": {
       "march7th:kind": "nav-router",
       "march7th:target_screen": "main",
       "march7th:predecessors": [
+        "apocalyptic",
+        "camera",
+        "click_enter",
+        "configure_team",
+        "currency_wars_homepage",
+        "divergent_main",
+        "fight_exit",
+        "incoming_message",
+        "leave_temporarily",
+        "map",
+        "memory",
+        "memory_of_chaos",
+        "menu",
+        "monthly_card",
+        "purefiction",
+        "retreat",
+        "stellar_warp",
+        "universe_expansion",
+        "universe_main"
+      ],
+      "march7th:routed_predecessors": [
         "apocalyptic",
         "camera",
         "click_enter",

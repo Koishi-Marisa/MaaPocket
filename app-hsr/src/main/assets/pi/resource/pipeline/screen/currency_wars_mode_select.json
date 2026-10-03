@@ -174,17 +174,62 @@
       "march7th:note": "在 currency_wars_homepage 上时，沿上游第一条 currency_wars_homepage -> currency_wars_mode_select 边前进"
     }
   },
+  "Nav_currency_wars_mode_select_from_currency_wars_mode_select_normal": {
+    "recognition": "TemplateMatch",
+    "template": "screen/currency_wars/mode_select_normal.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "currency_wars_mode_select_normal__currency_wars_mode_select__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 currency_wars_mode_select_normal 上时，沿上游第一条 currency_wars_mode_select_normal -> currency_wars_mode_select 边前进"
+    }
+  },
+  "Nav_currency_wars_mode_select_from_currency_wars_mode_select_overclock": {
+    "recognition": "TemplateMatch",
+    "template": "screen/currency_wars/mode_select_overclock.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "currency_wars_mode_select_overclock__currency_wars_mode_select__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 currency_wars_mode_select_overclock 上时，沿上游第一条 currency_wars_mode_select_overclock -> currency_wars_mode_select 边前进"
+    }
+  },
   "NavTo_currency_wars_mode_select": {
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
       "Nav_currency_wars_mode_select_from_currency_wars_homepage",
+      "Nav_currency_wars_mode_select_from_currency_wars_mode_select_normal",
+      "Nav_currency_wars_mode_select_from_currency_wars_mode_select_overclock",
       "Screen_currency_wars_mode_select"
     ],
     "attach": {
       "march7th:kind": "nav-router",
       "march7th:target_screen": "currency_wars_mode_select",
       "march7th:predecessors": [
+        "currency_wars_homepage",
+        "currency_wars_mode_select_normal",
+        "currency_wars_mode_select_overclock"
+      ],
+      "march7th:routed_predecessors": [
         "currency_wars_homepage",
         "currency_wars_mode_select_normal",
         "currency_wars_mode_select_overclock"

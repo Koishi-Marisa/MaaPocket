@@ -148,7 +148,7 @@ class MaaTasker internal constructor(
         api.MaaTaskerOverridePipeline(handle, taskId, pipelineOverrideJson).toBool()
 
     /** Drops cached recognition results. Required after the game's UI changes underneath us. */
-    fun clearCache(): Boolean = api.MaaTaskerClearCache(handle)
+    fun clearCache(): Boolean = api.MaaTaskerClearCache(handle).toBool()
 
     override fun close() {
         runCatching { api.MaaTaskerClearSinks(handle) }

@@ -88,6 +88,25 @@
       "march7th:kind": "sleep"
     }
   },
+  "Nav_currency_wars_homepage_from_currency_wars_mode_select": {
+    "recognition": "TemplateMatch",
+    "template": "screen/currency_wars/mode_select.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "currency_wars_mode_select__currency_wars_homepage__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 currency_wars_mode_select 上时，沿上游第一条 currency_wars_mode_select -> currency_wars_homepage 边前进"
+    }
+  },
   "Nav_currency_wars_homepage_from_guide5": {
     "recognition": "TemplateMatch",
     "template": "screen/guide/guide5.png",
@@ -111,6 +130,7 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
+      "Nav_currency_wars_homepage_from_currency_wars_mode_select",
       "Nav_currency_wars_homepage_from_guide5",
       "Screen_currency_wars_homepage"
     ],
@@ -118,6 +138,10 @@
       "march7th:kind": "nav-router",
       "march7th:target_screen": "currency_wars_homepage",
       "march7th:predecessors": [
+        "currency_wars_mode_select",
+        "guide5"
+      ],
+      "march7th:routed_predecessors": [
         "currency_wars_mode_select",
         "guide5"
       ],

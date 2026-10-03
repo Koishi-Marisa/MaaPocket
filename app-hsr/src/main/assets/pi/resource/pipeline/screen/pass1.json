@@ -86,6 +86,25 @@
       "march7th:note": "在 menu 上时，沿上游第一条 menu -> pass1 边前进"
     }
   },
+  "Nav_pass1_from_pass2": {
+    "recognition": "TemplateMatch",
+    "template": "screen/pass/pass2.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "pass2__pass1__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 pass2 上时，沿上游第一条 pass2 -> pass1 边前进"
+    }
+  },
   "Nav_pass1_from_start_srpass": {
     "recognition": "TemplateMatch",
     "template": "screen/start_srpass.png",
@@ -110,6 +129,7 @@
     "action": "DoNothing",
     "next": [
       "Nav_pass1_from_menu",
+      "Nav_pass1_from_pass2",
       "Nav_pass1_from_start_srpass",
       "Screen_pass1"
     ],
@@ -117,6 +137,11 @@
       "march7th:kind": "nav-router",
       "march7th:target_screen": "pass1",
       "march7th:predecessors": [
+        "menu",
+        "pass2",
+        "start_srpass"
+      ],
+      "march7th:routed_predecessors": [
         "menu",
         "pass2",
         "start_srpass"

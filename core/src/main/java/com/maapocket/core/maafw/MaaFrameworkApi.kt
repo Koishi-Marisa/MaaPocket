@@ -232,6 +232,13 @@ interface MaaFrameworkApi : Library {
     fun MaaResourceGetHash(res: Pointer?, buffer: Pointer?): Byte
     fun MaaResourceGetNodeList(res: Pointer?, buffer: Pointer?): Byte
 
+    // MaaResource.h: `MaaBool MaaResourceGetCustomRecognitionList(const MaaResource* res,
+    // MaaStringListBuffer* buffer)` / `...GetCustomActionList(...)` — 这两个是**镜像**成 agent 的
+    // custom 名列表（注册方在 agent 进程，见 [MaaAgentClient.customRecognitionList]），
+    // 和 [MaaAgentClient.customRecognitionList] 查的是同一份数据，只是入口不同。
+    fun MaaResourceGetCustomRecognitionList(res: Pointer?, buffer: Pointer?): Byte
+    fun MaaResourceGetCustomActionList(res: Pointer?, buffer: Pointer?): Byte
+
     // ==========================================================================
     // include/MaaFramework/Instance/MaaTasker.h
     // ==========================================================================

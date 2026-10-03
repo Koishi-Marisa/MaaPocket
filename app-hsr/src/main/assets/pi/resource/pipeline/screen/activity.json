@@ -147,17 +147,41 @@
       "march7th:note": "在 menu 上时，沿上游第一条 menu -> activity 边前进"
     }
   },
+  "Nav_activity_from_reward_guide": {
+    "recognition": "TemplateMatch",
+    "template": "screen/reward_guide.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "reward_guide__activity__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 reward_guide 上时，沿上游第一条 reward_guide -> activity 边前进"
+    }
+  },
   "NavTo_activity": {
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
       "Nav_activity_from_menu",
+      "Nav_activity_from_reward_guide",
       "Screen_activity"
     ],
     "attach": {
       "march7th:kind": "nav-router",
       "march7th:target_screen": "activity",
       "march7th:predecessors": [
+        "menu",
+        "reward_guide"
+      ],
+      "march7th:routed_predecessors": [
         "menu",
         "reward_guide"
       ],

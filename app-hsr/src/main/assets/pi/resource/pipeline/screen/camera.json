@@ -58,17 +58,41 @@
       "march7th:note": "在 menu 上时，沿上游第一条 menu -> camera 边前进"
     }
   },
+  "Nav_camera_from_photo_preview": {
+    "recognition": "TemplateMatch",
+    "template": "screen/photo_preview.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "photo_preview__camera__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 photo_preview 上时，沿上游第一条 photo_preview -> camera 边前进"
+    }
+  },
   "NavTo_camera": {
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
       "Nav_camera_from_menu",
+      "Nav_camera_from_photo_preview",
       "Screen_camera"
     ],
     "attach": {
       "march7th:kind": "nav-router",
       "march7th:target_screen": "camera",
       "march7th:predecessors": [
+        "menu",
+        "photo_preview"
+      ],
+      "march7th:routed_predecessors": [
         "menu",
         "photo_preview"
       ],

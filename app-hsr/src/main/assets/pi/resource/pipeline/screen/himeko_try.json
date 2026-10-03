@@ -85,6 +85,25 @@
       "march7th:kind": "sleep"
     }
   },
+  "Nav_himeko_try_from_himeko_prepare": {
+    "recognition": "TemplateMatch",
+    "template": "screen/warp/himeko_prepare.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "himeko_prepare__himeko_try__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 himeko_prepare 上时，沿上游第一条 himeko_prepare -> himeko_try 边前进"
+    }
+  },
   "Nav_himeko_try_from_stellar_warp": {
     "recognition": "TemplateMatch",
     "template": "screen/warp/stellar_warp.png",
@@ -108,6 +127,7 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
+      "Nav_himeko_try_from_himeko_prepare",
       "Nav_himeko_try_from_stellar_warp",
       "Screen_himeko_try"
     ],
@@ -115,6 +135,10 @@
       "march7th:kind": "nav-router",
       "march7th:target_screen": "himeko_try",
       "march7th:predecessors": [
+        "himeko_prepare",
+        "stellar_warp"
+      ],
+      "march7th:routed_predecessors": [
         "himeko_prepare",
         "stellar_warp"
       ],

@@ -1336,6 +1336,8 @@ def main(argv=None):
     edge_covered = 0
     screen_nodes = {}
     edge_first_node = {}         # (from, to, edge_index) -> first chain node name
+    pending_nodes = {}           # screen id -> node dict, filled in pass 1 and
+                                 # completed with the router in pass 2
     for sid in screen_order:
         screen_nodes[sid] = "Screen_%s" % sid
     for sid in screen_order:
@@ -1427,6 +1429,18 @@ def main(argv=None):
             edge_first_node[(sid, target, edge_idx)] = names[0]
             edge_covered += 1
 
+        pending_nodes[sid] = nodes
+
+    # PASS 2 — routers.  This MUST be a separate pass over screen_order: a
+    # guard for the edge <pred> -> <sid> needs edge_first_node[(pred, sid, ...)],
+    # and in pass 1 that entry is only created when `pred` is itself walked.  A
+    # predecessor that appears LATER in screens.json than the target would not
+    # exist yet, which silently dropped 59 of the 110 guards on the first
+    # implementation (found by auditing that every NavTo_*.next entry resolved
+    # and that guard count == 110).
+    for sid in screen_order:
+        nodes = pending_nodes[sid]
+
         # NavTo router: goal-directed single-hop navigation.
         # DECISION: a fully general multi-hop router would need to materialise
         # ~2313 (target, source) BFS paths; that is far outside the brief's
@@ -1442,7 +1456,7 @@ def main(argv=None):
         # the last fallback.  Putting the anchor first would swallow everything.
         predicates = sorted({(e["from"], e["index"]) for e in edge_records
                              if e["target_screen"] == sid})
-        nav_next, nav_guards = [], []
+        nav_next, nav_guards, routed_preds = [], [], []
         for pred in sorted({p[0] for p in predicates}):
             first_edge = min(idx for (p, idx) in predicates if p == pred)
             chain_head = edge_first_node.get((pred, sid, first_edge))
@@ -1451,6 +1465,7 @@ def main(argv=None):
                 continue
             guard = "Nav_%s_from_%s" % (sid, pred)
             nav_guards.append(guard)
+            routed_preds.append(pred)
             pred_templates = [template_rel(p)
                               for p in normalise_image_paths(screen_by_id[pred]["image_path"])]
             nodes[guard] = tm_node(
@@ -1467,6 +1482,7 @@ def main(argv=None):
             {"march7th:kind": "nav-router",
              "march7th:target_screen": sid,
              "march7th:predecessors": [p for (p, _i) in predicates],
+             "march7th:routed_predecessors": routed_preds,
              "march7th:note": ("DirectHit 进入：先按顺序试探各前驱屏幕守卫节点"
                                "（TemplateMatch 前驱屏幕锚点），命中则沿那条上游边导航；"
                                "全部未命中则回退到 Screen_%s 锚点——若此时已经在 %s 上即成功，"
@@ -1554,6 +1570,24 @@ def main(argv=None):
         "total": len(node_names), "duplicates": name_dupes,
         "dangling_references": dangling,
     }
+    # Guard-coverage invariant: every single-hop edge <from> -> <to> must have a
+    # Nav_<to>_from_<from> guard, i.e. one guard per DISTINCT (from, to) pair.
+    # (Recomputing it here caught the pass-ordering bug that had silently
+    # dropped 59 of 110 guards.)
+    guard_names = set(n for n in node_names if n.startswith("Nav_") and "_from_" in n)
+    expected_guards = set("Nav_%s_from_%s" % (to, frm)
+                          for frm, tos in adjacency.items() for to in tos)
+    report["nav_guard_coverage"] = {
+        "guards_emitted": len(guard_names),
+        "guards_expected": len(expected_guards),
+        "missing": sorted(expected_guards - guard_names),
+        "unexpected": sorted(guard_names - expected_guards),
+        "ok": guard_names == expected_guards,
+    }
+    if guard_names != expected_guards:
+        print("WARNING : nav guard coverage %d/%d (missing %d)"
+              % (len(guard_names), len(expected_guards),
+                 len(expected_guards - guard_names)))
     locale = {
         "interface_label": "崩坏：星穹铁道",
         "interface_title": "MaaPocket · 崩坏：星穹铁道",

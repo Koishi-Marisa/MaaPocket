@@ -71,6 +71,9 @@
       "march7th:predecessors": [
         "currency_wars_mode_select"
       ],
+      "march7th:routed_predecessors": [
+        "currency_wars_mode_select"
+      ],
       "march7th:note": "DirectHit 进入：先按顺序试探各前驱屏幕守卫节点（TemplateMatch 前驱屏幕锚点），命中则沿那条上游边导航；全部未命中则回退到 Screen_currency_wars_mode_select_overclock 锚点——若此时已经在 currency_wars_mode_select_overclock 上即成功，否则本节点识别失败（诚实失败，不静默跳过）。只覆盖单跳。"
     }
   }

@@ -142,6 +142,44 @@
       "march7th:note": "在 guide2 上时，沿上游第一条 guide2 -> guide3 边前进"
     }
   },
+  "Nav_guide3_from_guide4": {
+    "recognition": "TemplateMatch",
+    "template": "screen/guide/guide4.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "guide4__guide3__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 guide4 上时，沿上游第一条 guide4 -> guide3 边前进"
+    }
+  },
+  "Nav_guide3_from_guide5": {
+    "recognition": "TemplateMatch",
+    "template": "screen/guide/guide5.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "guide5__guide3__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 guide5 上时，沿上游第一条 guide5 -> guide3 边前进"
+    }
+  },
   "Nav_guide3_from_menu": {
     "recognition": "TemplateMatch",
     "template": "share/menu/more.png",
@@ -166,6 +204,8 @@
     "action": "DoNothing",
     "next": [
       "Nav_guide3_from_guide2",
+      "Nav_guide3_from_guide4",
+      "Nav_guide3_from_guide5",
       "Nav_guide3_from_menu",
       "Screen_guide3"
     ],
@@ -173,6 +213,12 @@
       "march7th:kind": "nav-router",
       "march7th:target_screen": "guide3",
       "march7th:predecessors": [
+        "guide2",
+        "guide4",
+        "guide5",
+        "menu"
+      ],
+      "march7th:routed_predecessors": [
         "guide2",
         "guide4",
         "guide5",

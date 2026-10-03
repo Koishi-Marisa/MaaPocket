@@ -114,17 +114,41 @@
       "march7th:note": "在 guide4 上时，沿上游第一条 guide4 -> memory_of_chaos 边前进"
     }
   },
+  "Nav_memory_of_chaos_from_prepare_fight": {
+    "recognition": "TemplateMatch",
+    "template": "forgottenhall/prepare_fight.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "prepare_fight__memory_of_chaos__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 prepare_fight 上时，沿上游第一条 prepare_fight -> memory_of_chaos 边前进"
+    }
+  },
   "NavTo_memory_of_chaos": {
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
       "Nav_memory_of_chaos_from_guide4",
+      "Nav_memory_of_chaos_from_prepare_fight",
       "Screen_memory_of_chaos"
     ],
     "attach": {
       "march7th:kind": "nav-router",
       "march7th:target_screen": "memory_of_chaos",
       "march7th:predecessors": [
+        "guide4",
+        "prepare_fight"
+      ],
+      "march7th:routed_predecessors": [
         "guide4",
         "prepare_fight"
       ],

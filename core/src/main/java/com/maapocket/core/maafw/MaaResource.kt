@@ -148,7 +148,7 @@ class MaaResource internal constructor(
     }
 
     /** Unloads everything. The next task needs a fresh [loadAll]. */
-    fun clear(): Boolean = api.MaaResourceClear(handle)
+    fun clear(): Boolean = api.MaaResourceClear(handle).toBool()
 
     override fun close() {
         api.MaaResourceClearSinks(handle)

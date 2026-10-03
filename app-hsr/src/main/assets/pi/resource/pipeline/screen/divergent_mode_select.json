@@ -98,17 +98,68 @@
       "march7th:note": "在 divergent_main 上时，沿上游第一条 divergent_main -> divergent_mode_select 边前进"
     }
   },
+  "Nav_divergent_mode_select_from_divergent_mode_select_cycle": {
+    "recognition": "TemplateMatch",
+    "template": [
+      "screen/universe/mode_select_cycle.png",
+      "screen/universe/mode_select_cycle2.png"
+    ],
+    "threshold": [
+      0.8,
+      0.8
+    ],
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "divergent_mode_select_cycle__divergent_mode_select__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 divergent_mode_select_cycle 上时，沿上游第一条 divergent_mode_select_cycle -> divergent_mode_select 边前进"
+    }
+  },
+  "Nav_divergent_mode_select_from_divergent_mode_select_normal": {
+    "recognition": "TemplateMatch",
+    "template": "screen/universe/mode_select_normal.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "divergent_mode_select_normal__divergent_mode_select__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 divergent_mode_select_normal 上时，沿上游第一条 divergent_mode_select_normal -> divergent_mode_select 边前进"
+    }
+  },
   "NavTo_divergent_mode_select": {
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
       "Nav_divergent_mode_select_from_divergent_main",
+      "Nav_divergent_mode_select_from_divergent_mode_select_cycle",
+      "Nav_divergent_mode_select_from_divergent_mode_select_normal",
       "Screen_divergent_mode_select"
     ],
     "attach": {
       "march7th:kind": "nav-router",
       "march7th:target_screen": "divergent_mode_select",
       "march7th:predecessors": [
+        "divergent_main",
+        "divergent_mode_select_cycle",
+        "divergent_mode_select_normal"
+      ],
+      "march7th:routed_predecessors": [
         "divergent_main",
         "divergent_mode_select_cycle",
         "divergent_mode_select_normal"

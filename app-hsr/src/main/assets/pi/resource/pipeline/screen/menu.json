@@ -1128,6 +1128,259 @@
       "march7th:approximation": "上游对带真实 alpha 的模板使用 cv2.TM_SQDIFF + mask（分数越低越像，阈值 2000000 等于“接受任意位置”）。这里退化为普通 TM_CCOEFF_NORMED 且阈值降到 0.7。"
     }
   },
+  "Nav_menu_from_achievement": {
+    "recognition": "TemplateMatch",
+    "template": "screen/achievement.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "achievement__menu__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 achievement 上时，沿上游第一条 achievement -> menu 边前进"
+    }
+  },
+  "Nav_menu_from_activity": {
+    "recognition": "TemplateMatch",
+    "template": [
+      "screen/activity.png",
+      "screen/activity_2.png"
+    ],
+    "threshold": [
+      0.8,
+      0.8
+    ],
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "activity__menu__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 activity 上时，沿上游第一条 activity -> menu 边前进"
+    }
+  },
+  "Nav_menu_from_bag_consumables": {
+    "recognition": "TemplateMatch",
+    "template": "screen/bag/bag_consumables.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "bag_consumables__menu__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 bag_consumables 上时，沿上游第一条 bag_consumables -> menu 边前进"
+    }
+  },
+  "Nav_menu_from_bag_lc": {
+    "recognition": "TemplateMatch",
+    "template": "screen/bag/bag_lc.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "bag_lc__menu__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 bag_lc 上时，沿上游第一条 bag_lc -> menu 边前进"
+    }
+  },
+  "Nav_menu_from_bag_relicset": {
+    "recognition": "TemplateMatch",
+    "template": "screen/bag/bag_relicset.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "bag_relicset__menu__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 bag_relicset 上时，沿上游第一条 bag_relicset -> menu 边前进"
+    }
+  },
+  "Nav_menu_from_character_warp": {
+    "recognition": "TemplateMatch",
+    "template": "screen/warp/character_warp.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "character_warp__menu__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 character_warp 上时，沿上游第一条 character_warp -> menu 边前进"
+    }
+  },
+  "Nav_menu_from_consumables": {
+    "recognition": "TemplateMatch",
+    "template": "screen/synthesis/consumables.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "consumables__menu__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 consumables 上时，沿上游第一条 consumables -> menu 边前进"
+    }
+  },
+  "Nav_menu_from_dispatch": {
+    "recognition": "TemplateMatch",
+    "template": "screen/dispatch.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "dispatch__menu__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 dispatch 上时，沿上游第一条 dispatch -> menu 边前进"
+    }
+  },
+  "Nav_menu_from_guide2": {
+    "recognition": "TemplateMatch",
+    "template": "screen/guide/guide2.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "guide2__menu__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 guide2 上时，沿上游第一条 guide2 -> menu 边前进"
+    }
+  },
+  "Nav_menu_from_guide3": {
+    "recognition": "TemplateMatch",
+    "template": "screen/guide/guide3.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "guide3__menu__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 guide3 上时，沿上游第一条 guide3 -> menu 边前进"
+    }
+  },
+  "Nav_menu_from_guide4": {
+    "recognition": "TemplateMatch",
+    "template": "screen/guide/guide4.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "guide4__menu__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 guide4 上时，沿上游第一条 guide4 -> menu 边前进"
+    }
+  },
+  "Nav_menu_from_guide5": {
+    "recognition": "TemplateMatch",
+    "template": "screen/guide/guide5.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "guide5__menu__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 guide5 上时，沿上游第一条 guide5 -> menu 边前进"
+    }
+  },
+  "Nav_menu_from_mail": {
+    "recognition": "TemplateMatch",
+    "template": "screen/mail.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "mail__menu__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 mail 上时，沿上游第一条 mail -> menu 边前进"
+    }
+  },
   "Nav_menu_from_main": {
     "recognition": "TemplateMatch",
     "template": "screen/main.png",
@@ -1147,17 +1400,151 @@
       "march7th:note": "在 main 上时，沿上游第一条 main -> menu 边前进"
     }
   },
+  "Nav_menu_from_material": {
+    "recognition": "TemplateMatch",
+    "template": "screen/synthesis/material.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "material__menu__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 material 上时，沿上游第一条 material -> menu 边前进"
+    }
+  },
+  "Nav_menu_from_pass1": {
+    "recognition": "TemplateMatch",
+    "template": "screen/pass/pass1.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "pass1__menu__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 pass1 上时，沿上游第一条 pass1 -> menu 边前进"
+    }
+  },
+  "Nav_menu_from_pass2": {
+    "recognition": "TemplateMatch",
+    "template": "screen/pass/pass2.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "pass2__menu__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 pass2 上时，沿上游第一条 pass2 -> menu 边前进"
+    }
+  },
+  "Nav_menu_from_redemption": {
+    "recognition": "TemplateMatch",
+    "template": "screen/redemption.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "redemption__menu__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 redemption 上时，沿上游第一条 redemption -> menu 边前进"
+    }
+  },
+  "Nav_menu_from_visa": {
+    "recognition": "TemplateMatch",
+    "template": "screen/visa.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "visa__menu__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 visa 上时，沿上游第一条 visa -> menu 边前进"
+    }
+  },
   "NavTo_menu": {
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
+      "Nav_menu_from_achievement",
+      "Nav_menu_from_activity",
+      "Nav_menu_from_bag_consumables",
+      "Nav_menu_from_bag_lc",
+      "Nav_menu_from_bag_relicset",
+      "Nav_menu_from_character_warp",
+      "Nav_menu_from_consumables",
+      "Nav_menu_from_dispatch",
+      "Nav_menu_from_guide2",
+      "Nav_menu_from_guide3",
+      "Nav_menu_from_guide4",
+      "Nav_menu_from_guide5",
+      "Nav_menu_from_mail",
       "Nav_menu_from_main",
+      "Nav_menu_from_material",
+      "Nav_menu_from_pass1",
+      "Nav_menu_from_pass2",
+      "Nav_menu_from_redemption",
+      "Nav_menu_from_visa",
       "Screen_menu"
     ],
     "attach": {
       "march7th:kind": "nav-router",
       "march7th:target_screen": "menu",
       "march7th:predecessors": [
+        "achievement",
+        "activity",
+        "bag_consumables",
+        "bag_lc",
+        "bag_relicset",
+        "character_warp",
+        "consumables",
+        "dispatch",
+        "guide2",
+        "guide3",
+        "guide4",
+        "guide5",
+        "mail",
+        "main",
+        "material",
+        "pass1",
+        "pass2",
+        "redemption",
+        "visa"
+      ],
+      "march7th:routed_predecessors": [
         "achievement",
         "activity",
         "bag_consumables",
