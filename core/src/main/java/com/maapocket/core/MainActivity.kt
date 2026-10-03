@@ -18,7 +18,9 @@ class MainActivity : ComponentActivity() {
 
         // MaaPocketApp 在 debug 里已经植过树了；这里只在「没有树」时补一次，
         // 否则每条日志会被打印两遍，反而更难读。
-        if (BuildConfig.DEBUG && Timber.treeCount() == 0) {
+        // 注意：当前 Timber 版本里 `treeCount` 是 **属性** 不是函数，写成 `treeCount()`
+        // 会得到 `Expression 'treeCount' of type 'Int' cannot be invoked as a function`。
+        if (BuildConfig.DEBUG && Timber.treeCount == 0) {
             Timber.plant(Timber.DebugTree())
         }
 

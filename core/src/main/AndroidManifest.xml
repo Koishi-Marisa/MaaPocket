@@ -29,7 +29,6 @@
         android:name="com.maapocket.core.MaaPocketApp"
         android:allowBackup="false"
         android:extractNativeLibs="true"
-        android:hasFragments="false"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
