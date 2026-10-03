@@ -226,28 +226,36 @@ jobs:
           PY
 
       # 铺进 Gradle 真正会打包的位置：
-      #   · 可执行文件必须落 core/src/main/jniLibs/<abi>/lib*.so —— 只有匹配 lib*.so 的文件
-      #     才会被当作原生库安装到应用私有目录并拿到 x 权限（Android 不允许从 assets execve）；
-      #   · locale bundle 进 assets/pi-agent-bundle/go-service/，由 AgentWorkspace 在启动前
-      #     解到 agent 的工作目录（Go agent 以 locales/go-service/zh_cn.json 的存在判定 locale 目录）。
+      #   · 可执行文件必须落 **app-endfield**/src/main/jniLibs/<abi>/lib*.so —— 只有匹配 lib*.so
+      #     的文件才会被当作原生库安装到应用私有目录并拿到 x 权限（Android 不允许从 assets execve）；
+      #   · locale bundle 进 **app-endfield**/assets/pi-agent-bundle/go-service/，由 AgentWorkspace
+      #     在启动前解到 agent 的工作目录（Go agent 以 locales/go-service/zh_cn.json 的存在判定 locale 目录）。
+      #
+      # 为什么钉在 app-endfield 而不是 core：
+      #   这是 MaaEnd 专属的 agent（Go，单文件 ELF 解包后 14 MB）。放在 :core 里会被三个 APK 各带一份，
+      #   而崩铁 / 绝区零的 interface.json 的 `agent` 是空数组，根本不会用它 —— 真机实测
+      #   `/data/app/**/com.maapocket.hsr-*/lib/arm64/libMaaEnd_go_service.so` 确实存在（14264632 B），
+      #   即每个 hsr / zzz APK 白扛 14 MB。nativeLibraryDir 与 assets 都是**按 app 模块**合并的，
+      #   所以只改落点即可，AgentRuntimeCatalog / AgentWorkspace 一行都不用动。
       - name: Install go agent into the Android source tree (${{ matrix.abi }})
         shell: bash
         run: |
           set -euo pipefail
           abi="${{ matrix.abi }}"
           src="dist/agents/${abi}"
+          mod="app-endfield/src/main"
           [ -f "${src}/libMaaEnd_go_service.so" ] || { echo "::error::缺少 agent 产物 ${src}/libMaaEnd_go_service.so"; exit 1; }
-          mkdir -p "core/src/main/jniLibs/${abi}"
-          cp "${src}/libMaaEnd_go_service.so" "core/src/main/jniLibs/${abi}/libMaaEnd_go_service.so"
-          chmod 755 "core/src/main/jniLibs/${abi}/libMaaEnd_go_service.so"
-          rm -rf core/src/main/assets/pi-agent-bundle/go-service
-          mkdir -p core/src/main/assets/pi-agent-bundle
-          cp -R "${src}/bundle/go-service" core/src/main/assets/pi-agent-bundle/go-service
-          marker=core/src/main/assets/pi-agent-bundle/go-service/locales/go-service/zh_cn.json
+          mkdir -p "${mod}/jniLibs/${abi}"
+          cp "${src}/libMaaEnd_go_service.so" "${mod}/jniLibs/${abi}/libMaaEnd_go_service.so"
+          chmod 755 "${mod}/jniLibs/${abi}/libMaaEnd_go_service.so"
+          rm -rf "${mod}/assets/pi-agent-bundle/go-service"
+          mkdir -p "${mod}/assets/pi-agent-bundle"
+          cp -R "${src}/bundle/go-service" "${mod}/assets/pi-agent-bundle/go-service"
+          marker="${mod}/assets/pi-agent-bundle/go-service/locales/go-service/zh_cn.json"
           [ -f "$marker" ] || { echo "::error::locale bundle 不完整，缺 $marker"; exit 1; }
-          echo "jniLibs: $(ls -l core/src/main/jniLibs/${abi}/libMaaEnd_go_service.so)"
-          echo "assets : $(find core/src/main/assets/pi-agent-bundle -type f | wc -l) 个文件"
-          find core/src/main/assets/pi-agent-bundle/go-service -maxdepth 2 -type d | sort
+          echo "jniLibs: $(ls -l ${mod}/jniLibs/${abi}/libMaaEnd_go_service.so)"
+          echo "assets : $(find ${mod}/assets/pi-agent-bundle -type f | wc -l) 个文件"
+          find ${mod}/assets/pi-agent-bundle/go-service -maxdepth 2 -type d | sort
 
       - name: Make gradlew executable
         run: chmod +x gradlew

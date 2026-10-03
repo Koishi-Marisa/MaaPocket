@@ -7,14 +7,17 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -36,6 +39,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -57,6 +61,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.maapocket.core.pi.PiController
 import com.maapocket.core.pi.PiOption
@@ -65,7 +70,6 @@ import com.maapocket.core.pi.PiSelection
 import com.maapocket.core.pi.PiTask
 import com.maapocket.core.privilege.PrivilegeAvailability
 import com.maapocket.core.privilege.PrivilegeKind
-import com.maapocket.core.privilege.PrivilegeState
 import com.maapocket.core.run.MaaRunController
 
 /** Shizuku 官方 App 的包名；只在用户点了「打开 Shizuku」时才用到。 */
@@ -103,8 +107,25 @@ fun HomeScreen(viewModel: MaaPocketViewModel) {
     val plan by viewModel.plan.collectAsState()
     val uiError by viewModel.uiError.collectAsState()
 
+    // 任务筛选词。**刻意放在 HomeScreen**：TaskCard 位于整页 verticalScroll 里，
+    // 状态放上层才能在滚动/重组期间保持住。它只做 UI 过滤，不影响"哪些任务被勾选"。
+    var taskQuery by remember { mutableStateOf("") }
+
     Scaffold(
         topBar = { TopAppBar(title = { Text("MaaPocket") }) },
+        // 承重：任务卡里有 30 个任务、每个带 4-8 行描述，把「准备 / 开始 / 停止」推到 20+ 屏之后。
+        // 真机实测（HONOR AGI-AN00 / Android 15 / 1200x2664）12 次 fling 都滚不到 —— 而整页只有
+        // 这一个入口。所以把它移出滚动流，常驻在 Scaffold 的 bottomBar 上。
+        bottomBar = {
+            RunBar(
+                state = state,
+                uiError = uiError,
+                onPrepare = viewModel::prepare,
+                onRun = viewModel::run,
+                onStop = viewModel::requestStop,
+                onDismissError = viewModel::dismissUiError,
+            )
+        },
     ) { insets ->
         Column(
             modifier = Modifier
@@ -119,6 +140,7 @@ fun HomeScreen(viewModel: MaaPocketViewModel) {
                 kind = kind,
                 onSelectKind = viewModel::selectPrivilegeKind,
                 onRefresh = viewModel::refreshPrivilegeOptions,
+                onRequestPrivilege = viewModel::requestPrivilege,
             )
 
             PackCard(
@@ -138,24 +160,24 @@ fun HomeScreen(viewModel: MaaPocketViewModel) {
 
             TaskCard(
                 repository = repository,
+                query = taskQuery,
+                onQueryChange = { taskQuery = it },
                 selectedTasks = selectedTasks,
                 optionValues = optionValues,
                 onCheck = viewModel::setTaskChecked,
                 onSelectAll = viewModel::selectAllTasks,
                 onClearAll = viewModel::clearAllTasks,
+                onSelectThese = viewModel::selectTasks,
+                onUnselectThese = viewModel::unselectTasks,
                 onOptionValue = viewModel::setOptionValue,
                 optionDisplayValue = viewModel::optionDisplayValue,
                 optionTrueCase = viewModel::optionTrueCase,
             )
 
-            ActionCard(
-                state = state,
-                plan = plan,
-                uiError = uiError,
-                onPrepare = viewModel::prepare,
-                onRun = viewModel::run,
-                onStop = viewModel::requestStop,
-            )
+            // 「运行」卡片的按钮已经搬到 bottomBar；这里只保留计划摘要，它是**配置结果**
+            // （controller / resource / 显示尺寸 / 勾了哪些任务），跟按钮放一起会让人以为
+            // 它随滚动位置失效。
+            RunSummaryCard(plan = plan)
 
             PreviewCard(
                 enabled = previewEnabled,
@@ -168,6 +190,10 @@ fun HomeScreen(viewModel: MaaPocketViewModel) {
                 onClear = viewModel::clearLogs,
                 logsText = viewModel::logsText,
             )
+
+            // Scaffold 给内容区的 insets 底部已经算进了 bottomBar 的高度，这里再补一点余量，
+            // 免得最后一张卡紧贴运行栏。
+            Spacer(Modifier.height(8.dp))
         }
     }
 }
@@ -180,15 +206,31 @@ private fun PrivilegeCard(
     kind: PrivilegeKind,
     onSelectKind: (PrivilegeKind) -> Unit,
     onRefresh: () -> Unit,
+    onRequestPrivilege: () -> Unit,
 ) {
     val context = LocalContext.current
     val privilege = state.privilege
 
+    // 会话状态里的 availability 默认值是 Unsupported（PrivilegeStatus 的字段默认值），
+    // 只有真的起过会话才有意义。直接显示它会出现自相矛盾的一屏：状态行写「设备不支持」，
+    // 紧挨着的 shizuku 那行却写「可用」。未启动时改用**所选后端的探测结果**。
+    val sessionKind = privilege.kind
+    val effectiveAvailability = if (sessionKind != null) {
+        privilege.availability
+    } else {
+        state.privilegeOptions.firstOrNull { it.first == kind }?.second ?: privilege.availability
+    }
+
     SectionCard(title = "权限") {
         Text(
-            text = "当前：${privilege.kind?.label ?: "未启动"} · " +
-                "${privilege.state.name} · uid=${privilege.uid} · " +
-                "availability=${describeAvailability(privilege.availability)}",
+            text = if (sessionKind == null) {
+                // uid 此时恒为 -1，写成 "-" 而不是 "-1"，免得看起来像探测失败。
+                "未启动 · ${privilege.state.name} · uid=- · " +
+                    "${kind.label}：${describeAvailability(effectiveAvailability)}"
+            } else {
+                "当前：${sessionKind.label} · ${privilege.state.name} · uid=${privilege.uid} · " +
+                    describeAvailability(effectiveAvailability)
+            },
             style = MaterialTheme.typography.bodyMedium,
         )
         privilege.detail?.takeIf { it.isNotBlank() }?.let {
@@ -215,9 +257,17 @@ private fun PrivilegeCard(
             }
         }
 
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = onRefresh) { Text("刷新") }
-            if (privilege.kind == PrivilegeKind.SHIZUKU && privilege.state == PrivilegeState.PERMISSION_REQUIRED) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+            Button(onClick = onRefresh, enabled = !state.busy) { Text("刷新") }
+            // 判据用**所选后端的探测结果**（effectiveAvailability）而不是会话状态：
+            // 会话还没起来时 privilege.kind == null、privilege.state == IDLE，
+            // 老代码的 `privilege.state == PERMISSION_REQUIRED` 永远为假 —— 真机上
+            // Shizuku 明明「需要授权」，这个按钮却从来没出现过，用户只能看到
+            // 「特权进程未连上」而无处可点。
+            if (effectiveAvailability is PrivilegeAvailability.PermissionRequired) {
+                Button(onClick = onRequestPrivilege, enabled = !state.busy) { Text("授权") }
+            }
+            if (kind == PrivilegeKind.SHIZUKU && effectiveAvailability !is PrivilegeAvailability.Ready) {
                 OutlinedButton(onClick = { openShizuku(context) }) { Text("打开 Shizuku") }
             }
         }
@@ -380,14 +430,21 @@ private fun repositoryLabel(repo: PiRepository, name: String, label: String?): S
 
 // ====================================================================== 任务
 
+/** 一个分组 + 它下面（可能被搜索过滤过的）任务。 */
+private data class TaskGroupView(val label: String, val tasks: List<PiTask>)
+
 @Composable
 private fun TaskCard(
     repository: PiRepository?,
+    query: String,
+    onQueryChange: (String) -> Unit,
     selectedTasks: Set<String>,
     optionValues: Map<String, String>,
     onCheck: (String, Boolean) -> Unit,
     onSelectAll: () -> Unit,
     onClearAll: () -> Unit,
+    onSelectThese: (Collection<String>) -> Unit,
+    onUnselectThese: (Collection<String>) -> Unit,
     onOptionValue: (String, String) -> Unit,
     optionDisplayValue: (String, PiOption) -> String,
     optionTrueCase: (PiOption) -> String?,
@@ -399,34 +456,121 @@ private fun TaskCard(
         }
 
         val defs = repository.optionDefs()
+
+        // 展开的「选项」编辑器：一次只开一个。真机可用宽度只有 369dp，同时展开多个会把
+        // 列表切成碎片，用户滚下去就再也找不到刚改的那一项。状态提到这里（而不是 TaskRow
+        // 内部的 remember）是为了扛住 LazyColumn 的回收 —— 行滚出屏幕再滚回来不会塌掉。
+        var expandedTask by remember { mutableStateOf<String?>(null) }
+
+        val groups = repository.tasksByGroup()
+        val filtered = filterTaskGroups(repository, groups, query)
+        val total = groups.values.fold(0) { acc, list -> acc + list.size }
+        val shown = filtered.fold(0) { acc, group -> acc + group.tasks.size }
+
+        OutlinedTextField(
+            value = query,
+            onValueChange = onQueryChange,
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("搜索任务（名称 / 说明 / 标签）") },
+            singleLine = true,
+        )
+
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("已选 ${selectedTasks.size} 项", modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodySmall)
-            TextButton(onClick = onSelectAll) { Text("全选") }
-            TextButton(onClick = onClearAll) { Text("全不选") }
+            Text(
+                text = if (query.isBlank()) {
+                    "已选 ${selectedTasks.size} 项"
+                } else {
+                    "已选 ${selectedTasks.size} 项 · 筛出 $shown / $total"
+                },
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.bodySmall,
+            )
+            // 有筛选词时「全选 / 全不选」只作用于**筛出来的那些**。否则筛出 3 个按「全选」，
+            // 会把另外 27 个看不见的任务一起勾上（或一起清掉），用户完全无从察觉。
+            val shownNames = filtered.flatMap { it.tasks }.map { it.name }
+            TextButton(
+                onClick = { if (query.isBlank()) onSelectAll() else onSelectThese(shownNames) },
+            ) { Text("全选") }
+            TextButton(
+                onClick = { if (query.isBlank()) onClearAll() else onUnselectThese(shownNames) },
+            ) { Text("全不选") }
         }
         HorizontalDivider()
 
-        repository.tasksByGroup().forEach { (groupName, tasks) ->
-            Text(
-                text = groupLabel(repository, groupName),
-                style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.padding(top = 4.dp),
-            )
-            tasks.forEach { task ->
-                TaskRow(
-                    repository = repository,
-                    task = task,
-                    checked = task.name in selectedTasks,
-                    defs = defs,
-                    optionValues = optionValues,
-                    onCheck = onCheck,
-                    onOptionValue = onOptionValue,
-                    optionDisplayValue = optionDisplayValue,
-                    optionTrueCase = optionTrueCase,
-                )
+        if (shown == 0) {
+            Text("没有匹配的任务，换个关键词试试。", style = MaterialTheme.typography.bodySmall)
+            return@SectionCard
+        }
+
+        // 独立的滚动区域。**必须有确定高度**：外层是 Column(verticalScroll)，它给子项的
+        // maxHeight 是 Infinity，而 Compose 会直接抛
+        //   IllegalStateException: Vertically scrollable component was measured with an
+        //   infinity maximum height constraints
+        // 日志卡早就是这个写法（LazyColumn + 固定 height），真机上已验证可用，
+        // 所以这里照抄而不用 weight/fillMaxHeight。
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(360.dp),
+        ) {
+            filtered.forEach { group ->
+                item {
+                    Text(
+                        text = group.label,
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
+                }
+                items(group.tasks) { task ->
+                    TaskRow(
+                        repository = repository,
+                        task = task,
+                        checked = task.name in selectedTasks,
+                        expanded = expandedTask == task.name,
+                        onToggleExpand = {
+                            expandedTask = if (expandedTask == task.name) null else task.name
+                        },
+                        defs = defs,
+                        optionValues = optionValues,
+                        onCheck = onCheck,
+                        onOptionValue = onOptionValue,
+                        optionDisplayValue = optionDisplayValue,
+                        optionTrueCase = optionTrueCase,
+                    )
+                }
             }
         }
     }
+}
+
+/**
+ * 按关键词过滤任务，空组直接丢掉。
+ *
+ * 匹配范围覆盖任务的 name / 已解析的 label / description / desc / entry / 它声明的 option 名，
+ * 因为真机上的描述全是「tasks/daily/fight.py:102 显式 screen.change_to('main')」这种
+ * 带路径的文本 —— 只按显示名搜等于搜不到。
+ */
+private fun filterTaskGroups(
+    repo: PiRepository,
+    groups: Map<String?, List<PiTask>>,
+    query: String,
+): List<TaskGroupView> {
+    val needle = query.trim()
+    return groups.mapNotNull { (name, tasks) ->
+        val matched = if (needle.isEmpty()) tasks else tasks.filter { matchesTask(repo, it, needle) }
+        if (matched.isEmpty()) null else TaskGroupView(groupLabel(repo, name), matched)
+    }
+}
+
+private fun matchesTask(repo: PiRepository, task: PiTask, needle: String): Boolean {
+    fun hit(text: String?): Boolean = text != null && text.contains(needle, ignoreCase = true)
+    return hit(task.name) ||
+        hit(repo.resolve(task.label)) ||
+        hit(task.label) ||
+        hit(task.description) ||
+        hit(task.desc) ||
+        hit(task.entry) ||
+        task.option.any { hit(it) }
 }
 
 private fun groupLabel(repo: PiRepository, groupName: String?): String {
@@ -440,6 +584,8 @@ private fun TaskRow(
     repository: PiRepository,
     task: PiTask,
     checked: Boolean,
+    expanded: Boolean,
+    onToggleExpand: () -> Unit,
     defs: Map<String, PiOption>,
     optionValues: Map<String, String>,
     onCheck: (String, Boolean) -> Unit,
@@ -450,7 +596,9 @@ private fun TaskRow(
     // 只渲染 task 自己声明的 option；case 里的子选项交给 core 的 applyOption 递归处理，
     // UI 不展开是为了避免同一个 override 被渲染两次、用户看到两份互相打架的取值。
     val optionNames = task.option.filter { defs.containsKey(it) }
-    var expanded by remember(task.name) { mutableStateOf(false) }
+    // 描述的展开状态留在行内即可（不需要跨回收保持），但「一行」必须是默认值：
+    // 30 个任务的描述都是 4-8 行，全展开就是 20+ 屏。
+    var descExpanded by remember(task.name) { mutableStateOf(false) }
 
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -462,15 +610,21 @@ private fun TaskRow(
                 )
                 val description = task.description ?: task.desc
                 description?.takeIf { it.isNotBlank() }?.let {
+                    // 点一下切换 2 行 / 全文。真机上的描述形如
+                    // 「tasks/daily/fight.py:102 显式 screen.change_to('main')」——
+                    // 折叠后仍能看到开头，展开才看得到文件名和行号。
                     Text(
                         text = repository.resolve(it),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = if (descExpanded) Int.MAX_VALUE else 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.clickable { descExpanded = !descExpanded },
                     )
                 }
             }
             if (optionNames.isNotEmpty()) {
-                TextButton(onClick = { expanded = !expanded }) {
+                TextButton(onClick = onToggleExpand) {
                     Text(if (expanded) "收起选项" else "选项 ${optionNames.size}")
                 }
             }
@@ -574,74 +728,121 @@ private fun OptionEditor(
 
 // ==================================================================== 操作栏
 
+/**
+ * 常驻运行栏（`Scaffold` 的 bottomBar）。
+ *
+ * 三个按钮的 `enabled` 条件是从原来那张页面里的 ActionCard **逐字照抄**的：
+ * 那是 [MaaRunController] 对外的状态约定，不该在「换个地方放按钮」的重构里顺手改掉。
+ *
+ * 之所以要常驻：真机（HONOR AGI-AN00 / 1200x2664）上任务卡有 30 个带长描述的任务，
+ * 把这三个按钮推到 20+ 屏之后，实测 12 次 fling 都到不了，而整页只有这一个入口。
+ */
 @Composable
-private fun ActionCard(
+private fun RunBar(
     state: MaaRunController.State,
-    plan: PiSelection.PiRunPlan?,
     uiError: String?,
     onPrepare: () -> Unit,
     onRun: () -> Unit,
     onStop: () -> Unit,
+    onDismissError: () -> Unit,
 ) {
-    SectionCard(title = "运行") {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-            Button(onClick = onPrepare, enabled = !state.busy) { Text("准备") }
-            Button(
-                onClick = onRun,
-                // core 自己会检验，但按钮先在 UI 上拦住，避免用户点了没反应还不知道为什么。
-                enabled = !state.busy && state.phase == MaaRunController.Phase.IDLE &&
-                    state.controllerReady && state.resourceLoaded,
-            ) { Text("开始") }
-            OutlinedButton(
-                onClick = onStop,
-                enabled = state.phase == MaaRunController.Phase.RUNNING,
-            ) { Text("停止") }
-            if (state.busy) {
-                CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+    val error = state.lastError ?: uiError
+    // 错误换一条就重新折成一行，免得上一条的展开状态串到新错误上。
+    var errorExpanded by remember(error) { mutableStateOf(false) }
+
+    Surface(tonalElevation = 3.dp, shadowElevation = 8.dp) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                // Scaffold **不会**给 bottomBar 自动加导航条内边距。不写这句，
+                // 手势导航条会正好盖住「停止」。运行栏是唯一的入口，不能被盖。
+                .navigationBarsPadding()
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Button(onClick = onPrepare, enabled = !state.busy, modifier = Modifier.weight(1f)) {
+                    Text("准备")
+                }
+                Button(
+                    onClick = onRun,
+                    // core 自己会检验，但按钮先在 UI 上拦住，避免用户点了没反应还不知道为什么。
+                    enabled = !state.busy && state.phase == MaaRunController.Phase.IDLE &&
+                        state.controllerReady && state.resourceLoaded,
+                    modifier = Modifier.weight(1f),
+                ) { Text("开始") }
+                OutlinedButton(
+                    onClick = onStop,
+                    enabled = state.phase == MaaRunController.Phase.RUNNING,
+                    modifier = Modifier.weight(1f),
+                ) { Text("停止") }
+                if (state.busy) {
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                }
             }
-        }
 
-        Text(describePhase(state.phase), style = MaterialTheme.typography.bodyMedium)
-
-        if (state.phase == MaaRunController.Phase.RUNNING) {
-            val fraction = if (state.taskCount > 0) {
-                (state.taskIndex.toFloat() / state.taskCount.toFloat()).coerceIn(0f, 1f)
-            } else {
-                0f
-            }
-            LinearProgressIndicator(progress = { fraction }, modifier = Modifier.fillMaxWidth())
-            Text(
-                text = "${state.taskIndex}/${state.taskCount}  ${state.currentTask ?: ""}",
-                style = MaterialTheme.typography.bodySmall,
-            )
-        }
-
-        plan?.let {
-            Text(PiSelection.summarize(it), style = MaterialTheme.typography.bodySmall)
-            if (it.warnings.isNotEmpty()) {
-                it.warnings.forEach { warning ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = describePhase(state.phase),
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+                if (state.phase == MaaRunController.Phase.RUNNING) {
                     Text(
-                        text = "⚠ $warning",
+                        text = "${state.taskIndex}/${state.taskCount}  ${state.currentTask ?: ""}",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error,
                     )
                 }
             }
-        }
 
-        val error = state.lastError ?: uiError
-        if (error != null) {
-            ErrorCard(error)
+            if (state.phase == MaaRunController.Phase.RUNNING) {
+                val fraction = if (state.taskCount > 0) {
+                    (state.taskIndex.toFloat() / state.taskCount.toFloat()).coerceIn(0f, 1f)
+                } else {
+                    0f
+                }
+                LinearProgressIndicator(progress = { fraction }, modifier = Modifier.fillMaxWidth())
+            }
+
+            if (error != null) {
+                // 运行栏只有这么点高度，长错误先压成一行；点一下展开全文，旁边可以关掉
+                // （`dismissUiError()` 之前没有任何 UI 调用过，所以 uiError 一旦出现就再也消不掉）。
+                Text(
+                    text = error,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                    maxLines = if (errorExpanded) Int.MAX_VALUE else 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { errorExpanded = !errorExpanded },
+                )
+                TextButton(onClick = onDismissError) { Text("关闭提示") }
+            }
         }
     }
 }
 
+/** 运行摘要。按钮搬去 bottomBar 之后，这里只留「这次要跑什么」的配置结果。 */
 @Composable
-private fun ErrorCard(message: String) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(12.dp)) {
+private fun RunSummaryCard(plan: PiSelection.PiRunPlan?) {
+    SectionCard(title = "运行摘要") {
+        if (plan == null) {
             Text(
-                text = message,
+                text = "解包资源包并勾选任务后，这里会显示这次要跑什么。",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            return@SectionCard
+        }
+        Text(PiSelection.summarize(plan), style = MaterialTheme.typography.bodySmall)
+        plan.warnings.forEach { warning ->
+            Text(
+                text = "⚠ $warning",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error,
             )

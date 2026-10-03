@@ -26,7 +26,13 @@ lint-results*.xml
 # 由 scripts/setup_maa_framework.py 在 CI / 本地重新生成，绝不入库（与 MAA-Meow 同策略）
 .maafw/
 core/src/main/jniLibs/*/
+app-*/src/main/jniLibs/*/
 !core/src/main/jniLibs/*/.gitkeep
+!app-*/src/main/jniLibs/*/.gitkeep
+
+# agent 的 locale bundle 同样是构建期产物（CI 从 MaaEnd 上游拷进来，约 46 个文件）
+core/src/main/assets/pi-agent-bundle/
+app-*/src/main/assets/pi-agent-bundle/
 
 # ---- MaaPocket: 构建期解包的 PI 资源包 ----
 # 由 scripts/build_pi_pack.py 产出，或用户在设备上从 assets 解出

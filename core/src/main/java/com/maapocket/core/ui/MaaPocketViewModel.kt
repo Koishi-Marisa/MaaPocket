@@ -215,6 +215,29 @@ class MaaPocketViewModel(application: Application) : AndroidViewModel(applicatio
         invalidatePlan()
     }
 
+    /**
+     * 按名单批量勾选（用于「按当前筛选结果全选」）。
+     *
+     * [selectAllTasks] 勾的是仓库里**全部**任务：搜索框里筛出 3 个之后按「全选」，会把剩下
+     * 27 个连看都看不见的任务一起勾上，用户完全无从察觉。所以搜索词非空时要走这个重载。
+     *
+     * 语义是**并集**（`current + names`）而不是替换 —— 筛选只该缩小"这一下点到谁"的范围，
+     * 不该顺手清掉用户之前手工勾好的任务。
+     */
+    fun selectTasks(names: Collection<String>) {
+        if (names.isEmpty()) return
+        _selectedTasks.update { it + names }
+        invalidatePlan()
+    }
+
+    /** 按名单批量取消勾选。与 [selectTasks] 对称；[clearAllTasks] 才是全清。 */
+    fun unselectTasks(names: Collection<String>) {
+        if (names.isEmpty()) return
+        val drop = names.toSet()
+        _selectedTasks.update { it - drop }
+        invalidatePlan()
+    }
+
     fun setOptionValue(name: String, value: String) {
         _optionValues.update { it + (name to value) }
         invalidatePlan()
