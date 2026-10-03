@@ -28,25 +28,41 @@ Android 的 APK 只会在 `lib/<abi>/` 下保留文件名匹配 `lib*.so` 的原
 再由 app 用 `File(nativeLibraryDir, "libMaaEnd_go_service.so")` 拿到真实可执行文件去 `exec`。
 文件名只是给打包器看的，ELF 本身仍然是 `ET_DYN` 的 PIE **可执行文件**，不是 `dlopen` 用的库。
 
-## 为什么是 GOOS=android 而不是 GOOS=linux
+## 关于 GOOS / CGO：**必须用 NDK 开 cgo**
 
-`github.com/MaaXYZ/maa-framework-go/v4` 用 `github.com/ebitengine/purego` 手写 `dlopen`，
-不含任何 cgo（`internal/native/native_unix.go`、`internal/native/native.go`），
-因此 `CGO_ENABLED=0` 即可，不需要 Android NDK。选 `GOOS=android` 的理由：
+一开始的设计是 `GOOS=android CGO_ENABLED=0`，理由看起来成立（`maa-framework-go` 用
+`github.com/ebitengine/purego` 手写 `dlopen`，整仓没有 cgo）。**但 CI 实测证伪了它**：
 
-* Go 的 build tag 规则里 `GOOS=android` **隐含满足 `//go:build linux`**
-  （`src/go/build/build.go`: `if ctxt.GOOS == "android" && name == "linux" { return true }`），
+    android/amd64 requires external (cgo) linking, but cgo is not enabled
+
+原因是 Go 的 `android/arm64`、`android/amd64` 两个端口**强制外部链接**：Android 上的
+可执行文件必须走 Bionic 动态链接器（`/system/bin/linker64`），Go 因此不能在
+`CGO_ENABLED=0` 下用内置链接器生成 android 目标（`src/cmd/go/internal/work/init.go` 的
+`mustUseExternalLinker` 对 `android` 分支返回 true）。`GOOS=linux` 不会触发这条规则，
+但那会让二进制里的 `runtime.GOOS` 变成 `"linux"`，丢失下面列出的语义。
+
+所以最终采用的是**标准做法**：给 Go 一个 NDK 的 clang 交叉编译器，开 cgo，走 external link。
+
+* `GOOS=android`（不是 linux）—— Go 的 build tag 规则里 `GOOS=android` **隐含满足
+  `//go:build linux`**（`src/go/build/build.go`:
+  `if ctxt.GOOS == "android" && name == "linux" { return true }`），
   所以 `ziplineimport/*.go`（`//go:build linux`）、`pkg/parentwatch/parentwatch_other.go`
-  （`//go:build !windows`）这些 POSIX 实现都会被正确选中；
-* `shirou/gopsutil/v4` 的 `process/process_linux.go` 也是 `//go:build linux`，同样满足；
-* `maa-framework-go` 自己的平台分支写的是 `case "linux", "android": return "libMaaFramework.so"`；
-* 最要紧的是：`GOOS` 会被编译进二进制，`runtime.GOOS` 在设备上必须真的是 `android`，
-  否则上游那些按 `runtime.GOOS` 分叉的代码（如 `intelarchive/showinventory.go` 选
-  `cmd` / `open` / `xdg-open`）会走错分支。
+  （`//go:build !windows`）这些 POSIX 实现都会被正确选中；`shirou/gopsutil/v4` 的
+  `process/process_linux.go` 也是 `//go:build linux`，同样满足；
+  `maa-framework-go` 自己的平台分支写的是 `case "linux", "android": return "libMaaFramework.so"`；
+* 最要紧的是 `GOOS` 会被编译进二进制，`runtime.GOOS` 在设备上必须真的是 `android`，
+  否则上游按 `runtime.GOOS` 分叉的代码会走错分支；
+* `CGO_ENABLED=1` + `CC=<NDK>/…-clang`：Go 用 NDK 的 clang 做 external link，
+  产物是动态链接 Bionic 的 PIE，`dlopen` 行为与 Android 原生进程完全一致；
+* **不要**手动加 `purego` build tag：`pkg/minicv/simd_amd64.go`（`//go:build amd64 && !purego`）
+  在 `GOARCH=amd64` 时会带上 `simd_amd64.s` 汇编实现，这是想要的；手动加 `purego` tag
+  反而会退化到纯 Go 分支。
 
-`CGO_ENABLED=0` + 不许额外的 `purego` build tag：`pkg/minicv/simd_amd64.go`
-（`//go:build amd64 && !purego`）在 `GOARCH=amd64` 时会带上 `simd_amd64.s` 汇编实现，
-这是想要的；手动加 `purego` tag 反而会退化到纯 Go 分支。
+NDK 位置按这个顺序找：`ANDROID_NDK_HOME` → `ANDROID_NDK_ROOT` → `NDK_HOME` →
+`$ANDROID_SDK_ROOT/ndk/<版本>`（取版本号最大的一个）→ `$ANDROID_HOME/ndk/<版本>`。
+找不到就直接报错，**不要**静默退回 `CGO_ENABLED=0`（那只会得到一条更难懂的链接错误）。
+可用 `--ndk` 显式指定，或 `--api` 覆盖默认的 `ANDROID_API`（默认 28，与 `minSdk` 一致）。
+
 
 ## 产出的目录形状
 
@@ -122,7 +138,7 @@ def _configure_std_streams() -> None:
 _configure_std_streams()
 
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 GENERATED_BY = "scripts/build_go_agent.py"
 
 # ABI（Android / Gradle 的叫法） -> GOARCH（Go 的叫法）。
@@ -157,6 +173,23 @@ GO_SERVICE_IDENTIFIER = "agent/go-service"
 GO_SERVICE_ARTIFACT = "libMaaEnd_go_service.so"
 BUNDLE_DIRNAME = "bundle"
 BUNDLE_AGENT_DIRNAME = "go-service"
+
+# --------------------------------------------------------------------------- #
+# NDK（交叉编译 android 目标的必要前提，见模块 docstring）
+# --------------------------------------------------------------------------- #
+
+# ABI -> NDK clang 的 target triple 前缀。
+ABI_TO_NDK_TRIPLE = {
+    "arm64-v8a": "aarch64-linux-android",
+    "x86_64": "x86_64-linux-android",
+}
+
+# 传给 clang 的 API level。取 28 与 gradle 的 minSdk 对齐：只要 >= 21 就能满足
+# Go 运行时对 `getrandom`/`futex` 等符号的需求，取和 minSdk 一样最直观。
+DEFAULT_ANDROID_API = 28
+
+# 找 NDK 时按顺序看这些环境变量。
+_NDK_ENV_VARS = ("ANDROID_NDK_HOME", "ANDROID_NDK_ROOT", "NDK_HOME")
 
 # 运行期必须跟着二进制一起走的语言资源。左侧是 MaaEnd 里的相对路径，
 # 右侧是 bundle 里的相对路径（都相对于各自根目录）。
@@ -419,6 +452,85 @@ def version_tuple(text: str) -> tuple[int, ...]:
 
 
 # --------------------------------------------------------------------------- #
+# NDK 定位与工具链选择
+# --------------------------------------------------------------------------- #
+
+
+def _looks_like_ndk(path: Path) -> bool:
+    return (path / "toolchains" / "llvm" / "prebuilt").is_dir()
+
+
+def locate_ndk(explicit: str | None = None) -> Path:
+    """找到 Android NDK 根目录。
+
+    顺序：显式参数 -> `ANDROID_NDK_HOME` -> `ANDROID_NDK_ROOT` -> `NDK_HOME`
+    -> `$ANDROID_SDK_ROOT/ndk/<最大版本>` -> `$ANDROID_HOME/ndk/<最大版本>`。
+
+    找不到就抛错而不是退回 `CGO_ENABLED=0` —— 后者只会产生
+    `requires external (cgo) linking` 这种离真正原因很远的报错。
+    """
+    if explicit:
+        path = Path(explicit).expanduser()
+        if not _looks_like_ndk(path):
+            raise BuildError(f"--ndk 指向的目录不像 Android NDK（缺 toolchains/llvm/prebuilt）：{path}")
+        return path
+
+    for var in _NDK_ENV_VARS:
+        value = os.environ.get(var)
+        if value:
+            path = Path(value).expanduser()
+            if _looks_like_ndk(path):
+                return path
+
+    for var in ("ANDROID_SDK_ROOT", "ANDROID_HOME", "ANDROID_SDK_HOME"):
+        value = os.environ.get(var)
+        if not value:
+            continue
+        ndk_dir = Path(value).expanduser() / "ndk"
+        if not ndk_dir.is_dir():
+            continue
+        # 目录名是版本号；按版本元组排序取最大的那个，别按字典序（"9." 会赢过 "29."）。
+        candidates = sorted(
+            (p for p in ndk_dir.iterdir() if p.is_dir() and _looks_like_ndk(p)),
+            key=lambda p: version_tuple(p.name),
+            reverse=True,
+        )
+        if candidates:
+            return candidates[0]
+
+    raise BuildError(
+        "找不到 Android NDK，无法用 cgo 交叉编译 android 目标。"
+        "请设置 ANDROID_NDK_HOME / ANDROID_NDK_ROOT，或用 --ndk 指定；"
+        "本地可用 `sdkmanager --install \"ndk;29.0.13113456\"` 安装。"
+    )
+
+
+def ndk_toolchain(ndk: Path, abi: str, api: int) -> tuple[Path, Path, Path]:
+    """返回 (CC, CXX, AR) 三个绝对路径。
+
+    prebuilt 下的 host 目录名随构建机而变（`linux-x86_64` / `darwin-arm64` / …），
+    所以不写死，直接取第一个存在的子目录。CI 是 ubuntu，本地 Windows 上
+    这套脚本本来也编不出 android 目标（NDK 的 Windows 包同样是 `windows-x86_64`，
+    其实可用，这里不做平台限制）。
+    """
+    if abi not in ABI_TO_NDK_TRIPLE:
+        raise BuildError(f"未知 ABI：{abi}")
+    prebuilt = ndk / "toolchains" / "llvm" / "prebuilt"
+    hosts = sorted(p for p in prebuilt.iterdir() if p.is_dir())
+    if not hosts:
+        raise BuildError(f"NDK 的 prebuilt 目录是空的：{prebuilt}")
+    bindir = hosts[0] / "bin"
+    triple = ABI_TO_NDK_TRIPLE[abi]
+    cc = bindir / f"{triple}{api}-clang"
+    cxx = bindir / f"{triple}{api}-clang++"
+    ar = bindir / "llvm-ar"
+    for tool in (cc, cxx, ar):
+        if not tool.is_file():
+            raise BuildError(f"NDK 工具链缺少 {tool.name}（找的是 {tool}）")
+    return cc, cxx, ar
+
+
+# --------------------------------------------------------------------------- #
 # 构建
 # --------------------------------------------------------------------------- #
 
@@ -434,6 +546,8 @@ def build_one(
     previous: dict | None,
     source_digest: str,
     go_version_text: str,
+    ndk: Path,
+    android_api: int,
 ) -> tuple[Path, dict, bool]:
     """编译一个 abi 的 Go agent。
 
@@ -459,21 +573,26 @@ def build_one(
     if target.exists():
         target.unlink()
 
+    cc, cxx, ar = ndk_toolchain(ndk, abi, android_api)
     env = {
         # GOOS=android 让 runtime.GOOS 在设备上是 "android"，同时 Go 的 build tag 规则
         # 会自动满足 `//go:build linux`，POSIX 实现照常编译进来。
         "GOOS": "android",
         "GOARCH": goarch,
-        # maa-framework-go 用 purego 手写 dlopen，go-service 无任何 cgo；
-        # 关掉 cgo 就不需要 Android NDK / 交叉编译器。
-        "CGO_ENABLED": "0",
+        # **必须开 cgo**：Go 的 android/arm64、android/amd64 端口强制外部链接
+        # （`android/amd64 requires external (cgo) linking, but cgo is not enabled`），
+        # 因为 Android 上的可执行文件要走 Bionic 动态链接器。详见模块 docstring。
+        "CGO_ENABLED": "1",
+        "CC": str(cc),
+        "CXX": str(cxx),
+        "AR": str(ar),
     }
     cmd = [go, "build", "-trimpath", "-buildvcs=false", "-ldflags=-s -w"]
     if tags:
         cmd += ["-tags", ",".join(tags)]
     cmd += ["-o", str(target), "."]
 
-    print(f"  [{abi}] GOOS=android GOARCH={goarch} CGO_ENABLED=0")
+    print(f"  [{abi}] GOOS=android GOARCH={goarch} CGO_ENABLED=1 CC={cc.name}")
     print(f"  [{abi}] {' '.join(cmd)}")
     run(cmd, cwd=go_service, env=env)
 
@@ -563,10 +682,16 @@ def load_previous_manifest(out_root: Path) -> dict:
     if not path.is_file():
         return {}
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
+        data = json.loads(path.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError) as exc:
         print(f"  警告：忽略无法解析的旧清单 {path}（{exc}）")
         return {}
+    # schema 变了就直接丢弃旧清单，别去猜字段含义。v1 -> v2 是 CGO_ENABLED 0 -> 1 的切换：
+    # v1 记录的产物在设备上根本起不来（android 目标强制 external linking），复用有害。
+    if data.get("schema") != SCHEMA_VERSION:
+        print(f"  旧清单 schema={data.get('schema')} != {SCHEMA_VERSION}，忽略并重建")
+        return {}
+    return data
 
 
 def write_manifest(out_root: Path, manifest: dict) -> Path:
@@ -624,6 +749,18 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--go", default="go", help="Go 工具链可执行文件（默认 go）。")
     parser.add_argument(
+        "--ndk",
+        default=None,
+        help="Android NDK 根目录。默认按 ANDROID_NDK_HOME / ANDROID_NDK_ROOT / NDK_HOME / "
+        "$ANDROID_SDK_ROOT/ndk/<最大版本> 依次查找。**必需**，见模块 docstring。",
+    )
+    parser.add_argument(
+        "--api",
+        type=int,
+        default=DEFAULT_ANDROID_API,
+        help=f"NDK clang 的 API level（默认 {DEFAULT_ANDROID_API}，与 gradle 的 minSdk 对齐）。",
+    )
+    parser.add_argument(
         "--tags",
         default="",
         help="额外的 -tags（逗号分隔）。默认空：GOOS=android 已经隐含 linux tag。",
@@ -664,6 +801,9 @@ def main(argv: list[str] | None = None) -> int:
         module_path, go_directive = read_go_mod(go_service)
         tags = [t.strip() for t in args.tags.split(",") if t.strip()]
 
+        # NDK 是硬性前置条件：没有它 Go 编不出 android 目标（详见模块 docstring）。
+        ndk = locate_ndk(args.ndk)
+
         if go_directive:
             want = version_tuple(go_directive)
             have = version_tuple(toolchain_number)
@@ -684,6 +824,8 @@ def main(argv: list[str] | None = None) -> int:
         print(f"source digest   : {digest}")
         print(f"源码文件        : {file_count} 个 / {human_mb(total_bytes)}")
         print(f"工具链          : {toolchain_text}")
+        print(f"NDK             : {ndk}")
+        print(f"Android API     : {args.api}")
         print(f"目标 ABI        : {', '.join(abis)}")
         print(f"输出目录        : {out_root}")
         print("")
@@ -710,6 +852,8 @@ def main(argv: list[str] | None = None) -> int:
                 previous=previous_agent,
                 source_digest=digest,
                 go_version_text=toolchain_text,
+                ndk=ndk,
+                android_api=args.api,
             )
 
             bundle_files = copy_bundle(
@@ -733,7 +877,9 @@ def main(argv: list[str] | None = None) -> int:
             manifest_abis[abi] = {
                 "goarch": ABI_TO_GOARCH[abi],
                 "goos": "android",
-                "cgoEnabled": "0",
+                "cgoEnabled": "1",
+                "cc": ABI_TO_NDK_TRIPLE[abi] + str(args.api) + "-clang",
+                "androidApi": args.api,
                 "agents": [
                     {
                         "identifier": GO_SERVICE_IDENTIFIER,

@@ -180,7 +180,9 @@ Gradle 的 `useLegacyPackaging` 决定打包期布局。只改一个会得到"�
 | --- | --- | --- |
 | `GOOS` | `android` | `maa-framework-go` 的 `internal/native/framework.go` / `agent_server.go` 在 `switch runtime.GOOS` 里显式列出了 `case "linux", "android"`，返回 `libMaaFramework.so` / `libMaaAgentServer.so`。用 `android` 才能让二进制内的 `runtime.GOOS` 与真实运行环境一致。 |
 | `GOARCH` | `arm64`（ABI `arm64-v8a`）/ `amd64`（ABI `x86_64`） | 对应 Android ABI。默认只出 `arm64-v8a`，见 `gradle.properties` 的 `maapocket.abis`。 |
-| `CGO_ENABLED` | `0` | `maa-framework-go` 不依赖 cgo：它用 `github.com/ebitengine/purego` 做 `Dlopen`/`Dlsym`（`internal/native/native_unix.go`），整仓没有任何 `.c`/`.h`，`import "C"` 出现 0 次。 |
+| `CGO_ENABLED` | **`1`** | **不能是 `0`。** 虽然 `maa-framework-go` 自己确实不依赖 cgo（它用 `github.com/ebitengine/purego` 做 `Dlopen`/`Dlsym`，`internal/native/native_unix.go`，整仓没有任何 `.c`/`.h`，`import "C"` 出现 0 次），但那是**宿主程序**的事，和**目标平台**无关。Go 自己在 `src/cmd/go/internal/work/init.go` 的 `mustUseExternalLinker` 里对 android 返回 true，于是 CI 直接报 `android/amd64 requires external (cgo) linking, but cgo is not enabled`。原因是 Android 上所有可执行文件都必须走 Bionic 动态链接器（`/system/bin/linker64`），不能是静态链接的裸 ELF。 |
+| `CC` / `CXX` / `AR` | NDK clang | 开了 cgo 之后必须给出交叉编译器，否则 cgo 会去用宿主 gcc（编出 x86-64 Linux 目标，`go build` 随后报 architecture mismatch）。取值 = `$NDK/toolchains/llvm/prebuilt/<host>/bin/{aarch64-linux-android28,x86_64-linux-android28}-clang` 与 `llvm-ar`。API level 取 28 与 gradle 的 `minSdk` 对齐。 |
+| `NDK` | `29.0.13113456` | CI 里由 `android-actions/setup-android` 的 `packages: 'ndk;29.0.13113456'` 安装，与 `build.yml` 的 cmake NDK 同版本。脚本按 `--ndk` → `ANDROID_NDK_HOME` → `ANDROID_NDK_ROOT` → `NDK_HOME` → `$ANDROID_SDK_ROOT/ndk/<最大版本>` 顺序查找；**找不到就报错，不会静默退回 `CGO_ENABLED=0`**。 |
 | `-tags` | 空 | 不需要额外 tag。Go 的构建约束规则里 `GOOS=android` 隐含满足 `linux` 约束（`src/go/build/build.go`：`if ctxt.GOOS == "android" && name == "linux" { return true }`），因此 `//go:build linux` 的 POSIX 实现（`ziplineimport/*`、`pkg/control/adaptor_linux.go`）和 `!windows` 的实现（`pkg/parentwatch/parentwatch_other.go`、`stderr_other.go`）都会被选中。**不要**手动加 `purego` tag：`pkg/minicv` 用它来二选一 SIMD 实现，加了会改变语义。 |
 
 其他编译参数：`-trimpath`、`-buildvcs=false`（保证可复现）、`-ldflags="-s -w"`。
