@@ -2,6 +2,7 @@ package com.maapocket.core.ui
 
 import android.app.Application
 import android.graphics.Bitmap
+import android.view.Surface
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.maapocket.core.constant.DefaultDisplayConfig
@@ -10,6 +11,7 @@ import com.maapocket.core.pi.PiInstalledPackages
 import com.maapocket.core.pi.PiOption
 import com.maapocket.core.pi.PiRepository
 import com.maapocket.core.pi.PiSelection
+import com.maapocket.core.privilege.BootstrapRegistry
 import com.maapocket.core.privilege.PrivilegeKind
 import com.maapocket.core.run.MaaRunController
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -340,9 +342,27 @@ class MaaPocketViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun setPreviewEnabled(enabled: Boolean) {
         _previewEnabled.value = enabled
-        // 只改本地开关是不够的：helper 里的 `previewLoop()` 由 `capture.preview` 驱动，
-        // 不发这条命令它永远不跑，预览框会一直是空的。
+        // 预览画面现在走 Surface：app 的 SurfaceView 直接把窗口交给特权进程的原生渲染线程
+        // （见 PreviewSurfaceBridge）。关掉时把 Surface 摘掉，否则原生侧会继续往一块
+        // 即将销毁的窗口上画 —— 真机上表现为「关了预览还在闪」。
+        if (!enabled) {
+            BootstrapRegistry.setPreviewSurface(null)
+        }
+        // 旧的 JPEG 帧通道（`capture.preview`）保留着，但不再用来驱动预览；
+        // 这里只在关闭时通知 helper 停掉可能还在跑的抓帧循环。
         controller.setPreviewEnabled(enabled)
+    }
+
+    /**
+     * 预览 Surface 的交接点：[com.maapocket.core.ui.HomeScreen] 的 `SurfaceView` 在
+     * `surfaceChanged` / `surfaceDestroyed` 时调进来。
+     *
+     * 这里只写进 [BootstrapRegistry]（app 进程内），由特权进程按
+     * [com.maapocket.core.privilege.BootstrapProtocol.METHOD_PREVIEW_SURFACE] 轮询取走 ——
+     * 所以这个函数可以安全地在主线程调用，不含任何跨进程等待。
+     */
+    fun onPreviewSurface(surface: Surface?) {
+        BootstrapRegistry.setPreviewSurface(surface)
     }
 
     fun clearLogs() {

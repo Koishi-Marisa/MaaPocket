@@ -557,10 +557,11 @@ class MaaRunController(private val context: Context) {
                 fail("虚拟屏没建起来（display.start 返回 displayId=$virtualDisplayId）", null)
                 return
             }
-            // 屏建好了才开始推预览帧：帧源就是这块屏，早于此只会拿到空帧。
-            // 这里用 exec 而不是 notify，就是为了把 `preview` 开关的成败写进 App 日志——
-            // 「预览有没有画面」全靠这一条，静默失败最难查。
-            if (previewWanted.get()) {
+            // 预览现在走 Surface：app 的 SurfaceView 把窗口交给特权进程，原生 EGL 直接把抓到的
+            // 帧画进去（见 `PreviewSurfaceBridge`）。旧的「每 200ms 编码一张 JPEG」通道会把
+            // 150KB×5fps 写进私有目录，既费 CPU 又费闪存，所以「准备」阶段不再自动打开它。
+            // 想临时回退成帧通道时把下面这段的 previewWanted 判据改回来即可。
+            if (previewWanted.get() && false) {
                 runCatching {
                     s.exec(
                         RemoteProtocol.Cmd.CAPTURE_PREVIEW,

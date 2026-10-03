@@ -87,6 +87,25 @@ public final class BootstrapProtocol {
     /** Bundle 键（回包）：app 的 uid。 */
     public static final String KEY_APP_UID = "app_uid";
 
+    /**
+     * {@code ContentProvider.call()} 的方法名：特权进程来取 app 当前的**预览 Surface**。
+     *
+     * <p>这是唯一一条 <b>app → 特权进程</b> 的通道。整个引导协议本来是单向的（特权进程调进来、
+     * app 只回一个 Bundle），但预览要反过来：Surface 由 app 的 {@code SurfaceView} 产生，
+     * 必须交给特权进程的原生渲染线程（{@code NativeBridgeLib.setPreviewSurface}）。
+     * 没有反向 binder（见 {@code BootstrapProvider} 类注释），所以让特权进程**轮询**这里。
+     *
+     * <p>MAA-Meow 走的是 AIDL（{@code service.setMonitorSurface(surface)}）；我们复用已经
+     * 建好的 ContentProvider 通道，代价是每秒一次 binder 事务。
+     */
+    public static final String METHOD_PREVIEW_SURFACE = "takePreviewSurface";
+
+    /** Bundle 键（回包）：app 当前的预览 Surface，可能为 null（用户还没打开预览）。 */
+    public static final String KEY_PREVIEW_SURFACE = "preview_surface";
+
+    /** Bundle 键（回包）：Surface 的代数，每换一次 +1；特权进程据此跳过重复设置。 */
+    public static final String KEY_PREVIEW_GENERATION = "preview_generation";
+
     private BootstrapProtocol() {
         /* 纯常量 holder，不可实例化 */
     }

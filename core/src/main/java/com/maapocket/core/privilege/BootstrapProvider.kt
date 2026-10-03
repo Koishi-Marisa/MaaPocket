@@ -46,6 +46,9 @@ class BootstrapProvider : ContentProvider() {
     override fun onCreate(): Boolean = true
 
     override fun call(method: String, arg: String?, extras: Bundle?): Bundle? {
+        if (method == BootstrapProtocol.METHOD_PREVIEW_SURFACE) {
+            return takePreviewSurface()
+        }
         if (method != BootstrapProtocol.METHOD_ATTACH || extras == null) {
             // 其它方法名不归我们管，交回默认实现（默认会抛 UnsupportedOperationException）。
             return super.call(method, arg, extras)
@@ -95,6 +98,30 @@ class BootstrapProvider : ContentProvider() {
         return Bundle().apply {
             putInt(BootstrapProtocol.KEY_APP_PID, Process.myPid())
             putInt(BootstrapProtocol.KEY_APP_UID, Process.myUid())
+        }
+    }
+
+    // ------------------------------------------------------------------ 预览 Surface
+
+    /**
+     * 特权进程来取 app 当前的预览 Surface（轮询，见 [BootstrapProtocol.METHOD_PREVIEW_SURFACE]）。
+     *
+     * 权限校验与 attach 一致：只认 shell(2000) / root(0)。
+     *
+     * 回包里的 Surface 经 binder 传过去后，特权进程拿到的是一块**代理** Surface；原生层
+     * `ANativeWindow_fromSurface` 会从中取出 `IGraphicBufferProducer`，直接往 app 的
+     * `SurfaceView` 缓冲队列里画 —— 像素不经过这条 binder 通道，只有「哪块 Surface」过去。
+     */
+    private fun takePreviewSurface(): Bundle? {
+        val callingUid = Binder.getCallingUid()
+        if (callingUid != Process.SHELL_UID && callingUid != 0) {
+            Ln.w("BootstrapProvider: 拒绝来自 uid=$callingUid 的预览 Surface 请求（只接受 shell(2000) / root(0)）")
+            return null
+        }
+        val snapshot = BootstrapRegistry.previewSurfaceSnapshot()
+        return Bundle().apply {
+            putParcelable(BootstrapProtocol.KEY_PREVIEW_SURFACE, snapshot.surface)
+            putInt(BootstrapProtocol.KEY_PREVIEW_GENERATION, snapshot.generation)
         }
     }
 

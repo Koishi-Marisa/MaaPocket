@@ -10,12 +10,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -88,9 +90,33 @@ class PrivilegedSession(
 
     private var heartbeatJob: Job? = null
 
-    /** 特权进程推来的事件；未连接时是空流。 */
-    val events: Flow<RemoteFrame>
-        get() = connector?.events ?: emptyFlow()
+    /**
+     * 特权进程推来的事件。
+     *
+     * **必须是稳定的流，不能在 getter 里读 `connector`。** [MaaRunController] 在
+     * `start()` 之前就订阅了它，那时 `connector` 还是 null；旧实现写的是
+     * `connector?.events ?: emptyFlow()`，于是订阅者拿到一个「立刻完成」的空流，
+     * 整个会话再也收不到任何事件（表现为预览永远「等待画面…」、应用日志里没有
+     * `[helper]` / `[maa]` 行）。现在改成先把 [RemoteConnector.events] 桥接进一个
+     * 进程级 [MutableSharedFlow]，订阅者什么时候来都能收到后续事件。
+     */
+    val events: Flow<RemoteFrame> = _events.asSharedFlow()
+
+    private val _events = MutableSharedFlow<RemoteFrame>(
+        replay = 0,
+        extraBufferCapacity = RemoteProtocol.EVENT_BUFFER,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
+
+    private var eventForwardJob: Job? = null
+
+    /** 把 [RemoteConnector.events] 桥接进 [events]。换 connector 时先取消旧桥。 */
+    private fun bridgeEvents(conn: RemoteConnector) {
+        eventForwardJob?.cancel()
+        eventForwardJob = conn.events
+            .onEach { frame -> _events.emit(frame) }
+            .launchIn(scope)
+    }
 
     /** 与 `ProcessServiceConnectorBackend.keepRootForInputInjection` 同义（需求 5）。 */
     val inputInjectionNeedsRoot: Boolean get() = ProcessSpawner.keepRootForInputInjection
@@ -187,6 +213,7 @@ class PrivilegedSession(
         update { it.copy(state = PrivilegeState.CONNECTING) }
         val conn = RemoteConnector(token, slot)
         connector = conn
+        bridgeEvents(conn)
         conn.onClosed = { cause ->
             // 连上之后断的（app 主动 close 不会走到这里）。
             update {
@@ -337,6 +364,8 @@ class PrivilegedSession(
     }
 
     private fun teardownConnection() {
+        eventForwardJob?.cancel()
+        eventForwardJob = null
         connector?.close()
         connector = null
         handle = null

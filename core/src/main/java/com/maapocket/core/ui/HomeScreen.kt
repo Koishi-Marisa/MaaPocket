@@ -4,6 +4,9 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.PixelFormat
+import android.view.SurfaceHolder
+import android.view.SurfaceView
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -63,6 +66,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import com.maapocket.core.constant.DefaultDisplayConfig
 import com.maapocket.core.pi.PiController
 import com.maapocket.core.pi.PiOption
 import com.maapocket.core.pi.PiRepository
@@ -95,7 +100,6 @@ fun HomeScreen(viewModel: MaaPocketViewModel) {
     val state by viewModel.state.collectAsState()
     val repository by viewModel.repository.collectAsState()
     val logs by viewModel.logs.collectAsState()
-    val preview by viewModel.preview.collectAsState()
     val previewEnabled by viewModel.previewEnabled.collectAsState()
     val selectedTasks by viewModel.selectedTasks.collectAsState()
     val optionValues by viewModel.optionValues.collectAsState()
@@ -182,7 +186,11 @@ fun HomeScreen(viewModel: MaaPocketViewModel) {
             PreviewCard(
                 enabled = previewEnabled,
                 onToggle = viewModel::setPreviewEnabled,
-                preview = preview,
+                // 与虚拟屏同尺寸：原生渲染线程按虚拟屏分辨率配置 EGL，SurfaceView 的
+                // buffer 尺寸对不上就会被拉伸（MAA-Meow 也是先 setFixedSize 再交 Surface）。
+                previewWidth = displayWidth.toIntOrNull() ?: DefaultDisplayConfig.WIDTH,
+                previewHeight = displayHeight.toIntOrNull() ?: DefaultDisplayConfig.HEIGHT,
+                onSurface = viewModel::onPreviewSurface,
             )
 
             LogCard(
@@ -867,7 +875,9 @@ private fun describePhase(phase: MaaRunController.Phase): String = when (phase) 
 private fun PreviewCard(
     enabled: Boolean,
     onToggle: (Boolean) -> Unit,
-    preview: android.graphics.Bitmap?,
+    previewWidth: Int,
+    previewHeight: Int,
+    onSurface: (android.view.Surface?) -> Unit,
 ) {
     SectionCard(title = "预览") {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -882,23 +892,52 @@ private fun PreviewCard(
                 .background(Color.Black),
             contentAlignment = Alignment.Center,
         ) {
-            when {
-                !enabled -> Text("预览已关闭", color = Color.White, style = MaterialTheme.typography.bodySmall)
-                // 分支写成 `preview != null`（而不是把 Image 放 else）：这样 non-null 是分支条件本身
-                // 带来的 smart cast，不依赖编译器对 else 的负向推断。
-                preview != null -> Image(
-                    bitmap = preview.asImageBitmap(),
-                    contentDescription = "MaaFramework 预览帧",
-                    modifier = Modifier.fillMaxSize(),
-                    // Fit 而不是 FillBounds：截图画面对不上显示尺寸时，宁可留黑边也不要拉伸。
-                    contentScale = ContentScale.Fit,
-                )
+            if (!enabled) {
+                Text("预览已关闭", color = Color.White, style = MaterialTheme.typography.bodySmall)
+            } else {
+                // 照抄 MAA-Meow 的 `BackgroundTaskView`：预览**不是**一帧帧推过来的位图，
+                // 而是一块 SurfaceView，把它的 Surface 交给特权进程，由原生 EGL 直接把抓到的
+                // 帧画进这块窗口的 BufferQueue。像素不经过 JSON / base64 / 文件，所以既不卡也不掉帧。
+                AndroidView(
+                    factory = { ctx ->
+                        SurfaceView(ctx).apply {
+                            // RGBA_8888 与原生侧 `RenderLoop` 的 EGL 配置一致。
+                            holder.setFormat(PixelFormat.RGBA_8888)
+                            holder.addCallback(object : SurfaceHolder.Callback {
+                                override fun surfaceCreated(holder: SurfaceHolder) {
+                                    // 尺寸必须固定成虚拟屏分辨率，否则画面会被拉伸。
+                                    holder.setFixedSize(previewWidth, previewHeight)
+                                }
 
-                else -> Text("等待画面…", color = Color.White, style = MaterialTheme.typography.bodySmall)
+                                override fun surfaceChanged(
+                                    holder: SurfaceHolder,
+                                    format: Int,
+                                    width: Int,
+                                    height: Int,
+                                ) {
+                                    // 只有尺寸已经是我们要求的那一版才交出去：SurfaceView 会先
+                                    // 用默认尺寸创建，那时交过去原生侧会把画面画进一块
+                                    // 尺寸不对的窗口。
+                                    if (width == previewWidth && height == previewHeight) {
+                                        onSurface(holder.surface)
+                                    }
+                                }
+
+                                override fun surfaceDestroyed(holder: SurfaceHolder) {
+                                    // 滚动出屏 / 关闭预览 / 换会话都会走到这里。必须摘掉，
+                                    // 否则原生侧会继续往一块正在销毁的窗口上画。
+                                    onSurface(null)
+                                }
+                            })
+                        }
+                    },
+                    modifier = Modifier.fillMaxSize(),
+                )
             }
         }
         Text(
-            text = "预览帧由特权进程按 5fps 推来；关掉会真的停掉远端抓帧，省电。",
+            text = "预览是 app 的 SurfaceView 直接承接特权进程抓到的帧（与 MAA-Meow 同款），" +
+                "不经过 IPC 传像素。",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

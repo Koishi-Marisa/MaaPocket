@@ -1,6 +1,7 @@
 package com.maapocket.core.privilege
 
 import android.os.ParcelFileDescriptor
+import android.view.Surface
 import com.maapocket.core.third.Ln
 import kotlinx.coroutines.CompletableDeferred
 import java.util.concurrent.ConcurrentHashMap
@@ -167,6 +168,41 @@ object BootstrapRegistry {
     /** `ParcelFileDescriptor.close()` 会抛 IOException，清理路径上不该因此中断。 */
     private fun closeQuietly(fd: ParcelFileDescriptor) {
         runCatching { fd.close() }.onFailure { Ln.d("BootstrapRegistry: 关闭 FD 失败: ${it.message}") }
+    }
+
+    // ---------------------------------------------------------------- 预览 Surface（app → 特权进程）
+
+    /**
+     * 预览 Surface 的快照。`generation` 每换一次 +1，特权进程拿它判断「要不要重设」。
+     *
+     * @property surface 当前该画到哪块 Surface 上；null = 停止预览。
+     */
+    data class PreviewSurfaceSnapshot(val surface: Surface?, val generation: Int)
+
+    private val previewLock = Any()
+    private var previewSurface: Surface? = null
+    private var previewGeneration: Int = 0
+
+    /**
+     * app 侧 UI（`SurfaceView` 的 `surfaceChanged` / `surfaceDestroyed`）调这里。
+     *
+     * 不在这里做任何 IPC：特权进程按 [BootstrapProtocol.METHOD_PREVIEW_SURFACE] 轮询
+     * [previewSurfaceSnapshot]。这样 UI 线程永远不会被跨进程调用挡住。
+     */
+    fun setPreviewSurface(surface: Surface?) {
+        val generation: Int
+        synchronized(previewLock) {
+            if (previewSurface === surface) return
+            previewSurface = surface
+            previewGeneration += 1
+            generation = previewGeneration
+        }
+        Ln.i("BootstrapRegistry: 预览 Surface 已更新（generation=$generation surface=${surface != null}）")
+    }
+
+    /** 特权进程取用。跑在 app 进程的 binder 线程上，只做一次加锁读。 */
+    fun previewSurfaceSnapshot(): PreviewSurfaceSnapshot = synchronized(previewLock) {
+        PreviewSurfaceSnapshot(previewSurface, previewGeneration)
     }
 
     /** 日志里不打完整 token（它等同于一次性的会话凭证）。 */

@@ -86,6 +86,50 @@ public final class BootstrapClient {
      */
     public static Result attach(String packageName, int appUid, String token,
                                 ParcelFileDescriptor fromRemote, ParcelFileDescriptor toRemote) {
+        // ---------------------------------------------------------- 1) 组 Bundle（token + 两个 FD）
+        final Bundle extras = new Bundle();
+        extras.putString(BootstrapProtocol.KEY_TOKEN, token);
+        extras.putParcelable(BootstrapProtocol.KEY_FROM_REMOTE, fromRemote);
+        extras.putParcelable(BootstrapProtocol.KEY_TO_REMOTE, toRemote);
+        extras.putInt(BootstrapProtocol.KEY_REMOTE_PID, Process.myPid());
+        extras.putInt(BootstrapProtocol.KEY_REMOTE_UID, Process.myUid());
+
+        // ---------------------------------------------------------- 2) 调过去
+        final Bundle reply = callProvider(
+                packageName, appUid, BootstrapProtocol.METHOD_ATTACH, extras, "attach");
+        if (reply == null) {
+            Ln.e("BootstrapClient: provider.call() returned null (token=" + shortToken(token) + ")");
+            err("provider.call() returned null");
+            return null;
+        }
+        final int appPid = reply.getInt(BootstrapProtocol.KEY_APP_PID, -1);
+        final int appUidFromApp = reply.getInt(BootstrapProtocol.KEY_APP_UID, -1);
+        Ln.i("BootstrapClient: attached, appPid=" + appPid + " appUid=" + appUidFromApp);
+        err("attached appPid=" + appPid + " appUid=" + appUidFromApp);
+        return new Result(appPid, appUidFromApp);
+    }
+
+    /**
+     * 取 app 当前的预览 Surface（[BootstrapProtocol#METHOD_PREVIEW_SURFACE]）。
+     *
+     * <p>这条是**唯一一条 app → 特权进程**方向的通道，靠轮询（[PreviewSurfaceBridge] 里做）。
+     * 回包见 {@link BootstrapProtocol#KEY_PREVIEW_SURFACE} / {@link BootstrapProtocol#KEY_PREVIEW_GENERATION}。
+     *
+     * @return null 表示这次没取到（provider 不在 / 被拒），调用方下一轮再试。
+     */
+    public static Bundle previewSurface(String packageName, int appUid) {
+        return callProvider(packageName, appUid, BootstrapProtocol.METHOD_PREVIEW_SURFACE, null,
+                "previewSurface");
+    }
+
+    /**
+     * 拿到 app 的 provider、调用一次 {@code call()}、把外部引用还回去。
+     *
+     * <p>每次调用都重新 {@code getContentProviderExternal}：特权进程的生命周期里 app 可能
+     * 重建（进程被杀又拉起），缓存住的 {@code IContentProvider} 未必还有效。
+     */
+    private static Bundle callProvider(String packageName, int appUid, String method,
+                                       Bundle extras, String what) {
         final String authority = packageName + BootstrapProtocol.AUTHORITY_SUFFIX;
         // uid 非正说明 --uid= 没解析出来（launcher 理论上拦掉了），退到 user 0 而不是崩。
         //
@@ -96,11 +140,10 @@ public final class BootstrapClient {
         final int userId = appUid > 0 ? appUid / 100_000 : 0;
         final IBinder providerToken = new Binder();
 
-        err("attach authority=" + authority + " userId=" + userId + " appUid=" + appUid);
+        err(what + " authority=" + authority + " userId=" + userId + " appUid=" + appUid);
 
         IContentProvider provider = null;
         try {
-            // ---------------------------------------------------------- 1) 找到 provider（带重试）
             for (int attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
                 provider = acquire(authority, userId, providerToken);
                 if (provider != null) {
@@ -118,30 +161,10 @@ public final class BootstrapClient {
                 err("giving up: provider never appeared");
                 return null;
             }
-
-            // ---------------------------------------------------------- 2) 组 Bundle（token + 两个 FD）
-            final Bundle extras = new Bundle();
-            extras.putString(BootstrapProtocol.KEY_TOKEN, token);
-            extras.putParcelable(BootstrapProtocol.KEY_FROM_REMOTE, fromRemote);
-            extras.putParcelable(BootstrapProtocol.KEY_TO_REMOTE, toRemote);
-            extras.putInt(BootstrapProtocol.KEY_REMOTE_PID, Process.myPid());
-            extras.putInt(BootstrapProtocol.KEY_REMOTE_UID, Process.myUid());
-
-            // ---------------------------------------------------------- 3) 调过去
-            final Bundle reply = callCompat(provider, authority, extras);
-            if (reply == null) {
-                Ln.e("BootstrapClient: provider.call() returned null (token=" + shortToken(token) + ")");
-                err("provider.call() returned null");
-                return null;
-            }
-            final int appPid = reply.getInt(BootstrapProtocol.KEY_APP_PID, -1);
-            final int appUidFromApp = reply.getInt(BootstrapProtocol.KEY_APP_UID, -1);
-            Ln.i("BootstrapClient: attached, appPid=" + appPid + " appUid=" + appUidFromApp);
-            err("attached appPid=" + appPid + " appUid=" + appUidFromApp);
-            return new Result(appPid, appUidFromApp);
+            return callCompat(provider, authority, method, extras);
         } catch (Throwable t) {
             // 这里跑在裸 app_process 里，任何未捕获异常都会直接杀进程并且死因不明——全部兜住。
-            Ln.e("BootstrapClient: attach failed", t);
+            Ln.e("BootstrapClient: " + what + " failed", t);
             err("exception: " + t);
             t.printStackTrace(System.err);
             return null;
@@ -184,9 +207,8 @@ public final class BootstrapClient {
      * <p>SDK31+ 优先用 {@code AttributionSource} 重载；如果因为隐藏 API 白名单/类缺失导致
      * {@code LinkageError} 或 {@code RuntimeException}，退回带 {@code attributionTag} 的那套。
      */
-    private static Bundle callCompat(IContentProvider provider, String authority, Bundle extras)
-            throws Exception {
-        final String method = BootstrapProtocol.METHOD_ATTACH;
+    private static Bundle callCompat(IContentProvider provider, String authority, String method,
+                                     Bundle extras) throws Exception {
         if (Build.VERSION.SDK_INT >= 31) {
             try {
                 final AttributionSource attributionSource = new AttributionSource.Builder(Os.getuid())

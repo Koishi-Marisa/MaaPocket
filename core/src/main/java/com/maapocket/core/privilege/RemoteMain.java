@@ -238,6 +238,10 @@ public final class RemoteMain {
                 appPid = r.appPid > 0 ? r.appPid : appPid;
                 Ln.i(TAG + ": bootstrap attached appPid=" + r.appPid + " appUid=" + r.appUid);
 
+                // 预览 Surface 只能由 app 的 SurfaceView 产生，而我们没有反向 binder：
+                // 起一条轮询线程去 provider 里拉（见 PreviewSurfaceBridge 的类注释）。
+                PreviewSurfaceBridge.start(a.packageName, a.uid);
+
                 // 参数是**特权进程视角**：先读端再写端。
                 //   读端 = down[0]（app 写 → 特权进程读）
                 //   写端 = up[1]  （特权进程写 → app 读）

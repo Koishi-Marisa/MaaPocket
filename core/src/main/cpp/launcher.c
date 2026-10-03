@@ -254,9 +254,18 @@ static void exec_app_process(const LauncherArgs *args, const char *argv0) {
     LOGFI("execv: %s CLASSPATH=%s nice-name=%s",
           kAppProcessPath, args->apk_path, args->process_name);
 
-    /* 把 stderr 重定向到日志文件，捕获 Java 侧的异常和 System.err 输出 */
+    /*
+     * 把 stderr **和 stdout** 都重定向到日志文件。
+     *
+     * stderr 捕获 Java 侧异常与 System.err（BootstrapClient 的诊断就走这里）。
+     * stdout 是 `Ln` 的 INFO/DEBUG 出口（`Ln.i` 写 FileDescriptor.out）。之前只 dup 了
+     * stderr，而 shizuku 后端的包装命令把 stdout 送进 /dev/null，于是特权进程里所有
+     * `Ln.i` 全部人间蒸发——「帧抓到了没有」「Surface 什么时候设进来的」这类关键线索
+     * 一条都看不到，只能靠 Ln.w 猜。C 的 stdio 缓冲在 execv 后沿用，所以这里 dup 是安全的。
+     */
     if (g_log_fd >= 0) {
         dup2(g_log_fd, STDERR_FILENO);
+        dup2(g_log_fd, STDOUT_FILENO);
     }
 
     execv(kAppProcessPath, exec_args);
