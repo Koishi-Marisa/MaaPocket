@@ -1,0 +1,147 @@
+{
+    "GiftOperatorMain": {
+        "desc": "赠送干员礼物 - 调用入口节点",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "SubTask",
+        "custom_action_param": {
+            "sub": [
+                "StashBackpackSubTask"
+            ]
+        },
+        "post_delay": 0,
+        "next": [
+            "GiftOperatorEntry"
+        ]
+    },
+    "GiftOperatorEntry": {
+        "desc": "赠送干员礼物 - 真·入口/重试节点",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "SubTask",
+        "custom_action_param": {
+            "sub": [
+                "GiftOperatorClearHitCount"
+            ]
+        },
+        "post_delay": 0,
+        "next": [
+            "GiftOperatorClickContact", // 理论上这样写可以优化掉后面很多兜底逻辑，但是写不动了，就先当是已经到地方了就别再寻路的意思吧
+            // "GiftOperatorInDijiang1",
+            "GiftOperatorInDijiang0",
+            "[JumpBack]GiftOperatorGoToDijiang"
+        ]
+    },
+    "GiftOperatorInDijiang0": {
+        "desc": "确认已在帝江号舰桥大世界",
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "MapLocateAssertLocation",
+                "custom_recognition_param": {
+                    "zone_id": "OMVBase01",
+                    "target": [
+                        155.86,
+                        186.98,
+                        10.14,
+                        9.06
+                    ]
+                }
+            }
+        },
+        "next": [
+            "GiftOperatorShiftToRun"
+        ]
+    },
+    "GiftOperatorGoToDijiang": {
+        "desc": "前往帝江号舰桥大世界",
+        "max_hit": 5,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "SceneEnterWorldDijiang0"
+        ]
+    },
+    "GiftOperatorInDijiang1": {
+        "desc": "短路优化,当前处于干员联络站附近触发",
+        "max_hit": 3, // 运气差到爆有可能一直重试短途寻路到上限，加一个限制
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "MapLocateAssertLocation",
+                "custom_recognition_param": {
+                    "zone_id": "OMVBase01",
+                    "target": [
+                        179.69,
+                        166.99,
+                        11.32,
+                        10.14
+                    ]
+                }
+            }
+        },
+        "next": [
+            "GiftOperatorShiftToRunSC"
+        ]
+    },
+    "GiftOperatorLeave": {
+        "desc": "点击离开",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    900,
+                    334,
+                    350,
+                    318
+                ],
+                "expected": [
+                    // @i18n-skip
+                    "暂时离开",
+                    "暫時離開",
+                    "(?i)Leave\\s*for\\s*now",
+                    "一旦離れる",
+                    "(?i)Exit",
+                    "退出",
+                    "离开",
+                    "離開",
+                    "(?i)Leave",
+                    "離れる"
+                ]
+            }
+        },
+        "pre_wait_freezes": 300,
+        "action": {
+            "type": "Click",
+            "param": {}
+        }
+    },
+    "GiftOperatorClearHitCount": {
+        "desc": "清空节点MaxHit",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "ClearHitCount",
+        "custom_action_param": {
+            "nodes": [
+                "GiftOperatorMoveAhead",
+                "GiftOperatorMoveBackward",
+                "GiftOperatorMoveResetBackward",
+                "GiftOperatorTurnEast",
+                "GiftOperatorMoveLocation3Move",
+                "GiftOperatorTurnSoutheast",
+                "GiftOperatorTurnNorthwest",
+                "GiftOperatorTurnNorthByWest",
+                "GiftOperatorMoveLocation2Move",
+                "GiftOperatorTurnWest",
+                "GiftOperatorMoveLocation1Move",
+                "GiftOperatorGoAheadContact",
+                "GiftOperatorClickContact",
+                "GiftOperatorSwipe",
+                "GiftOperatorBack"
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0
+    }
+}

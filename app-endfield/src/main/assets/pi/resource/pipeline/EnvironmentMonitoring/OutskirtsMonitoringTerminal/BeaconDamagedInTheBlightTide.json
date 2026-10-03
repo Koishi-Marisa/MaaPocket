@@ -1,0 +1,487 @@
+{
+    "BeaconDamagedInTheBlightTideJob": {
+        "desc": "侵蚀潮中损坏的信标任务",
+        "max_hit": 1,
+        "recognition": "And",
+        "all_of": [
+            "CheckBeaconDamagedInTheBlightTideText",
+            "CheckBeaconDamagedInTheBlightTideIcon",
+            "CheckBeaconDamagedInTheBlightTideWulingStockBill"
+        ],
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "FailureCollectorRunTask",
+        "custom_action_param": {
+            "key": "EnvironmentMonitoring",
+            "task": "BeaconDamagedInTheBlightTideExecute",
+            "recovery_task": "EnvironmentMonitoringGoToOutskirtsMonitoringTerminal",
+            "failure_task": "BeaconDamagedInTheBlightTideFailed"
+        },
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "BeaconDamagedInTheBlightTideFailed": {
+        "desc": "侵蚀潮中损坏的信标任务执行失败提示",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "focus": {
+            "Node.Recognition.Succeeded": "$task.EnvironmentMonitoring.route.BeaconDamagedInTheBlightTide.failed"
+        }
+    },
+    "BeaconDamagedInTheBlightTideExecute": {
+        "desc": "执行侵蚀潮中损坏的信标任务路线",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AcceptBeaconDamagedInTheBlightTide",
+            "GoToBeaconDamagedInTheBlightTideMission"
+        ]
+    },
+    "CheckBeaconDamagedInTheBlightTideText": {
+        "desc": "检查是否有侵蚀潮中损坏的信标文本",
+        "recognition": "OCR",
+        "roi": [
+            63,
+            208,
+            1158,
+            71
+        ],
+        "expected": [
+            "侵蚀潮中损坏的信标",
+            "侵蝕潮中損壞的信標",
+            "(?i)Beacon\\s*Damaged\\s*in\\s*the\\s*Blight\\s*Tide",
+            "侵蝕潮で壊れたビーコン",
+            "침식 조류로 인해 훼손된 신호기"
+        ],
+        "replace": [],
+        "order_by": "Vertical",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckBeaconDamagedInTheBlightTideWulingStockBill": {
+        "desc": "检查侵蚀潮中损坏的信标任务下方的武陵调度券图标",
+        "recognition": "TemplateMatch",
+        "roi": "CheckBeaconDamagedInTheBlightTideIcon",
+        "roi_offset": [
+            -14,
+            300,
+            359,
+            76
+        ],
+        "template": "EnvironmentMonitoring/WulingStockBill.png",
+        "threshold": 0.8,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckBeaconDamagedInTheBlightTideIcon": {
+        "desc": "检查侵蚀潮中损坏的信标文本下方的图标",
+        "recognition": "TemplateMatch",
+        "roi": "CheckBeaconDamagedInTheBlightTideText",
+        "roi_offset": [
+            -18,
+            0,
+            0,
+            28
+        ],
+        "template": "EnvironmentMonitoring/PhotoIcon.png",
+        "threshold": 0.8,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckBeaconDamagedInTheBlightTideJob": {
+        "desc": "检查侵蚀潮中损坏的信标委托是否可以接取",
+        "recognition": "OCR",
+        "roi": "CheckBeaconDamagedInTheBlightTideIcon",
+        "roi_offset": [
+            -14,
+            332,
+            359,
+            76
+        ],
+        "expected": [
+            "接取委托",
+            "接取委託",
+            "(?i)Accept\\s*Job",
+            "引き受ける",
+            "의뢰 수령"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckBeaconDamagedInTheBlightTideGoToMissionText": {
+        "desc": "检查侵蚀潮中损坏的信标委托是否可以前往",
+        "recognition": "OCR",
+        "roi": "CheckBeaconDamagedInTheBlightTideIcon",
+        "roi_offset": [
+            -14,
+            332,
+            359,
+            76
+        ],
+        "expected": [
+            "前往任务",
+            "前往任務",
+            "(?i)Go\\s*to\\s*Mission",
+            "任務へ",
+            "임무로 이동하기"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "InBeaconDamagedInTheBlightTideMission": {
+        "desc": "是否在侵蚀潮中损坏的信标任务界面",
+        "recognition": "OCR",
+        "roi": [
+            415,
+            50,
+            855,
+            241
+        ],
+        "expected": [
+            "拍摄侵蚀潮中损坏的信标",
+            "拍攝侵蝕潮中損壞的信標",
+            "(?i)Photo:\\s*Damaged\\s*Beacon",
+            "侵蝕潮で破損したビーコンの写真を撮る",
+            "침식 조류로 인해 훼손된 신호기를 촬영하기"
+        ],
+        "replace": [],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "AcceptBeaconDamagedInTheBlightTide": {
+        "desc": "接取侵蚀潮中损坏的信标委托",
+        "recognition": "And",
+        "all_of": [
+            "CheckBeaconDamagedInTheBlightTideText",
+            "CheckBeaconDamagedInTheBlightTideIcon",
+            "CheckBeaconDamagedInTheBlightTideJob"
+        ],
+        "box_index": 2,
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToBeaconDamagedInTheBlightTideMission"
+        ]
+    },
+    "GoToBeaconDamagedInTheBlightTideMission": {
+        "desc": "前往侵蚀潮中损坏的信标任务",
+        "recognition": "And",
+        "all_of": [
+            "CheckBeaconDamagedInTheBlightTideText",
+            "CheckBeaconDamagedInTheBlightTideIcon",
+            "CheckBeaconDamagedInTheBlightTideGoToMissionText"
+        ],
+        "box_index": 2,
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "BeaconDamagedInTheBlightTideTrackOrGoTo"
+        ]
+    },
+    "BeaconDamagedInTheBlightTideTrackOrGoTo": {
+        "desc": "在侵蚀潮中损坏的信标任务中，如果有开始追踪的按钮就点击追踪，已在追踪则继续",
+        "recognition": "And",
+        "all_of": [
+            "InBeaconDamagedInTheBlightTideMission"
+        ],
+        // 面板入场动画期间点击可能被吞掉，等按钮区域静止后再继续
+        // （wait_freezes 按 ROI 整体判定静止，区域越大越容易把按钮位移稀释掉）
+        "pre_wait_freezes": {
+            "time": 200,
+            "target": [
+                904,
+                580,
+                368,
+                130
+            ]
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrackBeaconDamagedInTheBlightTide",
+            "AlreadyTrackedBeaconDamagedInTheBlightTide"
+        ]
+    },
+    "TrackBeaconDamagedInTheBlightTide": {
+        "desc": "追踪侵蚀潮中损坏的信标任务",
+        "recognition": "And",
+        "all_of": [
+            "TrackMissionButton",
+            "InBeaconDamagedInTheBlightTideMission"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "BeaconDamagedInTheBlightTideInQuickTeleportMap"
+        ]
+    },
+    "AlreadyTrackedBeaconDamagedInTheBlightTide": {
+        "desc": "侵蚀潮中损坏的信标任务已经在追踪中",
+        "recognition": "And",
+        "all_of": [
+            "AlreadyTrackedMissionButton",
+            "InBeaconDamagedInTheBlightTideMission"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "BeaconDamagedInTheBlightTideOpenTrackedMissionMap"
+        ]
+    },
+    "BeaconDamagedInTheBlightTideOpenTrackedMissionMap": {
+        "desc": "侵蚀潮中损坏的信标任务已在追踪中，点击定位按钮进入任务地图",
+        "recognition": "And",
+        "all_of": [
+            "TrackedMissionMapButton",
+            "InBeaconDamagedInTheBlightTideMission"
+        ],
+        "box_index": 0,
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "BeaconDamagedInTheBlightTideInQuickTeleportMap"
+        ]
+    },
+    "BeaconDamagedInTheBlightTideInQuickTeleportMap": {
+        "desc": "已进入侵蚀潮中损坏的信标任务地图，准备快捷传送",
+        "recognition": "And",
+        "all_of": [
+            "QuickTeleportButton",
+            "InBeaconDamagedInTheBlightTideMission"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "BeaconDamagedInTheBlightTideQuickTeleportSelect"
+        ]
+    },
+    "BeaconDamagedInTheBlightTideQuickTeleportSelect": {
+        "desc": "在侵蚀潮中损坏的信标任务地图中点击前往传送",
+        "recognition": "And",
+        "all_of": [
+            "QuickTeleportButton",
+            "InBeaconDamagedInTheBlightTideMission"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_wait_freezes": 500,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "BeaconDamagedInTheBlightTideQuickTeleport"
+        ]
+    },
+    "BeaconDamagedInTheBlightTideQuickTeleport": {
+        "desc": "在侵蚀潮中损坏的信标任务地图中点击传送",
+        "recognition": "And",
+        "all_of": [
+            "TeleportButton"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "BeaconDamagedInTheBlightTideQuickTeleportDone",
+            "[JumpBack]SceneWaitLoadingExit"
+        ]
+    },
+    "BeaconDamagedInTheBlightTideQuickTeleportDone": {
+        "desc": "快捷传送完成，已返回大世界",
+        "recognition": "And",
+        "all_of": [
+            "InWorld"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToBeaconDamagedInTheBlightTideMove"
+        ]
+    },
+    "BeaconDamagedInTheBlightTideNotAdapted": {
+        "desc": "侵蚀潮中损坏的信标任务尚未适配，仅接取并追踪",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "focus": {
+            "Node.Recognition.Succeeded": "$task.EnvironmentMonitoring.not_adapted"
+        }
+    },
+    "GoToBeaconDamagedInTheBlightTide": {
+        "desc": "前往侵蚀潮中损坏的信标，先回到大世界再进行判断",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "SubTask",
+        "custom_action_param": {
+            "sub": [
+                "SceneAnyEnterWorld"
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToBeaconDamagedInTheBlightTideStartPos",
+            "GoToBeaconDamagedInTheBlightTideNotAtStartPos"
+        ]
+    },
+    "GoToBeaconDamagedInTheBlightTideStartPos": {
+        "desc": "在侵蚀潮中损坏的信标任务开始位置附近",
+        "recognition": "Custom",
+        "custom_recognition": "MapLocateAssertLocation",
+        "custom_recognition_param": {
+            "zone_id": "Wuling_Base",
+            "target": [
+                0,
+                0,
+                1,
+                1
+            ]
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToBeaconDamagedInTheBlightTideMove"
+        ]
+    },
+    "GoToBeaconDamagedInTheBlightTideNotAtStartPos": {
+        "desc": "不在侵蚀潮中损坏的信标任务开始位置附近，先传送再继续寻路",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "SubTask",
+        "custom_action_param": {
+            "sub": [
+                "SceneAnyEnterWorld"
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToBeaconDamagedInTheBlightTideMove"
+        ]
+    },
+    "GoToBeaconDamagedInTheBlightTideMove": {
+        "desc": "自动寻路前往侵蚀潮中损坏的信标",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "MapNavigateAction",
+        "custom_action_param": {
+            "path": [
+                {
+                    "action": "ZONE",
+                    "zone_id": "Wuling_Base"
+                },
+                [
+                    922.79,
+                    1312.01
+                ],
+                [
+                    915.76,
+                    1352.1
+                ],
+                {
+                    "action": "NAVMESH",
+                    "target": [
+                        978.32,
+                        1399.26
+                    ]
+                },
+                {
+                    "action": "HEADING",
+                    "angle": 90
+                }
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "BeaconDamagedInTheBlightTideTakePhoto"
+        ],
+        "focus": {
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    },
+    "GoToBeaconDamagedInTheBlightTideMoveAfterFight": {
+        "desc": "可能的战斗结束后，恢复性地走回侵蚀潮中损坏的信标拍照点",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "MapNavigateAction",
+        "custom_action_param": {
+            "path": [
+                {
+                    "action": "ZONE",
+                    "zone_id": "Wuling_Base"
+                },
+                [
+                    922.79,
+                    1312.01
+                ],
+                [
+                    915.76,
+                    1352.1
+                ],
+                {
+                    "action": "NAVMESH",
+                    "target": [
+                        978.32,
+                        1399.26
+                    ]
+                },
+                {
+                    "action": "HEADING",
+                    "angle": 90
+                }
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "BeaconDamagedInTheBlightTideTakePhoto"
+        ],
+        "focus": {
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    },
+    "BeaconDamagedInTheBlightTideTakePhoto": {
+        "desc": "在侵蚀潮中损坏的信标任务拍照点开始拍照",
+        "pre_delay": 0,
+        "anchor": {
+            "EnvironmentMonitoringBackToTerminal": "EnvironmentMonitoringGoToOutskirtsMonitoringTerminal"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "EnvironmentMonitoringTakePhoto"
+        ]
+    }
+}

@@ -1,0 +1,465 @@
+{
+    "TreeOfTheOldCourtyardJob": {
+        "desc": "旧庭树任务",
+        "max_hit": 1,
+        "recognition": "And",
+        "all_of": [
+            "CheckTreeOfTheOldCourtyardText",
+            "CheckTreeOfTheOldCourtyardIcon",
+            "CheckTreeOfTheOldCourtyardWulingStockBill"
+        ],
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "FailureCollectorRunTask",
+        "custom_action_param": {
+            "key": "EnvironmentMonitoring",
+            "task": "TreeOfTheOldCourtyardExecute",
+            "recovery_task": "EnvironmentMonitoringGoToMarkerStoneMonitoringTerminal",
+            "failure_task": "TreeOfTheOldCourtyardFailed"
+        },
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "TreeOfTheOldCourtyardFailed": {
+        "desc": "旧庭树任务执行失败提示",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "focus": {
+            "Node.Recognition.Succeeded": "$task.EnvironmentMonitoring.route.TreeOfTheOldCourtyard.failed"
+        }
+    },
+    "TreeOfTheOldCourtyardExecute": {
+        "desc": "执行旧庭树任务路线",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AcceptTreeOfTheOldCourtyard",
+            "GoToTreeOfTheOldCourtyardMission"
+        ]
+    },
+    "CheckTreeOfTheOldCourtyardText": {
+        "desc": "检查是否有旧庭树文本",
+        "recognition": "OCR",
+        "roi": [
+            63,
+            208,
+            1158,
+            71
+        ],
+        "expected": [
+            "“旧庭树”",
+            "「舊庭樹」",
+            "(?i)\"Tree\\s*of\\s*the\\s*Old\\s*Courtyard\"",
+            "「旧庭の木」",
+            "옛 정원의 나무"
+        ],
+        "replace": [],
+        "order_by": "Vertical",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckTreeOfTheOldCourtyardWulingStockBill": {
+        "desc": "检查旧庭树任务下方的武陵调度券图标",
+        "recognition": "TemplateMatch",
+        "roi": "CheckTreeOfTheOldCourtyardIcon",
+        "roi_offset": [
+            -14,
+            300,
+            359,
+            76
+        ],
+        "template": "EnvironmentMonitoring/WulingStockBill.png",
+        "threshold": 0.8,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckTreeOfTheOldCourtyardIcon": {
+        "desc": "检查旧庭树文本下方的图标",
+        "recognition": "TemplateMatch",
+        "roi": "CheckTreeOfTheOldCourtyardText",
+        "roi_offset": [
+            -18,
+            0,
+            0,
+            28
+        ],
+        "template": "EnvironmentMonitoring/PhotoIcon.png",
+        "threshold": 0.8,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckTreeOfTheOldCourtyardJob": {
+        "desc": "检查旧庭树委托是否可以接取",
+        "recognition": "OCR",
+        "roi": "CheckTreeOfTheOldCourtyardIcon",
+        "roi_offset": [
+            -14,
+            332,
+            359,
+            76
+        ],
+        "expected": [
+            "接取委托",
+            "接取委託",
+            "(?i)Accept\\s*Job",
+            "引き受ける",
+            "의뢰 수령"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckTreeOfTheOldCourtyardGoToMissionText": {
+        "desc": "检查旧庭树委托是否可以前往",
+        "recognition": "OCR",
+        "roi": "CheckTreeOfTheOldCourtyardIcon",
+        "roi_offset": [
+            -14,
+            332,
+            359,
+            76
+        ],
+        "expected": [
+            "前往任务",
+            "前往任務",
+            "(?i)Go\\s*to\\s*Mission",
+            "任務へ",
+            "임무로 이동하기"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "InTreeOfTheOldCourtyardMission": {
+        "desc": "是否在旧庭树任务界面",
+        "recognition": "OCR",
+        "roi": [
+            415,
+            50,
+            855,
+            241
+        ],
+        "expected": [
+            "拍摄“旧庭树”",
+            "拍攝「舊庭樹」",
+            "(?i)Photo:\\s*\"Tree\\s*of\\s*the\\s*Old\\s*Courtyard\"",
+            "「旧庭の木」の写真を撮る",
+            "'옛 정원의 나무'를 촬영하기"
+        ],
+        "replace": [],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "AcceptTreeOfTheOldCourtyard": {
+        "desc": "接取旧庭树委托",
+        "recognition": "And",
+        "all_of": [
+            "CheckTreeOfTheOldCourtyardText",
+            "CheckTreeOfTheOldCourtyardIcon",
+            "CheckTreeOfTheOldCourtyardJob"
+        ],
+        "box_index": 2,
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToTreeOfTheOldCourtyardMission"
+        ]
+    },
+    "GoToTreeOfTheOldCourtyardMission": {
+        "desc": "前往旧庭树任务",
+        "recognition": "And",
+        "all_of": [
+            "CheckTreeOfTheOldCourtyardText",
+            "CheckTreeOfTheOldCourtyardIcon",
+            "CheckTreeOfTheOldCourtyardGoToMissionText"
+        ],
+        "box_index": 2,
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TreeOfTheOldCourtyardTrackOrGoTo"
+        ]
+    },
+    "TreeOfTheOldCourtyardTrackOrGoTo": {
+        "desc": "在旧庭树任务中，如果有开始追踪的按钮就点击追踪，已在追踪则继续",
+        "recognition": "And",
+        "all_of": [
+            "InTreeOfTheOldCourtyardMission"
+        ],
+        // 面板入场动画期间点击可能被吞掉，等按钮区域静止后再继续
+        // （wait_freezes 按 ROI 整体判定静止，区域越大越容易把按钮位移稀释掉）
+        "pre_wait_freezes": {
+            "time": 200,
+            "target": [
+                904,
+                580,
+                368,
+                130
+            ]
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrackTreeOfTheOldCourtyard",
+            "AlreadyTrackedTreeOfTheOldCourtyard"
+        ]
+    },
+    "TrackTreeOfTheOldCourtyard": {
+        "desc": "追踪旧庭树任务",
+        "recognition": "And",
+        "all_of": [
+            "TrackMissionButton",
+            "InTreeOfTheOldCourtyardMission"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TreeOfTheOldCourtyardInQuickTeleportMap"
+        ]
+    },
+    "AlreadyTrackedTreeOfTheOldCourtyard": {
+        "desc": "旧庭树任务已经在追踪中",
+        "recognition": "And",
+        "all_of": [
+            "AlreadyTrackedMissionButton",
+            "InTreeOfTheOldCourtyardMission"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TreeOfTheOldCourtyardOpenTrackedMissionMap"
+        ]
+    },
+    "TreeOfTheOldCourtyardOpenTrackedMissionMap": {
+        "desc": "旧庭树任务已在追踪中，点击定位按钮进入任务地图",
+        "recognition": "And",
+        "all_of": [
+            "TrackedMissionMapButton",
+            "InTreeOfTheOldCourtyardMission"
+        ],
+        "box_index": 0,
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TreeOfTheOldCourtyardInQuickTeleportMap"
+        ]
+    },
+    "TreeOfTheOldCourtyardInQuickTeleportMap": {
+        "desc": "已进入旧庭树任务地图，准备快捷传送",
+        "recognition": "And",
+        "all_of": [
+            "QuickTeleportButton",
+            "InTreeOfTheOldCourtyardMission"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TreeOfTheOldCourtyardQuickTeleportSelect"
+        ]
+    },
+    "TreeOfTheOldCourtyardQuickTeleportSelect": {
+        "desc": "在旧庭树任务地图中点击前往传送",
+        "recognition": "And",
+        "all_of": [
+            "QuickTeleportButton",
+            "InTreeOfTheOldCourtyardMission"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_wait_freezes": 500,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TreeOfTheOldCourtyardQuickTeleport"
+        ]
+    },
+    "TreeOfTheOldCourtyardQuickTeleport": {
+        "desc": "在旧庭树任务地图中点击传送",
+        "recognition": "And",
+        "all_of": [
+            "TeleportButton"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TreeOfTheOldCourtyardQuickTeleportDone",
+            "[JumpBack]SceneWaitLoadingExit"
+        ]
+    },
+    "TreeOfTheOldCourtyardQuickTeleportDone": {
+        "desc": "快捷传送完成，已返回大世界",
+        "recognition": "And",
+        "all_of": [
+            "InWorld"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToTreeOfTheOldCourtyardMove"
+        ]
+    },
+    "TreeOfTheOldCourtyardNotAdapted": {
+        "desc": "旧庭树任务尚未适配，仅接取并追踪",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "focus": {
+            "Node.Recognition.Succeeded": "$task.EnvironmentMonitoring.not_adapted"
+        }
+    },
+    "GoToTreeOfTheOldCourtyard": {
+        "desc": "前往旧庭树，先回到大世界再进行判断",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "SubTask",
+        "custom_action_param": {
+            "sub": [
+                "SceneAnyEnterWorld"
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToTreeOfTheOldCourtyardStartPos",
+            "GoToTreeOfTheOldCourtyardNotAtStartPos"
+        ]
+    },
+    "GoToTreeOfTheOldCourtyardStartPos": {
+        "desc": "在旧庭树任务开始位置附近",
+        "recognition": "Custom",
+        "custom_recognition": "MapLocateAssertLocation",
+        "custom_recognition_param": {
+            "zone_id": "Wuling_Base",
+            "target": [
+                0,
+                0,
+                1,
+                1
+            ]
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToTreeOfTheOldCourtyardMove"
+        ]
+    },
+    "GoToTreeOfTheOldCourtyardNotAtStartPos": {
+        "desc": "不在旧庭树任务开始位置附近，先传送再继续寻路",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "SubTask",
+        "custom_action_param": {
+            "sub": [
+                "SceneAnyEnterWorld"
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToTreeOfTheOldCourtyardMove"
+        ]
+    },
+    "GoToTreeOfTheOldCourtyardMove": {
+        "desc": "自动寻路前往旧庭树",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "MapNavigateAction",
+        "custom_action_param": {
+            "path": [
+                {
+                    "action": "NAVMESH",
+                    "target": [
+                        98.4,
+                        111
+                    ],
+                    "target_tier": "Wuling_L4_330"
+                },
+                {
+                    "action": "HEADING",
+                    "angle": 180
+                }
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TreeOfTheOldCourtyardTakePhoto"
+        ],
+        "focus": {
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    },
+    "GoToTreeOfTheOldCourtyardMoveAfterFight": {
+        "desc": "可能的战斗结束后，恢复性地走回旧庭树拍照点",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "MapNavigateAction",
+        "custom_action_param": {
+            "path": [
+                {
+                    "action": "NAVMESH",
+                    "target": [
+                        98.4,
+                        111
+                    ],
+                    "target_tier": "Wuling_L4_330"
+                },
+                {
+                    "action": "HEADING",
+                    "angle": 180
+                }
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TreeOfTheOldCourtyardTakePhoto"
+        ],
+        "focus": {
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    },
+    "TreeOfTheOldCourtyardTakePhoto": {
+        "desc": "在旧庭树任务拍照点开始拍照",
+        "pre_delay": 0,
+        "anchor": {
+            "EnvironmentMonitoringBackToTerminal": "EnvironmentMonitoringGoToMarkerStoneMonitoringTerminal"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "EnvironmentMonitoringTakePhoto"
+        ]
+    }
+}

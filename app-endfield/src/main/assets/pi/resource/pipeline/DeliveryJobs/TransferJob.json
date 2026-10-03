@@ -1,0 +1,94 @@
+{
+    // 转交任务的流程
+    // 打开送货任务详情由 DeliveryJobsTransferOngoingJob 完成，进入它的入口有两个：
+    // 装箱时发现残留委托（DeliveryJobsOngoingDeliveryFor* 分派而来）、
+    // 自动送货失败（DeliveryJobsDeliverByAutoDelivery 的 on_error）。
+    // 本文件负责：点击转交任务 -> 确认转交任务 -> 按 DeliveryJobsReturnToDepotNode 跳转
+    "DeliveryJobsTransferOngoingJob": {
+        "desc": "进入任务界面选中送货任务，再转交它",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "SubTask",
+        "custom_action_param": {
+            "sub": [
+                "AutoDeliveryOpenDeliveryMission"
+            ],
+            "continue": false,
+            "strict": true
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "DeliveryJobsClickTransferJob"
+        ],
+        "focus": {
+            "Node.Recognition.Succeeded": "$task.DeliveryJobs.OngoingDeliveryTransferred"
+        }
+    },
+    "DeliveryJobsClickTransferJob": {
+        "desc": "单击转交任务",
+        "recognition": "OCR",
+        "roi": [
+            366,
+            620,
+            372,
+            63
+        ],
+        "expected": [
+            "转交运送委托",
+            "轉交運送委託",
+            "(?i)Transfer\\s*Delivery\\s*Job",
+            "外部委託",
+            "(?i)Transfer\\s*Job",
+            "운송 의뢰 위탁"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "DeliveryJobsConfirmTaskTransfer"
+        ]
+    },
+    "DeliveryJobsCheckTaskTransferText": {
+        "desc": "检查转交任务文本",
+        "recognition": "OCR",
+        "roi": [
+            401,
+            238,
+            494,
+            160
+        ],
+        "expected": [
+            "是否确认将送货任务委托给他人派送?",
+            "是否確定將送貨任務委託給他人運送？",
+            "(?i)Transfer\\s*delivery\\s*job\\s*to\\s*another\\s*courier\\s*\\?",
+            "配達任務を他人に委託しますか？",
+            "给他人派送",
+            "給他人運送",
+            "운송 임무를 다른 사람에게 위탁하시겠습니까?"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "DeliveryJobsConfirmTaskTransfer": {
+        "desc": "确认转交任务",
+        "recognition": "And",
+        "all_of": [
+            "YellowConfirmButtonType1",
+            "DeliveryJobsCheckTaskTransferText"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            // 落点由发起方声明为本仓储节点的落点：仓储节点界面发起的转交声明 InLocalDepotNode，
+            // 需要等待本地仓储界面完全加载完成，才继续后面的流程，
+            // 否则会因为无法识别到相关货物，导致退出去重新进入本地仓储界面
+            // 任务界面发起的转交会回到菜单列表，发起方声明本仓储节点的场景节点
+            "[Anchor]DeliveryJobsReturnToDepotNode"
+        ]
+    }
+}

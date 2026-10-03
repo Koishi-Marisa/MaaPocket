@@ -1,0 +1,448 @@
+{
+    "AccountSwitchStart": {
+        "desc": "账号切换入口",
+        "next": [
+            "__AccountSwitchAtLoginScreen",
+            "[JumpBack]SceneEnterMenuLogin"
+        ]
+    },
+    "__AccountSwitchAtLoginScreen": {
+        "desc": "已在登录界面，等待加载完成",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    0,
+                    -100,
+                    100,
+                    100
+                ],
+                "template": [
+                    "SceneManager/LoginExit.png"
+                ]
+            }
+        },
+        "next": [
+            "[JumpBack]__ScenePrivateCloseLoginAnnouncement",
+            "__AccountSwitchClickLogout",
+            "__AccountSwitchAtLoginScreenDialogShow",
+            "__AccountSwitchAtLoginScreen"
+        ]
+    },
+    "__AccountSwitchAtLoginScreenDialogShow": {
+        "desc": "在登陆界面，显示对话框",
+        "recognition": "OCR",
+        "roi": [
+            150,
+            130,
+            900,
+            500
+        ],
+        "expected": [
+            "登录"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            "__AccountSwitchFocusFormBeforeDropdown"
+        ]
+    },
+    "__AccountSwitchClickLogout": {
+        "desc": "点击登出按钮",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    -300,
+                    0,
+                    300,
+                    300
+                ],
+                "expected": [
+                    "账户登出"
+                ]
+            }
+        },
+        "pre_wait_freezes": 100,
+        "action": "Click",
+        "next": [
+            "__AccountSwitchLogoutConfirm"
+        ]
+    },
+    "__AccountSwitchLogoutConfirm": {
+        "desc": "确认登出弹窗（占位）",
+        "recognition": "And",
+        "all_of": [
+            {
+                "recognition": "OCR",
+                "roi": [
+                    350,
+                    250,
+                    550,
+                    202
+                ],
+                "expected": [
+                    "确认退出",
+                    "確定登出",
+                    "(?i)Log out of",
+                    "ログアウトします",
+                    "로그아웃하시겠"
+                ]
+            },
+            {
+                "recognition": {
+                    "type": "TemplateMatch",
+                    "param": {
+                        "roi": [
+                            350,
+                            350,
+                            550,
+                            100
+                        ],
+                        "template": [
+                            "AccountSwitch/ConfirmButton.png"
+                        ],
+                        "threshold": 0.9
+                    }
+                }
+            }
+        ],
+        "box_index": 1,
+        "pre_wait_freezes": 200,
+        "action": "Click",
+        "anchor": {
+            "MouseMoveResetAnchor": "MouseMoveReset"
+        },
+        "next": [
+            "[JumpBack][Anchor]MouseMoveResetAnchor",
+            "__AccountSwitchAtLoginScreenDialogShow"
+        ]
+    },
+    "__AccountSwitchFocusFormBeforeDropdown": {
+        "desc": "聚焦账号登录窗口后准备点击下拉",
+        "recognition": "DirectHit",
+        "action": "Custom",
+        "custom_action": "AccountSwitchWindowAction",
+        "custom_action_param": {
+            "op": "focus",
+            "window": "form",
+            "optional": false
+        },
+        "next": [
+            "__AccountSwitchClickDropdown"
+        ]
+    },
+    "__AccountSwitchClickDropdown": {
+        "desc": "点击账号下拉按钮,maafw在前台截图时5秒内会置顶一次游戏窗口，导致下拉框消失，因此需要重试",
+        "max_hit": 5,
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    254,
+                    130,
+                    863,
+                    495
+                ],
+                "expected": [
+                    // @i18n-skip
+                    ".*[*\\d]\\s*\\d{4}\\s*(?:最近)?.*",
+                    ".*\\d{4}\\s*(?:最近)?.*",
+                    "\\d{4}",
+                    // 国际服脱敏邮箱，如 zm*****18@hotmail.com
+                    "(?i).*\\*{5}\\S*@\\S+.*"
+                ]
+            }
+        },
+        "action": "Custom",
+        "custom_action": "AccountSwitchWindowAction", //目前是PostMessage，需要管理员运行，手动启动agent需要注意
+        "custom_action_param": {
+            "op": "click",
+            "window": "form"
+        },
+        "post_wait_freezes": 500,
+        "next": [
+            "__AccountSwitchClickDropdownSuccess",
+            "__AccountSwitchClickDropdown"
+        ]
+    },
+    "__AccountSwitchClickDropdownSuccess": {
+        "desc": "确认账号下拉列表已展开",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": "__AccountSwitchClickDropdown",
+                "roi_offset": [
+                    -100,
+                    30,
+                    100,
+                    100
+                ],
+                "expected": [
+                    // 完整文本示例："上次登录：7分钟前"
+                    // @i18n-skip
+                    "次登录"
+                ]
+            }
+        },
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "ClearHitCount",
+        "custom_action_param": {
+            "nodes": [
+                "__AccountSwitchClickDropdown"
+            ]
+        },
+        "post_delay": 0,
+        "next": [
+            "__AccountSwitchConfigureEmailPattern",
+            "__AccountSwitchOCRSelectAccount"
+        ]
+    },
+    "__AccountSwitchConfigureEmailPattern": {
+        "desc": "初始化国际服脱敏邮箱匹配规则",
+        "enabled": false,
+        "recognition": "DirectHit",
+        "action": "Custom",
+        "custom_action": "AttachToExpectedRegexAction",
+        "custom_action_param": {
+            "targets": [
+                "__AccountSwitchOCRSelectAccount",
+                "__AccountSwitchVerifySelected"
+            ],
+            "substring": true
+        },
+        "next": [
+            "__AccountSwitchOCRSelectAccount",
+            "__AccountSwitchClickDropdown"
+        ]
+    },
+    "__AccountSwitchOCRSelectAccount": {
+        "desc": "OCR识别目标账号并点击",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": "__AccountSwitchClickDropdown",
+                "roi_offset": [
+                    -30,
+                    30,
+                    150,
+                    300
+                ],
+                "expected": [
+                    // @i18n-skip
+                    ".*[*\\d]\\s*\\d{4}\\s*(?:最近)?.*",
+                    ".*\\d{4}\\s*(?:最近)?.*",
+                    "\\d{4}"
+                ]
+            }
+        },
+        "action": "Custom",
+        "custom_action": "AccountSwitchWindowAction",
+        "custom_action_param": {
+            "op": "click",
+            "window": "combo"
+        },
+        "next": [
+            "__AccountSwitchCloseCombo"
+        ]
+    },
+    "__AccountSwitchCloseCombo": {
+        "desc": "关闭账号下拉列表窗口",
+        "recognition": "DirectHit",
+        "action": "Custom",
+        "custom_action": "AccountSwitchWindowAction",
+        "custom_action_param": {
+            "op": "close",
+            "window": "combo",
+            "optional": true
+        },
+        "next": [
+            "__AccountSwitchFocusForm"
+        ]
+    },
+    "__AccountSwitchFocusForm": {
+        "desc": "聚焦账号登录窗口",
+        "recognition": "DirectHit",
+        "action": "Custom",
+        "custom_action": "AccountSwitchWindowAction",
+        "custom_action_param": {
+            "op": "focus",
+            "window": "form",
+            "optional": true
+        },
+        "next": [
+            "__AccountSwitchCheckAccount"
+        ]
+    },
+    "__AccountSwitchCheckAccount": {
+        "desc": "中继节点：路由检查",
+        "max_hit": 3,
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": "__AccountSwitchClickDropdown",
+                "roi_offset": [
+                    -15,
+                    -20,
+                    60,
+                    40
+                ],
+                "expected": [
+                    // @i18n-skip
+                    ".*[*\\d]\\s*\\d{4}\\s*(?:最近)?.*",
+                    ".*\\d{4}\\s*(?:最近)?.*",
+                    "\\d{4}",
+                    "\\d{4}$",
+                    // 国际服脱敏邮箱，如 zm*****18@hotmail.com
+                    "(?i).*\\*{5}\\S*@\\S+.*"
+                ]
+            }
+        },
+        "next": [
+            "__AccountSwitchVerifySelected",
+            "__AccountSwitchFocusFormBeforeDropdown"
+        ]
+    },
+    "__AccountSwitchVerifySelected": {
+        "desc": "验证目标账号是否已选中",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": "__AccountSwitchClickDropdown",
+                "roi_offset": [
+                    -15,
+                    -20,
+                    60,
+                    40
+                ],
+                "expected": [
+                    // @i18n-skip
+                    ".*[*\\d]\\s*\\d{4}\\s*(?:最近)?.*",
+                    ".*\\d{4}\\s*(?:最近)?.*",
+                    "\\d{4}",
+                    "\\d{4}$"
+                ]
+            }
+        },
+        "next": [
+            "__AccountSwitchClickLogin"
+        ]
+    },
+    "__AccountSwitchClickLogin": {
+        "desc": "点击登录按钮",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    471,
+                    309,
+                    328,
+                    400
+                ],
+                "expected": [
+                    // @i18n-skip
+                    "^\\s*登录\\s*$",
+                    "^\\s*登入\\s*$",
+                    "(?i)^\\s*Log\\s*in\\s*$",
+                    "^\\s*ログイン\\s*$",
+                    "^\\s*로그인\\s*$"
+                ]
+            }
+        },
+        "action": "Click",
+        "next": [
+            "__AccountSwitchLoginSuccess"
+        ]
+    },
+    "__AccountSwitchLoginSuccess": {
+        "desc": "账号切换登录成功（登录按钮消失）",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    471,
+                    309,
+                    328,
+                    400
+                ],
+                "expected": [
+                    // @i18n-skip
+                    "^\\s*登录\\s*$",
+                    "^\\s*登入\\s*$",
+                    "(?i)^\\s*Log\\s*in\\s*$",
+                    "^\\s*ログイン\\s*$",
+                    "^\\s*로그인\\s*$"
+                ]
+            }
+        },
+        "inverse": true,
+        "next": [
+            "__AccountSwitchClearUidCache"
+        ]
+    },
+    "__AccountSwitchClearUidCache": {
+        "desc": "清空UID缓存",
+        "recognition": "DirectHit",
+        "action": "Custom",
+        "custom_action": "CaptureUid",
+        "custom_action_param": {
+            "clear_cache": true
+        },
+        "next": [
+            "__AccountSwitchResetSceneImageCheck"
+        ]
+    },
+    "__AccountSwitchResetSceneImageCheck": {
+        "desc": "账号切换后重置场景初始化状态，使下一个任务重新做画面检查",
+        "recognition": "DirectHit",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "ImageCheckSetResultAction",
+        "custom_action_param": {
+            "result": false
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__AccountSwitchResetImsFirstScan"
+        ]
+    },
+    "__AccountSwitchResetImsFirstScan": {
+        "desc": "清空 IMS 首次库存扫描标记：重新打开各地区 Begin，关闭各完成标记，切号后会再次真正扫库",
+        "recognition": "DirectHit",
+        "pre_delay": 0,
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "PipelineOverride",
+                "custom_action_param": {
+                    "resource_override": true,
+                    "patch": {
+                        "SyncItemDataBegin": {
+                            "enabled": true
+                        },
+                        "SyncDepotItemDataBegin": {
+                            "enabled": true
+                        },
+                        "SyncDepotItemDataCompleted": {
+                            "enabled": false
+                        },
+                        "SyncShopItemDataBegin": {
+                            "enabled": true
+                        },
+                        "SyncShopItemDataCompleted": {
+                            "enabled": false
+                        },
+                        "SyncValuablesItemDataBegin": {
+                            "enabled": true
+                        }
+                    }
+                }
+            }
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": []
+    }
+}

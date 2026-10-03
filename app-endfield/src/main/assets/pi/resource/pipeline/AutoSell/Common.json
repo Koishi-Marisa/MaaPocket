@@ -1,0 +1,93 @@
+{
+    "AutoSellShipEnterStockRedistribution": {
+        "desc": "从飞船走向弹性需求物资界面",
+        "recognition": "TemplateMatch",
+        "roi": [
+            0,
+            0,
+            100,
+            100
+        ],
+        "template": "VisitFriends/ShipEscButton.png",
+        "threshold": 0.9,
+        "pre_wait_freezes": 100,
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "MapNavigateAction",
+        "custom_action_param": {
+            "path": [
+                {
+                    "action": "ZONE",
+                    "zone_id": "OMVBase01"
+                },
+                {
+                    "action": "NAVMESH",
+                    "target": [
+                        185.9,
+                        141.39
+                    ]
+                },
+                {
+                    "action": "INTERACT",
+                    "target": [
+                        185.9,
+                        130
+                    ],
+                    "interact_text": [
+                        "物资调度终端",
+                        "物資調度終端"
+                    ]
+                }
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AutoSellEnterStockRedistributionSuccess"
+        ],
+        "focus": {
+            "Node.Action.Starting": "正在走向物资调度终端",
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    },
+    "AutoSellEnterStockRedistributionSuccess": {
+        "desc": "成功进入物资调度页面",
+        "recognition": "And",
+        "all_of": [
+            "InFriendsStockRedistribution"
+        ],
+        "pre_wait_freezes": 100,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "AutoSellTicketValleyIVOverflow": {
+        "desc": "识别四号谷地调度券是否溢出",
+        "recognition": "Custom",
+        "custom_recognition": "ExpressionRecognition",
+        "custom_recognition_param": {
+            "expression": "30000000 < {AutoSellOwnTicketCountRecognition}",
+            "focus_matched_resolved_expression": true
+        },
+        "focus": {
+            "Node.Recognition.Succeeded": "四号谷地调度券已超过阈值"
+        }
+    },
+    "AutoSellTicketWulingOverflow": {
+        "desc": "识别武陵调度券是否溢出",
+        "recognition": "Custom",
+        "custom_recognition": "ExpressionRecognition",
+        "custom_recognition_param": {
+            "expression": "30000000 < {AutoSellOwnTicketCountRecognition}",
+            "focus_matched_resolved_expression": true
+        },
+        "focus": {
+            "Node.Recognition.Succeeded": "武陵调度券已超过阈值"
+        }
+    }
+}

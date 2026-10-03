@@ -1,0 +1,125 @@
+{
+    "GotoTriggerPointSetAnchor_VFOriginiumSciencePark": {
+        "enabled": false,
+        "pre_delay": 0,
+        "anchor": {
+            "AutoEssenceMoveToTriggerPoint": "GotoTriggerPointMove_VFOriginiumSciencePark",
+            "AutoEssenceMoveToTriggerPointMaybeTeleport": "GotoTriggerPointMaybeTeleport_VFOriginiumSciencePark"
+        },
+        "post_delay": 0,
+        "focus": {
+            "Node.Action.Starting": "📌目标地点：源石研究园"
+        }
+    },
+    "GotoTriggerPointMaybeTeleport_VFOriginiumSciencePark": {
+        "desc": "强制传送到最近锚点后前往激发点",
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "SubTask",
+                "custom_action_param": {
+                    "sub": [
+                        "SceneEnterWorldValleyIVOriginiumSciencePark1"
+                    ]
+                }
+            }
+        },
+        "next": [
+            "GotoTriggerPointMove_VFOriginiumSciencePark"
+        ],
+        "focus": {
+            "Node.Action.Starting": "✈️准备传送到最近锚点"
+        }
+    },
+    "GotoTriggerPointMove_VFOriginiumSciencePark": {
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "MapNavigateAction",
+                "custom_action_param": {
+                    "path": [
+                        {
+                            "action": "ZONE",
+                            "zone_id": "ValleyIV_Base"
+                        },
+                        [
+                            1144.31,
+                            734.12
+                        ],
+                        [
+                            1154.65,
+                            734.22
+                        ],
+                        [
+                            1165.09,
+                            744.46
+                        ],
+                        [
+                            1166.29,
+                            750.37
+                        ],
+                        [
+                            1166.11,
+                            762.83
+                        ],
+                        [
+                            1166.01,
+                            763.11,
+                            true
+                        ]
+                    ]
+                }
+            }
+        },
+        "next": [
+            "GotoTriggerPointMoveExact_VFOriginiumSciencePark"
+        ],
+        "focus": {
+            "Node.Action.Starting": "🚶正在前往预备位置",
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    },
+    "GotoTriggerPointMoveExact_VFOriginiumSciencePark": {
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "MapNavigateAction",
+                "custom_action_param": {
+                    "path": [
+                        {
+                            "action": "ZONE",
+                            "zone_id": "ValleyIV_Base"
+                        },
+                        [
+                            1165.55,
+                            761.45
+                        ],
+                        [
+                            1158.71,
+                            763.59,
+                            true
+                        ]
+                    ]
+                }
+            }
+        },
+        "post_delay": 1500,
+        "next": [
+            "AutoEssenceDispatcher"
+        ],
+        "focus": {
+            "Node.Action.Starting": "🚶正在前往激发点",
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    }
+}

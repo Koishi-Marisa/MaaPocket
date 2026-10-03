@@ -1,0 +1,486 @@
+{
+    "CloudrestEcoSiteJob": {
+        "desc": "栖云生态点任务",
+        "max_hit": 1,
+        "recognition": "And",
+        "all_of": [
+            "CheckCloudrestEcoSiteText",
+            "CheckCloudrestEcoSiteIcon",
+            "CheckCloudrestEcoSiteWulingStockBill"
+        ],
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "FailureCollectorRunTask",
+        "custom_action_param": {
+            "key": "EnvironmentMonitoring",
+            "task": "CloudrestEcoSiteExecute",
+            "recovery_task": "EnvironmentMonitoringGoToMarkerStoneMonitoringTerminal",
+            "failure_task": "CloudrestEcoSiteFailed"
+        },
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CloudrestEcoSiteFailed": {
+        "desc": "栖云生态点任务执行失败提示",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "focus": {
+            "Node.Recognition.Succeeded": "$task.EnvironmentMonitoring.route.CloudrestEcoSite.failed"
+        }
+    },
+    "CloudrestEcoSiteExecute": {
+        "desc": "执行栖云生态点任务路线",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AcceptCloudrestEcoSite",
+            "GoToCloudrestEcoSiteMission"
+        ]
+    },
+    "CheckCloudrestEcoSiteText": {
+        "desc": "检查是否有栖云生态点文本",
+        "recognition": "OCR",
+        "roi": [
+            63,
+            208,
+            1158,
+            71
+        ],
+        "expected": [
+            "栖云生态点",
+            "棲雲生態點",
+            "(?i)Cloudrest\\s*Eco\\s*-\\s*Site",
+            "栖雲生態スポット",
+            "서운 생태 지점"
+        ],
+        "replace": [],
+        "order_by": "Vertical",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckCloudrestEcoSiteWulingStockBill": {
+        "desc": "检查栖云生态点任务下方的武陵调度券图标",
+        "recognition": "TemplateMatch",
+        "roi": "CheckCloudrestEcoSiteIcon",
+        "roi_offset": [
+            -14,
+            300,
+            359,
+            76
+        ],
+        "template": "EnvironmentMonitoring/WulingStockBill.png",
+        "threshold": 0.8,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckCloudrestEcoSiteIcon": {
+        "desc": "检查栖云生态点文本下方的图标",
+        "recognition": "TemplateMatch",
+        "roi": "CheckCloudrestEcoSiteText",
+        "roi_offset": [
+            -18,
+            0,
+            0,
+            28
+        ],
+        "template": "EnvironmentMonitoring/PhotoIcon.png",
+        "threshold": 0.8,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckCloudrestEcoSiteJob": {
+        "desc": "检查栖云生态点委托是否可以接取",
+        "recognition": "OCR",
+        "roi": "CheckCloudrestEcoSiteIcon",
+        "roi_offset": [
+            -14,
+            332,
+            359,
+            76
+        ],
+        "expected": [
+            "接取委托",
+            "接取委託",
+            "(?i)Accept\\s*Job",
+            "引き受ける",
+            "의뢰 수령"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckCloudrestEcoSiteGoToMissionText": {
+        "desc": "检查栖云生态点委托是否可以前往",
+        "recognition": "OCR",
+        "roi": "CheckCloudrestEcoSiteIcon",
+        "roi_offset": [
+            -14,
+            332,
+            359,
+            76
+        ],
+        "expected": [
+            "前往任务",
+            "前往任務",
+            "(?i)Go\\s*to\\s*Mission",
+            "任務へ",
+            "임무로 이동하기"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "InCloudrestEcoSiteMission": {
+        "desc": "是否在栖云生态点任务界面",
+        "recognition": "OCR",
+        "roi": [
+            415,
+            50,
+            855,
+            241
+        ],
+        "expected": [
+            "拍摄栖云生态点",
+            "拍攝棲雲生態點",
+            "(?i)Photo:\\s*Cloudrest\\s*Eco\\s*-\\s*Site",
+            "栖雲生態スポットの写真を撮る",
+            "서운 생태 지점을 촬영하기"
+        ],
+        "replace": [],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "AcceptCloudrestEcoSite": {
+        "desc": "接取栖云生态点委托",
+        "recognition": "And",
+        "all_of": [
+            "CheckCloudrestEcoSiteText",
+            "CheckCloudrestEcoSiteIcon",
+            "CheckCloudrestEcoSiteJob"
+        ],
+        "box_index": 2,
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToCloudrestEcoSiteMission"
+        ]
+    },
+    "GoToCloudrestEcoSiteMission": {
+        "desc": "前往栖云生态点任务",
+        "recognition": "And",
+        "all_of": [
+            "CheckCloudrestEcoSiteText",
+            "CheckCloudrestEcoSiteIcon",
+            "CheckCloudrestEcoSiteGoToMissionText"
+        ],
+        "box_index": 2,
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "CloudrestEcoSiteTrackOrGoTo"
+        ]
+    },
+    "CloudrestEcoSiteTrackOrGoTo": {
+        "desc": "在栖云生态点任务中，如果有开始追踪的按钮就点击追踪，已在追踪则继续",
+        "recognition": "And",
+        "all_of": [
+            "InCloudrestEcoSiteMission"
+        ],
+        // 面板入场动画期间点击可能被吞掉，等按钮区域静止后再继续
+        // （wait_freezes 按 ROI 整体判定静止，区域越大越容易把按钮位移稀释掉）
+        "pre_wait_freezes": {
+            "time": 200,
+            "target": [
+                904,
+                580,
+                368,
+                130
+            ]
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrackCloudrestEcoSite",
+            "AlreadyTrackedCloudrestEcoSite"
+        ]
+    },
+    "TrackCloudrestEcoSite": {
+        "desc": "追踪栖云生态点任务",
+        "recognition": "And",
+        "all_of": [
+            "TrackMissionButton",
+            "InCloudrestEcoSiteMission"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToCloudrestEcoSite"
+        ]
+    },
+    "AlreadyTrackedCloudrestEcoSite": {
+        "desc": "栖云生态点任务已经在追踪中",
+        "recognition": "And",
+        "all_of": [
+            "AlreadyTrackedMissionButton",
+            "InCloudrestEcoSiteMission"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToCloudrestEcoSite"
+        ]
+    },
+    "CloudrestEcoSiteOpenTrackedMissionMap": {
+        "desc": "栖云生态点任务已在追踪中，点击定位按钮进入任务地图",
+        "recognition": "And",
+        "all_of": [
+            "TrackedMissionMapButton",
+            "InCloudrestEcoSiteMission"
+        ],
+        "box_index": 0,
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "CloudrestEcoSiteInQuickTeleportMap"
+        ]
+    },
+    "CloudrestEcoSiteInQuickTeleportMap": {
+        "desc": "已进入栖云生态点任务地图，准备快捷传送",
+        "recognition": "And",
+        "all_of": [
+            "QuickTeleportButton",
+            "InCloudrestEcoSiteMission"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "CloudrestEcoSiteQuickTeleportSelect"
+        ]
+    },
+    "CloudrestEcoSiteQuickTeleportSelect": {
+        "desc": "在栖云生态点任务地图中点击前往传送",
+        "recognition": "And",
+        "all_of": [
+            "QuickTeleportButton",
+            "InCloudrestEcoSiteMission"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_wait_freezes": 500,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "CloudrestEcoSiteQuickTeleport"
+        ]
+    },
+    "CloudrestEcoSiteQuickTeleport": {
+        "desc": "在栖云生态点任务地图中点击传送",
+        "recognition": "And",
+        "all_of": [
+            "TeleportButton"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "CloudrestEcoSiteQuickTeleportDone",
+            "[JumpBack]SceneWaitLoadingExit"
+        ]
+    },
+    "CloudrestEcoSiteQuickTeleportDone": {
+        "desc": "快捷传送完成，已返回大世界",
+        "recognition": "And",
+        "all_of": [
+            "InWorld"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToCloudrestEcoSiteMove"
+        ]
+    },
+    "CloudrestEcoSiteNotAdapted": {
+        "desc": "栖云生态点任务尚未适配，仅接取并追踪",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "focus": {
+            "Node.Recognition.Succeeded": "$task.EnvironmentMonitoring.not_adapted"
+        }
+    },
+    "GoToCloudrestEcoSite": {
+        "desc": "前往栖云生态点，先回到大世界再进行判断",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "SubTask",
+        "custom_action_param": {
+            "sub": [
+                "SceneAnyEnterWorld"
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToCloudrestEcoSiteStartPos",
+            "GoToCloudrestEcoSiteNotAtStartPos"
+        ]
+    },
+    "GoToCloudrestEcoSiteStartPos": {
+        "desc": "在栖云生态点任务开始位置附近",
+        "recognition": "Custom",
+        "custom_recognition": "MapLocateAssertLocation",
+        "custom_recognition_param": {
+            "zone_id": "Wuling_Base",
+            "target": [
+                598,
+                2336,
+                60,
+                48
+            ]
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToCloudrestEcoSiteMove"
+        ]
+    },
+    "GoToCloudrestEcoSiteNotAtStartPos": {
+        "desc": "不在栖云生态点任务开始位置附近，先传送再继续寻路",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "SubTask",
+        "custom_action_param": {
+            "sub": [
+                "SceneEnterWorldWulingMarkerStone3"
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToCloudrestEcoSiteMove"
+        ]
+    },
+    "GoToCloudrestEcoSiteMove": {
+        "desc": "自动寻路前往栖云生态点",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "MapNavigateAction",
+        "custom_action_param": {
+            "path": [
+                {
+                    "action": "ZONE",
+                    "zone_id": "Wuling_Base"
+                },
+                {
+                    "action": "NAVMESH",
+                    "target": [
+                        636.32,
+                        2331.84
+                    ]
+                },
+                {
+                    "action": "NAVMESH",
+                    "target": [
+                        590.94,
+                        2346.75
+                    ]
+                },
+                {
+                    "action": "NAVMESH",
+                    "target": [
+                        430.6,
+                        2398.33
+                    ]
+                },
+                {
+                    "action": "HEADING",
+                    "angle": 177
+                }
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "[JumpBack]AutoFight",
+            "GoToCloudrestEcoSiteMoveAfterFight"
+        ],
+        "focus": {
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    },
+    "GoToCloudrestEcoSiteMoveAfterFight": {
+        "desc": "可能的战斗结束后，恢复性地走回栖云生态点拍照点",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "MapNavigateAction",
+        "custom_action_param": {
+            "path": [
+                {
+                    "action": "ZONE",
+                    "zone_id": "Wuling_Base"
+                },
+                {
+                    "action": "NAVMESH",
+                    "target": [
+                        430.6,
+                        2398.33
+                    ]
+                },
+                {
+                    "action": "HEADING",
+                    "angle": 177
+                }
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "CloudrestEcoSiteTakePhoto"
+        ],
+        "focus": {
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    },
+    "CloudrestEcoSiteTakePhoto": {
+        "desc": "在栖云生态点任务拍照点开始拍照",
+        "pre_delay": 0,
+        "anchor": {
+            "EnvironmentMonitoringBackToTerminal": "EnvironmentMonitoringGoToMarkerStoneMonitoringTerminal"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "EnvironmentMonitoringTakePhoto"
+        ]
+    }
+}

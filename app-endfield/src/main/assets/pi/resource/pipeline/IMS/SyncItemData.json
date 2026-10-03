@@ -1,0 +1,188 @@
+{
+    "SyncItemData": {
+        "desc": "IMS A2 入口：业务侧只需调用本节点。首次成功后 Resource 级关闭 SyncItemDataBegin，同 Resource 后续调用走 Skipped",
+        "max_hit": 1,
+        "recognition": "DirectHit",
+        "pre_delay": 0,
+        "action": "DoNothing",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "SyncItemDataBegin",
+            "SyncItemDataSkipped"
+        ]
+    },
+    "SyncItemDataBegin": {
+        "desc": "A2 实际执行入口：进入贵重品库培养素材页并同步；成功后由 SyncItemDataLock 关闭本节点",
+        "enabled": true,
+        "recognition": "DirectHit",
+        "pre_delay": 0,
+        "action": "DoNothing",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "SyncItemDataInProgressionTab",
+            "[JumpBack]SceneEnterMenuValuablesProgressionTab"
+        ]
+    },
+    "SyncItemDataSkipped": {
+        "desc": "本次 Resource 已同步过培养道具缓存，跳过 A2",
+        "recognition": "DirectHit",
+        "pre_delay": 0,
+        "action": "DoNothing",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": []
+    },
+    "SyncItemDataInProgressionTab": {
+        "desc": "确认已在培养素材页，开始多页同步（完整识别 → 按 max_hit 滑动增量）",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "InStashProgressionTab"
+                ]
+            }
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "SyncItemDataRunFull"
+        ]
+    },
+    "SyncItemDataRunFull": {
+        "desc": "A2 初次完整识别（page_dedup=false）。培养素材列表静止后识别；结束后优先 JumpBack 滑动增量，次数由 SyncItemDataScrollPage.max_hit 控制；用尽后走 Lock",
+        "recognition": "DirectHit",
+        "pre_wait_freezes": {
+            "target": [
+                30,
+                80,
+                950,
+                560
+            ],
+            "time": 300,
+            "threshold": 0.97,
+            "timeout": 1500
+        },
+        "pre_delay": 0,
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "SyncItemData",
+                "custom_action_param": {
+                    "grid_type": "valuables",
+                    "item_filters": [
+                        "ValuableDepot:SpecialItem"
+                    ],
+                    "items": {
+                        "item_gold": "item_gold_NUMBER",
+                        "item_diamond": "item_diamond_NUMBER"
+                    },
+                    "page_dedup": false
+                }
+            }
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "[JumpBack]SyncItemDataScrollPage",
+            "SyncItemDataLock"
+        ]
+    },
+    "SyncItemDataScrollPage": {
+        "desc": "A2 滑动并进入增量识别。Win32-Front 默认关闭；ADB 资源开启。调 max_hit 控制额外翻页次数",
+        "enabled": false,
+        "max_hit": 1,
+        "recognition": "DirectHit",
+        "pre_delay": 0,
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    680,
+                    560
+                ],
+                "end": [
+                    680,
+                    300
+                ],
+                "end_hold": 300
+            }
+        },
+        "post_wait_freezes": {
+            "target": [
+                30,
+                80,
+                950,
+                560
+            ],
+            "time": 300,
+            "threshold": 0.97,
+            "timeout": 1500
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "SyncItemDataRunInc"
+        ]
+    },
+    "SyncItemDataRunInc": {
+        "desc": "A2 增量识别（page_dedup=true）。列表静止后识别；完成后空 next，经 JumpBack 回到 RunFull.next 再决定是否继续滑动",
+        "recognition": "DirectHit",
+        "pre_wait_freezes": {
+            "target": [
+                30,
+                80,
+                950,
+                560
+            ],
+            "time": 300,
+            "threshold": 0.97,
+            "timeout": 1500
+        },
+        "pre_delay": 0,
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "SyncItemData",
+                "custom_action_param": {
+                    "grid_type": "valuables",
+                    "item_filters": [
+                        "ValuableDepot:SpecialItem"
+                    ],
+                    "items": {
+                        "item_gold": "item_gold_NUMBER",
+                        "item_diamond": "item_diamond_NUMBER"
+                    },
+                    "page_dedup": true
+                }
+            }
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": []
+    },
+    "SyncItemDataLock": {
+        "desc": "A2 成功后 Resource 级关闭 SyncItemDataBegin，同 Resource 内不再扫库（不恢复）",
+        "recognition": "DirectHit",
+        "pre_delay": 0,
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "PipelineOverride",
+                "custom_action_param": {
+                    "resource_override": true,
+                    "patch": {
+                        "SyncItemDataBegin": {
+                            "enabled": false
+                        }
+                    }
+                }
+            }
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": []
+    }
+}

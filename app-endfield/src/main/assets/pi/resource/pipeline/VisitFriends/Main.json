@@ -1,0 +1,274 @@
+{
+    "VisitFriendsMain": {
+        "desc": "函数入口",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            "[JumpBack]VisitFriendsEnter",
+            "VisitFriendsFakeTrue"
+        ]
+    },
+    "VisitFriendsEnter": {
+        "desc": "进入大世界并打开好友列表",
+        "max_hit": 1,
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "SubTask",
+        "custom_action_param": {
+            "sub": [
+                "SceneAnyEnterWorld",
+                "SceneEnterMenuFriendsList"
+            ]
+        },
+        "post_delay": 0,
+        "next": [
+            "VisitFriendsMenu"
+        ],
+        "focus": {
+            "Node.Action.Succeeded": "开始拜访好友"
+        }
+    },
+    "VisitFriendsMenu": {
+        "desc": "识别是否位于好友列表界面",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    0,
+                    0,
+                    191,
+                    136
+                ],
+                "template": "VisitFriends/OnFriendList.png",
+                "threshold": 0.8
+            }
+        },
+        "pre_wait_freezes": {
+            "time": 200,
+            "target": [
+                0,
+                -100,
+                300,
+                300
+            ]
+        },
+        "next": [
+            "VisitFriendsFull",
+            "VisitFriendsWaitFriendNameLoaded"
+        ]
+    },
+    "VisitFriendsWaitFriendNameLoaded": {
+        "desc": "等待好友列表项与好友名加载完成（进船按钮 ∧ 含 # 的好友名）后再进入扫描",
+        "recognition": "And",
+        "all_of": [
+            "VisitFriendsRecognitionItemWithNameForScroll"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "VisitFriendsMenuScan"
+        ]
+    },
+    "VisitFriendsAssistCountZero": {
+        "desc": "助力次数为 0（纯识别，无 max_hit，供 Full 判定与 AssistFull 复用）",
+        "recognition": "And",
+        "all_of": [
+            {
+                "sub_name": "icon",
+                "recognition": "TemplateMatch",
+                "roi": [
+                    -230,
+                    0,
+                    230,
+                    130
+                ],
+                "template": "VisitFriends/AssistCountIcon.png",
+                "threshold": 0.9
+            },
+            {
+                "recognition": "OCR",
+                "roi": "icon",
+                "roi_offset": [
+                    0,
+                    0,
+                    25,
+                    0
+                ],
+                "expected": [
+                    "0"
+                ]
+            }
+        ]
+    },
+    "VisitFriendsClueExchangeCountZero": {
+        "desc": "线索交换次数为 0（纯识别，无 max_hit，供 Full 判定与 ClueExchangeFull 复用）",
+        "recognition": "And",
+        "all_of": [
+            {
+                "sub_name": "icon",
+                "recognition": "TemplateMatch",
+                "roi": [
+                    -230,
+                    0,
+                    230,
+                    130
+                ],
+                "template": "VisitFriends/ClueExchangeCountIcon.png",
+                "threshold": 0.9
+            },
+            {
+                "recognition": "OCR",
+                "roi": "icon",
+                "roi_offset": [
+                    0,
+                    0,
+                    25,
+                    0
+                ],
+                "expected": [
+                    "0"
+                ]
+            }
+        ]
+    },
+    "VisitFriendsFull": {
+        "desc": "好友助力和线索交换次数均已归零，停止拜访",
+        "recognition": "And",
+        "all_of": [
+            "VisitFriendsAssistCountZero",
+            "VisitFriendsClueExchangeCountZero"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "focus": {
+            "Node.Recognition.Succeeded": "好友助力和线索交换次数已满，停止拜访"
+        }
+    },
+    "VisitFriendsAssistFull": {
+        "desc": "助力次数归零（或 AssistFullInit 将 CountZero 置为 DirectHit）：关闭三舱检查/领取，列表改为只认可线索好友",
+        "max_hit": 1,
+        "recognition": "And",
+        "all_of": [
+            "VisitFriendsAssistCountZero"
+        ],
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "PipelineOverrideAction",
+        "custom_action_param": {
+            "patch": {
+                "VisitFriendsCheckAssistControlNexus": {
+                    "recognition": "ColorMatch",
+                    "roi": [
+                        0,
+                        0,
+                        1,
+                        1
+                    ],
+                    "method": 6,
+                    "lower": [
+                        0
+                    ],
+                    "upper": [
+                        255
+                    ],
+                    "count": 2
+                },
+                "VisitFriendsCheckAssistMFGCabin": {
+                    "recognition": "ColorMatch",
+                    "roi": [
+                        0,
+                        0,
+                        1,
+                        1
+                    ],
+                    "method": 6,
+                    "lower": [
+                        0
+                    ],
+                    "upper": [
+                        255
+                    ],
+                    "count": 2
+                },
+                "VisitFriendsCheckAssistGrowthChamber": {
+                    "recognition": "ColorMatch",
+                    "roi": [
+                        0,
+                        0,
+                        1,
+                        1
+                    ],
+                    "method": 6,
+                    "lower": [
+                        0
+                    ],
+                    "upper": [
+                        255
+                    ],
+                    "count": 2
+                },
+                "VisitFriendsMenuAssistControlNexusEntry": {
+                    "enabled": false
+                },
+                "VisitFriendsMenuAssistMFGCabin1Entry": {
+                    "enabled": false
+                },
+                "VisitFriendsMenuAssistMFGCabin2Entry": {
+                    "enabled": false
+                },
+                "VisitFriendsMenuAssistGrowthChamberSwipeEntry": {
+                    "enabled": false
+                },
+                "VisitFriendsRecognitionItemClueExchange": {
+                    "recognition": "TemplateMatch",
+                    "template": "VisitFriends/ClueExchangeAvailable.png",
+                    "threshold": 0.9
+                }
+            }
+        },
+        "post_delay": 0,
+        "focus": {
+            "Node.Action.Succeeded": "助力次数已满；列表改为只认可线索交换好友"
+        }
+    },
+    "VisitFriendsClueExchangeFull": {
+        "desc": "线索交换次数归零：关闭线索交换检查与领取",
+        "max_hit": 1,
+        "recognition": "And",
+        "all_of": [
+            "VisitFriendsClueExchangeCountZero"
+        ],
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "PipelineOverrideAction",
+        "custom_action_param": {
+            "patch": {
+                "VisitFriendsCheckAssistClueExchange": {
+                    "recognition": "ColorMatch",
+                    "roi": [
+                        0,
+                        0,
+                        1,
+                        1
+                    ],
+                    "method": 6,
+                    "lower": [
+                        0
+                    ],
+                    "upper": [
+                        255
+                    ],
+                    "count": 2
+                },
+                "VisitFriendsMenuClueExchangeEntry": {
+                    "enabled": false
+                }
+            }
+        },
+        "post_delay": 0,
+        "focus": {
+            "Node.Action.Succeeded": "线索交换次数已满，已关闭线索交换检查与领取"
+        }
+    }
+}

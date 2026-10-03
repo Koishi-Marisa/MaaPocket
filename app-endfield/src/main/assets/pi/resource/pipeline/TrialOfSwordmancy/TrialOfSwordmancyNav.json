@@ -1,0 +1,196 @@
+{
+    "TrialOfSwordmancyEnterTrialMenu": {
+        "desc": "进入选剑演武演算界面",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            // 内部实现：先判断是否已在演算界面，不在则先返回大世界
+            "TrialOfSwordmancyEnterTrialMenuSuccess",
+            "TrialOfSwordmancyEnterTrialMenu2"
+        ]
+    },
+    "TrialOfSwordmancyEnterTrialMenu2": {
+        "desc": "先返回大世界，再判断后续",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "SubTask",
+        "custom_action_param": {
+            "sub": [
+                "SceneAnyEnterWorld"
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrialOfSwordmancyClickTrialTrigger",
+            "TrialOfSwordmancyQuickTeleportStart"
+        ]
+    },
+    // ===========================================================================
+    // 已在大世界演武台旁，直接点击交互
+    // ===========================================================================
+    "TrialOfSwordmancyClickTrialTrigger": {
+        "desc": "在大世界演武台旁，点击进入演算",
+        "recognition": "And",
+        "all_of": [
+            "TrialOfSwordmancyTrialTrigger"
+        ],
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "RepeatUntilNotFoundAction",
+        "custom_action_param": {
+            "custom_action": "AutoAltClickAction",
+            "wait_node": "InWorld"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrialOfSwordmancyEnterTrialMenuSuccess"
+        ]
+    },
+    "TrialOfSwordmancyEnterTrialMenuSuccess": {
+        "desc": "成功进入演算界面",
+        "recognition": "And",
+        "all_of": [
+            "TrialOfSwordmancyInTrialMenu"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    // ===========================================================================
+    // 已在悬谷台传送点，直接开始导航
+    // ===========================================================================
+    "TrialOfSwordmancyGotoTrialArena": {
+        "desc": "在悬谷台传送点，使用MapNavigator导航前往目标地点",
+        "recognition": "And",
+        "all_of": [
+            "TrialOfSwordmancyInSwordVaultDale"
+        ],
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "MapNavigateAction",
+        "custom_action_param": {
+            "arrival_timeout": 45000,
+            "path": [
+                {
+                    "action": "ZONE",
+                    "zone_id": "Wuling_Base"
+                },
+                {
+                    "action": "NAVMESH",
+                    "target": [
+                        1863.23,
+                        2847.51
+                    ]
+                }
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrialOfSwordmancyClickTrialTrigger"
+        ],
+        "focus": {
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    },
+    // ===========================================================================
+    // 不在大世界演武台旁，通过事务总览传送至悬谷台
+    // ===========================================================================
+    "TrialOfSwordmancyQuickTeleportStart": {
+        "desc": "通过快速传送前往悬谷台",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "SubTask",
+        "custom_action_param": {
+            "sub": [
+                "SceneEnterMenuRegionalOverviewWulingTrialOfSwordmancy"
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrialOfSwordmancyOverviewViewPosition"
+        ]
+    },
+    "TrialOfSwordmancyOverviewViewPosition": {
+        "desc": "在武陵事务总览界面，点击查看位置",
+        "recognition": "And",
+        "all_of": [
+            "SceneMenuRegionalOverviewWulingTrialOfSwordmancy",
+            "TrialOfSwordmancyViewPositionButton"
+        ],
+        "box_index": 1,
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "RepeatUntilNotFoundAction",
+        "custom_action_param": {
+            "action": "Click",
+            "wait_node": "InRegionalOverviewWuling"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrialOfSwordmancyQuickTeleportSelect"
+        ]
+    },
+    "TrialOfSwordmancyQuickTeleportSelect": {
+        "desc": "点击前往传送",
+        "recognition": "And",
+        "all_of": [
+            "QuickTeleportButton"
+        ],
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "RepeatUntilNotFoundAction",
+        "custom_action_param": {
+            "action": "Click",
+            "wait_node": "QuickTeleportButton"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrialOfSwordmancyQuickTeleport"
+        ]
+    },
+    "TrialOfSwordmancyQuickTeleport": {
+        "desc": "点击传送",
+        "recognition": "And",
+        "all_of": [
+            "TeleportButton"
+        ],
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "RepeatUntilNotFoundAction",
+        "custom_action_param": {
+            "action": "Click",
+            "wait_node": "TeleportButton"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrialOfSwordmancyQuickTeleportDone",
+            "[JumpBack]SceneWaitLoadingExit"
+        ]
+    },
+    "TrialOfSwordmancyQuickTeleportDone": {
+        "desc": "传送完成",
+        "recognition": "And",
+        "all_of": [
+            "InWorld"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrialOfSwordmancyGotoTrialArena"
+        ]
+    }
+}

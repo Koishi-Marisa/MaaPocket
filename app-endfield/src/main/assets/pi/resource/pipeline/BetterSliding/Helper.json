@@ -1,0 +1,124 @@
+{
+    "BetterSlidingSwipeButton": {
+        "desc": "用于定位滑动按钮",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "template": [
+                    "BetterSliding/SwipeButton.png"
+                ],
+                "green_mask": true,
+                "order_by": "Score"
+            }
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "BetterSlidingIncreaseButton": {
+        "desc": "定位增加数量按钮，具体模板会在运行时被 go 覆写",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "template": [
+                    "BetterSliding/SwipeButton.png"
+                ],
+                "green_mask": true,
+                "threshold": [
+                    0.8
+                ],
+                "order_by": "Score"
+            }
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "BetterSlidingDecreaseButton": {
+        "desc": "定位减少数量按钮，具体模板会在运行时被 go 覆写",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "template": [
+                    "BetterSliding/SwipeButton.png"
+                ],
+                "green_mask": true,
+                "threshold": [
+                    0.8
+                ],
+                "order_by": "Score"
+            }
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "BetterSlidingGetSliderQuantity": {
+        "desc": "识别当前选择的数量",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "expected": [
+                    "\\d+"
+                ],
+                "only_rec": false,
+                "order_by": "Length"
+            }
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "BetterSlidingSliderQuantityFilter": {
+        "desc": "辅助 GetSliderQuantity 节点进行 OCR",
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "method": 4,
+                "lower": [
+                    [
+                        0,
+                        0,
+                        0
+                    ]
+                ],
+                "upper": [
+                    [
+                        255,
+                        255,
+                        255
+                    ]
+                ]
+            }
+        }
+    },
+    "BetterSlidingAvailableQuantityFilter": {
+        "desc": "辅助 GetAvailableQuantity 节点进行 OCR",
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "method": 4,
+                "lower": [
+                    [
+                        0,
+                        0,
+                        0
+                    ]
+                ],
+                "upper": [
+                    [
+                        255,
+                        255,
+                        255
+                    ]
+                ]
+            }
+        }
+    }
+}

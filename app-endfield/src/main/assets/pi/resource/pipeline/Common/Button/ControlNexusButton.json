@@ -1,0 +1,20 @@
+{
+    "ControlNexusButton": {
+        "desc": "帝江号大世界中的控制枢纽按钮，注意大世界左上角三个按钮顺序会随机换",
+        "recognition": "TemplateMatch",
+        "roi": [
+            100,
+            0,
+            300,
+            100
+        ],
+        "template": [
+            "SceneManager/ControlNexus.png",
+            "SceneManager/ControlNexusWithTips.png"
+        ],
+        "threshold": 0.8,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    }
+}

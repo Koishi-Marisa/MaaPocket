@@ -1,0 +1,632 @@
+{
+    "SceneEnterMenuList": {
+        "desc": "从任意界面进入菜单总列表",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuSettingEnterMenuList",
+            "__ScenePrivateWorldEnterMenuList",
+            "[JumpBack]SceneAnyEnterWorld"
+        ]
+    },
+    "SceneEnterMenuMission": {
+        "desc": "从任意界面进入任务界面",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateWorldEnterMenuMission",
+            "[JumpBack]SceneAnyEnterWorld"
+        ]
+    },
+    "SceneEnterMenuOperator": {
+        "desc": "从任意界面进入干员菜单",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateWorldEnterMenuOperator",
+            "[JumpBack]SceneAnyEnterWorld"
+        ]
+    },
+    "SceneEnterMenuRegionalDevelopment": {
+        "desc": "从任意界面进入地区建设菜单",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "InRegionalDevelopment",
+            "__ScenePrivateWorldEnterMenuRegionalDevelopment",
+            "[JumpBack]__ScenePrivateMenuRegionalDevelopmentView2EnterMenuRegionalDevelopment",
+            "[JumpBack]SceneAnyEnterWorld"
+        ]
+    },
+    "SceneEnterMenuEvent": {
+        "desc": "从任意界面进入活动菜单",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateWorldEnterMenuEvent",
+            "[JumpBack]SceneAnyEnterWorld"
+        ]
+    },
+    "SceneEnterMenuValuables": {
+        "desc": "从任意界面进入贵重品库菜单",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateWorldEnterMenuValuables",
+            "[JumpBack]SceneAnyEnterWorld"
+        ]
+    },
+    "SceneEnterMenuValuablesValuableTab": {
+        "desc": "从任意界面进入贵重品库的珍贵物品页",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            "__ScenePrivateMenuValuablesEnterValuableTab",
+            "[JumpBack]SceneEnterMenuValuables"
+        ]
+    },
+    "SceneEnterMenuValuablesProgressionTab": {
+        "desc": "从任意界面进入贵重品库的培养素材页",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuValuablesEnterProgressionTab",
+            "[JumpBack]SceneEnterMenuValuables"
+        ]
+    },
+    "SceneEnterMenuOperationalManual": {
+        "desc": "从任意界面进入行动手册菜单",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateWorldEnterMenuOperationalManual",
+            "[JumpBack]SceneAnyEnterWorld"
+        ]
+    },
+    "SceneEnterMenuTeam": {
+        "desc": "从任意界面进入编队菜单",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateWorldEnterMenuTeam",
+            "[JumpBack]SceneAnyEnterWorld"
+        ]
+    },
+    "SceneEnterMenuProtocolPass": {
+        "desc": "从任意界面进入通行证菜单",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateWorldEnterMenuProtocolPass",
+            "[JumpBack]SceneAnyEnterWorld"
+        ]
+    },
+    "SceneEnterMenuFriendsAdd": {
+        "desc": "从任意界面进入好友添加菜单",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateWorldEnterMenuFriendsAdd",
+            "[JumpBack]SceneAnyEnterWorld"
+        ]
+    },
+    "SceneEnterMenuFriendsList": {
+        "desc": "从任意界面进入好友列表菜单",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateWorldEnterMenuFriendsList",
+            "[JumpBack]SceneAnyEnterWorld"
+        ]
+    },
+    "SceneEnterMenuGearAssembly": {
+        "desc": "从任意界面进入装备加工界面",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateWorldEnterMenuGearAssembly",
+            "[JumpBack]SceneAnyEnterWorld"
+        ]
+    },
+    "SceneEnterMenuBluePrint": {
+        "desc": "从任意界面进入蓝图菜单",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateWorldFactoryEnterMenuBluePrint",
+            "[JumpBack]SceneEnterWorldFactory"
+        ]
+    },
+    "SceneEnterMenuEmail": {
+        "desc": "从任意界面进入邮箱界面，无未读邮箱时会任务失败，不建议使用",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateWorldEnterMenuEmail",
+            "[JumpBack]SceneAnyEnterWorld"
+        ]
+    },
+    "SceneEnterMenuBackpack": {
+        "desc": "从任意界面进入背包界面，左侧不一定有仓库",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateWorldEnterMenuBackpack",
+            "[JumpBack]SceneAnyEnterWorld"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepot": {
+        "desc": "从任意界面进入背包界面，左侧包含所有仓库",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "InDijiangDepot",
+            "[JumpBack]__DijiangDepotCloseSwitch",
+            "__ScenePrivateWorldDijiangEnterMenuBackpackWithDepot",
+            "[JumpBack]SceneEnterWorldDijiang"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotAll": {
+        "desc": "从任意界面进入帝江号仓库，在不切换仓库地区的情况下选择全部分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryAll"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepot"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotOre": {
+        "desc": "从任意界面进入帝江号仓库，在不切换仓库地区的情况下选择矿物分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryOre"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepot"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotPlant": {
+        "desc": "从任意界面进入帝江号仓库，在不切换仓库地区的情况下选择植物分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryPlant"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepot"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotProduct": {
+        "desc": "从任意界面进入帝江号仓库，在不切换仓库地区的情况下选择产物分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryProduct"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepot"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotDoodad": {
+        "desc": "从任意界面进入帝江号仓库，在不切换仓库地区的情况下选择采集材料分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryDoodad"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepot"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotNurturance": {
+        "desc": "从任意界面进入帝江号仓库，在不切换仓库地区的情况下选择培养素材分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryNurturance"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepot"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotUsable": {
+        "desc": "从任意界面进入帝江号仓库，在不切换仓库地区的情况下选择可用道具分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryUsable"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepot"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotProducer": {
+        "desc": "从任意界面进入帝江号仓库，在不切换仓库地区的情况下选择生产工具分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryProducer"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepot"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotPortableDevice": {
+        "desc": "从任意界面进入帝江号仓库，在不切换仓库地区的情况下选择随身装置分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryPortableDevice"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepot"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotValleyIV": {
+        "desc": "从任意界面进入帝江号仓库，并切换至四号谷地",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__DijiangDepotInValleyIV",
+            "[JumpBack]__DijiangDepotSwitchToValleyIV",
+            "[JumpBack]SceneEnterMenuBackpackWithDepot"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotWuling": {
+        "desc": "从任意界面进入帝江号仓库，并切换至武陵",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__DijiangDepotInWuling",
+            "[JumpBack]__DijiangDepotSwitchToWuling",
+            "[JumpBack]SceneEnterMenuBackpackWithDepot"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotValleyIVAll": {
+        "desc": "从任意界面进入帝江号仓库，并切换至四号谷地的全部分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryAll"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotValleyIVSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepotValleyIV"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotValleyIVOre": {
+        "desc": "从任意界面进入帝江号仓库，并切换至四号谷地的矿物分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryOre"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotValleyIVSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepotValleyIV"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotValleyIVPlant": {
+        "desc": "从任意界面进入帝江号仓库，并切换至四号谷地的植物分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryPlant"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotValleyIVSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepotValleyIV"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotValleyIVProduct": {
+        "desc": "从任意界面进入帝江号仓库，并切换至四号谷地的产物分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryProduct"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotValleyIVSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepotValleyIV"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotValleyIVDoodad": {
+        "desc": "从任意界面进入帝江号仓库，并切换至四号谷地的采集材料分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryDoodad"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotValleyIVSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepotValleyIV"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotValleyIVNurturance": {
+        "desc": "从任意界面进入帝江号仓库，并切换至四号谷地的培养素材分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryNurturance"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotValleyIVSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepotValleyIV"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotValleyIVUsable": {
+        "desc": "从任意界面进入帝江号仓库，并切换至四号谷地的可用道具分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryUsable"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotValleyIVSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepotValleyIV"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotValleyIVProducer": {
+        "desc": "从任意界面进入帝江号仓库，并切换至四号谷地的生产工具分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryProducer"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotValleyIVSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepotValleyIV"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotValleyIVPortableDevice": {
+        "desc": "从任意界面进入帝江号仓库，并切换至四号谷地的随身装置分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryPortableDevice"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotValleyIVSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepotValleyIV"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotWulingAll": {
+        "desc": "从任意界面进入帝江号仓库，并切换至武陵的全部分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryAll"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotWulingSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepotWuling"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotWulingOre": {
+        "desc": "从任意界面进入帝江号仓库，并切换至武陵的矿物分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryOre"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotWulingSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepotWuling"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotWulingPlant": {
+        "desc": "从任意界面进入帝江号仓库，并切换至武陵的植物分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryPlant"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotWulingSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepotWuling"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotWulingProduct": {
+        "desc": "从任意界面进入帝江号仓库，并切换至武陵的产物分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryProduct"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotWulingSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepotWuling"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotWulingDoodad": {
+        "desc": "从任意界面进入帝江号仓库，并切换至武陵的采集材料分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryDoodad"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotWulingSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepotWuling"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotWulingNurturance": {
+        "desc": "从任意界面进入帝江号仓库，并切换至武陵的培养素材分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryNurturance"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotWulingSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepotWuling"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotWulingUsable": {
+        "desc": "从任意界面进入帝江号仓库，并切换至武陵的可用道具分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryUsable"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotWulingSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepotWuling"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotWulingProducer": {
+        "desc": "从任意界面进入帝江号仓库，并切换至武陵的生产工具分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryProducer"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotWulingSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepotWuling"
+        ]
+    },
+    "SceneEnterMenuBackpackWithDepotWulingPortableDevice": {
+        "desc": "从任意界面进入帝江号仓库，并切换至武陵的随身装置分类",
+        "pre_delay": 0,
+        "anchor": {
+            "__ScenePrivateMenuBackpackWithDepotTargetItemCategory": "__DijiangDepotSelectItemCategoryPortableDevice"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateMenuBackpackWithDepotWulingSelectItemCategory",
+            "[JumpBack]SceneEnterMenuBackpackWithDepotWuling"
+        ]
+    },
+    "SceneEnterMenuBaker": {
+        "desc": "从任意界面进入Baker界面",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateWorldEnterMenuBaker",
+            "[JumpBack]SceneAnyEnterWorld"
+        ]
+    },
+    "SceneEnterMenuWiki": {
+        "desc": "从任意界面进入百科界面",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateWorldEnterMenuWiki",
+            "[JumpBack]SceneAnyEnterWorld"
+        ]
+    },
+    "SceneEnterMenuIntelArchive": {
+        "desc": "从任意界面进入档案库",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateAnyEnterMenuIntelArchiveSuccess",
+            "[JumpBack]__ScenePrivateMenuIntelArchiveView2EnterMenuIntelArchive",
+            "__ScenePrivateWorldEnterMenuIntelArchive",
+            "[JumpBack]SceneAnyEnterWorld"
+        ]
+    },
+    "SceneEnterMenuShop": {
+        "desc": "从任意界面进入采购中心；到达后顺手执行 IMS 采购中心静默缓存（SyncShopItemDataInShopNoNotify），同 Resource 仅首次真正扫库",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateAnyEnterMenuShopSuccess",
+            "__ScenePrivateWorldEnterMenuShop",
+            "[JumpBack]SceneAnyEnterWorld"
+        ]
+    },
+    "SceneEnterMenuHeadhunt": {
+        "desc": "从任意界面进入干员寻访界面",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateWorldEnterMenuHeadhunt",
+            "[JumpBack]SceneAnyEnterWorld"
+        ]
+    },
+    "SceneEnterMenuLogin": {
+        "desc": "从任意界面进入登录界面",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateWorldEnterMenuLogin",
+            "[JumpBack]SceneAnyEnterWorld"
+        ]
+    },
+    "SceneEnterMenuDijiangControlNexus": {
+        "desc": "从任意界面进入帝江号控制中枢菜单",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateWorldEnterMenuControlNexus",
+            "[JumpBack]SceneEnterWorldDijiang"
+        ]
+    }
+}

@@ -1,0 +1,181 @@
+{
+    "AutoCollectRoute9Start": {
+        "desc": "燎石",
+        "enabled": false,
+        "action": "Custom",
+        "custom_action": "SubTask",
+        "custom_action_param": {
+            "sub": [
+                "SceneEnterWorldWulingWulingCity7"
+            ]
+        },
+        "next": [
+            "AutoCollectRoute9AssertLocation1"
+        ],
+        "focus": {
+            "Node.Recognition.Succeeded": "$option.AutoCollectRoute9.label"
+        }
+    },
+    "AutoCollectRoute9End": {
+        "pre_delay": 0,
+        "post_delay": 0
+    },
+    "AutoCollectRoute9AssertLocation1": {
+        "desc": "传送到采集点",
+        "recognition": "Custom",
+        "custom_recognition": "MapLocateAssertLocation",
+        "custom_recognition_param": {
+            "zone_id": "Wuling_Base",
+            "target": [
+                697,
+                1884,
+                20,
+                20
+            ]
+        },
+        "action": "DoNothing",
+        "next": [
+            "AutoCollectRoute9Goto1"
+        ]
+    },
+    "AutoCollectRoute9Goto1": {
+        "desc": "前往采集点",
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "MapNavigateAction",
+                "custom_action_param": {
+                    "path": [
+                        {
+                            "action": "ZONE",
+                            "zone_id": "Wuling_Base"
+                        },
+                        {
+                            "action": "NAVMESH",
+                            "target": [
+                                838.22,
+                                1943.85
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        "next": [
+            "AutoCollectRoute9AssertLocation2"
+        ],
+        "focus": {
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    },
+    "AutoCollectRoute9AssertLocation2": {
+        "desc": "传送到采集点",
+        "recognition": "Custom",
+        "custom_recognition": "MapLocateAssertLocation",
+        "custom_recognition_param": {
+            "zone_id": "Wuling_Base",
+            "target": [
+                826,
+                1934,
+                20,
+                20
+            ]
+        },
+        "action": "DoNothing",
+        "next": [
+            "AutoCollectRoute9Goto2"
+        ]
+    },
+    "AutoCollectRoute9Goto2": {
+        "desc": "前往采集点",
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "MapNavigateAction",
+                "custom_action_param": {
+                    "path": [
+                        {
+                            "action": "ZONE",
+                            "zone_id": "Wuling_Base"
+                        },
+                        [
+                            837.04,
+                            1951.24,
+                            "DIG",
+                            true
+                        ],
+                        [
+                            835.76,
+                            1949.86,
+                            "DIG",
+                            true
+                        ],
+                        [
+                            833.3,
+                            1951.24,
+                            "DIG",
+                            true
+                        ],
+                        [
+                            840.68,
+                            1953.6,
+                            "DIG",
+                            true
+                        ],
+                        [
+                            843.15,
+                            1953.7,
+                            "DIG",
+                            true
+                        ],
+                        [
+                            841.87,
+                            1954.88,
+                            "DIG",
+                            true
+                        ],
+                        [
+                            843.15,
+                            1957.24,
+                            "DIG",
+                            true
+                        ],
+                        [
+                            840.68,
+                            1957.34,
+                            "DIG",
+                            true
+                        ]
+                    ]
+                }
+            }
+        },
+        "next": [
+            "AutoCollectRoute9Wait10sec"
+        ],
+        "focus": {
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    },
+    "AutoCollectRoute9Wait10sec": {
+        "desc": "等待10s完成收集",
+        "pre_delay": 0,
+        "post_delay": 10000,
+        "next": [
+            "AutoCollectRoute9End"
+        ],
+        "focus": {
+            "Node.Recognition.Succeeded": "等待10s完成收集"
+        }
+    }
+}

@@ -1,0 +1,144 @@
+{
+    "GotoTriggerPointSetAnchor_WLNorthWulingExclusionZone": {
+        "enabled": false,
+        "pre_delay": 0,
+        "anchor": {
+            "AutoEssenceMoveToTriggerPoint": "GotoTriggerPointMove_WLNorthWulingExclusionZone",
+            "AutoEssenceMoveToTriggerPointMaybeTeleport": "GotoTriggerPointMaybeTeleport_WLNorthWulingExclusionZone"
+        },
+        "post_delay": 0,
+        "focus": {
+            "Node.Action.Starting": "📌目标地点：北部禁区"
+        }
+    },
+    "GotoTriggerPointMaybeTeleport_WLNorthWulingExclusionZone": {
+        "desc": "强制传送到最近锚点后前往激发点",
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "SubTask",
+                "custom_action_param": {
+                    "sub": [
+                        "SceneEnterWorldWulingNorthWulingExclusionZone5"
+                    ]
+                }
+            }
+        },
+        "next": [
+            "GotoTriggerPointMove_WLNorthWulingExclusionZone"
+        ],
+        "focus": {
+            "Node.Action.Starting": "✈️准备传送到最近锚点"
+        }
+    },
+    "GotoTriggerPointMove_WLNorthWulingExclusionZone": {
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "MapNavigateAction",
+                "custom_action_param": {
+                    "path": [
+                        {
+                            "action": "ZONE",
+                            "zone_id": "Wuling_L8_388"
+                        },
+                        {
+                            "action": "NAVMESH",
+                            "target": [
+                                267.5,
+                                276.87
+                            ],
+                            "target_tier": "Wuling_L8_388"
+                        }
+                    ]
+                }
+            }
+        },
+        "next": [
+            "GotoTriggerPointMoveExact_WLNorthWulingExclusionZone"
+        ],
+        "focus": {
+            "Node.Action.Starting": "🚶正在前往预备位置",
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    },
+    "GotoTriggerPointMoveExact_WLNorthWulingExclusionZone": {
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "MapNavigateAction",
+                "custom_action_param": {
+                    "path": [
+                        {
+                            "action": "ZONE",
+                            "zone_id": "Wuling_L8_388"
+                        },
+                        {
+                            "action": "RUN",
+                            "target": [
+                                258.17,
+                                281.28
+                            ],
+                            "target_tier": "Wuling_L8_388",
+                            "strict_arrival": true
+                        }
+                    ]
+                }
+            }
+        },
+        "post_delay": 1500,
+        "next": [
+            "AutoEssenceDispatcher"
+        ],
+        "focus": {
+            "Node.Action.Starting": "🚶正在前往激发点",
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    },
+    "__GotoTriggerPointNearAnchor_WLNorthWulingExclusionZone": {
+        "desc": "锚点附近",
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "MapLocateAssertLocation",
+                "custom_recognition_param": {
+                    "zone_id": "Wuling_Base",
+                    "target": [
+                        1382.01,
+                        497.53,
+                        15.66,
+                        16.44
+                    ]
+                }
+            }
+        }
+    },
+    "__GotoTriggerPointNearTrigger_WLNorthWulingExclusionZone": {
+        "desc": "淤积点附近",
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "MapLocateAssertLocation",
+                "custom_recognition_param": {
+                    "zone_id": "Wuling_Base",
+                    "target": [
+                        1365.46,
+                        523.62,
+                        30.23,
+                        25.01
+                    ]
+                }
+            }
+        }
+    }
+}

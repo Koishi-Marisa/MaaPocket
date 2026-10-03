@@ -1,0 +1,471 @@
+{
+    "AncientTreeJob": {
+        "desc": "古树任务",
+        "max_hit": 1,
+        "recognition": "And",
+        "all_of": [
+            "CheckAncientTreeText",
+            "CheckAncientTreeIcon",
+            "CheckAncientTreeWulingStockBill"
+        ],
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "FailureCollectorRunTask",
+        "custom_action_param": {
+            "key": "EnvironmentMonitoring",
+            "task": "AncientTreeExecute",
+            "recovery_task": "EnvironmentMonitoringGoToOutskirtsMonitoringTerminal",
+            "failure_task": "AncientTreeFailed"
+        },
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "AncientTreeFailed": {
+        "desc": "古树任务执行失败提示",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "focus": {
+            "Node.Recognition.Succeeded": "$task.EnvironmentMonitoring.route.AncientTree.failed"
+        }
+    },
+    "AncientTreeExecute": {
+        "desc": "执行古树任务路线",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AcceptAncientTree",
+            "GoToAncientTreeMission"
+        ]
+    },
+    "CheckAncientTreeText": {
+        "desc": "检查是否有古树文本",
+        "recognition": "OCR",
+        "roi": [
+            63,
+            208,
+            1158,
+            71
+        ],
+        "expected": [
+            "古树",
+            "古樹",
+            "(?i)Ancient\\s*Tree",
+            "古木",
+            "고목"
+        ],
+        "replace": [],
+        "order_by": "Vertical",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckAncientTreeWulingStockBill": {
+        "desc": "检查古树任务下方的武陵调度券图标",
+        "recognition": "TemplateMatch",
+        "roi": "CheckAncientTreeIcon",
+        "roi_offset": [
+            -14,
+            300,
+            359,
+            76
+        ],
+        "template": "EnvironmentMonitoring/WulingStockBill.png",
+        "threshold": 0.8,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckAncientTreeIcon": {
+        "desc": "检查古树文本下方的图标",
+        "recognition": "TemplateMatch",
+        "roi": "CheckAncientTreeText",
+        "roi_offset": [
+            -18,
+            0,
+            0,
+            28
+        ],
+        "template": "EnvironmentMonitoring/PhotoIcon.png",
+        "threshold": 0.8,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckAncientTreeJob": {
+        "desc": "检查古树委托是否可以接取",
+        "recognition": "OCR",
+        "roi": "CheckAncientTreeIcon",
+        "roi_offset": [
+            -14,
+            332,
+            359,
+            76
+        ],
+        "expected": [
+            "接取委托",
+            "接取委託",
+            "(?i)Accept\\s*Job",
+            "引き受ける",
+            "의뢰 수령"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckAncientTreeGoToMissionText": {
+        "desc": "检查古树委托是否可以前往",
+        "recognition": "OCR",
+        "roi": "CheckAncientTreeIcon",
+        "roi_offset": [
+            -14,
+            332,
+            359,
+            76
+        ],
+        "expected": [
+            "前往任务",
+            "前往任務",
+            "(?i)Go\\s*to\\s*Mission",
+            "任務へ",
+            "임무로 이동하기"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "InAncientTreeMission": {
+        "desc": "是否在古树任务界面",
+        "recognition": "OCR",
+        "roi": [
+            415,
+            50,
+            855,
+            241
+        ],
+        "expected": [
+            "拍摄生长在小水潭上的古树",
+            "拍攝生長在小水潭上的古樹",
+            "(?i)Photo:\\s*Ancient\\s*Tree\\s*in\\s*Lake",
+            "水中から生えた古木の写真を撮る",
+            "작은 웅덩이에서 자라는 고목을 촬영하기"
+        ],
+        "replace": [],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "AcceptAncientTree": {
+        "desc": "接取古树委托",
+        "recognition": "And",
+        "all_of": [
+            "CheckAncientTreeText",
+            "CheckAncientTreeIcon",
+            "CheckAncientTreeJob"
+        ],
+        "box_index": 2,
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToAncientTreeMission"
+        ]
+    },
+    "GoToAncientTreeMission": {
+        "desc": "前往古树任务",
+        "recognition": "And",
+        "all_of": [
+            "CheckAncientTreeText",
+            "CheckAncientTreeIcon",
+            "CheckAncientTreeGoToMissionText"
+        ],
+        "box_index": 2,
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AncientTreeTrackOrGoTo"
+        ]
+    },
+    "AncientTreeTrackOrGoTo": {
+        "desc": "在古树任务中，如果有开始追踪的按钮就点击追踪，已在追踪则继续",
+        "recognition": "And",
+        "all_of": [
+            "InAncientTreeMission"
+        ],
+        // 面板入场动画期间点击可能被吞掉，等按钮区域静止后再继续
+        // （wait_freezes 按 ROI 整体判定静止，区域越大越容易把按钮位移稀释掉）
+        "pre_wait_freezes": {
+            "time": 200,
+            "target": [
+                904,
+                580,
+                368,
+                130
+            ]
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrackAncientTree",
+            "AlreadyTrackedAncientTree"
+        ]
+    },
+    "TrackAncientTree": {
+        "desc": "追踪古树任务",
+        "recognition": "And",
+        "all_of": [
+            "TrackMissionButton",
+            "InAncientTreeMission"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AncientTreeInQuickTeleportMap"
+        ]
+    },
+    "AlreadyTrackedAncientTree": {
+        "desc": "古树任务已经在追踪中",
+        "recognition": "And",
+        "all_of": [
+            "AlreadyTrackedMissionButton",
+            "InAncientTreeMission"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AncientTreeOpenTrackedMissionMap"
+        ]
+    },
+    "AncientTreeOpenTrackedMissionMap": {
+        "desc": "古树任务已在追踪中，点击定位按钮进入任务地图",
+        "recognition": "And",
+        "all_of": [
+            "TrackedMissionMapButton",
+            "InAncientTreeMission"
+        ],
+        "box_index": 0,
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AncientTreeInQuickTeleportMap"
+        ]
+    },
+    "AncientTreeInQuickTeleportMap": {
+        "desc": "已进入古树任务地图，准备快捷传送",
+        "recognition": "And",
+        "all_of": [
+            "QuickTeleportButton",
+            "InAncientTreeMission"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AncientTreeQuickTeleportSelect"
+        ]
+    },
+    "AncientTreeQuickTeleportSelect": {
+        "desc": "在古树任务地图中点击前往传送",
+        "recognition": "And",
+        "all_of": [
+            "QuickTeleportButton",
+            "InAncientTreeMission"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_wait_freezes": 500,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AncientTreeQuickTeleport"
+        ]
+    },
+    "AncientTreeQuickTeleport": {
+        "desc": "在古树任务地图中点击传送",
+        "recognition": "And",
+        "all_of": [
+            "TeleportButton"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AncientTreeQuickTeleportDone",
+            "[JumpBack]SceneWaitLoadingExit"
+        ]
+    },
+    "AncientTreeQuickTeleportDone": {
+        "desc": "快捷传送完成，已返回大世界",
+        "recognition": "And",
+        "all_of": [
+            "InWorld"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToAncientTreeMove"
+        ]
+    },
+    "AncientTreeNotAdapted": {
+        "desc": "古树任务尚未适配，仅接取并追踪",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "focus": {
+            "Node.Recognition.Succeeded": "$task.EnvironmentMonitoring.not_adapted"
+        }
+    },
+    "GoToAncientTree": {
+        "desc": "前往古树，先回到大世界再进行判断",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "SubTask",
+        "custom_action_param": {
+            "sub": [
+                "SceneAnyEnterWorld"
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToAncientTreeStartPos",
+            "GoToAncientTreeNotAtStartPos"
+        ]
+    },
+    "GoToAncientTreeStartPos": {
+        "desc": "在古树任务开始位置附近",
+        "recognition": "Custom",
+        "custom_recognition": "MapLocateAssertLocation",
+        "custom_recognition_param": {
+            "zone_id": "Wuling_Base",
+            "target": [
+                0,
+                0,
+                1,
+                1
+            ]
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToAncientTreeMove"
+        ]
+    },
+    "GoToAncientTreeNotAtStartPos": {
+        "desc": "不在古树任务开始位置附近，先传送再继续寻路",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "SubTask",
+        "custom_action_param": {
+            "sub": [
+                "SceneAnyEnterWorld"
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToAncientTreeMove"
+        ]
+    },
+    "GoToAncientTreeMove": {
+        "desc": "自动寻路前往古树",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "MapNavigateAction",
+        "custom_action_param": {
+            "path": [
+                {
+                    "action": "ZONE",
+                    "zone_id": "Wuling_Base"
+                },
+                {
+                    "action": "NAVMESH",
+                    "target": [
+                        829.41,
+                        2576.94
+                    ]
+                },
+                {
+                    "action": "HEADING",
+                    "angle": 245
+                }
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AncientTreeTakePhoto"
+        ],
+        "focus": {
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    },
+    "GoToAncientTreeMoveAfterFight": {
+        "desc": "可能的战斗结束后，恢复性地走回古树拍照点",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "MapNavigateAction",
+        "custom_action_param": {
+            "path": [
+                {
+                    "action": "ZONE",
+                    "zone_id": "Wuling_Base"
+                },
+                {
+                    "action": "NAVMESH",
+                    "target": [
+                        829.41,
+                        2576.94
+                    ]
+                },
+                {
+                    "action": "HEADING",
+                    "angle": 245
+                }
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AncientTreeTakePhoto"
+        ],
+        "focus": {
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    },
+    "AncientTreeTakePhoto": {
+        "desc": "在古树任务拍照点开始拍照",
+        "pre_delay": 0,
+        "anchor": {
+            "EnvironmentMonitoringBackToTerminal": "EnvironmentMonitoringGoToOutskirtsMonitoringTerminal"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "EnvironmentMonitoringTakePhoto"
+        ]
+    }
+}

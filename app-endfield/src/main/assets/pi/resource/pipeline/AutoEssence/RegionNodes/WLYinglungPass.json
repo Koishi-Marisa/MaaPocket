@@ -1,0 +1,127 @@
+{
+    "GotoTriggerPointSetAnchor_WLYinglungPass": {
+        "enabled": false,
+        "pre_delay": 0,
+        "anchor": {
+            "AutoEssenceMoveToTriggerPoint": "GotoTriggerPointMove_WLYinglungPass",
+            "AutoEssenceMoveToTriggerPointMaybeTeleport": "GotoTriggerPointMaybeTeleport_WLYinglungPass"
+        },
+        "post_delay": 0,
+        "focus": {
+            "Node.Action.Starting": "📌目标地点：应龙关"
+        }
+    },
+    "GotoTriggerPointMaybeTeleport_WLYinglungPass": {
+        "desc": "强制传送到最近锚点后前往激发点",
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "SubTask",
+                "custom_action_param": {
+                    "sub": [
+                        "SceneEnterWorldWulingYinglungPass2"
+                    ]
+                }
+            }
+        },
+        "next": [
+            "GotoTriggerPointMove_WLYinglungPass"
+        ],
+        "focus": {
+            "Node.Action.Starting": "✈️准备传送到最近锚点"
+        }
+    },
+    "__GotoTriggerPointNearAnchor_WLYinglungPass": {
+        "desc": "锚点附近",
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "MapLocateAssertLocation",
+                "custom_recognition_param": {
+                    "zone_id": "Wuling_Base",
+                    "target": [
+                        1125.22,
+                        792.71,
+                        16.05,
+                        13.59
+                    ]
+                }
+            }
+        }
+    },
+    "__GotoTriggerPointNearTrigger_WLYinglungPass": {
+        "desc": "淤积点附近",
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "MapLocateAssertLocation",
+                "custom_recognition_param": {
+                    "zone_id": "Wuling_Base",
+                    "target": [
+                        1049.4,
+                        865.28,
+                        37.71,
+                        37.71
+                    ]
+                }
+            }
+        }
+    },
+    "GotoTriggerPointMove_WLYinglungPass": {
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "MapNavigateAction",
+                "custom_action_param": {
+                    "path": [
+                        {
+                            "action": "ZONE",
+                            "zone_id": "Wuling_Base"
+                        },
+                        {
+                            "action": "NAVMESH",
+                            "target": [
+                                1068.26,
+                                814.83
+                            ]
+                        },
+                        [
+                            1068.26,
+                            832.88
+                        ],
+                        [
+                            1068.26,
+                            850.93
+                        ],
+                        [
+                            1068.26,
+                            868.98,
+                            true
+                        ],
+                        [
+                            1069.0,
+                            884.0,
+                            true
+                        ]
+                    ]
+                }
+            }
+        },
+        "post_delay": 1500, // 确保彻底停下，规避移动惯性
+        "next": [
+            "AutoEssenceDispatcher"
+        ],
+        "on_error": [
+            "[Anchor]AutoEssenceMoveToTriggerPointMaybeTeleport"
+        ],
+        "focus": {
+            "Node.Action.Starting": "🚶正在前往激发点",
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    }
+}

@@ -1,0 +1,50 @@
+{
+    "AutoStockpileCheckSliding": {
+        "recognition": {
+            "param": {
+                "roi": [
+                    490,
+                    522,
+                    199,
+                    36
+                ]
+            }
+        }
+    },
+    "AutoStockpileSwipeSpecificQuantity": {
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "BetterSliding",
+                "custom_action_param": {
+                    "ClampTargetToSliderMax": true,
+                    "DecreaseButton": "AutoStockpile/DecreaseButton.png",
+                    "Direction": "right",
+                    "IncreaseButton": "AutoStockpile/IncreaseButton.png",
+                    "SliderQuantity": {
+                        "Box": [
+                            303,
+                            516,
+                            111,
+                            47
+                        ],
+                        "Filter": {
+                            "lower": [
+                                20,
+                                150,
+                                150
+                            ],
+                            "upper": [
+                                35,
+                                255,
+                                255
+                            ],
+                            "method": 40
+                        }
+                    },
+                    "TargetQuantity": 1
+                }
+            }
+        }
+    }
+}

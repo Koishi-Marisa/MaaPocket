@@ -1,0 +1,47 @@
+{
+    "task": [
+        {
+            "name": "ZiplineImport",
+            "label": "$task.ZiplineImport.label",
+            "entry": "ZiplineImportMain",
+            "description": "$task.ZiplineImport.description",
+            "option": [
+                "ZiplineImportClearLogin"
+            ],
+            "controller": [
+                "Linux-Gamescope",
+                "Linux-ScreenCast",
+                "Linux-Wlroots",
+                "Win32-Front"
+            ],
+            "group": [
+                "open_world"
+            ]
+        }
+    ],
+    "option": {
+        "ZiplineImportClearLogin": {
+            "type": "switch",
+            "controller": [
+                "Win32-Front"
+            ],
+            "label": "$option.ZiplineImportClearLogin.label",
+            "default_case": "No",
+            "cases": [
+                {
+                    "name": "Yes",
+                    "pipeline_override": {
+                        "ZiplineImportMain": {
+                            "attach": {
+                                "clear_login": true
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "No"
+                }
+            ]
+        }
+    }
+}

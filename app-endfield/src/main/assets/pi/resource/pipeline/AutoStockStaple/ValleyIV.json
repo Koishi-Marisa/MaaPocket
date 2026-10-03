@@ -1,0 +1,148 @@
+{
+    "AutoStockInStapleValleyIV": {
+        "desc": "识别当前处于四号谷地界面，并进入囤货界面",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "InValleyIVText",
+                    "InStapleColor",
+                    "InStockStaple"
+                ]
+            }
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AutoStockTargetCanNotBuyValleyIV",
+            "[JumpBack]AutoStockBuyItemValleyIVTask",
+            "SoldOut",
+            "[JumpBack]AutoStockSwipeValleyIV"
+        ]
+    },
+    "AutoStockTargetCompareValleyIV": {
+        "desc": "识别目标调度券是否不可购买",
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "ExpressionRecognition",
+                "custom_recognition_param": {
+                    "expression": "240000> {AutoStockCurrentStockBill}"
+                }
+            }
+        }
+    },
+    "AutoStockDiscountCompareValleyIV": {
+        "desc": "比较商品折扣与最低折扣阈值，四号谷地",
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "ExpressionRecognition",
+                "custom_recognition_param": {
+                    "expression": "{AutoStockInStapleItemDiscountsValleyIV} <= -50"
+                }
+            }
+        }
+    },
+    "AutoStockTargetCanNotBuyValleyIV": {
+        "desc": "识别目标调度券是否不可购买",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "InStapleColor",
+                    "AutoStockTargetCompareValleyIV"
+                ]
+            }
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "AutoStockBuyItemValleyIVTask": {
+        "desc": "识别商品，并进入购买流程",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "AutoStockInStapleItem",
+                    "AutoStockInStapleItemName_Expected",
+                    "AutoStockInStapleItemDiscountsValleyIV",
+                    "AutoStockDiscountCompareValleyIV"
+                ],
+                "box_index": 2
+            }
+        },
+        "pre_delay": 0,
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "RepeatUntilFoundAction",
+                "custom_action_param": {
+                    "action": "Click",
+                    "wait_nodes": [
+                        "AutoStockStapleQuantityControl"
+                    ]
+                },
+                "target_offset": [
+                    -45,
+                    85,
+                    -30,
+                    0
+                ]
+            }
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AutoStockStapleQuantityControl"
+        ],
+        "focus": {
+            "Node.Action.Failed": "$task.AutoStockStaple.focus.quantity_control.purchase_page_failed"
+        }
+    },
+    "AutoStockSwipeValleyIV": {
+        "desc": "向下滑动寻找商品，直到找到商品或到达底部",
+        "max_hit": 25,
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "InValleyIVText",
+                    "InStapleColor"
+                ],
+                "box_index": 1
+            }
+        },
+        "action": {
+            "type": "Swipe",
+            "param": {
+                "begin": [
+                    240,
+                    500
+                ],
+                "end": [
+                    [
+                        240,
+                        400
+                    ],
+                    [
+                        360,
+                        400
+                    ]
+                ],
+                "end_hold": 200
+            }
+        },
+        "post_wait_freezes": {
+            "time": 300,
+            "target": [
+                89,
+                200,
+                99,
+                176
+            ]
+        }
+    }
+}

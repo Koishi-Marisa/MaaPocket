@@ -1,0 +1,27 @@
+{
+    "__ScenePrivateMenuValuablesEnterValuableTab": {
+        "roi": [
+            0,
+            483,
+            102,
+            107
+        ]
+    },
+    "__ScenePrivateMenuValuablesEnterProgressionTab": {
+        "roi": [
+            0,
+            40,
+            140,
+            658
+        ],
+        "template": "SceneManager/ProgressionTabNotChoosed.png"
+    },
+    "__ScenePrivateMenuFriendsEnterMenuFriendsList": {
+        "roi": [
+            0,
+            130,
+            100,
+            215
+        ]
+    }
+}

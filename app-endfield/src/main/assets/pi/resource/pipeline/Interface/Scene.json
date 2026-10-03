@@ -1,0 +1,391 @@
+{
+    // 只能使用本文件中定义的接口，禁止引用 SceneManager 文件夹内的 __ScenePrivate 节点
+    "SceneAnyEnterWorld": {
+        "desc": "从任意界面进入谷地/武陵/帝江任意一个大世界",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateCloseADBExit",
+            "__ScenePrivateMenuListLoadingEnterWorld",
+            "__ScenePrivateMenuListEnterWorld",
+            "__ScenePrivateTrialOfSwordmancyEnterWorld",
+            "__ScenePrivateAnyEnterWorldSuccess",
+            "[JumpBack]__ScenePrivateLogin",
+            "[JumpBack]SceneNoticeRewardsUpgrade",
+            "[JumpBack]SceneNoticeRewardsConfirm",
+            "[JumpBack]__ScenePrivateWorldSpaceExit",
+            "[JumpBack]__ScenePrivateWorldStorySkip",
+            "[JumpBack]__ScenePrivateLoggedOutConfirm",
+            "[JumpBack]SceneWaitLoadingExit",
+            "[JumpBack]__ScenePrivateScreenshotStableAbnormal",
+            "[JumpBack]__ScenePrivateAnyExit"
+        ]
+    },
+    "SceneEnterMapAny": {
+        "desc": "从任意界面进入任意一个地图界面",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateWorldEnterMapAny",
+            "[JumpBack]SceneAnyEnterWorld"
+        ]
+    },
+    "SceneEnterWorldFactory": {
+        "desc": "从任意界面进入大世界工厂模式",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateAnyEnterWorldFactorySuccess",
+            "__ScenePrivateWorldFactoryDisableEnterFactoryActive",
+            "__ScenePrivateWorldFactoryNotActiveEnterFactoryActive",
+            "__ScenePrivateWorldDijiangEnterFactoryActive",
+            "[JumpBack]SceneAnyEnterWorld"
+        ]
+    },
+    "SceneDialogConfirm": {
+        "desc": "点击对话框的确认按钮",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "GrayCancelButton",
+                    "YellowConfirmButtonType1"
+                ],
+                "box_index": 1
+            }
+        },
+        "action": {
+            "type": "Click"
+        }
+    },
+    "SceneDialogCancel": {
+        "desc": "点击对话框的取消按钮",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "GrayCancelButton",
+                    "YellowConfirmButtonType1"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click"
+        }
+    },
+    "SceneNoticeRewardsConfirm": {
+        "desc": "奖励界面：IMS A3 累加培养道具后，再点击关闭",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "InNoticeRewards",
+                    "CloseRewardsButton"
+                ],
+                "box_index": 1
+            }
+        },
+        "pre_wait_freezes": {
+            "time": 300,
+            "threshold": 0.97,
+            "timeout": 1500,
+            "target": [
+                528,
+                299,
+                222,
+                131
+            ]
+        },
+        "pre_delay": 0,
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "AddItemData",
+                "custom_action_param": {}
+            }
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "SceneNoticeRewardsConfirmClick"
+        ]
+    },
+    "SceneNoticeRewardsConfirmClick": {
+        "desc": "奖励界面：点击 CloseRewardsButton 关闭",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "InNoticeRewards",
+                    "CloseRewardsButton"
+                ],
+                "box_index": 1
+            }
+        },
+        "pre_delay": 0,
+        "action": {
+            "type": "Click"
+        },
+        "post_wait_freezes": {
+            "time": 400,
+            "timeout": 2000,
+            "target": [
+                500,
+                0,
+                280,
+                200
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "[JumpBack]SceneNoticeRewardsUpgrade",
+            "__ScenePrivateNextTrue"
+        ]
+    },
+    "SceneNoticeRewardsConfirmWithAnchor": {
+        "desc": "奖励界面：IMS A3 累加培养道具后，再点击关闭（带 Anchor next）",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "InNoticeRewards",
+                    "CloseRewardsButton"
+                ],
+                "box_index": 1
+            }
+        },
+        "pre_wait_freezes": {
+            "time": 300,
+            "threshold": 0.97,
+            "timeout": 1500,
+            "target": [
+                528,
+                299,
+                222,
+                131
+            ]
+        },
+        "pre_delay": 0,
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "AddItemData",
+                "custom_action_param": {}
+            }
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "SceneNoticeRewardsConfirmWithAnchorClick"
+        ]
+    },
+    "SceneNoticeRewardsConfirmWithAnchorClick": {
+        "desc": "奖励界面：点击 CloseRewardsButton 关闭（带 Anchor next）",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "InNoticeRewards",
+                    "CloseRewardsButton"
+                ],
+                "box_index": 1
+            }
+        },
+        "pre_delay": 0,
+        "action": {
+            "type": "Click"
+        },
+        "post_wait_freezes": {
+            "time": 400,
+            "timeout": 2000,
+            "target": [
+                500,
+                0,
+                280,
+                200
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "[JumpBack]SceneNoticeRewardsUpgrade",
+            "[Anchor]SceneNoticeRewardsConfirmNextAnchor"
+        ]
+    },
+    "SceneNoticeRewardsUpgrade": {
+        "desc": "权限等阶升级界面，点击空白处关闭",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__ScenePrivateNoticeRewardsUpgrade"
+                ]
+            }
+        },
+        "pre_delay": 0,
+        "post_delay": 5000, //权限等阶显示后3s消失，或者显示升级弹窗(仍包含权限等阶四个字)
+        "rate_limit": 0,
+        "next": [
+            "__ScenePrivateNoticeRewardsUpgradeDisappear",
+            "__ScenePrivateNoticeRewardsUpgradeConfirm"
+        ]
+    },
+    "SceneMapZoomOutWithoutReco": {
+        "desc": "在地图界面缩小地图（供 MapFind 等子任务调用）,需确保在地图界面",
+        "pre_delay": 0,
+        "action": "DoNothing",
+        "post_delay": 0,
+        "next": [
+            "__ScenePrivateMapZoomOut",
+            "__ScenePrivateNextTrue"
+        ]
+    },
+    "SceneMapZoomOut": {
+        "desc": "在地图界面缩小地图",
+        "recognition": "And",
+        "all_of": [
+            {
+                "recognition": "TemplateMatch",
+                "roi": [
+                    -350,
+                    0,
+                    350,
+                    60
+                ],
+                "template": [
+                    "SceneManager/MapMind.png"
+                ],
+                "method": 10001 // 默认5时，当弹出右侧面板，此图片依然能匹配上
+            },
+            "__ScenePrivateMapZoomOutWhite"
+        ],
+        "box_index": 1,
+        "action": "LongPress",
+        "duration": 2000,
+        "post_wait_freezes": {
+            "target": [
+                -100,
+                0,
+                100,
+                100
+            ],
+            "time": 400
+        }
+    },
+    "SceneMapLayerSwitchToMain": {
+        "desc": "在分层地图，切换到主地图",
+        "recognition": "And",
+        "all_of": [
+            {
+                "sub_name": "layers_other",
+                "recognition": "TemplateMatch",
+                "roi": [
+                    0,
+                    -200,
+                    250,
+                    200
+                ],
+                "template": [
+                    "SceneManager/MapLayersOther.png"
+                ]
+            },
+            {
+                "recognition": "ColorMatch",
+                "roi": "layers_other",
+                "lower": [
+                    245,
+                    229,
+                    0
+                ],
+                "upper": [
+                    255,
+                    249,
+                    10
+                ],
+                "connected": true,
+                "count": 10
+            },
+            {
+                "recognition": "TemplateMatch",
+                "roi": [
+                    0,
+                    -400,
+                    250,
+                    400
+                ],
+                "template": [
+                    "SceneManager/MapLayersMain.png"
+                ]
+            }
+        ],
+        "box_index": 2,
+        "action": "Click",
+        "target_offset": [
+            7,
+            7,
+            -14,
+            -14
+        ],
+        "post_wait_freezes": 200
+    },
+    "SceneWaitLoadingExit": {
+        "desc": "判断当前场景在加载界面，什么都不做，用于等待加载界面消失",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    0,
+                    0,
+                    200,
+                    200
+                ],
+                "template": [
+                    "SceneManager/LoadingIcon.png"
+                ]
+            }
+        },
+        "next": [
+            // "[JumpBack]__SceneCheckOSD",
+            // "[JumpBack]__SceneCheckYellowColor",
+            // "[JumpBack]__SceneCheckTealColor",
+            // "[JumpBack]__SceneCheckPurpleColor",
+            "SceneWaitLoadingExit",
+            "__ScenePrivateNextTrue"
+        ]
+    },
+    "SceneWaitBlackScreenLoadingExit": {
+        "desc": "判断当前场景在加载界面（黑屏），什么都不做，用于等待加载界面消失",
+        "recognition": "ColorMatch",
+        "roi": [
+            0,
+            0,
+            200,
+            200
+        ],
+        "lower": [
+            0,
+            0,
+            0
+        ],
+        "upper": [
+            10,
+            10,
+            10
+        ],
+        "count": 40000,
+        "pre_delay": 0,
+        "post_delay": 500,
+        "next": [
+            // "[JumpBack]__SceneCheckOSD",
+            // "[JumpBack]__SceneCheckYellowColor",
+            // "[JumpBack]__SceneCheckTealColor",
+            // "[JumpBack]__SceneCheckPurpleColor",
+            "SceneWaitBlackScreenLoadingExit",
+            "__ScenePrivateNextTrue"
+        ]
+    }
+}

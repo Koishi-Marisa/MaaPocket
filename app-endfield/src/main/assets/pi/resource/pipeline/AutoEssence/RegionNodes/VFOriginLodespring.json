@@ -1,0 +1,154 @@
+{
+    "GotoTriggerPointSetAnchor_VFOriginLodespring": {
+        "enabled": false,
+        "pre_delay": 0,
+        "anchor": {
+            "AutoEssenceMoveToTriggerPoint": "GotoTriggerPointMove_VFOriginLodespring",
+            "AutoEssenceMoveToTriggerPointMaybeTeleport": "GotoTriggerPointMaybeTeleport_VFOriginLodespring"
+        },
+        "post_delay": 0,
+        "focus": {
+            "Node.Action.Starting": "📌目标地点：矿脉源区"
+        }
+    },
+    "GotoTriggerPointMaybeTeleport_VFOriginLodespring": {
+        "desc": "强制传送到最近锚点后前往激发点",
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "SubTask",
+                "custom_action_param": {
+                    "sub": [
+                        "SceneEnterWorldValleyIVOriginLodespring3"
+                    ]
+                }
+            }
+        },
+        "next": [
+            "GotoTriggerPointMove_VFOriginLodespring"
+        ],
+        "focus": {
+            "Node.Action.Starting": "✈️准备传送到最近锚点"
+        }
+    },
+    "GotoTriggerPointMove_VFOriginLodespring": {
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "MapNavigateAction",
+                "custom_action_param": {
+                    "path": [
+                        {
+                            "action": "ZONE",
+                            "zone_id": "ValleyIV_Base"
+                        },
+                        {
+                            "action": "NAVMESH",
+                            "target": [
+                                979.39,
+                                493.08
+                            ]
+                        },
+                        {
+                            "action": "RUN",
+                            "target": [
+                                105.41,
+                                180.4
+                            ],
+                            "target_tier": "ValleyIV_L6_109"
+                        }
+                    ]
+                }
+            }
+        },
+        "next": [
+            "GotoTriggerPointMoveExact_VFOriginLodespring"
+        ],
+        "on_error": [
+            "[Anchor]AutoEssenceMoveToTriggerPointMaybeTeleport"
+        ],
+        "focus": {
+            "Node.Action.Starting": "🚶正在前往激发点附近",
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    },
+    "GotoTriggerPointMoveExact_VFOriginLodespring": {
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "MapNavigateAction",
+                "custom_action_param": {
+                    "path": [
+                        {
+                            "action": "ZONE",
+                            "zone_id": "ValleyIV_L6_109"
+                        },
+                        {
+                            "action": "RUN",
+                            "target": [
+                                97.7,
+                                180.36
+                            ],
+                            "target_tier": "ValleyIV_L6_109",
+                            "strict_arrival": true
+                        }
+                    ]
+                }
+            }
+        },
+        "post_delay": 1500,
+        "next": [
+            "AutoEssenceDispatcher"
+        ],
+        "focus": {
+            "Node.Action.Starting": "🚶正在前往激发点",
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    },
+    "__GotoTriggerPointNearAnchor_VFOriginLodespring": {
+        "desc": "锚点附近",
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "MapLocateAssertLocation",
+                "custom_recognition_param": {
+                    "zone_id": "ValleyIV_Base",
+                    "target": [
+                        1091.08,
+                        445.85,
+                        19.57,
+                        19.57
+                    ]
+                }
+            }
+        }
+    },
+    "__GotoTriggerPointNearTrigger_VFOriginLodespring": {
+        "desc": "淤积点附近",
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "MapLocateAssertLocation",
+                "custom_recognition_param": {
+                    "zone_id": "ValleyIV_L6_109",
+                    "target": [
+                        79.51,
+                        167.49,
+                        31.67,
+                        31.65
+                    ]
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,50 @@
+{
+    "EssenceFilterClickLockItem": {
+        "recognition": {
+            "param": {
+                "roi": [
+                    1159,
+                    210,
+                    87,
+                    50
+                ]
+            }
+        }
+    },
+    "EssenceFilterCheckLocked": {
+        "recognition": {
+            "param": {
+                "roi": [
+                    1159,
+                    210,
+                    87,
+                    50
+                ]
+            }
+        }
+    },
+    "EssenceFilterClickDiscardItem": {
+        "recognition": {
+            "param": {
+                "roi": [
+                    1159,
+                    210,
+                    87,
+                    50
+                ]
+            }
+        }
+    },
+    "EssenceFilterCheckDiscarded": {
+        "recognition": {
+            "param": {
+                "roi": [
+                    1159,
+                    210,
+                    87,
+                    50
+                ]
+            }
+        }
+    }
+}

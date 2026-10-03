@@ -1,0 +1,473 @@
+{
+    "WaterTemperatureControllerJob": {
+        "desc": "净水温控装置任务",
+        "max_hit": 1,
+        "recognition": "And",
+        "all_of": [
+            "CheckWaterTemperatureControllerText",
+            "CheckWaterTemperatureControllerIcon",
+            "CheckWaterTemperatureControllerWulingStockBill"
+        ],
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "FailureCollectorRunTask",
+        "custom_action_param": {
+            "key": "EnvironmentMonitoring",
+            "task": "WaterTemperatureControllerExecute",
+            "recovery_task": "EnvironmentMonitoringGoToMarkerStoneMonitoringTerminal",
+            "failure_task": "WaterTemperatureControllerFailed"
+        },
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "WaterTemperatureControllerFailed": {
+        "desc": "净水温控装置任务执行失败提示",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "focus": {
+            "Node.Recognition.Succeeded": "$task.EnvironmentMonitoring.route.WaterTemperatureController.failed"
+        }
+    },
+    "WaterTemperatureControllerExecute": {
+        "desc": "执行净水温控装置任务路线",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AcceptWaterTemperatureController",
+            "GoToWaterTemperatureControllerMission"
+        ]
+    },
+    "CheckWaterTemperatureControllerText": {
+        "desc": "检查是否有净水温控装置文本",
+        "recognition": "OCR",
+        "roi": [
+            63,
+            208,
+            1158,
+            71
+        ],
+        "expected": [
+            "净水温控装置",
+            "淨水溫控裝置",
+            "(?i)Water\\s*Temperature\\s*Controller",
+            "浄水温度調整装置",
+            "정수 온도 조절 장치"
+        ],
+        "replace": [],
+        "order_by": "Vertical",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckWaterTemperatureControllerWulingStockBill": {
+        "desc": "检查净水温控装置任务下方的武陵调度券图标",
+        "recognition": "TemplateMatch",
+        "roi": "CheckWaterTemperatureControllerIcon",
+        "roi_offset": [
+            -14,
+            300,
+            359,
+            76
+        ],
+        "template": "EnvironmentMonitoring/WulingStockBill.png",
+        "threshold": 0.8,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckWaterTemperatureControllerIcon": {
+        "desc": "检查净水温控装置文本下方的图标",
+        "recognition": "TemplateMatch",
+        "roi": "CheckWaterTemperatureControllerText",
+        "roi_offset": [
+            -18,
+            0,
+            0,
+            28
+        ],
+        "template": "EnvironmentMonitoring/PhotoIcon.png",
+        "threshold": 0.8,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckWaterTemperatureControllerJob": {
+        "desc": "检查净水温控装置委托是否可以接取",
+        "recognition": "OCR",
+        "roi": "CheckWaterTemperatureControllerIcon",
+        "roi_offset": [
+            -14,
+            332,
+            359,
+            76
+        ],
+        "expected": [
+            "接取委托",
+            "接取委託",
+            "(?i)Accept\\s*Job",
+            "引き受ける",
+            "의뢰 수령"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckWaterTemperatureControllerGoToMissionText": {
+        "desc": "检查净水温控装置委托是否可以前往",
+        "recognition": "OCR",
+        "roi": "CheckWaterTemperatureControllerIcon",
+        "roi_offset": [
+            -14,
+            332,
+            359,
+            76
+        ],
+        "expected": [
+            "前往任务",
+            "前往任務",
+            "(?i)Go\\s*to\\s*Mission",
+            "任務へ",
+            "임무로 이동하기"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "InWaterTemperatureControllerMission": {
+        "desc": "是否在净水温控装置任务界面",
+        "recognition": "OCR",
+        "roi": [
+            415,
+            50,
+            855,
+            241
+        ],
+        "expected": [
+            "拍摄净水温控装置",
+            "拍攝淨水溫控裝置",
+            "(?i)Photo:\\s*Water\\s*Temperature\\s*Controller",
+            "浄水温度調整装置の写真を撮る",
+            "정수 온도 조절 장치를 촬영하기"
+        ],
+        "replace": [],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "AcceptWaterTemperatureController": {
+        "desc": "接取净水温控装置委托",
+        "recognition": "And",
+        "all_of": [
+            "CheckWaterTemperatureControllerText",
+            "CheckWaterTemperatureControllerIcon",
+            "CheckWaterTemperatureControllerJob"
+        ],
+        "box_index": 2,
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToWaterTemperatureControllerMission"
+        ]
+    },
+    "GoToWaterTemperatureControllerMission": {
+        "desc": "前往净水温控装置任务",
+        "recognition": "And",
+        "all_of": [
+            "CheckWaterTemperatureControllerText",
+            "CheckWaterTemperatureControllerIcon",
+            "CheckWaterTemperatureControllerGoToMissionText"
+        ],
+        "box_index": 2,
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "WaterTemperatureControllerTrackOrGoTo"
+        ]
+    },
+    "WaterTemperatureControllerTrackOrGoTo": {
+        "desc": "在净水温控装置任务中，如果有开始追踪的按钮就点击追踪，已在追踪则继续",
+        "recognition": "And",
+        "all_of": [
+            "InWaterTemperatureControllerMission"
+        ],
+        // 面板入场动画期间点击可能被吞掉，等按钮区域静止后再继续
+        // （wait_freezes 按 ROI 整体判定静止，区域越大越容易把按钮位移稀释掉）
+        "pre_wait_freezes": {
+            "time": 200,
+            "target": [
+                904,
+                580,
+                368,
+                130
+            ]
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrackWaterTemperatureController",
+            "AlreadyTrackedWaterTemperatureController"
+        ]
+    },
+    "TrackWaterTemperatureController": {
+        "desc": "追踪净水温控装置任务",
+        "recognition": "And",
+        "all_of": [
+            "TrackMissionButton",
+            "InWaterTemperatureControllerMission"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "WaterTemperatureControllerInQuickTeleportMap"
+        ]
+    },
+    "AlreadyTrackedWaterTemperatureController": {
+        "desc": "净水温控装置任务已经在追踪中",
+        "recognition": "And",
+        "all_of": [
+            "AlreadyTrackedMissionButton",
+            "InWaterTemperatureControllerMission"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "WaterTemperatureControllerOpenTrackedMissionMap"
+        ]
+    },
+    "WaterTemperatureControllerOpenTrackedMissionMap": {
+        "desc": "净水温控装置任务已在追踪中，点击定位按钮进入任务地图",
+        "recognition": "And",
+        "all_of": [
+            "TrackedMissionMapButton",
+            "InWaterTemperatureControllerMission"
+        ],
+        "box_index": 0,
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "WaterTemperatureControllerInQuickTeleportMap"
+        ]
+    },
+    "WaterTemperatureControllerInQuickTeleportMap": {
+        "desc": "已进入净水温控装置任务地图，准备快捷传送",
+        "recognition": "And",
+        "all_of": [
+            "QuickTeleportButton",
+            "InWaterTemperatureControllerMission"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "WaterTemperatureControllerQuickTeleportSelect"
+        ]
+    },
+    "WaterTemperatureControllerQuickTeleportSelect": {
+        "desc": "在净水温控装置任务地图中点击前往传送",
+        "recognition": "And",
+        "all_of": [
+            "QuickTeleportButton",
+            "InWaterTemperatureControllerMission"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_wait_freezes": 500,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "WaterTemperatureControllerQuickTeleport"
+        ]
+    },
+    "WaterTemperatureControllerQuickTeleport": {
+        "desc": "在净水温控装置任务地图中点击传送",
+        "recognition": "And",
+        "all_of": [
+            "TeleportButton"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "WaterTemperatureControllerQuickTeleportDone",
+            "[JumpBack]SceneWaitLoadingExit"
+        ]
+    },
+    "WaterTemperatureControllerQuickTeleportDone": {
+        "desc": "快捷传送完成，已返回大世界",
+        "recognition": "And",
+        "all_of": [
+            "InWorld"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToWaterTemperatureControllerMove"
+        ]
+    },
+    "WaterTemperatureControllerNotAdapted": {
+        "desc": "净水温控装置任务尚未适配，仅接取并追踪",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "focus": {
+            "Node.Recognition.Succeeded": "$task.EnvironmentMonitoring.not_adapted"
+        }
+    },
+    "GoToWaterTemperatureController": {
+        "desc": "前往净水温控装置，先回到大世界再进行判断",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "SubTask",
+        "custom_action_param": {
+            "sub": [
+                "SceneAnyEnterWorld"
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToWaterTemperatureControllerStartPos",
+            "GoToWaterTemperatureControllerNotAtStartPos"
+        ]
+    },
+    "GoToWaterTemperatureControllerStartPos": {
+        "desc": "在净水温控装置任务开始位置附近",
+        "recognition": "Custom",
+        "custom_recognition": "MapLocateAssertLocation",
+        "custom_recognition_param": {
+            "zone_id": "Wuling_Base",
+            "target": [
+                0,
+                0,
+                1,
+                1
+            ]
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToWaterTemperatureControllerMove"
+        ]
+    },
+    "GoToWaterTemperatureControllerNotAtStartPos": {
+        "desc": "不在净水温控装置任务开始位置附近，先传送再继续寻路",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "SubTask",
+        "custom_action_param": {
+            "sub": [
+                "SceneAnyEnterWorld"
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToWaterTemperatureControllerMove"
+        ]
+    },
+    "GoToWaterTemperatureControllerMove": {
+        "desc": "自动寻路前往净水温控装置",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "MapNavigateAction",
+        "custom_action_param": {
+            "path": [
+                {
+                    "action": "ZONE",
+                    "zone_id": "Wuling_Base"
+                },
+                {
+                    "action": "NAVMESH",
+                    "target": [
+                        333.71,
+                        2155.67
+                    ],
+                    "target_deck_y": 265.55
+                },
+                {
+                    "action": "HEADING",
+                    "angle": 255
+                }
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "WaterTemperatureControllerTakePhoto"
+        ],
+        "focus": {
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    },
+    "GoToWaterTemperatureControllerMoveAfterFight": {
+        "desc": "可能的战斗结束后，恢复性地走回净水温控装置拍照点",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "MapNavigateAction",
+        "custom_action_param": {
+            "path": [
+                {
+                    "action": "ZONE",
+                    "zone_id": "Wuling_Base"
+                },
+                {
+                    "action": "NAVMESH",
+                    "target": [
+                        333.71,
+                        2155.67
+                    ],
+                    "target_deck_y": 265.55
+                },
+                {
+                    "action": "HEADING",
+                    "angle": 255
+                }
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "WaterTemperatureControllerTakePhoto"
+        ],
+        "focus": {
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    },
+    "WaterTemperatureControllerTakePhoto": {
+        "desc": "在净水温控装置任务拍照点开始拍照",
+        "pre_delay": 0,
+        "anchor": {
+            "EnvironmentMonitoringBackToTerminal": "EnvironmentMonitoringGoToMarkerStoneMonitoringTerminal"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "EnvironmentMonitoringTakePhoto"
+        ]
+    }
+}

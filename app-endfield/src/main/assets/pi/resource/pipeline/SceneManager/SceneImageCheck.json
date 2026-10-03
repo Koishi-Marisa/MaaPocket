@@ -1,0 +1,234 @@
+{
+    "__SceneImageCheck": {
+        "desc": "场景图像检查，检查完毕后回到菜单列表",
+        "recognition": "And",
+        "all_of": [
+            "InMenuList",
+            {
+                "recognition": "Custom",
+                "custom_recognition": "ImageCheckNotPassedRecognition"
+            }
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "target": [
+            60,
+            -100,
+            10,
+            10
+        ],
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__SceneImageCheckDialogIn"
+        ],
+        "focus": {
+            "Node.Recognition.Succeeded": "正在检查画面，提示登出账号是正常现象，会自动取消"
+        }
+    },
+    "__SceneImageCheckDialogIn": {
+        "desc": "在菜单列表界面",
+        "recognition": "OCR",
+        "roi": [
+            400,
+            250,
+            470,
+            200
+        ],
+        "expected": [
+            "登录界面",
+            "登入介面",
+            "login screen",
+            "画面に戻りますか",
+            "나가시겠습니까"
+        ],
+        "pre_wait_freezes": 120,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "[JumpBack]__SceneCheckOSD",
+            "[JumpBack]__SceneImageCheckAICPlanColor",
+            "[JumpBack]__SceneImageCheckMod",
+            "[JumpBack]__SceneImageCheckLanguage",
+            "[JumpBack]__SceneImageCaptureUid",
+            "__SceneImageCheckFinishSave"
+        ]
+    },
+    "__SceneImageCheckFinishSave": {
+        "desc": "场景图像检查完成保存状态",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "ImageCheckSetResultAction",
+        "custom_action_param": {
+            "result": true
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__SceneImageCheckFinishExit"
+        ],
+        "focus": {
+            "Node.Recognition.Succeeded": "画面检查通过"
+        }
+    },
+    "__SceneImageCheckFinishExit": {
+        "desc": "场景图像检查完成退出到原界面",
+        "recognition": "And",
+        "all_of": [
+            "CancelButton"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "rate_limit": 0,
+        "next": [
+            "__SceneImageCheckFinishExitSuccess"
+        ]
+    },
+    "__SceneImageCheckFinishExitSuccess": {
+        "desc": "场景图像检查完成退出到原界面成功",
+        "recognition": "And",
+        "all_of": [
+            "CancelButton"
+        ],
+        "inverse": true,
+        "pre_wait_freezes": 120,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "__SceneImageCheckLanguage": {
+        "desc": "检查游戏语言是否为简体中文",
+        "max_hit": 1,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__SceneImageCheckLanguageSuccess",
+            "__SceneImageCheckLanguageFailedWarn"
+        ]
+    },
+    "__SceneImageCheckLanguageSuccess": {
+        "desc": "游戏语言为简体中文",
+        "recognition": "OCR",
+        "roi": [
+            400,
+            250,
+            470,
+            200
+        ],
+        "expected": [
+            // 是否退出至登录界面
+            // @i18n-skip
+            "是否退出至登录界面"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "focus": {
+            "Node.Recognition.Succeeded": {
+                "trace": true
+            }
+        }
+    },
+    "__SceneImageCheckLanguageFailedWarn": {
+        "desc": "游戏语言不是简体中文，输出警告",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "focus": {
+            "Node.Recognition.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Starting": "$task.SceneManager.focus.language_not_zh_cn"
+        }
+    },
+    "__SceneImageCheckAICPlanColor": {
+        "desc": "检查颜色",
+        "max_hit": 1,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__SceneImageCheckAICPlanColorSuccess",
+            "__SceneImageCheckAICPlanColorFailedFinish"
+        ]
+    },
+    "__SceneImageCheckAICPlanColorSuccess": {
+        "desc": "检查颜色成功",
+        "recognition": "And",
+        "all_of": [
+            "CancelButton",
+            "YellowConfirmButtonType1"
+        ]
+    },
+    "__SceneImageCheckAICPlanColorFailedFinish": {
+        "desc": "检查颜色失败,截图保存到 debug 目录",
+        "pre_delay": 0,
+        "action": "Screencap",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__SceneCheckAbortPipeline"
+        ],
+        "focus": {
+            "Node.Action.Starting": {
+                "content": "$task.SceneManager.focus.color_match_failed_prefix",
+                "display": "modal"
+            }
+        }
+    },
+    "__SceneImageCheckMod": {
+        "desc": "检查是否启用隐藏uid的mod，会挡住左上角文字影响ocr",
+        "max_hit": 1,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__SceneImageCheckModSuccess",
+            "__SceneImageCheckModFailedFinish"
+        ]
+    },
+    "__SceneImageCheckModSuccess": {
+        "desc": "检查mod成功",
+        "recognition": "OCR",
+        "roi": [
+            0,
+            -30,
+            200,
+            30
+        ],
+        "expected": [
+            // UID，怕I正确率低，只识别D
+            // @i18n-skip
+            "D"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0
+    },
+    "__SceneImageCheckModFailedFinish": {
+        "desc": "检查mod失败,截图保存到 debug 目录",
+        "pre_delay": 0,
+        "action": "Screencap",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "__SceneCheckAbortPipeline"
+        ],
+        "focus": {
+            "Node.Action.Starting": {
+                "content": "$task.SceneManager.focus.mod_check_failed_prefix",
+                "display": "modal"
+            }
+        }
+    },
+    "__SceneImageCaptureUid": {
+        "desc": "从注册表（Win32）或 OCR（其他控制器）获取 UID 并发布到 CurrentAccountIdentity，供 cpp-algo 滑索规划使用",
+        "max_hit": 1,
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "CaptureUid",
+        "post_delay": 0,
+        "rate_limit": 0
+    }
+}

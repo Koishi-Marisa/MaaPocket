@@ -1,0 +1,611 @@
+{
+    "GiftOperatorBranchGift": {
+        "desc": "分支1：可以赠送礼物",
+        "recognition": {
+            "type": "Or",
+            "param": {
+                "any_of": [
+                    "GiftOperatorBranchGiftTemplate",
+                    "GiftOperatorBranchGiftOCR"
+                ]
+            }
+        },
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "RepeatUntilFoundAction",
+                "custom_action_param": {
+                    "action": "Click",
+                    "wait_nodes": [
+                        "GiftOperatorGiftUI"
+                    ]
+                }
+            }
+        },
+        "next": [
+            "GiftOperatorGiftUI"
+        ]
+    },
+    "GiftOperatorBranchGiftTemplate": {
+        "desc": "赠送礼物按钮模板识别",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    900,
+                    334,
+                    350,
+                    318
+                ],
+                "template": [
+                    "GiftOperator/GiftOperatorGiftButton.png",
+                    "GiftOperator/GiftOperatorGiftFullButton.png",
+                    "GiftOperator/GiftFullOperatorGiftButton.png"
+                ],
+                "threshold": 0.8
+            }
+        }
+    },
+    "GiftOperatorBranchGiftOCR": {
+        "desc": "赠送礼物按钮 OCR 识别，作为模板失败时的回退",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    900,
+                    334,
+                    350,
+                    318
+                ],
+                "expected": [
+                    "赠送礼物",
+                    "贈送禮物",
+                    "(?i)Offering\\s*Gifts",
+                    "プレゼントを贈る"
+                ]
+            }
+        }
+    },
+    "GiftOperatorBranchReceive": {
+        "desc": "分支2：干员给你送礼，点击领取",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    900,
+                    334,
+                    350,
+                    318
+                ],
+                "expected": [
+                    "收下礼物",
+                    "收下禮物",
+                    "(?i)Accept\\s*gift",
+                    "プレゼントを受け取る",
+                    "收下"
+                ]
+            }
+        },
+        "pre_wait_freezes": {
+            "time": 200,
+            "timeout": 3000,
+            "target": [
+                1008,
+                474,
+                84,
+                38
+            ]
+        },
+        "pre_delay": 0,
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "RepeatUntilFoundAction",
+                "custom_action_param": {
+                    "action": "Click",
+                    "wait_nodes": [
+                        "GiftOperatorReceiveDialog",
+                        "GiftOperatorBagFull"
+                    ]
+                }
+            }
+        },
+        "next": [
+            "GiftOperatorReceiveDialog",
+            "GiftOperatorBagFull"
+        ]
+    },
+    "GiftOperatorClickGift": {
+        "desc": "选择礼物",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "GiftOperatorClickGiftColor",
+                    "GiftOperatorClickGiftColorNumber"
+                ],
+                "box_index": 1
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "next": [
+            "GiftOperatorGiftSelected"
+        ]
+    },
+    "GiftOperatorClickGiftColorNumber": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": "GiftOperatorClickGiftColor",
+                "roi_offset": [
+                    26,
+                    -24,
+                    -50,
+                    24
+                ],
+                "expected": [
+                    "[1-9]\\d*"
+                ]
+            }
+        }
+    },
+    "GiftOperatorClickGiftColor": {
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "roi": [
+                    0,
+                    466,
+                    1280,
+                    254
+                ],
+                "method": 40,
+                "lower": [
+                    20,
+                    250,
+                    250
+                ],
+                "upper": [
+                    30,
+                    255,
+                    255
+                ],
+                "connected": true,
+                "count": 10
+            }
+        }
+    },
+    "GiftOperatorConfirmGift": {
+        "desc": "点击赠送按钮",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "YellowButtonBackground",
+                    "GiftOperatorConfirmGiftText"
+                ],
+                "box_index": 1
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_wait_freezes": {
+            "time": 200,
+            "timeout": 3000
+        },
+        "next": [
+            "[JumpBack]GiftOperatorConfirmDialog",
+            "[JumpBack]GiftOperatorGiftDialog",
+            "GiftOperatorLeave"
+        ]
+    },
+    "GiftOperatorConfirmDialog": {
+        "desc": "赠送后二次确认弹窗：黄底圆环确认按钮，文字为确认",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "YellowConfirmButtonType1",
+                    "YellowButtonConfirmText"
+                ],
+                "box_index": 1
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_wait_freezes": {
+            "time": 200,
+            "timeout": 3000
+        }
+    },
+    "GiftOperatorConfirmGiftText": {
+        "desc": "确认赠送按钮上有文字，避免误点",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": "YellowButtonBackground",
+                "expected": [
+                    "确认赠送",
+                    "確定贈送",
+                    "Confirm",
+                    "贈る"
+                ]
+            }
+        }
+    },
+    "GiftOperatorGiftDialog": {
+        "desc": "赠送后跳过对话；赠送已满离开送礼界面后跳过对话。",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    616,
+                    679,
+                    48,
+                    40
+                ],
+                "template": [
+                    "RealTimeTask/AutoSkipNext2.png"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click"
+        }
+    },
+    "GiftOperatorGiftSelectedLabelColor": {
+        "desc": "选中礼物标签颜色",
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "roi": [
+                    28,
+                    430,
+                    1252,
+                    130
+                ],
+                "method": 40,
+                "lower": [
+                    25,
+                    230,
+                    240
+                ],
+                "upper": [
+                    30,
+                    255,
+                    255
+                ],
+                "connected": true,
+                "count": 10
+            }
+        }
+    },
+    "GiftOperatorGiftSelectedTextColor": {
+        "desc": "选中礼物文字颜色",
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "roi": "GiftOperatorGiftSelectedLabelColor",
+                "lower": [
+                    60,
+                    60,
+                    60
+                ],
+                "upper": [
+                    114,
+                    110,
+                    100
+                ],
+                "connected": true,
+                "count": 10
+            }
+        }
+    },
+    "GiftOperatorGiftSelectedText": {
+        "desc": "选中礼物文字",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": "GiftOperatorGiftSelectedTextColor",
+                "roi_offset": [
+                    -2,
+                    -2,
+                    4,
+                    4
+                ],
+                "expected": [
+                    "\\d+"
+                ],
+                "only_rec": true
+            }
+        }
+    },
+    "GiftOperatorGiftSelected": {
+        "desc": "确认礼物已选中",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "GiftOperatorGiftSelectedLabelColor"
+                    //"GiftOperatorGiftSelectedTextColor",
+                    //"GiftOperatorGiftSelectedText"
+                ]
+            }
+        },
+        "next": [
+            "GiftOperatorConfirmGift"
+        ]
+    },
+    "GiftOperatorGiftUILabelColor": {
+        "desc": "送礼界面「默认」标签颜色",
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "roi": [
+                    100,
+                    606,
+                    108,
+                    83
+                ],
+                "lower": [
+                    230,
+                    230,
+                    230
+                ],
+                "upper": [
+                    255,
+                    255,
+                    255
+                ],
+                "connected": true,
+                "count": 10
+            }
+        }
+    },
+    "GiftOperatorGiftUITextColor": {
+        "desc": "送礼界面「默认」文字颜色",
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "roi": "GiftOperatorGiftUILabelColor",
+                "lower": [
+                    0,
+                    0,
+                    0
+                ],
+                "upper": [
+                    200,
+                    200,
+                    200
+                ],
+                "count": 10
+            }
+        }
+    },
+    "GiftOperatorGiftUIText": {
+        "desc": "送礼界面「默认」文字",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": "GiftOperatorGiftUITextColor",
+                "roi_offset": [
+                    -2,
+                    -2,
+                    4,
+                    4
+                ],
+                "expected": [
+                    "默认",
+                    "預設",
+                    "(?i)Default",
+                    "デフォルト"
+                ],
+                "replace": [
+                    [
+                        "数",
+                        "默"
+                    ],
+                    [
+                        "以",
+                        "认"
+                    ]
+                ],
+                "only_rec": true
+            }
+        }
+    },
+    "GiftOperatorGiftUI": {
+        "desc": "进入送礼界面，确认已加载",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "GiftOperatorGiftUILabelColor",
+                    "GiftOperatorGiftUITextColor",
+                    "GiftOperatorGiftUIText"
+                ]
+            }
+        },
+        "next": [
+            "GiftOperatorGiftFull",
+            "GiftOperatorClickGift"
+        ]
+    },
+    "GiftOperatorGiftFull": {
+        "desc": "赠送已满",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    1035,
+                    375,
+                    222,
+                    130
+                ],
+                "expected": [
+                    // @i18n-skip 请明天再来吧
+                    "明天",
+                    "tomorrow",
+                    "明日",
+                    "내일"
+                ]
+            }
+        },
+        "next": [
+            "GiftOperatorGiftFullLeave"
+        ],
+        "focus": {
+            "Node.Action.Starting": "$task.GiftOperator.focus.gift_full"
+        }
+    },
+    "GiftOperatorGiftFullLeave": {
+        "desc": "赠送已满点右上角叉离开送礼界面",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "CloseButtonType1"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_wait_freezes": {
+            "time": 200,
+            "timeout": 3000
+        },
+        "next": [
+            "[JumpBack]GiftOperatorGiftDialog",
+            "[JumpBack]GiftOperatorLeave",
+            "GiftOperatorGiftFullBackInWorld"
+        ]
+    },
+    "GiftOperatorGiftFullBackInWorld": {
+        "desc": "确认对话结束已返回帝江号大世界",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "InDijiangWorld"
+                ]
+            }
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GiftOperatorGiftFullRetry",
+            "GiftOperatorGiftFullFail"
+        ]
+    },
+    "GiftOperatorGiftFullRetry": {
+        "desc": "赠送已满重试入口",
+        "max_hit": 5,
+        "pre_delay": 0,
+        "action": "DoNothing",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GiftOperatorEntry"
+        ]
+    },
+    "GiftOperatorGiftFullFail": {
+        "desc": "重试五次也只能找到送满的干员，正常失败",
+        "pre_delay": 0,
+        "action": "StopTask", // 已经确定是都送满了，不是 Bug 不需要报错
+        "post_delay": 0,
+        "rate_limit": 0,
+        "focus": {
+            "Node.Action.Starting": "$task.GiftOperator.focus.gift_full_fail"
+        }
+    },
+    "GiftOperatorReceiveDialog": {
+        "desc": "领取成功后跳过对话，回到对话流程。",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    603,
+                    646,
+                    75,
+                    74
+                ],
+                "template": [
+                    "RealTimeTask/AutoSkipNext2.png"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_wait_freezes": {
+            "time": 1000,
+            "timeout": 2000,
+            "target": [
+                831,
+                403,
+                161,
+                176
+            ]
+        },
+        "next": [
+            "GiftOperatorWaitChat",
+            "[JumpBack]GiftOperatorMoveAhead",
+            "GiftOperatorSkipDialog",
+            "GiftOperatorBranchGift",
+            "GiftOperatorLeave",
+            // "GiftOperatorMoveRetry",
+            "GiftOperatorMoveFail"
+        ]
+    },
+    "GiftOperatorSkipDialog": {
+        "desc": "跳过对话，然后判断赠送 / 收礼分支。next 含自身以便未跳转时重试一次点击",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    616,
+                    679,
+                    48,
+                    40
+                ],
+                "template": [
+                    "RealTimeTask/AutoSkipNext2.png"
+                ]
+            }
+        },
+        "pre_wait_freezes": {
+            "time": 200,
+            "timeout": 2000,
+            "target": [
+                977,
+                145,
+                192,
+                215
+            ]
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_wait_freezes": {
+            "time": 200,
+            "timeout": 2000,
+            "target": [
+                977,
+                145,
+                192,
+                215
+            ]
+        },
+        "next": [
+            "GiftOperatorBranchGift",
+            "GiftOperatorBranchReceive",
+            "GiftOperatorSkipDialog"
+        ]
+    }
+}

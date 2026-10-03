@@ -1,0 +1,101 @@
+{
+    "SeizeDeliveryJobsScanTarget": {
+        "desc": "委托目标扫描入口点，Go 驱动扫描所有符合条件的委托（终点筛选开启时启用）",
+        "enabled": false,
+        "recognition": "Custom",
+        "custom_recognition": "SeizeDeliveryJobsScanTargetRecognition",
+        "action": "Custom",
+        "custom_action": "SeizeDeliveryJobsScanTargetAction",
+        "next": [
+            "SeizeDeliveryJobsFoundTargetViewLocationClick"
+        ],
+        "on_error": [
+            "SeizeDeliveryJobsScanExhausted"
+        ]
+    },
+    "SeizeDeliveryJobsFoundTargetViewLocationClick": {
+        "desc": "点击委托项的查看位置按钮（由 Go 覆写 target）",
+        "action": "Click",
+        "target": [
+            -1,
+            -1
+        ], // 必须覆写此字段
+        "next": [
+            "SeizeDeliveryJobsEndpointFilter"
+        ]
+    },
+    // 终点筛选守卫节点 SeizeDeliveryJobsEndpointFilter、一次判全部终点的 MapFind candidates 节点
+    // SeizeDeliveryJobsEndpointCandidates，以及每个终点的「开关+落点」叶子节点 SeizeDeliveryJobsEndpointFilter<终点>，
+    // 均由 tools/pipeline-generate/SeizeDeliveryJobs 生成（分别输出到同目录的
+    // SeizeDeliveryJobsEndpointDispatcher.json 与 SeizeDeliveryJobsDestinations.json），此处不再手写。
+    // ===== 下面是结果处理的流程节点 =====
+    "SeizeDeliveryJobsEndpointMatched": {
+        "desc": "终点匹配成功，重置 Go 扫描状态",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "SeizeDeliveryJobsResetScanStateAction",
+        "post_delay": 0,
+        "next": [
+            "SeizeDeliveryJobsPressEscAfterMatch"
+        ]
+    },
+    "SeizeDeliveryJobsPressEscAfterMatch": {
+        "desc": "终点匹配成功，关闭地图",
+        "action": "ClickKey",
+        "key": 27, // ESC
+        "post_delay": 1000,
+        "next": [
+            "SeizeDeliveryJobsAcceptClick"
+        ]
+    },
+    "SeizeDeliveryJobsAcceptClick": {
+        "desc": "点击接取运送委托（由 Go 覆写target）",
+        "action": "Click",
+        "target": [
+            -1,
+            -1
+        ], // 必须覆写此字段
+        "post_wait_freezes": {
+            "time": 2000,
+            "target": [
+                2,
+                164,
+                264,
+                103
+            ]
+        },
+        "timeout": 5000,
+        "next": [
+            "SeizeDeliveryJobsIsSeizeSuccess"
+        ],
+        "on_error": [
+            "SeizeDeliveryJobsRefresh"
+        ]
+    },
+    "SeizeDeliveryJobsEndpointNotMatched": {
+        "desc": "终点未匹配，继续扫描下一个委托",
+        "next": [
+            "SeizeDeliveryJobsPressEscAfterNotMatch"
+        ],
+        "focus": {
+            "Node.Recognition.Succeeded": "$task.SeizeDeliveryJobs.focus.endpointNotMatched"
+        }
+    },
+    "SeizeDeliveryJobsPressEscAfterNotMatch": {
+        "desc": "终点未匹配，关闭地图",
+        "action": "ClickKey",
+        "key": 27, // ESC
+        "post_delay": 1000,
+        "next": [
+            "SeizeDeliveryJobsScanTarget"
+        ]
+    },
+    "SeizeDeliveryJobsScanExhausted": {
+        "desc": "扫描完毕未找到目标委托，重置 Go 扫描状态",
+        "action": "Custom",
+        "custom_action": "SeizeDeliveryJobsResetScanStateAction",
+        "next": [
+            "SeizeDeliveryJobsRefresh"
+        ]
+    }
+}

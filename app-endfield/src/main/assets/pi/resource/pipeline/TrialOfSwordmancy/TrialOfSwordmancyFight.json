@@ -1,0 +1,327 @@
+{
+    // Daily Decide 动作汇入
+    "TrialOfSwordmancyPreStartTrial": {
+        "desc": "准备开始演算",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrialOfSwordmancyFinishOnOverflow",
+            "TrialOfSwordmancyStartTrial"
+        ]
+    },
+    "TrialOfSwordmancyFinishOnOverflow": {
+        "desc": "开始演算前检查是否因溢出结束任务",
+        "enabled": false, // option 开关
+        "recognition": "DirectHit",
+        "inverse": true, // Decide 动作根据点数溢出情况当场设定 inverse 值
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "focus": {
+            "Node.Action.Succeeded": {
+                "content": "$task.TrialOfSwordmancy.focus.overflow_stopped",
+                "display": "modal"
+            }
+        }
+    },
+    "TrialOfSwordmancyStartTrial": {
+        "desc": "点击开始演算并等待编队界面",
+        "recognition": "And",
+        "all_of": [
+            "TrialOfSwordmancyStartTrialButton"
+        ],
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "RepeatUntilFoundAction",
+        "custom_action_param": {
+            "action": "Click",
+            "interval_ms": 1500,
+            "wait_nodes": [
+                "TrialOfSwordmancyPrepareTeam"
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrialOfSwordmancyPrepareTeam"
+        ]
+    },
+    "TrialOfSwordmancyPrepareTeam": {
+        "desc": "准备编队界面",
+        "recognition": "And",
+        "all_of": [
+            "InTeam"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrialOfSwordmancyConfirmTeam"
+        ]
+    },
+    "TrialOfSwordmancyConfirmTeam": {
+        "desc": "开始战斗前确认编队", // TODO: 编队切换
+        "recognition": "And",
+        "all_of": [
+            "YellowConfirmButtonType2"
+        ],
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "RepeatUntilNotFoundAction",
+        "custom_action_param": {
+            "action": "Click",
+            "interval_ms": 200,
+            "repeat_count": 20,
+            "wait_node": "InTeam"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "[JumpBack]SceneWaitBlackScreenLoadingExit",
+            "TrialOfSwordmancyLoadingExit"
+        ]
+    },
+    "TrialOfSwordmancyLoadingExit": {
+        "desc": "加载完毕",
+        "recognition": "And",
+        "all_of": [
+            "InWorld"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrialOfSwordmancyChallengeTarget",
+            "TrialOfSwordmancyOutOfBounds"
+        ]
+    },
+    "TrialOfSwordmancyOutOfBounds": {
+        "desc": "开始演算时角色在演算区域外",
+        "recognition": "And",
+        "all_of": [
+            "EndChallengeButton"
+        ],
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "MapNavigateAction",
+        "custom_action_param": {
+            "arrival_timeout": 10000,
+            "path": [
+                {
+                    "action": "NAVMESH",
+                    "target": [
+                        1863,
+                        2845
+                    ]
+                }
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "on_error": [
+            // 本次寻路必定失败：进入演算区域会强制传送并出现挑战目标弹窗
+            "TrialOfSwordmancyChallengeTarget"
+        ],
+        "focus": {
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    },
+    "TrialOfSwordmancyChallengeTarget": {
+        "desc": "进入挑战目标界面",
+        "recognition": "And",
+        "all_of": [
+            "TrialOfSwordmancyChallengeBackground"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrialOfSwordmancyCloseChallengeTarget"
+        ]
+    },
+    "TrialOfSwordmancyCloseChallengeTarget": {
+        "desc": "关闭挑战目标界面",
+        "recognition": "TemplateMatch",
+        "roi": [
+            1042,
+            176,
+            119,
+            119
+        ],
+        "template": "Common/Button/CloseButtonType4.png",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "RepeatUntilNotFoundAction",
+        "custom_action_param": {
+            "action": "Click",
+            "wait_node": "TrialOfSwordmancyChallengeBackground"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrialOfSwordmancyFight"
+        ]
+    },
+    "TrialOfSwordmancyFight": {
+        "desc": "进入战斗场景",
+        "recognition": "And",
+        "all_of": [
+            "TrialOfSwordmancyChallengeBackground"
+        ],
+        "inverse": true,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrialOfSwordmancyFightFinish",
+            "[JumpBack]AutoFight"
+        ]
+    },
+    "TrialOfSwordmancyFightFinish": {
+        "desc": "战斗结束",
+        "recognition": "And",
+        "all_of": [
+            "WhiteConfirmButtonType1"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrialOfSwordmancyFightSuccess",
+            "TrialOfSwordmancyFightFail"
+        ]
+    },
+    "TrialOfSwordmancyFightFail": {
+        "desc": "战斗失败",
+        "recognition": "And",
+        "all_of": [
+            "CheckOperationFailedText",
+            "WhiteConfirmButtonType1"
+        ],
+        "box_index": 1,
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrialOfSwordmancyLeaveSuccess"
+        ],
+        "focus": {
+            "Node.Action.Succeeded": "$task.TrialOfSwordmancy.focus.operation_failed"
+        }
+    },
+    "TrialOfSwordmancyFightSuccess": {
+        "desc": "战斗胜利：IMS A3 识别武陵调度券后再继续",
+        "recognition": "And",
+        "all_of": [
+            "WhiteConfirmButtonType1",
+            "CancelButton"
+        ],
+        "pre_wait_freezes": {
+            "target": [
+                528,
+                299,
+                222,
+                131
+            ],
+            "time": 300,
+            "threshold": 0.97,
+            "timeout": 1500
+        },
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "AddItemData",
+        "custom_action_param": {
+            "item_ids": [
+                "item_domain_jinlong_coupon"
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrialOfSwordmancyFightSuccessContinue"
+        ]
+    },
+    "TrialOfSwordmancyFightSuccessContinue": {
+        "desc": "战斗胜利后，点击再次演算",
+        "recognition": "And",
+        "all_of": [
+            "WhiteConfirmButtonType1"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrialOfSwordmancyRewardExhaustedPopUp",
+            "TrialOfSwordmancyReEnterTrialMenuSuccess"
+        ]
+    },
+    "TrialOfSwordmancyRewardExhaustedPopUp": {
+        "desc": "弹窗确认：奖励次数用尽，即将进入自由演算模式",
+        "recognition": "And",
+        "all_of": [
+            "YellowConfirmButtonType1"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrialOfSwordmancyReEnterTrialMenuSuccess"
+        ]
+    },
+    "TrialOfSwordmancyReEnterTrialMenuSuccess": {
+        "desc": "成功返回演算菜单",
+        "recognition": "And",
+        "all_of": [
+            "TrialOfSwordmancyInTrialMenu"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrialOfSwordmancyMain"
+        ]
+    },
+    "TrialOfSwordmancyFightSuccessLeave": {
+        "desc": "战斗胜利后，点击离开",
+        "recognition": "And",
+        "all_of": [
+            "CancelButton"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrialOfSwordmancyLeaveSuccess"
+        ]
+    },
+    "TrialOfSwordmancyLeaveSuccess": {
+        "desc": "回到大世界",
+        "recognition": "And",
+        "all_of": [
+            "InWorld"
+        ],
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "SubTask",
+        "custom_action_param": {
+            "sub": [
+                "TrialOfSwordmancyQuickTeleportStart"
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrialOfSwordmancyMain"
+        ]
+    }
+}

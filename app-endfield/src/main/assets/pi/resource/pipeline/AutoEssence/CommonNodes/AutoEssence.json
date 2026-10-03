@@ -1,0 +1,1468 @@
+{
+    "AutoEssenceSchedule": {
+        "desc": "基质刷取计划任务",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            "AutoEssenceScheduleEnabled",
+            "AutoEssenceScheduleEnd"
+        ]
+    },
+    "AutoEssenceScheduleEnabled": {
+        "desc": "基质刷取计划任务命中",
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "ScheduleRecognition",
+                "custom_recognition_param": {}
+            }
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            "AutoEssenceMain"
+        ],
+        "attach": {
+            "monday": false,
+            "tuesday": false,
+            "wednesday": false,
+            "thursday": false,
+            "friday": false,
+            "saturday": false,
+            "sunday": false
+        }
+    },
+    "AutoEssenceScheduleEnd": {
+        "desc": "基质刷取计划任务跳过",
+        "pre_delay": 0,
+        "post_delay": 0
+    },
+    "AutoEssenceMain": {
+        "desc": "自动基质刷取的主入口",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            // 在 SetupLocation 节点的 max_hit 未耗尽时，先经过该节点进行初始化步骤
+            "AutoEssenceSetupLocation",
+            // 如果 SetupLocation 节点的 max_hit 已耗尽，则会直接进入交互分发
+            "AutoEssenceDispatcher"
+        ],
+        "focus": {
+            "Node.Action.Starting": "▶️**准备开始本次基质刷取**"
+        }
+    },
+    "AutoEssenceSetupLocation": {
+        "desc": "抽取一个已启用的淤积点，调用其 Anchor 赋值节点，为自动导航的节点赋值（此节点默认最多执行 1 次）",
+        "max_hit": 1, // 设为 1 表示全程只刷取一个地区；若修改此值为一个很大的数，即可实现每次循环刷取都重新选地区
+        "pre_delay": 0,
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "SubTask",
+                "custom_action_param": {
+                    // 根据 SubTask 的内部执行逻辑，若节点 enabled 字段为 false，则会被过滤掉，便不会被抽到
+                    "sub": [
+                        "GotoTriggerPointSetAnchor_VFTheHub",
+                        "GotoTriggerPointSetAnchor_VFOriginiumSciencePark",
+                        "GotoTriggerPointSetAnchor_VFOriginLodespring",
+                        "GotoTriggerPointSetAnchor_VFPowerPlateau",
+                        "GotoTriggerPointSetAnchor_WLWulingCity",
+                        "GotoTriggerPointSetAnchor_WLQingboStockade",
+                        "GotoTriggerPointSetAnchor_WLMarkerStone",
+                        "GotoTriggerPointSetAnchor_WLTestArea",
+                        "GotoTriggerPointSetAnchor_WLSwordVaultDale",
+                        "GotoTriggerPointSetAnchor_WLYinglungPass",
+                        "GotoTriggerPointSetAnchor_WLNorthWulingExclusionZone",
+                        "GotoTriggerPointSetAnchor_WLSnowyForest"
+                    ],
+                    "continue": false,
+                    "strict": true,
+                    "random_choice": 1
+                }
+            }
+        },
+        "post_delay": 0,
+        "next": [
+            "AutoEssenceDispatcher"
+        ],
+        "on_error": [
+            "AutoEssenceSetupLocationFailed"
+        ]
+    },
+    "AutoEssenceSetupLocationFailed": {
+        "desc": "抽取淤积点失败（通常是因为所有淤积点均未启用），此时结束任务",
+        "action": "StopTask",
+        "focus": {
+            "Node.Action.Starting": "🤔**未选择任何地区**\n请在任务设置中至少勾选一个地区后重试~"
+        }
+    },
+    "AutoEssenceTargetPrepare": {
+        "desc": "目标模式：首次强制盘点无暇基质库存（export_inventory）后加载内存仓储；max_hit=1",
+        "max_hit": 1,
+        "pre_delay": 0,
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "PipelineOverride",
+                "custom_action_param": {
+                    "patch": {
+                        "EssenceFilterInit": {
+                            "attach": {
+                                "export_inventory": true
+                            }
+                        },
+                        "EssenceFilterCheckItemOCRFallback": {
+                            "action": "StopTask"
+                        },
+                        "EssenceGridClickPending": {
+                            "on_error": [
+                                "EssenceFilterCheckItemOCRFallback"
+                            ]
+                        },
+                        "EssenceFilterMainFailed": {
+                            "action": "StopTask"
+                        },
+                        "EssenceFilterNavigateToInventory": {
+                            "action": "StopTask"
+                        }
+                    }
+                }
+            }
+        },
+        "post_delay": 0,
+        "next": [
+            "AutoEssenceTargetRunInventoryFilter"
+        ],
+        "on_error": [
+            "AutoEssenceTargetPrepareFailed"
+        ],
+        "focus": {
+            "Node.Action.Starting": "📦目标模式：开始盘点基质库存"
+        }
+    },
+    "AutoEssenceTargetRunInventoryFilter": {
+        "desc": "目标模式：SubTask 跑 EssenceFilterMain（库存导出）",
+        "pre_delay": 0,
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "SubTask",
+                "custom_action_param": {
+                    "sub": [
+                        "EssenceFilterMain"
+                    ],
+                    "continue": false,
+                    "strict": true
+                }
+            }
+        },
+        "post_delay": 0,
+        "next": [
+            "AutoEssenceTargetLoadInventory"
+        ],
+        "on_error": [
+            "AutoEssenceTargetPrepareFailed"
+        ]
+    },
+    "AutoEssenceTargetLoadInventory": {
+        "desc": "目标模式：将 EssenceInventory.json 载入内存仓储",
+        "pre_delay": 0,
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "AutoEssenceLoadInventoryAction"
+            }
+        },
+        "post_delay": 0,
+        "next": [
+            "AutoEssenceTargetPlan"
+        ],
+        "on_error": [
+            "AutoEssenceTargetPrepareFailed"
+        ],
+        "focus": {
+            "Node.Action.Succeeded": "📦目标模式：基质仓储已加载"
+        }
+    },
+    "AutoEssenceTargetPrepareFailed": {
+        "desc": "目标模式库存盘点失败，禁止空库存开刷",
+        "action": "StopTask",
+        "focus": {
+            "Node.Action.Starting": "❌**目标模式：基质库存盘点失败**\n请确认已在基质界面可盘点后重试"
+        }
+    },
+    "AutoEssenceTargetPlan": {
+        "desc": "目标模式 A1：按缺口选刷取点与预刻写条件，OverrideNext 交还 Pipeline",
+        "pre_delay": 0,
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "AutoEssenceTargetPlanAction"
+            }
+        },
+        "post_delay": 0,
+        "attach": {}
+    },
+    "AutoEssenceDispatcher": {
+        "desc": "基质刷取分发：首次强制传送；之后认开挑战/激发/领取等，未命中则纯寻路",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            // 整次任务首次：只强制传送+寻路，不识别其它界面
+            "__AutoEssenceForceTeleportOnce",
+            // 淤积点交互：激发 / 领取 / 放弃
+            "AutoEssenceClickTriggerButton",
+            "AutoEssenceClickObtainButton",
+            "AutoEssenceClickDiscardButton",
+            "[JumpBack]AutoEssenceInObtain",
+            // 无交互图标则纯寻路
+            "[Anchor]AutoEssenceMoveToTriggerPoint"
+        ],
+        "focus": {
+            "Node.Action.Starting": "🧠正在判断当前状态"
+        }
+    },
+    "__AutoEssenceForceTeleportOnce": {
+        "desc": "整次任务仅一次：强制传送到目标锚点后再寻路",
+        "max_hit": 1,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            "[Anchor]AutoEssenceMoveToTriggerPointMaybeTeleport"
+        ]
+    },
+    "AutoEssenceClickTriggerButton": {
+        "desc": "识别并点击激发的大世界按钮",
+        "recognition": {
+            "type": "Or",
+            "param": {
+                "any_of": [
+                    "__AutoEssenceRecoEssenceTriggerButton",
+                    "__AutoEssenceRecoEssenceTriggerText"
+                ]
+            }
+        },
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "RepeatUntilFoundAction",
+                "custom_action_param": {
+                    "custom_action": "AutoAltClickAction",
+                    "wait_nodes": [
+                        "AutoEssenceClickEssenceStartPrepare",
+                        "AutoEssenceMistakeFactoryDevice"
+                    ]
+                }
+            }
+        },
+        "next": [
+            "AutoEssenceMistakeFactoryDevice",
+            "AutoEssenceReadyToStart"
+        ],
+        "focus": {
+            "Node.Action.Starting": "👆点击激发按钮"
+        }
+    },
+    "AutoEssenceReadyToStart": {
+        "desc": "点击了激发的大世界按钮之后的守卫节点",
+        "pre_delay": 0,
+        "post_wait_freezes": 500,
+        "post_delay": 0,
+        "next": [
+            "AutoEssenceMistakeFactoryDevice",
+            "AutoEssenceClickEssenceStartPrepare"
+        ]
+    },
+    "AutoEssenceMistakeFactoryDevice": {
+        "desc": "识别是否误入工业设备界面，并将其关闭",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    950,
+                    30,
+                    270,
+                    230
+                ],
+                "template": "AutoEssence/FactoryDeviceDialog.png"
+            }
+        },
+        "action": {
+            "type": "Click", // 此处点击的是工业设备界面的关闭按钮
+            "param": {
+                "target_offset": [
+                    50,
+                    5,
+                    -50,
+                    -10
+                ]
+            }
+        },
+        "next": [
+            "[Anchor]AutoEssenceMoveToTriggerPoint"
+        ],
+        "focus": {
+            "Node.Action.Starting": "😕误入工业设备界面，点击关闭按钮"
+        }
+    },
+    "AutoEssenceClickEssenceStartPrepare": {
+        "desc": "识别开始挑战界面，播报当前理智",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "WhiteConfirmButtonType1",
+                    "AutoEssenceClickEssenceStartButtonText"
+                ],
+                "box_index": 1
+            }
+        },
+        "pre_delay": 0,
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "FocusOCRAction",
+                "custom_action_param": {
+                    "node": "CommonSanityText",
+                    "focus": "当前理智 %s"
+                }
+            }
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AutoEssenceAdjustEngraveConditions"
+        ]
+    },
+    "AutoEssenceAdjustEngraveConditions": {
+        "desc": "检查基质预刻写条件（DirectHit 无条件命中，默认开启）",
+        "recognition": {
+            "type": "DirectHit",
+            "param": {}
+        },
+        "pre_delay": 0,
+        "action": "DoNothing",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AutoEssenceEngraveConditionsMatched",
+            "AutoEssenceEngraveConditionsAdjust"
+        ]
+    },
+    "AutoEssenceEngraveConditionsMatched": {
+        "desc": "识别预刻写条件正确（基础属性默认 OCR 全部，勾选后收窄）",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "AutoEssenceEngraveCondition1Matched",
+                    "AutoEssenceEngraveCondition2Matched"
+                ]
+            }
+        },
+        "pre_delay": 0,
+        "action": "DoNothing",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AutoEssenceClickEssenceStartButton"
+        ],
+        "focus": {
+            "Node.Recognition.Succeeded": "✅预刻写条件正确"
+        }
+    },
+    "__AutoEssenceEngraveCondition1HighlightColor": {
+        "desc": "预刻写基础条件高亮颜色",
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "roi": [
+                    820,
+                    545,
+                    286,
+                    97
+                ],
+                "method": 40,
+                "lower": [
+                    37,
+                    140,
+                    140
+                ],
+                "upper": [
+                    38,
+                    200,
+                    230
+                ],
+                "count": 100
+            }
+        }
+    },
+    "__AutoEssenceEngraveCondition2HighlightColor": {
+        "desc": "预刻写附加/武器条件高亮颜色",
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "roi": [
+                    1066,
+                    546,
+                    162,
+                    103
+                ],
+                "method": 40,
+                "lower": [
+                    37,
+                    140,
+                    140
+                ],
+                "upper": [
+                    38,
+                    200,
+                    230
+                ],
+                "count": 100
+            }
+        }
+    },
+    "AutoEssenceEngraveCondition1Matched": {
+        "desc": "预刻写条件 1：高亮颜色 + 五项基础属性（默认 OCR 全部，勾选后收窄）",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__AutoEssenceEngraveCondition1HighlightColor",
+                    "AutoEssenceEngraveCondition1Base_s1_1",
+                    "AutoEssenceEngraveCondition1Base_s1_2",
+                    "AutoEssenceEngraveCondition1Base_s1_3",
+                    "AutoEssenceEngraveCondition1Base_s1_4",
+                    "AutoEssenceEngraveCondition1Base_s1_5"
+                ]
+            }
+        }
+    },
+    "AutoEssenceEngraveCondition1Base_s1_1": {
+        "desc": "预刻写条件 1：基础属性 s1_1（默认识别全部文字）",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": "__AutoEssenceEngraveCondition1HighlightColor",
+                "expected": [
+                    // @i18n-skip
+                    ""
+                ],
+                "only_rec": true
+            }
+        }
+    },
+    "AutoEssenceEngraveCondition1Base_s1_2": {
+        "desc": "预刻写条件 1：基础属性 s1_2（默认识别全部文字）",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": "__AutoEssenceEngraveCondition1HighlightColor",
+                "expected": [
+                    // @i18n-skip
+                    ""
+                ],
+                "only_rec": true
+            }
+        }
+    },
+    "AutoEssenceEngraveCondition1Base_s1_3": {
+        "desc": "预刻写条件 1：基础属性 s1_3（默认识别全部文字）",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": "__AutoEssenceEngraveCondition1HighlightColor",
+                "expected": [
+                    // @i18n-skip
+                    ""
+                ],
+                "only_rec": true
+            }
+        }
+    },
+    "AutoEssenceEngraveCondition1Base_s1_4": {
+        "desc": "预刻写条件 1：基础属性 s1_4（默认识别全部文字）",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": "__AutoEssenceEngraveCondition1HighlightColor",
+                "expected": [
+                    // @i18n-skip
+                    ""
+                ],
+                "only_rec": true
+            }
+        }
+    },
+    "AutoEssenceEngraveCondition1Base_s1_5": {
+        "desc": "预刻写条件 1：基础属性 s1_5（默认识别全部文字）",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": "__AutoEssenceEngraveCondition1HighlightColor",
+                "expected": [
+                    // @i18n-skip
+                    ""
+                ],
+                "only_rec": true
+            }
+        }
+    },
+    "AutoEssenceEngraveCondition2Matched": {
+        "desc": "预刻写条件 2：高亮颜色 + 对应文字",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__AutoEssenceEngraveCondition2HighlightColor",
+                    "AutoEssenceEngraveCondition2OCR"
+                ]
+            }
+        }
+    },
+    "AutoEssenceEngraveCondition2OCR": {
+        "desc": "预刻写条件 2 文字（默认识别全部文字，勾选后收窄 expected）",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": "__AutoEssenceEngraveCondition2HighlightColor",
+                "expected": [
+                    // @i18n-skip
+                    ""
+                ],
+                "replace": [
+                    [
+                        "进发",
+                        "迸发"
+                    ]
+                ],
+                "only_rec": true
+            }
+        }
+    },
+    "AutoEssenceEngraveConditionsAdjust": {
+        "desc": "识别预刻写条件错误，开始调整条件",
+        "recognition": {
+            "type": "DirectHit",
+            "param": {}
+        },
+        "pre_delay": 0,
+        "action": "DoNothing",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AutoEssenceFindAttributeSelection"
+        ],
+        "focus": {
+            "Node.Action.Starting": "⚙️正在调整预刻写条件"
+        }
+    },
+    "AutoEssenceFindAttributeSelection": {
+        "desc": "OCR 识别属性选择按钮并点击",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    1083,
+                    514,
+                    197,
+                    93
+                ],
+                "expected": [
+                    "属性选择",
+                    "屬性選擇",
+                    "Select",
+                    "効果選択",
+                    "속성 선택"
+                ]
+            }
+        },
+        "pre_delay": 0,
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "[JumpBack]AutoEssenceClickGrayAttributeOption",
+            "AutoEssenceNoGrayAttributeOption"
+        ]
+    },
+    "AutoEssenceClickGrayAttributeOption": {
+        "desc": "识别灰色属性选项并点击取消选择",
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "roi": [
+                    43,
+                    125,
+                    904,
+                    540
+                ],
+                "method": 40,
+                "lower": [
+                    0,
+                    0,
+                    40
+                ],
+                "upper": [
+                    0,
+                    0,
+                    50
+                ],
+                "connected": true,
+                "count": 200
+            }
+        },
+        "pre_delay": 0,
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 500,
+        "rate_limit": 0
+    },
+    "AutoEssenceNoGrayAttributeOption": {
+        "desc": "已无灰色属性选项，开始后续操作",
+        "recognition": {
+            "type": "ColorMatch",
+            "param": {
+                "roi": [
+                    43,
+                    125,
+                    904,
+                    540
+                ],
+                "method": 40,
+                "lower": [
+                    0,
+                    0,
+                    40
+                ],
+                "upper": [
+                    0,
+                    0,
+                    50
+                ],
+                "connected": true,
+                "count": 200
+            }
+        },
+        "inverse": true,
+        "pre_delay": 0,
+        "action": "DoNothing",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AutoEssenceSelectEngraveBase_s1_1"
+        ]
+    },
+    "AutoEssenceSelectEngraveBase_s1_1": {
+        "desc": "选择预刻写基础属性 s1_1（未勾选时 DirectHit 跳过）",
+        "recognition": {
+            "type": "DirectHit",
+            "param": {}
+        },
+        "pre_delay": 0,
+        "action": "DoNothing",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AutoEssenceSelectEngraveBase_s1_2"
+        ]
+    },
+    "AutoEssenceSelectEngraveBase_s1_2": {
+        "desc": "选择预刻写基础属性 s1_2（未勾选时 DirectHit 跳过）",
+        "recognition": {
+            "type": "DirectHit",
+            "param": {}
+        },
+        "pre_delay": 0,
+        "action": "DoNothing",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AutoEssenceSelectEngraveBase_s1_3"
+        ]
+    },
+    "AutoEssenceSelectEngraveBase_s1_3": {
+        "desc": "选择预刻写基础属性 s1_3（未勾选时 DirectHit 跳过）",
+        "recognition": {
+            "type": "DirectHit",
+            "param": {}
+        },
+        "pre_delay": 0,
+        "action": "DoNothing",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AutoEssenceSelectEngraveBase_s1_4"
+        ]
+    },
+    "AutoEssenceSelectEngraveBase_s1_4": {
+        "desc": "选择预刻写基础属性 s1_4（未勾选时 DirectHit 跳过）",
+        "recognition": {
+            "type": "DirectHit",
+            "param": {}
+        },
+        "pre_delay": 0,
+        "action": "DoNothing",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AutoEssenceSelectEngraveBase_s1_5"
+        ]
+    },
+    "AutoEssenceSelectEngraveBase_s1_5": {
+        "desc": "选择预刻写基础属性 s1_5（未勾选时 DirectHit 跳过）",
+        "recognition": {
+            "type": "DirectHit",
+            "param": {}
+        },
+        "pre_delay": 0,
+        "action": "DoNothing",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AutoEssenceSelectEngraveBonusCondition"
+        ]
+    },
+    "AutoEssenceSelectEngraveBonusCondition": {
+        "desc": "选择预刻写附加属性",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    43,
+                    125,
+                    904,
+                    540
+                ],
+                "expected": [
+                    // @i18n-skip
+                    "a^"
+                ],
+                "replace": [
+                    [
+                        "进发",
+                        "迸发"
+                    ]
+                ]
+            }
+        },
+        "pre_delay": 0,
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AutoEssenceConfirmEngraveSelection"
+        ]
+    },
+    "AutoEssenceConfirmEngraveSelection": {
+        "desc": "识别并点击确认选择按钮",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "YellowConfirmButtonType2"
+                ]
+            }
+        },
+        "pre_delay": 0,
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AutoEssenceEngraveConditionsMatched"
+        ]
+    },
+    "AutoEssenceClickEssenceStartButton": {
+        "desc": "识别并点击开始界面中的开始挑战按钮",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "WhiteConfirmButtonType1",
+                    "AutoEssenceClickEssenceStartButtonText"
+                ],
+                "box_index": 1
+            }
+        },
+        "pre_wait_freezes": 1000,
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 1000,
+        "next": [
+            "[JumpBack]AutoEssenceDismissWarningEngravePermitInsufficientContinue",
+            "AutoEssenceDismissWarningEngravePermitInsufficientCancel",
+            "[JumpBack]AutoEssenceDismissWarningPreEngrave",
+            "AutoEssenceDismissWarningSanityLowContinue",
+            "AutoEssenceDismissWarningSanityLowStop",
+            "AutoEssenceDismissWarningSanityLowUseSpMedicationPrepare",
+            "AutoEssenceChallengeEnter"
+        ],
+        "focus": {
+            "Node.Action.Starting": "👆点击开启挑战按钮"
+        }
+    },
+    "AutoEssenceDismissWarningEngravePermitInsufficientContinue": {
+        "desc": "刻写关闭时：识别刻写券不足弹窗，点击确定后 JumpBack 继续挑战",
+        "enabled": false,
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "YellowConfirmButtonType1",
+                    "__AutoEssenceRecoEngravePermitInsufficient"
+                ],
+                "box_index": 0
+            }
+        },
+        "pre_delay": 0,
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "focus": {
+            "Node.Action.Starting": "$task.AutoEssence.focus.engrave_permit_insufficient"
+        }
+    },
+    "AutoEssenceDismissWarningEngravePermitInsufficientCancel": {
+        "desc": "刻写开启时：识别刻写券不足弹窗，点击取消后停止任务",
+        "enabled": true,
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "CancelButton",
+                    "__AutoEssenceRecoEngravePermitInsufficient"
+                ],
+                "box_index": 0
+            }
+        },
+        "pre_delay": 0,
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AutoEssenceEngravePermitInsufficientStop"
+        ]
+    },
+    "AutoEssenceEngravePermitInsufficientStop": {
+        "desc": "刻写券不足，停止任务",
+        "pre_delay": 0,
+        "action": "StopTask",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "focus": {
+            "Node.Action.Starting": "$task.AutoEssence.focus.engrave_permit_insufficient"
+        }
+    },
+    "AutoEssenceDismissWarningPreEngrave": {
+        "desc": "识别并关闭开始挑战时预刻写警告弹窗，弹完再弹体力不足窗口",
+        "recognition": "And",
+        "all_of": [
+            "YellowConfirmButtonType1",
+            {
+                "recognition": "OCR",
+                "roi": [
+                    0,
+                    250,
+                    1280,
+                    200
+                ],
+                "expected": [
+                    // @i18n-skip
+                    "当前未进行基质预刻写",
+                    "目前未預刻寫基質"
+                ]
+            }
+        ],
+        "box_index": 0,
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 1000,
+        "focus": {
+            "Node.Action.Starting": "👷无视预刻写警告，继续刷取"
+        }
+    },
+    "AutoEssenceDismissWarningSanityLowStop": {
+        "desc": "识别开始挑战时无体力结束任务",
+        "enabled": true,
+        "recognition": "And",
+        "all_of": [
+            "CancelButton",
+            {
+                "recognition": "OCR",
+                "roi": [
+                    0,
+                    250,
+                    1280,
+                    200
+                ],
+                // @i18n-skip
+                "expected": [
+                    "当前理智不足",
+                    "目前理智不足"
+                ]
+            }
+        ],
+        "next": [
+            "AutoEssenceLowSpStop"
+        ]
+    },
+    "AutoEssenceDismissWarningSanityLowUseSpMedicationPrepare": {
+        "desc": "识别开始挑战时无体力关尝试补充",
+        "enabled": false,
+        "recognition": "And",
+        "all_of": [
+            "CancelButton",
+            {
+                "recognition": "OCR",
+                "roi": [
+                    0,
+                    250,
+                    1280,
+                    200
+                ],
+                // @i18n-skip
+                "expected": [
+                    "当前理智不足",
+                    "目前理智不足"
+                ]
+            }
+        ],
+        "box_index": 0,
+        "action": "Click",
+        "next": [
+            "AutoEssenceDismissWarningSanityLowUseSpMedication"
+        ]
+    },
+    "AutoEssenceDismissWarningSanityLowUseSpMedication": {
+        "desc": "回到开始挑战界面，尝试添加理智",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "WhiteConfirmButtonType1",
+                    "AutoEssenceClickEssenceStartButtonText"
+                ],
+                "box_index": 1
+            }
+        },
+        "pre_wait_freezes": 100,
+        "anchor": {
+            "AutoUseSpMedicationInPrepareFinishNoUseAnchor": "AutoEssenceLowSpStop",
+            "AutoUseSpMedicationInPrepareFinishUseAnchor": "AutoEssenceClickEssenceStartButton"
+        },
+        "next": [
+            "AutoUseSpMedicationInPrepareWithAnchor"
+        ]
+    },
+    "AutoEssenceDismissWarningSanityLowContinue": {
+        "desc": "识别并关闭开始挑战时无体力警告弹窗，继续刷取",
+        "enabled": false,
+        "recognition": "And",
+        "all_of": [
+            "YellowConfirmButtonType1",
+            {
+                "recognition": "OCR",
+                "roi": [
+                    0,
+                    250,
+                    1280,
+                    200
+                ],
+                // @i18n-skip
+                "expected": [
+                    "当前理智不足",
+                    "目前理智不足"
+                ]
+            }
+        ],
+        "box_index": 0,
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 1000,
+        "next": [
+            "AutoEssenceChallengeEnter"
+        ],
+        "focus": {
+            "Node.Action.Starting": "👷理智不足，继续刷取"
+        }
+    },
+    "AutoEssenceChallengeEnter": {
+        "desc": "检查是否进入挑战，随后使用自动战斗方式进行挑战",
+        "recognition": {
+            "type": "Or",
+            "param": {
+                "any_of": [
+                    "__AutoEssenceRecoEssenceOngoing"
+                ]
+            }
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            "[JumpBack]AutoFight",
+            "AutoEssenceChallengeFinished"
+        ],
+        "focus": {
+            "Node.Recognition.Starting": "⚔️正在通过自动战斗挑战"
+        }
+    },
+    "AutoEssenceChallengeFinished": {
+        "desc": "检查是否挑战结束",
+        "recognition": {
+            "type": "Or",
+            "param": {
+                "any_of": [
+                    "__AutoEssenceRecoEssenceOngoing"
+                ]
+            }
+        },
+        "inverse": true,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            "AutoEssenceClickObtainButton",
+            "AutoEssenceClickDiscardButton",
+            "[JumpBack]AutoEssenceInObtain",
+            "[Anchor]AutoEssenceMoveToTriggerPoint" // 未识别到领取时纯寻路回交互位，再由 Interact 处理
+        ],
+        "focus": {
+            "Node.Recognition.Starting": "🔍检查挑战是否结束",
+            "Node.Action.Starting": "👌识别到挑战结束"
+        }
+    },
+    "AutoEssenceInObtain": {
+        "desc": "需要滑动以确保领取奖励的按钮组可见",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    738,
+                    335,
+                    445,
+                    300
+                ],
+                "expected": [
+                    "重度|能量|淤积点", // 重度能量淤积点
+                    "重度|能量|淤積點", // 重度能量淤積點
+                    "Severe|Energy|Alluvium", // Severe Energy Alluvium
+                    "重度|超域|活性点" // 重度超域活性点
+                ]
+            }
+        },
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "AutoAltSwipeAction",
+                "custom_action_param": {
+                    "begin_offset": [
+                        0,
+                        30,
+                        0,
+                        -10
+                    ],
+                    "end_offset": [
+                        0,
+                        -120,
+                        0,
+                        0
+                    ]
+                }
+            }
+        },
+        "focus": {
+            "Node.Action.Starting": "🖐️滑动交互列表"
+        }
+    },
+    "AutoEssenceClickObtainButton": {
+        "desc": "识别并点击领取奖励的大世界按钮（Alt 点击；此节点默认开启）",
+        "enabled": true,
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__AutoEssenceRecoEssenceObtainButton",
+                    "__AutoEssenceRecoEssenceObtainText"
+                ],
+                "box_index": 1
+            }
+        },
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "AutoAltClickAction"
+            }
+        },
+        "timeout": 2000,
+        "next": [
+            "AutoEssenceMistakeFactoryDevice",
+            "AutoEssenceChooseScalingPre"
+        ],
+        "focus": {
+            "Node.Action.Starting": "👆点击领取奖励按钮"
+        }
+    },
+    "AutoEssenceClickDiscardButton": {
+        "desc": "识别并点击放弃奖励的大世界按钮（Alt 点击；此节点默认关闭）",
+        "enabled": false,
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__AutoEssenceRecoEssenceObtainButton",
+                    "__AutoEssenceRecoEssenceDiscardText"
+                ],
+                "box_index": 1
+            }
+        },
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "AutoAltClickAction"
+            }
+        },
+        "timeout": 2000,
+        "next": [
+            "AutoEssenceMistakeFactoryDevice",
+            "AutoEssenceConfirmDiscard"
+        ],
+        "focus": {
+            "Node.Action.Starting": "👆点击放弃奖励按钮"
+        }
+    },
+    "AutoEssenceChooseScalingPre": {
+        "desc": "准备选择领取倍数的守卫节点",
+        "pre_wait_freezes": 1000,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            // 考虑到双倍领取的许可券可能不足，不论是单倍还是双倍领取，都需要点击一次单倍领取的选项
+            "AutoEssenceChooseScaling1",
+            // 考虑到某些情况无需选择领取倍数，当没有识别到单倍领取选项时，直接进入下一步
+            "AutoEssenceAfterChooseScaling"
+        ]
+    },
+    "AutoEssenceChooseScaling1": {
+        "desc": "识别并点击单倍领取的选项",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    260,
+                    190,
+                    490,
+                    360
+                ],
+                "template": "AutoEssence/EssenceScaling1.png",
+                "order_by": "Score"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "next": [
+            // 如果识别双倍领取选项的节点已开启，下一步就会尝试双倍领取
+            "AutoEssenceChooseScaling2",
+            // 如果双倍领取的对应节点没有开启或者未能识别，就会在点击了单倍领取的选项后，直接进入下一步
+            "AutoEssenceAfterChooseScaling"
+        ],
+        "focus": {
+            "Node.Action.Starting": "👆点击单倍领取按钮"
+        }
+    },
+    "AutoEssenceChooseScaling2": {
+        "desc": "识别并点击双倍领取的选项",
+        "enabled": false,
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    260,
+                    190,
+                    490,
+                    360
+                ],
+                "template": "AutoEssence/EssenceScaling2.png",
+                "order_by": "Score"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "next": [
+            "AutoEssenceAfterChooseScaling"
+        ],
+        "focus": {
+            "Node.Action.Starting": "👆点击双倍领取按钮"
+        }
+    },
+    "AutoEssenceAfterChooseScaling": {
+        "desc": "选择了领取倍数之后的守卫节点",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            "[JumpBack]AutoEssenceChooseOverrideOff",
+            "[JumpBack]AutoEssenceChooseOverrideOn",
+            "AutoEssenceConfirmObtain"
+        ]
+    },
+    "AutoEssenceChooseOverrideOff": {
+        "desc": "识别刻写选项是否已打开，识别到之后，点击它来关闭刻写",
+        "enabled": false,
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    66,
+                    124,
+                    472,
+                    460
+                ],
+                "template": "AutoEssence/EssenceOverrideOn.png",
+                "order_by": "Score"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "focus": {
+            "Node.Action.Starting": "👆点击关闭刻写按钮"
+        }
+    },
+    "AutoEssenceChooseOverrideOn": {
+        "desc": "识别刻写选项是否已关闭，识别到之后，点击它来开启刻写",
+        "enabled": false,
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    66,
+                    124,
+                    472,
+                    460
+                ],
+                "template": "AutoEssence/EssenceOverrideOff.png",
+                "order_by": "Score"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "focus": {
+            "Node.Action.Starting": "👆点击开启刻写按钮"
+        }
+    },
+    "AutoEssenceConfirmObtain": {
+        "desc": "识别并点击确认领取奖励的按钮",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    630,
+                    455,
+                    420,
+                    260
+                ],
+                "template": "Common/Button/YellowConfirmButtonType1.png"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_wait_freezes": {
+            "time": 1000,
+            "target": [
+                210,
+                168,
+                861,
+                422
+            ]
+        },
+        "post_delay": 1000,
+        "next": [
+            "AutoEssenceLowSp",
+            //基质筛选开启时进入基质筛选线，完成后自己退出战利品界面并next到"AutoEssenceOnSuccess"
+            "EssenceFilterAfterBattleStart",
+            //基质筛选未开启或进入失败时直接关闭战利品界面
+            "AutoEssenceCloseObtainDialog"
+        ],
+        "focus": {
+            "Node.Action.Starting": "👆点击确认领取按钮"
+        }
+    },
+    "AutoEssenceConfirmDiscard": {
+        "desc": "识别并点击确认放弃奖励的按钮",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    710,
+                    390,
+                    210,
+                    150
+                ],
+                "template": "Common/Button/YellowConfirmButtonType1.png"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 1000,
+        "next": [
+            "AutoEssenceOnSuccess"
+        ],
+        "focus": {
+            "Node.Action.Starting": "👆点击确认放弃按钮"
+        }
+    },
+    "AutoEssenceLowSp": {
+        "desc": "识别体力不足的弹窗，如有则关闭，随后进入体力不足的分支",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "__AutoEssenceLowSpDialog",
+                    "__AutoEssenceLowSpDialogCloseButton"
+                ],
+                "box_index": 1
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "next": [
+            "AutoEssenceLowDisappear"
+        ],
+        "focus": {
+            "Node.Action.Starting": "✖️关闭体力不足弹窗"
+        }
+    },
+    "AutoEssenceLowDisappear": {
+        "desc": "识别体力不足的弹窗消失",
+        "recognition": "And",
+        "all_of": [
+            "__AutoEssenceLowSpDialog"
+        ],
+        "inverse": true,
+        "next": [
+            "AutoEssenceLowSpUseMedication",
+            "AutoEssenceLowSpCancelObtain"
+        ]
+    },
+    "AutoEssenceLowSpUseMedication": {
+        "desc": "尝试使用理智消耗许可",
+        "pre_delay": 0,
+        "anchor": {
+            "AutoUseSpMedicationInPrepareFinishNoUseAnchor": "AutoEssenceLowSpCancelObtain",
+            "AutoUseSpMedicationInPrepareFinishUseAnchor": "AutoEssenceConfirmObtain"
+        },
+        "post_delay": 0,
+        "next": [
+            "AutoUseSpMedicationInPrepareWithAnchor"
+        ]
+    },
+    "AutoEssenceLowSpCancelObtain": {
+        "desc": "体力不足分支识别并点击取消领取奖励的按钮，以便返回主界面",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    220,
+                    455,
+                    420,
+                    260
+                ],
+                "template": "Common/Button/CancelButtonType2.png"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "next": [
+            "[JumpBack]AutoEssenceAfterBattleRunEndLootReport",
+            "AutoEssenceLowSpStop"
+        ],
+        "focus": {
+            "Node.Action.Starting": "✖️关闭领取奖励界面"
+        }
+    },
+    "AutoEssenceLowSpStop": {
+        "desc": "体力不足分支最终停止任务并展示提示",
+        "action": "StopTask",
+        "focus": {
+            "Node.Action.Starting": "😴**体力不足，任务结束**\n如需继续刷取，请补充足够的体力值~"
+        }
+    },
+    "AutoEssenceCloseObtainDialog": {
+        "desc": "识别并点击关闭战利品界面的按钮",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    630,
+                    430,
+                    420,
+                    260
+                ],
+                "template": "Common/Button/CancelButtonType1.png"
+            }
+        },
+        "pre_wait_freezes": 2000,
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 1000,
+        "next": [
+            "AutoEssenceOnSuccess"
+        ],
+        "focus": {
+            "Node.Action.Starting": "👆点击离开按钮"
+        }
+    },
+    "AutoEssenceOnSuccess": {
+        "desc": "成功完成一次基质刷取后的守卫节点",
+        "pre_delay": 0,
+        "next": [
+            // 循环与整次结束由任务选项覆写 next；典型为 Main -> [JumpBack]汇总 -> OnComplete（汇总无自有 next，JumpBack 后继续 OnComplete）
+            "[JumpBack]AutoEssenceAfterBattleRunEndLootReport",
+            "AutoEssenceOnComplete"
+        ],
+        "focus": {
+            "Node.Action.Starting": "✅已完成一次基质刷取"
+        }
+    },
+    "AutoEssenceAfterBattleRunEndLootReport": {
+        "desc": "战后筛选整次任务汇总：EssenceFilterFinishAction；max_hit=1 全任务仅输出一次；须由父节点以 [JumpBack] 引用以便继续 OnComplete 或体力不足 StopTask；默认关闭",
+        "enabled": false,
+        "max_hit": 1,
+        "pre_delay": 0,
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "EssenceFilterFinishAction"
+            }
+        },
+        "post_delay": 0
+    },
+    "AutoEssenceOnComplete": {
+        "desc": "成功完成了所有基质刷取，安全结束任务",
+        "action": "StopTask",
+        "focus": {
+            "Node.Action.Starting": "🎉**已完成所规定次数的基质刷取**"
+        }
+    }
+}

@@ -1,0 +1,449 @@
+{
+    "FeranmutHeartJob": {
+        "desc": "巨兽心脏任务",
+        "max_hit": 1,
+        "recognition": "And",
+        "all_of": [
+            "CheckFeranmutHeartText",
+            "CheckFeranmutHeartIcon",
+            "CheckFeranmutHeartWulingStockBill"
+        ],
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "FailureCollectorRunTask",
+        "custom_action_param": {
+            "key": "EnvironmentMonitoring",
+            "task": "FeranmutHeartExecute",
+            "recovery_task": "EnvironmentMonitoringGoToMarkerStoneMonitoringTerminal",
+            "failure_task": "FeranmutHeartFailed"
+        },
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "FeranmutHeartFailed": {
+        "desc": "巨兽心脏任务执行失败提示",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "focus": {
+            "Node.Recognition.Succeeded": "$task.EnvironmentMonitoring.route.FeranmutHeart.failed"
+        }
+    },
+    "FeranmutHeartExecute": {
+        "desc": "执行巨兽心脏任务路线",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AcceptFeranmutHeart",
+            "GoToFeranmutHeartMission"
+        ]
+    },
+    "CheckFeranmutHeartText": {
+        "desc": "检查是否有巨兽心脏文本",
+        "recognition": "OCR",
+        "roi": [
+            63,
+            208,
+            1158,
+            71
+        ],
+        "expected": [
+            "巨兽心脏",
+            "巨獸心臟",
+            "(?i)Feranmut\\s*Heart",
+            "巨獣の心臓",
+            "베헤모스의 심장"
+        ],
+        "replace": [],
+        "order_by": "Vertical",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckFeranmutHeartWulingStockBill": {
+        "desc": "检查巨兽心脏任务下方的武陵调度券图标",
+        "recognition": "TemplateMatch",
+        "roi": "CheckFeranmutHeartIcon",
+        "roi_offset": [
+            -14,
+            300,
+            359,
+            76
+        ],
+        "template": "EnvironmentMonitoring/WulingStockBill.png",
+        "threshold": 0.8,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckFeranmutHeartIcon": {
+        "desc": "检查巨兽心脏文本下方的图标",
+        "recognition": "TemplateMatch",
+        "roi": "CheckFeranmutHeartText",
+        "roi_offset": [
+            -18,
+            0,
+            0,
+            28
+        ],
+        "template": "EnvironmentMonitoring/PhotoIcon.png",
+        "threshold": 0.8,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckFeranmutHeartJob": {
+        "desc": "检查巨兽心脏委托是否可以接取",
+        "recognition": "OCR",
+        "roi": "CheckFeranmutHeartIcon",
+        "roi_offset": [
+            -14,
+            332,
+            359,
+            76
+        ],
+        "expected": [
+            "接取委托",
+            "接取委託",
+            "(?i)Accept\\s*Job",
+            "引き受ける",
+            "의뢰 수령"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckFeranmutHeartGoToMissionText": {
+        "desc": "检查巨兽心脏委托是否可以前往",
+        "recognition": "OCR",
+        "roi": "CheckFeranmutHeartIcon",
+        "roi_offset": [
+            -14,
+            332,
+            359,
+            76
+        ],
+        "expected": [
+            "前往任务",
+            "前往任務",
+            "(?i)Go\\s*to\\s*Mission",
+            "任務へ",
+            "임무로 이동하기"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "InFeranmutHeartMission": {
+        "desc": "是否在巨兽心脏任务界面",
+        "recognition": "OCR",
+        "roi": [
+            415,
+            50,
+            855,
+            241
+        ],
+        "expected": [
+            "拍摄巨兽心脏",
+            "拍攝巨獸心臟",
+            "(?i)Photo:\\s*Feranmut\\s*Heart",
+            "巨獣の心臓の写真を撮る",
+            "베헤모스의 심장을 촬영하기"
+        ],
+        "replace": [],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "AcceptFeranmutHeart": {
+        "desc": "接取巨兽心脏委托",
+        "recognition": "And",
+        "all_of": [
+            "CheckFeranmutHeartText",
+            "CheckFeranmutHeartIcon",
+            "CheckFeranmutHeartJob"
+        ],
+        "box_index": 2,
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToFeranmutHeartMission"
+        ]
+    },
+    "GoToFeranmutHeartMission": {
+        "desc": "前往巨兽心脏任务",
+        "recognition": "And",
+        "all_of": [
+            "CheckFeranmutHeartText",
+            "CheckFeranmutHeartIcon",
+            "CheckFeranmutHeartGoToMissionText"
+        ],
+        "box_index": 2,
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "FeranmutHeartTrackOrGoTo"
+        ]
+    },
+    "FeranmutHeartTrackOrGoTo": {
+        "desc": "在巨兽心脏任务中，如果有开始追踪的按钮就点击追踪，已在追踪则继续",
+        "recognition": "And",
+        "all_of": [
+            "InFeranmutHeartMission"
+        ],
+        // 面板入场动画期间点击可能被吞掉，等按钮区域静止后再继续
+        // （wait_freezes 按 ROI 整体判定静止，区域越大越容易把按钮位移稀释掉）
+        "pre_wait_freezes": {
+            "time": 200,
+            "target": [
+                904,
+                580,
+                368,
+                130
+            ]
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrackFeranmutHeart",
+            "AlreadyTrackedFeranmutHeart"
+        ]
+    },
+    "TrackFeranmutHeart": {
+        "desc": "追踪巨兽心脏任务",
+        "recognition": "And",
+        "all_of": [
+            "TrackMissionButton",
+            "InFeranmutHeartMission"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "FeranmutHeartInQuickTeleportMap"
+        ]
+    },
+    "AlreadyTrackedFeranmutHeart": {
+        "desc": "巨兽心脏任务已经在追踪中",
+        "recognition": "And",
+        "all_of": [
+            "AlreadyTrackedMissionButton",
+            "InFeranmutHeartMission"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "FeranmutHeartOpenTrackedMissionMap"
+        ]
+    },
+    "FeranmutHeartOpenTrackedMissionMap": {
+        "desc": "巨兽心脏任务已在追踪中，点击定位按钮进入任务地图",
+        "recognition": "And",
+        "all_of": [
+            "TrackedMissionMapButton",
+            "InFeranmutHeartMission"
+        ],
+        "box_index": 0,
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "FeranmutHeartInQuickTeleportMap"
+        ]
+    },
+    "FeranmutHeartInQuickTeleportMap": {
+        "desc": "已进入巨兽心脏任务地图，准备快捷传送",
+        "recognition": "And",
+        "all_of": [
+            "QuickTeleportButton",
+            "InFeranmutHeartMission"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "FeranmutHeartQuickTeleportSelect"
+        ]
+    },
+    "FeranmutHeartQuickTeleportSelect": {
+        "desc": "在巨兽心脏任务地图中点击前往传送",
+        "recognition": "And",
+        "all_of": [
+            "QuickTeleportButton",
+            "InFeranmutHeartMission"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_wait_freezes": 500,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "FeranmutHeartQuickTeleport"
+        ]
+    },
+    "FeranmutHeartQuickTeleport": {
+        "desc": "在巨兽心脏任务地图中点击传送",
+        "recognition": "And",
+        "all_of": [
+            "TeleportButton"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "FeranmutHeartQuickTeleportDone",
+            "[JumpBack]SceneWaitLoadingExit"
+        ]
+    },
+    "FeranmutHeartQuickTeleportDone": {
+        "desc": "快捷传送完成，已返回大世界",
+        "recognition": "And",
+        "all_of": [
+            "InWorld"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToFeranmutHeartMove"
+        ]
+    },
+    "FeranmutHeartNotAdapted": {
+        "desc": "巨兽心脏任务尚未适配，仅接取并追踪",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "focus": {
+            "Node.Recognition.Succeeded": "$task.EnvironmentMonitoring.not_adapted"
+        }
+    },
+    "GoToFeranmutHeart": {
+        "desc": "前往巨兽心脏，先回到大世界再进行判断",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "SubTask",
+        "custom_action_param": {
+            "sub": [
+                "SceneAnyEnterWorld"
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToFeranmutHeartStartPos",
+            "GoToFeranmutHeartNotAtStartPos"
+        ]
+    },
+    "GoToFeranmutHeartStartPos": {
+        "desc": "在巨兽心脏任务开始位置附近",
+        "recognition": "Custom",
+        "custom_recognition": "MapLocateAssertLocation",
+        "custom_recognition_param": {
+            "zone_id": "Wuling_Base",
+            "target": [
+                0,
+                0,
+                1,
+                1
+            ]
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToFeranmutHeartMove"
+        ]
+    },
+    "GoToFeranmutHeartNotAtStartPos": {
+        "desc": "前往巨兽心脏传送点，传送后调整朝向并拍照",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "SubTask",
+        "custom_action_param": {
+            "sub": [
+                "SceneAnyEnterWorld"
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToFeranmutHeartMove"
+        ]
+    },
+    "GoToFeranmutHeartMove": {
+        "desc": "在巨兽心脏传送点调整拍照朝向",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "MapNavigateAction",
+        "custom_action_param": {
+            "path": [
+                {
+                    "action": "HEADING",
+                    "angle": 270
+                }
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "FeranmutHeartTakePhoto"
+        ],
+        "focus": {
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    },
+    "GoToFeranmutHeartMoveAfterFight": {
+        "desc": "可能的战斗结束后，恢复性地走回巨兽心脏拍照点",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "MapNavigateAction",
+        "custom_action_param": {
+            "path": [
+                {
+                    "action": "HEADING",
+                    "angle": 270
+                }
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "FeranmutHeartTakePhoto"
+        ],
+        "focus": {
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    },
+    "FeranmutHeartTakePhoto": {
+        "desc": "在巨兽心脏任务拍照点开始拍照",
+        "pre_delay": 0,
+        "anchor": {
+            "EnvironmentMonitoringBackToTerminal": "EnvironmentMonitoringGoToMarkerStoneMonitoringTerminal"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "EnvironmentMonitoringTakePhoto"
+        ]
+    }
+}

@@ -1,0 +1,38 @@
+{
+    "InStashProgressionTab": {
+        "desc": "当前正在培养素材页",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    357,
+                    0,
+                    510,
+                    74
+                ],
+                "template": "SceneManager/ProgressionTabChoosed.png"
+            }
+        },
+        "focus": {
+            "Node.Action.Starting": "进入培养素材页"
+        }
+    },
+    "InStashValuablesTab": {
+        "desc": "当前正在珍贵物品页界面",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    713,
+                    16,
+                    23,
+                    23
+                ],
+                "template": "SceneManager/ValuablesTabChoosed.png"
+            }
+        },
+        "focus": {
+            "Node.Action.Starting": "进入珍贵物品标签页界面"
+        }
+    }
+}

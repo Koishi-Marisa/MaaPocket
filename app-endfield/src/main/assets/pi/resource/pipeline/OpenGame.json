@@ -1,0 +1,267 @@
+{
+    "OpenGame": {
+        "desc": "打开游戏",
+        "max_hit": 2,
+        "timeout": 45000,
+        "next": [
+            "EnterGame",
+            "[JumpBack]EnterGameResourceInitializeComplete",
+            "[JumpBack]EnterGameRecognition",
+            "[JumpBack]CloudEndfieldStartGame",
+            "[JumpBack]CloudEndfieldWaitStartGame",
+            "[JumpBack]CloudEndfieldRetry",
+            "[JumpBack]StartUpGame",
+            "StuckRepairAction"
+        ]
+    },
+    "StuckRepairAction": {
+        "desc": "尝试修复卡死",
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "SubTask",
+                "custom_action_param": {
+                    "sub": [
+                        "CloseGame",
+                        "ResetStartUpGame"
+                    ]
+                }
+            }
+        },
+        "next": [
+            "OpenGame",
+            "StartUpGameFailed"
+        ],
+        "focus": {
+            "Node.Action.Starting": "$task.OpenGame.focus.stuck_repair"
+        }
+    },
+    "ResetStartUpGame": {
+        "desc": "重置启动游戏",
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "ClearHitCount",
+                "custom_action_param": {
+                    "nodes": [
+                        "StartUpGame"
+                    ]
+                }
+            }
+        }
+    },
+    "StartUpGameFailed": {
+        "desc": "启动游戏失败",
+        "focus": {
+            "Node.Action.Starting": "$task.OpenGame.focus.start_up_game_failed"
+        }
+    },
+    "EnterGameResourceInitializeComplete": {
+        "desc": "识别资源初始化完成",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "EnterGameResourceInitializeCompleteText",
+                    "EnterGameResourceInitializeCompleteButton"
+                ],
+                "box_index": 1
+            }
+        },
+        "action": {
+            "type": "Click"
+        }
+    },
+    "EnterGameResourceInitializeCompleteText": {
+        "desc": "识别资源初始化完成文本",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    403,
+                    241,
+                    472,
+                    245
+                ],
+                "expected": [
+                    "资源初始化更新完成，请重启游戏",
+                    "資源初始化更新完成，請重啟遊戲",
+                    "Resource initialization update completed. Please restart the game.",
+                    "リソースの初期化・更新が完了しました。ゲームを再起動してください"
+                ]
+            }
+        }
+    },
+    "EnterGameResourceInitializeCompleteButton": {
+        "desc": "识别资源初始化完成按钮",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    403,
+                    241,
+                    472,
+                    245
+                ],
+                "expected": [
+                    "确认",
+                    "確定",
+                    "Confirm",
+                    "確定"
+                ]
+            }
+        }
+    },
+    "EnterGame": {
+        "desc": "确认进入游戏",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "EnterGameOCR",
+                    "EnterGameRecognition"
+                ]
+            }
+        }
+    },
+    "EnterGameOCR": {
+        "desc": "进入游戏识别",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    -250,
+                    200,
+                    250,
+                    400
+                ],
+                "expected": [
+                    "点击任意位置继续",
+                    "按下任意位置繼續",
+                    "Click to continue",
+                    "クリックして続ける",
+                    "아무 곳이나 눌러 계속하기"
+                ]
+            }
+        }
+    },
+    "EnterGameRecognition": {
+        "desc": "识别公告按钮",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    1067,
+                    0,
+                    213,
+                    276
+                ],
+                "template": [
+                    "SceneManager/News.png",
+                    "SceneManager/NewsWithRedDot.png"
+                ]
+            }
+        }
+    },
+    "StartUpGame": {
+        "desc": "启动游戏,由ADB端option进行覆盖",
+        "max_hit": 20,
+        "post_delay": 3000,
+        "focus": {
+            "Node.Action.Failed": "$task.OpenGame.focus.start_app_failed" //多半是Client选错了
+        }
+    },
+    "CloudEndfieldStartGame": {
+        "desc": "云终末地开始游戏",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    887,
+                    522,
+                    393,
+                    198
+                ],
+                "expected": [
+                    "开始游戏"
+                ]
+            }
+        },
+        "action": {
+            "type": "Click"
+        }
+    },
+    "CloudEndfieldWaitStartGame": {
+        "desc": "云终末地等待开始游戏",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    350,
+                    233,
+                    572,
+                    346
+                ],
+                "expected": [
+                    "检查网络环境",
+                    "游戏启动中"
+                ]
+            }
+        }
+    },
+    "CloudEndfieldRetry": {
+        "desc": "云终末地重试",
+        "max_hit": 20,
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "CloudEndfieldRetryText",
+                    "CloudEndfieldRetryButton"
+                ],
+                "box_index": 1
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 5000
+    },
+    "CloudEndfieldRetryText": {
+        "desc": "云终末地重试文本",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    410,
+                    227,
+                    459,
+                    262
+                ],
+                "expected": [
+                    "您上次游戏的数据正在火速处理中"
+                ]
+            }
+        }
+    },
+    "CloudEndfieldRetryButton": {
+        "desc": "云终末地重试按钮",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    410,
+                    227,
+                    459,
+                    262
+                ],
+                "expected": [
+                    "知道了"
+                ]
+            }
+        }
+    },
+    "CloseGame": {
+        "desc": "关闭游戏,由ADB端option进行覆盖"
+    }
+}

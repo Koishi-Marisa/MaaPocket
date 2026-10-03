@@ -1,0 +1,157 @@
+{
+    "CreditShoppingClaimCredit": {
+        "desc": "领取信用点",
+        "recognition": "OCR",
+        "roi": [
+            26,
+            583,
+            254,
+            137
+        ],
+        "expected": [
+            "收取信用",
+            "(?i)Collect\\s*Credits",
+            "FP受取"
+        ],
+        "action": "Click",
+        "next": [
+            "CreditShoppingClaimConfirm"
+        ]
+    },
+    "CreditShoppingNoCreditClaim": {
+        "desc": "没有信用点可领取",
+        "recognition": "OCR",
+        "roi": [
+            26,
+            583,
+            254,
+            137
+        ],
+        "expected": [
+            "无待领取信用",
+            "無待領取信用",
+            "(?i)No\\s*credits\\s*to\\s*claim",
+            "FP未獲得"
+        ],
+        "replace": [
+            [
+                "無",
+                "无"
+            ],
+            [
+                "領",
+                "领"
+            ]
+        ],
+        "action": "DoNothing",
+        "next": [
+            "CreditShoppingShopping"
+        ]
+    },
+    "CreditShoppingClaimConfirm": {
+        "desc": "获取信用点或物品后：IMS A3 累加（嵌晶玉/折金票/武库配额/信用 + SpecialItem 升级经验与材料），再关闭奖励界面",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "CloseRewardsButton",
+                    "CreditShoppingClaimConfirmText"
+                ]
+            }
+        },
+        "pre_wait_freezes": {
+            "time": 300,
+            "target": [
+                300,
+                250,
+                750,
+                200
+            ],
+            "timeout": 1000
+        },
+        "pre_delay": 0,
+        "action": {
+            "type": "Custom",
+            "param": {
+                "custom_action": "AddItemData",
+                "custom_action_param": {
+                    "item_filters": [
+                        "Isolate:Diamond",
+                        "Isolate:Gold",
+                        "Isolate:WeaponGold",
+                        "Isolate:SpaceshipGold",
+                        "ValuableDepot:SpecialItem"
+                    ]
+                }
+            }
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "CreditShoppingClaimConfirmClick"
+        ]
+    },
+    "CreditShoppingClaimConfirmClick": {
+        "desc": "关闭奖励界面后继续信用购物",
+        "recognition": {
+            "type": "And",
+            "param": {
+                "all_of": [
+                    "CloseRewardsButton",
+                    "CreditShoppingClaimConfirmText"
+                ]
+            }
+        },
+        "pre_delay": 0,
+        "action": {
+            "type": "Click"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "CreditShoppingShopping"
+        ]
+    },
+    "CreditShoppingClaimConfirmText": {
+        "desc": "获得奖励后的文字提示确认",
+        "recognition": {
+            "type": "Or",
+            "param": {
+                "any_of": [
+                    "CloseRewardsButtonText",
+                    "CreditShoppingBuySuccess"
+                ]
+            }
+        }
+    },
+    "CreditShoppingBuySuccess": {
+        "desc": "购买成功的文字提示",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    537,
+                    21,
+                    209,
+                    149
+                ],
+                "expected": [
+                    "购买成功",
+                    "購買成功",
+                    "(?i)Purchased",
+                    "購入完了"
+                ],
+                "replace": [
+                    [
+                        "購",
+                        "购"
+                    ],
+                    [
+                        "買",
+                        "买"
+                    ]
+                ]
+            }
+        }
+    }
+}

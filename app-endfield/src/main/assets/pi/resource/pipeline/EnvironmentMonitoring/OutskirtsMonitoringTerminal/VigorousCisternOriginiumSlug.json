@@ -1,0 +1,471 @@
+{
+    "VigorousCisternOriginiumSlugJob": {
+        "desc": "充满活力的蓄水源石虫任务",
+        "max_hit": 1,
+        "recognition": "And",
+        "all_of": [
+            "CheckVigorousCisternOriginiumSlugText",
+            "CheckVigorousCisternOriginiumSlugIcon",
+            "CheckVigorousCisternOriginiumSlugWulingStockBill"
+        ],
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "FailureCollectorRunTask",
+        "custom_action_param": {
+            "key": "EnvironmentMonitoring",
+            "task": "VigorousCisternOriginiumSlugExecute",
+            "recovery_task": "EnvironmentMonitoringGoToOutskirtsMonitoringTerminal",
+            "failure_task": "VigorousCisternOriginiumSlugFailed"
+        },
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "VigorousCisternOriginiumSlugFailed": {
+        "desc": "充满活力的蓄水源石虫任务执行失败提示",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "focus": {
+            "Node.Recognition.Succeeded": "$task.EnvironmentMonitoring.route.VigorousCisternOriginiumSlug.failed"
+        }
+    },
+    "VigorousCisternOriginiumSlugExecute": {
+        "desc": "执行充满活力的蓄水源石虫任务路线",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "AcceptVigorousCisternOriginiumSlug",
+            "GoToVigorousCisternOriginiumSlugMission"
+        ]
+    },
+    "CheckVigorousCisternOriginiumSlugText": {
+        "desc": "检查是否有充满活力的蓄水源石虫文本",
+        "recognition": "OCR",
+        "roi": [
+            63,
+            208,
+            1158,
+            71
+        ],
+        "expected": [
+            "充满活力的蓄水源石虫",
+            "充滿活力的蓄水源石蟲",
+            "(?i)Vigorous\\s*Cistern\\s*Originium\\s*Slug",
+            "活発になっている貯水オリジムシ",
+            "활기찬 저수 원석충"
+        ],
+        "replace": [],
+        "order_by": "Vertical",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckVigorousCisternOriginiumSlugWulingStockBill": {
+        "desc": "检查充满活力的蓄水源石虫任务下方的武陵调度券图标",
+        "recognition": "TemplateMatch",
+        "roi": "CheckVigorousCisternOriginiumSlugIcon",
+        "roi_offset": [
+            -14,
+            300,
+            359,
+            76
+        ],
+        "template": "EnvironmentMonitoring/WulingStockBill.png",
+        "threshold": 0.8,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckVigorousCisternOriginiumSlugIcon": {
+        "desc": "检查充满活力的蓄水源石虫文本下方的图标",
+        "recognition": "TemplateMatch",
+        "roi": "CheckVigorousCisternOriginiumSlugText",
+        "roi_offset": [
+            -18,
+            0,
+            0,
+            28
+        ],
+        "template": "EnvironmentMonitoring/PhotoIcon.png",
+        "threshold": 0.8,
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckVigorousCisternOriginiumSlugJob": {
+        "desc": "检查充满活力的蓄水源石虫委托是否可以接取",
+        "recognition": "OCR",
+        "roi": "CheckVigorousCisternOriginiumSlugIcon",
+        "roi_offset": [
+            -14,
+            332,
+            359,
+            76
+        ],
+        "expected": [
+            "接取委托",
+            "接取委託",
+            "(?i)Accept\\s*Job",
+            "引き受ける",
+            "의뢰 수령"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "CheckVigorousCisternOriginiumSlugGoToMissionText": {
+        "desc": "检查充满活力的蓄水源石虫委托是否可以前往",
+        "recognition": "OCR",
+        "roi": "CheckVigorousCisternOriginiumSlugIcon",
+        "roi_offset": [
+            -14,
+            332,
+            359,
+            76
+        ],
+        "expected": [
+            "前往任务",
+            "前往任務",
+            "(?i)Go\\s*to\\s*Mission",
+            "任務へ",
+            "임무로 이동하기"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "InVigorousCisternOriginiumSlugMission": {
+        "desc": "是否在充满活力的蓄水源石虫任务界面",
+        "recognition": "OCR",
+        "roi": [
+            415,
+            50,
+            855,
+            241
+        ],
+        "expected": [
+            "拍摄充满活力的蓄水源石虫",
+            "拍攝充滿活力的蓄水源石蟲",
+            "(?i)Photograph\\s*a\\s*Vigorous\\s*Cistern\\s*Originium\\s*Slug",
+            "活発になっている貯水オリジムシの写真を撮る",
+            "활기찬 저수 원석충 촬영하기"
+        ],
+        "replace": [],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0
+    },
+    "AcceptVigorousCisternOriginiumSlug": {
+        "desc": "接取充满活力的蓄水源石虫委托",
+        "recognition": "And",
+        "all_of": [
+            "CheckVigorousCisternOriginiumSlugText",
+            "CheckVigorousCisternOriginiumSlugIcon",
+            "CheckVigorousCisternOriginiumSlugJob"
+        ],
+        "box_index": 2,
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToVigorousCisternOriginiumSlugMission"
+        ]
+    },
+    "GoToVigorousCisternOriginiumSlugMission": {
+        "desc": "前往充满活力的蓄水源石虫任务",
+        "recognition": "And",
+        "all_of": [
+            "CheckVigorousCisternOriginiumSlugText",
+            "CheckVigorousCisternOriginiumSlugIcon",
+            "CheckVigorousCisternOriginiumSlugGoToMissionText"
+        ],
+        "box_index": 2,
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "VigorousCisternOriginiumSlugTrackOrGoTo"
+        ]
+    },
+    "VigorousCisternOriginiumSlugTrackOrGoTo": {
+        "desc": "在充满活力的蓄水源石虫任务中，如果有开始追踪的按钮就点击追踪，已在追踪则继续",
+        "recognition": "And",
+        "all_of": [
+            "InVigorousCisternOriginiumSlugMission"
+        ],
+        // 面板入场动画期间点击可能被吞掉，等按钮区域静止后再继续
+        // （wait_freezes 按 ROI 整体判定静止，区域越大越容易把按钮位移稀释掉）
+        "pre_wait_freezes": {
+            "time": 200,
+            "target": [
+                904,
+                580,
+                368,
+                130
+            ]
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "TrackVigorousCisternOriginiumSlug",
+            "AlreadyTrackedVigorousCisternOriginiumSlug"
+        ]
+    },
+    "TrackVigorousCisternOriginiumSlug": {
+        "desc": "追踪充满活力的蓄水源石虫任务",
+        "recognition": "And",
+        "all_of": [
+            "TrackMissionButton",
+            "InVigorousCisternOriginiumSlugMission"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToVigorousCisternOriginiumSlug"
+        ]
+    },
+    "AlreadyTrackedVigorousCisternOriginiumSlug": {
+        "desc": "充满活力的蓄水源石虫任务已经在追踪中",
+        "recognition": "And",
+        "all_of": [
+            "AlreadyTrackedMissionButton",
+            "InVigorousCisternOriginiumSlugMission"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToVigorousCisternOriginiumSlug"
+        ]
+    },
+    "VigorousCisternOriginiumSlugOpenTrackedMissionMap": {
+        "desc": "充满活力的蓄水源石虫任务已在追踪中，点击定位按钮进入任务地图",
+        "recognition": "And",
+        "all_of": [
+            "TrackedMissionMapButton",
+            "InVigorousCisternOriginiumSlugMission"
+        ],
+        "box_index": 0,
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "VigorousCisternOriginiumSlugInQuickTeleportMap"
+        ]
+    },
+    "VigorousCisternOriginiumSlugInQuickTeleportMap": {
+        "desc": "已进入充满活力的蓄水源石虫任务地图，准备快捷传送",
+        "recognition": "And",
+        "all_of": [
+            "QuickTeleportButton",
+            "InVigorousCisternOriginiumSlugMission"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "VigorousCisternOriginiumSlugQuickTeleportSelect"
+        ]
+    },
+    "VigorousCisternOriginiumSlugQuickTeleportSelect": {
+        "desc": "在充满活力的蓄水源石虫任务地图中点击前往传送",
+        "recognition": "And",
+        "all_of": [
+            "QuickTeleportButton",
+            "InVigorousCisternOriginiumSlugMission"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_wait_freezes": 500,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "VigorousCisternOriginiumSlugQuickTeleport"
+        ]
+    },
+    "VigorousCisternOriginiumSlugQuickTeleport": {
+        "desc": "在充满活力的蓄水源石虫任务地图中点击传送",
+        "recognition": "And",
+        "all_of": [
+            "TeleportButton"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "VigorousCisternOriginiumSlugQuickTeleportDone",
+            "[JumpBack]SceneWaitLoadingExit"
+        ]
+    },
+    "VigorousCisternOriginiumSlugQuickTeleportDone": {
+        "desc": "快捷传送完成，已返回大世界",
+        "recognition": "And",
+        "all_of": [
+            "InWorld"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToVigorousCisternOriginiumSlugMove"
+        ]
+    },
+    "VigorousCisternOriginiumSlugNotAdapted": {
+        "desc": "充满活力的蓄水源石虫任务尚未适配，仅接取并追踪",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "focus": {
+            "Node.Recognition.Succeeded": "$task.EnvironmentMonitoring.not_adapted"
+        }
+    },
+    "GoToVigorousCisternOriginiumSlug": {
+        "desc": "前往充满活力的蓄水源石虫，先回到大世界再进行判断",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "SubTask",
+        "custom_action_param": {
+            "sub": [
+                "SceneAnyEnterWorld"
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToVigorousCisternOriginiumSlugStartPos",
+            "GoToVigorousCisternOriginiumSlugNotAtStartPos"
+        ]
+    },
+    "GoToVigorousCisternOriginiumSlugStartPos": {
+        "desc": "在充满活力的蓄水源石虫任务开始位置附近",
+        "recognition": "Custom",
+        "custom_recognition": "MapLocateAssertLocation",
+        "custom_recognition_param": {
+            "zone_id": "Wuling_Base",
+            "target": [
+                682.09,
+                2636.41,
+                44.2,
+                48.35
+            ]
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToVigorousCisternOriginiumSlugMove"
+        ]
+    },
+    "GoToVigorousCisternOriginiumSlugNotAtStartPos": {
+        "desc": "不在充满活力的蓄水源石虫任务开始位置附近，先传送再继续寻路",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "SubTask",
+        "custom_action_param": {
+            "sub": [
+                "SceneEnterWorldWulingJingyuValley8"
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "GoToVigorousCisternOriginiumSlugMove"
+        ]
+    },
+    "GoToVigorousCisternOriginiumSlugMove": {
+        "desc": "自动寻路前往充满活力的蓄水源石虫",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "MapNavigateAction",
+        "custom_action_param": {
+            "path": [
+                {
+                    "action": "ZONE",
+                    "zone_id": "Wuling_Base"
+                },
+                {
+                    "action": "NAVMESH",
+                    "target": [
+                        691.16,
+                        2634.78
+                    ]
+                },
+                {
+                    "action": "HEADING",
+                    "angle": 100
+                }
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "VigorousCisternOriginiumSlugTakePhoto"
+        ],
+        "focus": {
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    },
+    "GoToVigorousCisternOriginiumSlugMoveAfterFight": {
+        "desc": "可能的战斗结束后，恢复性地走回充满活力的蓄水源石虫拍照点",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "MapNavigateAction",
+        "custom_action_param": {
+            "path": [
+                {
+                    "action": "ZONE",
+                    "zone_id": "Wuling_Base"
+                },
+                {
+                    "action": "NAVMESH",
+                    "target": [
+                        691.16,
+                        2634.78
+                    ]
+                },
+                {
+                    "action": "HEADING",
+                    "angle": 100
+                }
+            ]
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "VigorousCisternOriginiumSlugTakePhoto"
+        ],
+        "focus": {
+            "Node.Action.Succeeded": {
+                "trace": true
+            },
+            "Node.Action.Failed": {
+                "trace": true
+            }
+        }
+    },
+    "VigorousCisternOriginiumSlugTakePhoto": {
+        "desc": "在充满活力的蓄水源石虫任务拍照点开始拍照",
+        "pre_delay": 0,
+        "anchor": {
+            "EnvironmentMonitoringBackToTerminal": "EnvironmentMonitoringGoToOutskirtsMonitoringTerminal"
+        },
+        "post_delay": 0,
+        "rate_limit": 0,
+        "next": [
+            "EnvironmentMonitoringTakePhoto"
+        ]
+    }
+}
