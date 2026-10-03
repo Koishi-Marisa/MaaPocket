@@ -1,0 +1,30 @@
+{
+  "$schema": "https://raw.githubusercontent.com/MaaXYZ/MaaFramework/main/tools/interface.schema.json",
+  "interface_version": 2,
+  "name": "MaaPocketHSR",
+  "version": "0.1.0",
+  "label": "$interface.label",
+  "icon": "icon.png",
+  "description": "$interface.description",
+  "message": "$interface.message",
+  "controller": [
+    {
+      "name": "Android",
+      "type": "Adb",
+      "display_short_side": 720
+    }
+  ],
+  "resource": [
+    {
+      "name": "官服",
+      "path": ["./resource"]
+    }
+  ],
+  "task": [],
+  "option": [],
+  "agent": [],
+  "import": [],
+  "languages": {
+    "zh_cn": "locales/interface/zh_cn.json"
+  }
+}

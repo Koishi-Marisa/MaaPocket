@@ -1,0 +1,172 @@
+name: build
+
+# 构建三个 app 模块的 release APK。
+# 每个 ABI 一个矩阵腿：setup_maa_framework.py 把该 ABI 的 .so 铺进 core/src/main/jniLibs/<abi>/，
+# 再由 Gradle 打进 APK（abiFilters 也被 -Pmaapocket.abis 收到同一个 ABI）。
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      maafw_version:
+        description: 'MaaFramework release tag（留空 = 用 gradle.properties 里的 maafw.version）'
+        required: false
+        type: string
+        default: ''
+      abis:
+        description: '要构建的 ABI，逗号分隔'
+        required: false
+        type: string
+        default: 'arm64-v8a,x86_64'
+
+# 同一分支/PR 上新的 run 直接掐掉旧的，别排队烧 runner
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # 把 workflow_dispatch 的 abis 输入（或 push/pr 的默认值）变成矩阵。
+  # 单独一个 job 是因为 strategy.matrix 不能直接消费 shell，需要 fromJSON 一个真实数组。
+  matrix:
+    name: resolve abi matrix
+    runs-on: ubuntu-latest
+    outputs:
+      abis: ${{ steps.resolve.outputs.abis }}
+    steps:
+      - name: Resolve ABI matrix
+        id: resolve
+        shell: bash
+        env:
+          INPUT_ABIS: ${{ github.event.inputs.abis }}
+        run: |
+          set -euo pipefail
+          raw="${INPUT_ABIS:-arm64-v8a,x86_64}"
+          json="$(python3 -c 'import json,sys; print(json.dumps([a.strip() for a in sys.argv[1].split(",") if a.strip()]))' "$raw")"
+          echo "abis=$json" >> "$GITHUB_OUTPUT"
+          echo "abi matrix: $json"
+
+  build:
+    name: build ${{ matrix.abi }}
+    needs: matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        abi: ${{ fromJSON(needs.matrix.outputs.abis) }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK and CMake
+        shell: bash
+        run: |
+          set -euo pipefail
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager --install "ndk;29.0.13113456" "cmake;3.22.1"
+          sdkmanager --list_installed
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle.kts', '**/gradle-wrapper.properties', 'gradle/libs.versions.toml') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      # 依赖 scripts/setup_maa_framework.py —— 单独一步，失败时一眼看出是抓原生库挂了还是编译挂了
+      - name: Fetch MaaFramework native libs (scripts/setup_maa_framework.py)
+        shell: bash
+        env:
+          MAAFW_VERSION: ${{ github.event.inputs.maafw_version }}
+          ABI: ${{ matrix.abi }}
+        run: |
+          set -euo pipefail
+          args=(--abi "$ABI")
+          if [ -n "${MAAFW_VERSION:-}" ]; then
+            args+=(--tag "$MAAFW_VERSION")
+          fi
+          echo "==> python scripts/setup_maa_framework.py ${args[*]}"
+          python scripts/setup_maa_framework.py "${args[@]}"
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Assemble release APKs
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./gradlew :app-hsr:assembleRelease \
+                    :app-zzz:assembleRelease \
+                    :app-endfield:assembleRelease \
+                    -Pmaapocket.abis=${{ matrix.abi }} \
+                    --stacktrace
+
+      # AGP 产出的名字（app-hsr-release.apk 之类）三个模块互不重名，但打进同一份 artifact
+      # 后无法区分 ABI，所以先统一改名成 MaaPocket-<game>-<abi>.apk 再上传。
+      - name: Collect and rename APKs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          found=0
+          for game in hsr zzz endfield; do
+            outdir="app-${game}/build/outputs/apk/release"
+            [ -d "$outdir" ] || { echo "::warning::$outdir 不存在"; continue; }
+            for apk in $(find "$outdir" -maxdepth 1 -name '*.apk' | sort); do
+              case "$apk" in
+                *-unsigned.apk) echo "skip unsigned: $apk"; continue ;;
+              esac
+              cp "$apk" "dist/MaaPocket-${game}-${{ matrix.abi }}.apk"
+              echo "collected $apk -> dist/MaaPocket-${game}-${{ matrix.abi }}.apk"
+              found=$((found + 1))
+            done
+          done
+          echo "collected ${found} APK(s)"
+          ls -l dist
+          if [ "$found" -eq 0 ]; then
+            echo "::error::没有收集到任何 APK"
+            exit 1
+          fi
+
+      - name: Upload APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: MaaPocket-apks-${{ matrix.abi }}
+          path: dist/*.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload Gradle reports and logs (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-reports-${{ matrix.abi }}
+          path: |
+            **/build/reports/**
+            **/build/outputs/logs/**
+            /home/runner/.gradle/daemon/**/*.log
+          if-no-files-found: warn
+          retention-days: 7

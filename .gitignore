@@ -1,0 +1,48 @@
+# ---- Gradle ----
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+local.properties
+
+# ---- Android ----
+*.apk
+*.aab
+*.ap_
+*.dex
+captures/
+.externalNativeBuild/
+.cxx/
+lint-results*.html
+lint-results*.xml
+
+# ---- IDE ----
+.idea/
+*.iml
+*.hprof
+.vscode/
+
+# ---- MaaPocket: 构建期抓取的 MaaFramework 原生产物 ----
+# 由 scripts/setup_maa_framework.py 在 CI / 本地重新生成，绝不入库（与 MAA-Meow 同策略）
+.maafw/
+core/src/main/jniLibs/*/
+!core/src/main/jniLibs/*/.gitkeep
+
+# ---- MaaPocket: 构建期解包的 PI 资源包 ----
+# 由 scripts/build_pi_pack.py 产出，或用户在设备上从 assets 解出
+dist/
+*.pi_pack.json
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# ---- OS / 编辑器 ----
+.DS_Store
+Thumbs.db
+*~
+*.orig
+*.rej
+*.swp

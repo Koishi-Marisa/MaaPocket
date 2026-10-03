@@ -1,0 +1,13 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- 口袋轮廓 -->
+    <path
+        android:fillColor="#4FC3F7"
+        android:pathData="M54,30c-13.3,0 -24,10.7 -24,24s10.7,24 24,24s24,-10.7 24,-24S67.3,30 54,30zM54,70c-8.8,0 -16,-7.2 -16,-16s7.2,-16 16,-16s16,7.2 16,16S62.8,70 54,70z" />
+    <path
+        android:fillColor="#81D4FA"
+        android:pathData="M54,46c-4.4,0 -8,3.6 -8,8s3.6,8 8,8s8,-3.6 8,-8S58.4,46 54,46z" />
+</vector>

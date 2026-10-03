@@ -1,0 +1,227 @@
+name: prepare-packs
+
+# 每周预演一次「上游资源 -> assets/pi」的全流程：
+#   1. 拉三个上游项目（March7thAssistant / ZenlessZoneZero-OneDragon / MaaEnd）到固定 ref
+#   2. 跑 scripts/migrate_*.py 把各自格式转成 PI-V2 资源工程（build/pi-src/<game>）
+#   3. 跑 scripts/build_pi_pack.py 把资源工程装进对应 app 模块的 assets/pi
+#   4. 把三棵 pi 树作为 artifact 传上去
+#
+# 注意：migrate_*.py 由另一条线在写。它们一旦缺失，下面的 preflight 会以明确的
+# ::error:: 报出来，而不是让后面某个 python 调用抛一个看不懂的 traceback。
+# 每个 game 的 migrate / assemble 都是独立命名步骤，失败时能直接定位到是哪一环。
+
+on:
+  workflow_dispatch:
+    inputs:
+      march7th_ref:
+        description: 'moesnow/March7thAssistant 的 ref/commit'
+        required: false
+        type: string
+        default: ''
+      zzz_od_ref:
+        description: 'OneDragon-Anything/ZenlessZoneZero-OneDragon 的 ref/commit'
+        required: false
+        type: string
+        default: ''
+      maaend_ref:
+        description: 'MaaEnd/MaaEnd 的 ref/commit'
+        required: false
+        type: string
+        default: ''
+  schedule:
+    # 每周一 18:00 UTC（周二凌晨 +8）
+    - cron: '0 18 * * 0'
+
+concurrency:
+  group: prepare-packs-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  # 固定 ref（上游 HEAD 快照）。想换版本不必改文件：dispatch 时填上面的 input 即可。
+  MARCH7TH_REPO: moesnow/March7thAssistant
+  MARCH7TH_REF: ${{ github.event.inputs.march7th_ref || '5bbe11c4a1e799b89258dd01cf8d30837eadb32f' }}
+  ZZZ_OD_REPO: OneDragon-Anything/ZenlessZoneZero-OneDragon
+  ZZZ_OD_REF: ${{ github.event.inputs.zzz_od_ref || '256c2005749247462e6bd1337a5b9e62e4064f09' }}
+  MAAEND_REPO: MaaEnd/MaaEnd
+  MAAEND_REF: ${{ github.event.inputs.maaend_ref || 'ae43a184c02408410061c858a46205cf90606a26' }}
+
+  # 迁移脚本（假设的 CLI：--source <checkout> --out <dir> [--schemas <dir>]）
+  MIGRATE_HSR: scripts/migrate_march7th.py
+  MIGRATE_ZZZ: scripts/migrate_zzz_od.py
+  MIGRATE_ENDFIELD: scripts/migrate_maaend.py
+
+  SRC_HSR: build/pi-src/hsr
+  SRC_ZZZ: build/pi-src/zzz
+  SRC_ENDFIELD: build/pi-src/endfield
+
+jobs:
+  prepare:
+    name: assemble pi packs
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+
+      - name: Checkout March7thAssistant (upstream, pinned)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.MARCH7TH_REPO }}
+          ref: ${{ env.MARCH7TH_REF }}
+          path: refs/March7thAssistant
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout ZenlessZoneZero-OneDragon (upstream, pinned)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.ZZZ_OD_REPO }}
+          ref: ${{ env.ZZZ_OD_REF }}
+          path: refs/ZenlessZoneZero-OneDragon
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout MaaEnd (upstream, pinned)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.MAAEND_REPO }}
+          ref: ${{ env.MAAEND_REF }}
+          path: refs/MaaEnd
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # 先探一遍脚本在不在：缺哪个就明确点名哪个，别等到 python 报 No such file
+      - name: Preflight - check required scripts exist
+        shell: bash
+        run: |
+          set -uo pipefail
+          missing=0
+          for f in scripts/setup_maa_framework.py scripts/build_pi_pack.py \
+                   "$MIGRATE_HSR" "$MIGRATE_ZZZ" "$MIGRATE_ENDFIELD"; do
+            if [ -f "$f" ]; then
+              echo "OK    $f"
+            else
+              echo "::error file=$f::缺少必需脚本 $f"
+              missing=1
+            fi
+          done
+          if [ "$missing" -eq 1 ]; then
+            echo "::error::有脚本还没落地（migrate_*.py 由另一条线负责），本次流程无法继续"
+            exit 1
+          fi
+
+      # 迁移脚本要吃 interface.schema.json / pipeline.schema.json，所以先把头文件和
+      # schema 抓下来。--skip-jnilibs：这里不需要 200 MB 的 .so，只有 build.yml 才铺。
+      - name: Fetch MaaFramework headers and schemas (scripts/setup_maa_framework.py)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/setup_maa_framework.py --skip-jnilibs
+          inc="$(python -c "import json; print(json.load(open('.maafw/version.json', encoding='utf-8'))['include_dir'])")"
+          if [ -d "$inc/schemas" ]; then
+            echo "MAAFW_SCHEMAS=$inc/schemas" >> "$GITHUB_ENV"
+            echo "schemas -> $inc/schemas"
+            ls -l "$inc/schemas"
+          else
+            echo "::warning::schema 目录不存在：$inc/schemas，迁移脚本将走内置兜底"
+          fi
+
+      # ---------------- HSR ----------------
+      - name: Migrate HSR (needs scripts/migrate_march7th.py)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$MIGRATE_HSR" --source refs/March7thAssistant --out "$SRC_HSR" \
+            ${MAAFW_SCHEMAS:+--schemas "$MAAFW_SCHEMAS"}
+
+      - name: Assemble HSR pack (needs scripts/build_pi_pack.py)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/build_pi_pack.py --source "$SRC_HSR" \
+            --out app-hsr/src/main/assets/pi --game hsr
+
+      # ---------------- ZZZ ----------------
+      - name: Migrate ZZZ (needs scripts/migrate_zzz_od.py)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$MIGRATE_ZZZ" --source refs/ZenlessZoneZero-OneDragon --out "$SRC_ZZZ" \
+            ${MAAFW_SCHEMAS:+--schemas "$MAAFW_SCHEMAS"}
+
+      - name: Assemble ZZZ pack (needs scripts/build_pi_pack.py)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/build_pi_pack.py --source "$SRC_ZZZ" \
+            --out app-zzz/src/main/assets/pi --game zzz
+
+      # ---------------- Endfield ----------------
+      - name: Migrate Endfield (needs scripts/migrate_maaend.py)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$MIGRATE_ENDFIELD" --source refs/MaaEnd --out "$SRC_ENDFIELD" \
+            ${MAAFW_SCHEMAS:+--schemas "$MAAFW_SCHEMAS"}
+
+      - name: Assemble Endfield pack (needs scripts/build_pi_pack.py)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/build_pi_pack.py --source "$SRC_ENDFIELD" \
+            --out app-endfield/src/main/assets/pi --game endfield
+
+      # 汇总到 job summary，失败时也能一眼看到哪几个 pack 装出来了
+      - name: Summarize packs
+        if: always()
+        shell: bash
+        run: |
+          set -uo pipefail
+          for game in hsr zzz endfield; do
+            man="app-${game}/src/main/assets/pi/pi_pack.json"
+            if [ -f "$man" ]; then
+              echo "### ${game}: ok" >> "$GITHUB_STEP_SUMMARY"
+              python -c "import json,sys; m=json.load(open(sys.argv[1], encoding='utf-8')); print('```json'); print(json.dumps({k:m.get(k) for k in ('game','interface_version','file_count','total_size','source_git_head','overlays','stale_removed')}, ensure_ascii=False, indent=2)); print('```')" "$man" >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "### ${game}: 没有产出（$man 不存在）" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+
+      # 上传用 if: always()：某个 game 挂了不该连累另外两个已经装好的树。
+      # if-no-files-found: warn 而不是 error，是为了让 job 的失败原因保持在
+      # 上面那个真正的 ::error:: 步骤上，而不是被上传步骤的二次失败盖掉。
+      - name: Upload HSR pi pack
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pi-pack-hsr
+          path: app-hsr/src/main/assets/pi
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload ZZZ pi pack
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pi-pack-zzz
+          path: app-zzz/src/main/assets/pi
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload Endfield pi pack
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pi-pack-endfield
+          path: app-endfield/src/main/assets/pi
+          if-no-files-found: warn
+          retention-days: 14
