@@ -516,6 +516,7 @@ class MaaRunController(private val context: Context) {
                     put("userDir", userDir.absolutePath)
                     put("nativeLibraryDir", nativeLibDir)
                     put("requireMaa", true)
+                    put("saveDraw", SAVE_DRAW)
                 },
                 timeoutMs = 60_000L,
             )
@@ -558,19 +559,10 @@ class MaaRunController(private val context: Context) {
                 return
             }
             // 预览现在走 Surface：app 的 SurfaceView 把窗口交给特权进程，原生 EGL 直接把抓到的
-            // 帧画进去（见 `PreviewSurfaceBridge`）。旧的「每 200ms 编码一张 JPEG」通道会把
-            // 150KB×5fps 写进私有目录，既费 CPU 又费闪存，所以「准备」阶段不再自动打开它。
-            // 想临时回退成帧通道时把下面这段的 previewWanted 判据改回来即可。
-            if (previewWanted.get() && false) {
-                runCatching {
-                    s.exec(
-                        RemoteProtocol.Cmd.CAPTURE_PREVIEW,
-                        previewParams(true),
-                        timeoutMs = 20_000L,
-                    )
-                }.onSuccess { log("capture.preview → $it") }
-                    .onFailure { log("预览开启失败：${it.message}") }
-            }
+            // 帧画进去（见 `PreviewSurfaceBridge`）。**不需要**再下发 `capture.preview` ——
+            // helper 侧 `IsPreviewEnabled()` 只看 `g_hasPreview`（由 `SetPreviewSurface` 置位），
+            // 而 `capture.preview` 唯一的作用是启动那条「每 200ms 编码一张 150KB JPEG 并落盘」
+            // 的旧通道，纯属白烧 CPU 和闪存。实测它会把 1920x1080 的模板匹配从 ~1s 拖到 10s+。
 
             // 4. controller（内部 dlopen <nativeLibraryDir>/libbridge.so）
             val ctrl = s.exec(
@@ -1079,29 +1071,11 @@ class MaaRunController(private val context: Context) {
      */
     fun setPreviewEnabled(enabled: Boolean) {
         previewWanted.set(enabled)
-        sendPreviewCommand(enabled)
-    }
-
-    private fun sendPreviewCommand(enabled: Boolean) {
-        val s = session ?: return
-        if (!s.isConnected) return
-        runCatching { s.notify(RemoteProtocol.Cmd.CAPTURE_PREVIEW, previewParams(enabled)) }
-            .onFailure { log("预览开关下发失败：${it.message}") }
-    }
-
-    private fun previewParams(enabled: Boolean): JsonObject = buildJsonObject {
-        put("enable", enabled)
-        if (enabled) {
-            // 落盘而不是内联。理由有三条：
-            // 1. 1920x1080 的 JPEG 内联成 base64 后逼近 1 MiB 的单行上限，协议里那句
-            //    「持续内联大帧会打爆协议」不是吓唬人；
-            // 2. `<userDir>/frames/` 里的 JPEG 是排查「识别为什么对不上」的唯一证据——
-            //    虚拟屏没有可用的 `screencap -d`，adb 拿不到那块屏的像素；
-            // 3. 落盘那条路 [decodePreviewFile] 本来就兜着，帧大了自然走它，不如直接走。
-            // helper 侧会自己只保留最近 PREVIEW_KEEP_FILES 张（见 RemoteEngine.pruneFrameDir）。
-            put("inline", false)
-            put("intervalMs", PREVIEW_INTERVAL_MS)
-        }
+        // 这里**故意不再**下发 `capture.preview`。预览像素走 Surface（SurfaceView 的窗口
+        // 交给特权进程，原生 EGL 直接画进去），helper 侧 `IsPreviewEnabled()` 只认
+        // `SetPreviewSurface` 置位的 `g_hasPreview`。`capture.preview` 只会额外拉起那条
+        // 「5fps 编码 150KB JPEG 并写私有目录」的旧通道：实测在 1920x1080 上把单个模板的
+        // 匹配耗时从 ~1s 推到 10s+，还会持续吃闪存。
     }
 
     // ------------------------------------------------------------------ 选择态
@@ -1130,6 +1104,15 @@ class MaaRunController(private val context: Context) {
 
     companion object {
         const val LOG_CAPACITY = 500
+
+        /**
+         * 让 MaaFramework 把它**实际用于识别的那一帧**（含识别框）写进 `<userDir>/debug/`。
+         *
+         * 这是唯一能回答「模板为什么没匹配上」的证据通道：预览帧走的是
+         * `bridge_preview.cpp` 的 AImage 渲染路径，与识别用的 BGR 帧缓冲不是同一份数据。
+         * 每帧都要写 PNG，长期开启会吃存储 —— 取完证就改回 false。
+         */
+        const val SAVE_DRAW = true
 
         /** 单个 task 的上限：MaaEnd 的长任务（导航、模拟作战）动辄十几分钟。 */
         const val TASK_TIMEOUT_MS = 60L * 60_000L

@@ -131,6 +131,9 @@ class RemoteEngine(
 
     private var setupDetail: String? = null
 
+    /** `engine.setup` 的 `saveDraw` 参数：让 MaaFramework 把它实际匹配的帧落盘（默认关）。 */
+    private var saveDraw: Boolean = false
+
     // ------------------------------------------------------------------ MaaFramework 状态
 
     /**
@@ -229,8 +232,10 @@ class RemoteEngine(
             )
         }
         params.str("nativeLibraryDir")?.let { nativeLibraryDir = File(it) }
+        saveDraw = params.bool("saveDraw") == true
 
         if (setupOk == true && requested == userDir) {
+            applyDrawOptions()
             return buildJsonObject {
                 put("userDir", requested.absolutePath)
                 put("cached", true)
@@ -312,7 +317,27 @@ class RemoteEngine(
         // 日志目录：native 会在里面写 maa.log / 各任务的 save_draw。
         runCatching { MaaFw.setLogDir(workDir) }
             .onFailure { Ln.w("RemoteEngine: MaaFw.setLogDir failed: ${it.message}") }
+        applyDrawOptions()
         return null
+    }
+
+    /**
+     * 取证开关：让 MaaFramework 把**它实际匹配的那一帧**连同识别框落盘。
+     *
+     * `Ln.*` 在真机 logcat 里根本看不到（实测），而「识别为什么对不上」只能靠
+     * MaaFramework 自己的截图回答 —— 我们推给 App 的预览帧是另一条通道
+     * （`bridge_preview.cpp` 渲染的是 AImage 原图，不是识别用的 BGR 帧缓冲）。
+     * 开启后 native 会在 `<logDir>/debug/` 下按任务写 PNG，`adb pull` 即可取。
+     *
+     * 由 `engine.setup` 的 `saveDraw` 参数控制，默认关：它每个识别节点都写图，长时间跑会吃存储。
+     */
+    private fun applyDrawOptions() {
+        if (!MaaFw.isLoaded) return
+        runCatching { MaaFw.setSaveDraw(saveDraw) }
+            .onFailure { Ln.w("RemoteEngine: MaaFw.setSaveDraw($saveDraw) failed: ${it.message}") }
+        runCatching { MaaFw.setDebugMode(saveDraw) }
+            .onFailure { Ln.w("RemoteEngine: MaaFw.setDebugMode($saveDraw) failed: ${it.message}") }
+        Ln.i("RemoteEngine: saveDraw=$saveDraw logDir=${userDir?.absolutePath}")
     }
 
     private fun engineInfo(): JsonObject = buildJsonObject {
