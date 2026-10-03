@@ -153,5 +153,124 @@
       "label": "锄大地",
       "description": "上游应用 锄大地（包 world_patrol，app_id=world_patrol）；迁移置信度：navigation-stub-package-known"
     }
+  },
+  "option": {
+    "GameRegion": {
+      "label": "游戏区服",
+      "description": "选择运行的游戏客户端。国服 / B服 / 国际服是三个不同的客户端，登录画面不同。",
+      "case": {
+        "CN": {
+          "label": "国服"
+        },
+        "CNB": {
+          "label": "B服"
+        },
+        "INTL": {
+          "label": "国际服（亚/美/欧/港澳台）"
+        }
+      }
+    },
+    "AutoUltimate": {
+      "label": "自动释放终结技",
+      "description": "对应上游「自动终结技」开关，打开后会点击终结技按钮。",
+      "case": {
+        "On": {
+          "label": "开启"
+        },
+        "Off": {
+          "label": "关闭"
+        }
+      }
+    },
+    "DriveDiscDismantleLevel": {
+      "label": "驱动盘拆解等级",
+      "description": "对应上游 dismantle_level，决定快速选择时勾到哪个档位。",
+      "case": {
+        "LevelA": {
+          "label": "A及以下"
+        },
+        "LevelS": {
+          "label": "S及以下"
+        },
+        "LevelB": {
+          "label": "仅B"
+        }
+      }
+    },
+    "DriveDiscDismantleAbandon": {
+      "label": "同时拆解已弃置",
+      "description": "对应上游 dismantle_abandon，决定是否先点「全选已弃置」。",
+      "case": {
+        "On": {
+          "label": "是"
+        },
+        "Off": {
+          "label": "否"
+        }
+      }
+    },
+    "DailySigninTarget": {
+      "label": "每日签到目标",
+      "description": "对应上游 selected_sign，二选一：嗷呜（报亭刮刮卡）或好味面包房。",
+      "case": {
+        "HouHouBakery": {
+          "label": "好味面包房（盲盒）"
+        },
+        "NewsStand": {
+          "label": "报亭（刮刮卡）"
+        }
+      }
+    },
+    "SuibianYumchaSin": {
+      "label": "饮茶仙定期采办",
+      "description": "对应上游 yum_cha_sin，是否做随便观的定期采办。",
+      "case": {
+        "On": {
+          "label": "开启"
+        },
+        "Off": {
+          "label": "关闭"
+        }
+      }
+    },
+    "SuibianYumchaRefresh": {
+      "label": "定期采办自动刷新",
+      "description": "对应上游 yum_cha_sin_period_refresh，采办时是否点刷新。",
+      "case": {
+        "On": {
+          "label": "开启"
+        },
+        "Off": {
+          "label": "关闭"
+        }
+      }
+    },
+    "SuibianPawnshop": {
+      "label": "当铺兑换货币",
+      "description": "对应上游 pawnshop_omnicoin_enabled / pawnshop_crest_enabled 两个开关的组合。",
+      "case": {
+        "Both": {
+          "label": "百通宝 + 云纹徽"
+        },
+        "Omnicoin": {
+          "label": "仅百通宝"
+        },
+        "Crest": {
+          "label": "仅云纹徽"
+        }
+      }
+    },
+    "SuibianBooboxPurchase": {
+      "label": "邦布盲盒购买",
+      "description": "对应上游 boo_box_purchase_enabled，是否做邦布盲盒聘用。",
+      "case": {
+        "On": {
+          "label": "开启"
+        },
+        "Off": {
+          "label": "关闭"
+        }
+      }
+    }
   }
 }

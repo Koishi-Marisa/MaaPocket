@@ -1,6 +1,6 @@
 {
   "generator": "MaaPocket/scripts/migrate_onedragon_zzz.py",
-  "generated_at": "2026-10-03T13:12:31Z",
+  "generated_at": "2026-10-03T14:54:13Z",
   "source": {
     "path": "D:\\Trea\\二游自动化\\refs\\ZenlessZoneZero-OneDragon",
     "git_head": "256c2005749247462e6bd1337a5b9e62e4064f09",
@@ -29145,6 +29145,675 @@
     "restore_charge",
     "storage_material"
   ],
+  "options": {
+    "design": "只映射有真实 pipeline 落点的配置项；pipeline_override 仅使用 `enabled` 字段，上游 pipeline 没有任何节点写过 `enabled`，因此是纯新增、不覆盖既有语义。",
+    "definitions": [
+      {
+        "name": "GameRegion",
+        "label": "游戏区服",
+        "default_case": "CN",
+        "tasks": [
+          "TaskOneDragon"
+        ],
+        "cases": [
+          "CN",
+          "CNB",
+          "INTL"
+        ],
+        "landing_nodes": [
+          "enter_game__B服-同意按钮",
+          "enter_game__B服-密码输入区域",
+          "enter_game__B服-登录",
+          "enter_game__B服-账号删除区域",
+          "enter_game__B服-账号输入区域",
+          "enter_game__B服新-切换账号",
+          "enter_game__B服新-同意隐私政策",
+          "enter_game__B服新-手机号登录",
+          "enter_game__B服新-登录记录",
+          "enter_game__B服新-账号列表",
+          "enter_game__B服新-隐私政策提示",
+          "enter_game__国服-同意按钮",
+          "enter_game__国服-同意按钮-新",
+          "enter_game__国服-密码输入区域",
+          "enter_game__国服-密码输入区域-新",
+          "enter_game__国服-账号密码",
+          "enter_game__国服-账号密码-新",
+          "enter_game__国服-账号密码进入游戏",
+          "enter_game__国服-账号密码进入游戏-新",
+          "enter_game__国服-账号输入区域",
+          "enter_game__国服-账号输入区域-新",
+          "enter_game__国服-返回按钮",
+          "enter_game__国际服-密码输入区域",
+          "enter_game__国际服-换服",
+          "enter_game__国际服-换服-亚洲",
+          "enter_game__国际服-换服-欧洲",
+          "enter_game__国际服-换服-港澳台",
+          "enter_game__国际服-换服-美国",
+          "enter_game__国际服-点击登录",
+          "enter_game__国际服-账号密码进入游戏",
+          "enter_game__国际服-账号输入区域"
+        ],
+        "upstream": [
+          "src/one_dragon/base/config/game_account_config.py:18 GameRegionEnum"
+        ]
+      },
+      {
+        "name": "AutoUltimate",
+        "label": "自动释放终结技",
+        "default_case": "Off",
+        "tasks": [
+          "TaskAutoBattle",
+          "TaskOneDragon"
+        ],
+        "cases": [
+          "On",
+          "Off"
+        ],
+        "landing_nodes": [
+          "battle__按键-终结技"
+        ],
+        "upstream": [
+          "src/zzz_od/application/battle_assistant/battle_assistant_config.py:61 auto_ultimate_enabled"
+        ]
+      },
+      {
+        "name": "DriveDiscDismantleLevel",
+        "label": "驱动盘拆解等级",
+        "default_case": "LevelA",
+        "tasks": [
+          "TaskDriveDiscDismantle"
+        ],
+        "cases": [
+          "LevelA",
+          "LevelS",
+          "LevelB"
+        ],
+        "landing_nodes": [
+          "drive_disc_dismantle__按钮-A及以下",
+          "drive_disc_dismantle__按钮-B",
+          "drive_disc_dismantle__按钮-S及以下"
+        ],
+        "upstream": [
+          "src/zzz_od/application/drive_disc_dismantle/drive_disc_dismantle_config.py:28 dismantle_level"
+        ]
+      },
+      {
+        "name": "DriveDiscDismantleAbandon",
+        "label": "同时拆解已弃置",
+        "default_case": "Off",
+        "tasks": [
+          "TaskDriveDiscDismantle"
+        ],
+        "cases": [
+          "On",
+          "Off"
+        ],
+        "landing_nodes": [
+          "drive_disc_dismantle__按钮-全选已弃置"
+        ],
+        "upstream": [
+          "src/zzz_od/application/drive_disc_dismantle/drive_disc_dismantle_config.py:40 dismantle_abandon"
+        ]
+      },
+      {
+        "name": "DailySigninTarget",
+        "label": "每日签到目标",
+        "default_case": "HouHouBakery",
+        "tasks": [
+          "TaskDailySignin"
+        ],
+        "cases": [
+          "HouHouBakery",
+          "NewsStand"
+        ],
+        "landing_nodes": [
+          "hou_hou_bakery__盲盒",
+          "news_stand__刮刮卡"
+        ],
+        "upstream": [
+          "src/zzz_od/application/daily_signin/daily_signin_config.py:12 selected_sign"
+        ]
+      },
+      {
+        "name": "SuibianYumchaSin",
+        "label": "饮茶仙定期采办",
+        "default_case": "On",
+        "tasks": [
+          "TaskSuibianTemple"
+        ],
+        "cases": [
+          "On",
+          "Off"
+        ],
+        "landing_nodes": [
+          "suibian_temple_yumchaxian__按钮-定期采办"
+        ],
+        "upstream": [
+          "src/zzz_od/application/suibian_temple/suibian_temple_config.py:16 yum_cha_sin"
+        ]
+      },
+      {
+        "name": "SuibianYumchaRefresh",
+        "label": "定期采办自动刷新",
+        "default_case": "On",
+        "tasks": [
+          "TaskSuibianTemple"
+        ],
+        "cases": [
+          "On",
+          "Off"
+        ],
+        "landing_nodes": [
+          "suibian_temple_yumchaxian__按钮-定期采办-刷新"
+        ],
+        "upstream": [
+          "src/zzz_od/application/suibian_temple/suibian_temple_config.py:25 yum_cha_sin_period_refresh"
+        ]
+      },
+      {
+        "name": "SuibianPawnshop",
+        "label": "当铺兑换货币",
+        "default_case": "Both",
+        "tasks": [
+          "TaskSuibianTemple"
+        ],
+        "cases": [
+          "Both",
+          "Omnicoin",
+          "Crest"
+        ],
+        "landing_nodes": [
+          "suibian_temple_pawnshop__按钮-云纹徽-周期",
+          "suibian_temple_pawnshop__按钮-百通宝-周期"
+        ],
+        "upstream": [
+          "src/zzz_od/application/suibian_temple/suibian_temple_config.py:133 pawnshop_omnicoin_enabled",
+          "src/zzz_od/application/suibian_temple/suibian_temple_config.py:154 pawnshop_crest_enabled"
+        ]
+      },
+      {
+        "name": "SuibianBooboxPurchase",
+        "label": "邦布盲盒购买",
+        "default_case": "Off",
+        "tasks": [
+          "TaskSuibianTemple"
+        ],
+        "cases": [
+          "On",
+          "Off"
+        ],
+        "landing_nodes": [
+          "suibian_temple_boobox__按钮-聘用"
+        ],
+        "upstream": [
+          "src/zzz_od/application/suibian_temple/suibian_temple_config.py:97 boo_box_purchase_enabled"
+        ]
+      }
+    ],
+    "unmapped_upstream_config": [
+      {
+        "source": "battle_assistant/battle_assistant_config.py:12",
+        "key": "dodge_assistant_config",
+        "reason": "指向另一个应用的配置名，迁移包里没有「闪避助手」流程"
+      },
+      {
+        "source": "battle_assistant/battle_assistant_config.py:20",
+        "key": "screenshot_interval",
+        "reason": "纯运行参数（截图轮询间隔），不是画面交互，没有节点可改"
+      },
+      {
+        "source": "battle_assistant/battle_assistant_config.py:28",
+        "key": "control_method",
+        "reason": "PC 输入方式（键鼠 / 手柄），Android 上不存在这个选择"
+      },
+      {
+        "source": "battle_assistant/battle_assistant_config.py:43",
+        "key": "auto_battle_config",
+        "reason": "上游的「战斗配置」是 YAML 脚本，迁移包没有对应的战斗逻辑 agent"
+      },
+      {
+        "source": "battle_assistant/battle_assistant_config.py:52",
+        "key": "use_merged_file",
+        "reason": "YAML 载入细节，不影响画面"
+      },
+      {
+        "source": "charge_plan/charge_plan_config.py:300",
+        "key": "loop",
+        "reason": "体力计划里有「循环」按钮（charge_plan__按钮-循环），但本 option 只做了登录节点组，未纳入"
+      },
+      {
+        "source": "charge_plan/charge_plan_config.py:308",
+        "key": "daily_reset_plan_times",
+        "reason": "完成后的后处理逻辑，没有节点"
+      },
+      {
+        "source": "charge_plan/charge_plan_config.py:316",
+        "key": "last_daily_reset_dt",
+        "reason": "运行时记录，不是用户配置"
+      },
+      {
+        "source": "charge_plan/charge_plan_config.py:324",
+        "key": "skip_plan",
+        "reason": "跳过体力计划，迁移包里没有对应节点"
+      },
+      {
+        "source": "charge_plan/charge_plan_config.py:332",
+        "key": "double_reward",
+        "reason": "双倍奖励开关，迁移包里没有对应节点"
+      },
+      {
+        "source": "charge_plan/charge_plan_config.py:340",
+        "key": "combat_simulation_double_reward_config",
+        "reason": "复合配置，没有节点"
+      },
+      {
+        "source": "charge_plan/charge_plan_config.py:349",
+        "key": "restore_charge",
+        "reason": "恢复体力方式（Enum），迁移包没有对应节点"
+      },
+      {
+        "source": "coffee/coffee_config.py:26",
+        "key": "transport_point",
+        "reason": "传送点选择，需要地图寻路；迁移包只迁了画面识别，没有寻路"
+      },
+      {
+        "source": "coffee/coffee_config.py:35",
+        "key": "run_charge_plan_afterwards",
+        "reason": "跑完咖啡后触发另一个应用，跨应用编排，没有节点"
+      },
+      {
+        "source": "commission_assistant/commission_assistant_config.py:33",
+        "key": "pause_in_background",
+        "reason": "窗口失焦暂停，Android 前台应用概念不同"
+      },
+      {
+        "source": "commission_assistant/commission_assistant_config.py:41",
+        "key": "dialog_click_interval",
+        "reason": "点击间隔，纯运行参数"
+      },
+      {
+        "source": "commission_assistant/commission_assistant_config.py:49",
+        "key": "story_mode",
+        "reason": "剧情处理方式，迁移包里没有「跳过剧情」按钮节点"
+      },
+      {
+        "source": "commission_assistant/commission_assistant_config.py:57",
+        "key": "dialog_option",
+        "reason": "对话框选项位置，落在 commission_assistant__右侧选项区域 / __中间选项区域 两个区域节点上，但这两个节点的语义是「点哪里」而不是「选哪个」，改 enabled 会把整个区域点关掉，风险大于收益"
+      },
+      {
+        "source": "commission_assistant/commission_assistant_config.py:65",
+        "key": "dodge_config",
+        "reason": "同 dodge_assistant_config"
+      },
+      {
+        "source": "commission_assistant/commission_assistant_config.py:73",
+        "key": "dodge_switch",
+        "reason": "PC 快捷键，Android 没有键盘映射"
+      },
+      {
+        "source": "commission_assistant/commission_assistant_config.py:81",
+        "key": "auto_battle",
+        "reason": "战斗配置名，同 auto_battle_config"
+      },
+      {
+        "source": "commission_assistant/commission_assistant_config.py:89",
+        "key": "auto_battle_switch",
+        "reason": "PC 快捷键"
+      },
+      {
+        "source": "commission_assistant/commission_assistant_config.py:97",
+        "key": "sleep_after_empty_screen",
+        "reason": "等待时长，纯运行参数"
+      },
+      {
+        "source": "devtools/operation_debug/operation_debug_config.py:17",
+        "key": "operation_template",
+        "reason": "devtools 应用在迁移包里没有 pipeline 文件"
+      },
+      {
+        "source": "devtools/operation_debug/operation_debug_config.py:25",
+        "key": "repeat_enabled",
+        "reason": "devtools 应用在迁移包里没有 pipeline 文件"
+      },
+      {
+        "source": "devtools/screenshot_helper/screenshot_helper_config.py:16",
+        "key": "frequency_second",
+        "reason": "devtools 应用在迁移包里没有 pipeline 文件"
+      },
+      {
+        "source": "devtools/screenshot_helper/screenshot_helper_config.py:24",
+        "key": "length_second",
+        "reason": "devtools 应用在迁移包里没有 pipeline 文件"
+      },
+      {
+        "source": "devtools/screenshot_helper/screenshot_helper_config.py:32",
+        "key": "key_save",
+        "reason": "devtools 应用在迁移包里没有 pipeline 文件"
+      },
+      {
+        "source": "devtools/screenshot_helper/screenshot_helper_config.py:40",
+        "key": "dodge_detect",
+        "reason": "devtools 应用在迁移包里没有 pipeline 文件"
+      },
+      {
+        "source": "devtools/screenshot_helper/screenshot_helper_config.py:48",
+        "key": "screenshot_before_key",
+        "reason": "devtools 应用在迁移包里没有 pipeline 文件"
+      },
+      {
+        "source": "devtools/screenshot_helper/screenshot_helper_config.py:56",
+        "key": "mini_map_angle_detect",
+        "reason": "devtools 应用在迁移包里没有 pipeline 文件"
+      },
+      {
+        "source": "hollow_zero/lost_void/lost_void_config.py:27",
+        "key": "daily_plan_times",
+        "reason": "次数上限，需要逐轮计数，pipeline 没有对应节点"
+      },
+      {
+        "source": "hollow_zero/lost_void/lost_void_config.py:35",
+        "key": "weekly_plan_times",
+        "reason": "次数上限，同 daily_plan_times"
+      },
+      {
+        "source": "hollow_zero/lost_void/lost_void_config.py:43",
+        "key": "extra_task",
+        "reason": "额外任务类型选择，没有节点"
+      },
+      {
+        "source": "hollow_zero/lost_void/lost_void_config.py:55",
+        "key": "mission_name",
+        "reason": "副本名，靠 OCR 匹配，没有对应节点"
+      },
+      {
+        "source": "hollow_zero/lost_void/lost_void_config.py:63",
+        "key": "challenge_config",
+        "reason": "挑战配置 YAML 名，迁移包没有对应逻辑"
+      },
+      {
+        "source": "hollow_zero/lost_void/lost_void_challenge_config.py:110",
+        "key": "predefined_team_idx",
+        "reason": "配队索引，需要队伍选择界面建模，未迁移"
+      },
+      {
+        "source": "hollow_zero/lost_void/lost_void_challenge_config.py:122",
+        "key": "choose_team_by_priority",
+        "reason": "配队策略，同 predefined_team_idx"
+      },
+      {
+        "source": "hollow_zero/lost_void/lost_void_challenge_config.py:134",
+        "key": "manually_choose_agent",
+        "reason": "手动选代理人，同 predefined_team_idx"
+      },
+      {
+        "source": "hollow_zero/lost_void/lost_void_challenge_config.py:146",
+        "key": "team_info",
+        "reason": "队伍成员列表，同 predefined_team_idx"
+      },
+      {
+        "source": "hollow_zero/lost_void/lost_void_challenge_config.py:154",
+        "key": "auto_battle",
+        "reason": "战斗配置名"
+      },
+      {
+        "source": "hollow_zero/lost_void/lost_void_challenge_config.py:166",
+        "key": "artifact_priority_new",
+        "reason": "鸣徽优先级，需要空洞内部商店/掉落建模"
+      },
+      {
+        "source": "hollow_zero/lost_void/lost_void_challenge_config.py:174",
+        "key": "artifact_priority",
+        "reason": "鸣徽优先级，同上"
+      },
+      {
+        "source": "hollow_zero/lost_void/lost_void_challenge_config.py:196",
+        "key": "artifact_priority_2",
+        "reason": "鸣徽优先级，同上"
+      },
+      {
+        "source": "hollow_zero/lost_void/lost_void_challenge_config.py:208",
+        "key": "region_type_priority",
+        "reason": "区域类型优先级，同上"
+      },
+      {
+        "source": "hollow_zero/lost_void/lost_void_challenge_config.py:220",
+        "key": "period_buff_no",
+        "reason": "周期增益编号，同上"
+      },
+      {
+        "source": "hollow_zero/lost_void/lost_void_challenge_config.py:228",
+        "key": "buy_only_priority_1",
+        "reason": "购买策略，同上"
+      },
+      {
+        "source": "hollow_zero/lost_void/lost_void_challenge_config.py:236",
+        "key": "buy_only_priority_2",
+        "reason": "购买策略，同上"
+      },
+      {
+        "source": "hollow_zero/lost_void/lost_void_challenge_config.py:247",
+        "key": "store_gold",
+        "reason": "购买策略，同上"
+      },
+      {
+        "source": "hollow_zero/lost_void/lost_void_challenge_config.py:258",
+        "key": "store_blood",
+        "reason": "购买策略，同上"
+      },
+      {
+        "source": "hollow_zero/lost_void/lost_void_challenge_config.py:269",
+        "key": "store_blood_min",
+        "reason": "购买策略，同上"
+      },
+      {
+        "source": "hollow_zero/lost_void/lost_void_challenge_config.py:277",
+        "key": "investigation_strategy",
+        "reason": "调查战略名，同上"
+      },
+      {
+        "source": "hollow_zero/lost_void/lost_void_challenge_config.py:288",
+        "key": "chase_new_mode",
+        "reason": "玩法开关，同上"
+      },
+      {
+        "source": "hollow_zero/withered_domain/withered_domain_config.py:35",
+        "key": "mission_name",
+        "reason": "副本名，同上"
+      },
+      {
+        "source": "hollow_zero/withered_domain/withered_domain_config.py:43",
+        "key": "challenge_config",
+        "reason": "挑战配置名，同上"
+      },
+      {
+        "source": "hollow_zero/withered_domain/withered_domain_config.py:55",
+        "key": "weekly_plan_times",
+        "reason": "次数上限，同上"
+      },
+      {
+        "source": "hollow_zero/withered_domain/withered_domain_config.py:63",
+        "key": "daily_plan_times",
+        "reason": "次数上限，同上"
+      },
+      {
+        "source": "hollow_zero/withered_domain/withered_domain_config.py:71",
+        "key": "extra_task",
+        "reason": "额外任务类型，同上"
+      },
+      {
+        "source": "hollow_zero/withered_domain/withered_domain_config.py:79",
+        "key": "extra_exit",
+        "reason": "额外退出条件，同上"
+      },
+      {
+        "source": "intel_board/intel_board_config.py:18",
+        "key": "predefined_team_idx",
+        "reason": "配队索引，未迁移"
+      },
+      {
+        "source": "intel_board/intel_board_config.py:27",
+        "key": "auto_battle_config",
+        "reason": "战斗配置名"
+      },
+      {
+        "source": "intel_board/intel_board_config.py:36",
+        "key": "exp_grind_mode",
+        "reason": "刷经验模式，迁移包没有对应节点"
+      },
+      {
+        "source": "life_on_line/life_on_line_config.py:18",
+        "key": "daily_plan_times",
+        "reason": "次数上限，未迁移"
+      },
+      {
+        "source": "life_on_line/life_on_line_config.py:31",
+        "key": "predefined_team_idx",
+        "reason": "配队索引，未迁移"
+      },
+      {
+        "source": "notorious_hunt/notorious_hunt_config.py:76",
+        "key": "weekly_challenge_start_weekday",
+        "reason": "起始星期，需要日期判断，pipeline 没有对应节点"
+      },
+      {
+        "source": "notorious_hunt/notorious_hunt_config.py:84",
+        "key": "loop",
+        "reason": "循环开关，迁移包里没有对应节点"
+      },
+      {
+        "source": "random_play/random_play_config.py:29",
+        "key": "transport_point",
+        "reason": "传送点选择，需要地图寻路"
+      },
+      {
+        "source": "random_play/random_play_config.py:37",
+        "key": "agent_name_1",
+        "reason": "随机玩法的代理人，需要选人界面建模"
+      },
+      {
+        "source": "random_play/random_play_config.py:45",
+        "key": "agent_name_2",
+        "reason": "同上"
+      },
+      {
+        "source": "shiyu_defense/shiyu_defense_config.py:38",
+        "key": "team_list",
+        "reason": "配队列表，需要队伍选择界面建模"
+      },
+      {
+        "source": "shiyu_defense/shiyu_defense_config.py:125",
+        "key": "critical_max_node_idx",
+        "reason": "高难节点索引，需要关卡建模"
+      },
+      {
+        "source": "suibian_temple/suibian_temple_config.py:34",
+        "key": "adventure_duration",
+        "reason": "游历时长，落在 suibian_temple_adventure__弹窗-游历时间选择 上，但该弹窗没有独立选项节点，只能整块开关，做不到「选哪个时长」"
+      },
+      {
+        "source": "suibian_temple/suibian_temple_config.py:43",
+        "key": "adventure_mission_1",
+        "reason": "游历委托选择，同 adventure_duration"
+      },
+      {
+        "source": "suibian_temple/suibian_temple_config.py:52",
+        "key": "adventure_mission_2",
+        "reason": "同上"
+      },
+      {
+        "source": "suibian_temple/suibian_temple_config.py:61",
+        "key": "adventure_mission_3",
+        "reason": "同上"
+      },
+      {
+        "source": "suibian_temple/suibian_temple_config.py:70",
+        "key": "adventure_mission_4",
+        "reason": "同上"
+      },
+      {
+        "source": "suibian_temple/suibian_temple_config.py:79",
+        "key": "craft_drag_times",
+        "reason": "制造拖拽次数，纯运行参数"
+      },
+      {
+        "source": "suibian_temple/suibian_temple_config.py:88",
+        "key": "good_goods_purchase_enabled",
+        "reason": "好物铺购买，迁移包里没有好物铺画面"
+      },
+      {
+        "source": "suibian_temple/suibian_temple_config.py:106",
+        "key": "boo_box_adventure_price",
+        "reason": "邦布盲盒价格档位，落在 __区域-邦布类型 之外的文本节点上，没有独立选择节点"
+      },
+      {
+        "source": "suibian_temple/suibian_temple_config.py:115",
+        "key": "boo_box_craft_price",
+        "reason": "同上"
+      },
+      {
+        "source": "suibian_temple/suibian_temple_config.py:124",
+        "key": "boo_box_sell_price",
+        "reason": "同上"
+      },
+      {
+        "source": "suibian_temple/suibian_temple_config.py:175",
+        "key": "pawnshop_crest_unlimited_denny_enabled",
+        "reason": "当铺「不限量兑换丁尼」子开关，迁移包里没有对应节点"
+      },
+      {
+        "source": "suibian_temple/suibian_temple_config.py:184",
+        "key": "auto_manage_enabled",
+        "reason": "自动管理（种田逻辑），迁移包没有对应画面"
+      },
+      {
+        "source": "world_patrol/world_patrol_config.py:22",
+        "key": "auto_battle",
+        "reason": "战斗配置名"
+      },
+      {
+        "source": "world_patrol/world_patrol_config.py:30",
+        "key": "route_list",
+        "reason": "路线文件选择，world_patrol 在迁移包里没有 pipeline 文件"
+      },
+      {
+        "source": "world_patrol/world_patrol_config.py:38",
+        "key": "ui_disappear_action",
+        "reason": "UI 消失后的处置，同上"
+      },
+      {
+        "source": "world_patrol/world_patrol_config.py:46",
+        "key": "ui_disappear_seconds",
+        "reason": "等待时长，同上"
+      },
+      {
+        "source": "world_patrol/world_patrol_config.py:54",
+        "key": "route_retry_times",
+        "reason": "重试次数，同上"
+      },
+      {
+        "source": "world_patrol/world_patrol_config.py:62",
+        "key": "route_retry_action",
+        "reason": "重试策略，同上"
+      },
+      {
+        "source": "world_patrol/world_patrol_config.py:70",
+        "key": "daily_loop_count",
+        "reason": "循环次数，同上"
+      },
+      {
+        "source": "world_patrol/world_patrol_config.py:78",
+        "key": "loop_interval_seconds",
+        "reason": "循环间隔，同上"
+      }
+    ],
+    "server_selection": {
+      "needed": true,
+      "reason": "国服 / B服 / 国际服是三个不同的游戏客户端，登录画面节点（enter_game__国服-* / enter_game__B服* / enter_game__国际服-*）都已迁入，因此需要区服选择。",
+      "implementation": "做成 GameRegion 选项，只切换登录节点组的 enabled，不改 resource 名称（仍是「国服」/ ./resource），也不加 StartApp。",
+      "missing": "上游是 PC 工具，靠 game_path 找 exe，仓库里没有硬编码 Android 包名，所以迁移包里没有真实包名可用，无法生成 StartApp 覆盖。"
+    }
+  },
   "stats": {
     "screens": 79,
     "areas_total": 700,
@@ -29161,7 +29830,7 @@
     "files_changed": 0,
     "files_unchanged": 195,
     "files_written": 195,
-    "bytes_written": 845474,
+    "bytes_written": 866502,
     "click_evidence": {
       "id_mark-fingerprint-only": 41,
       "goto_list": 66,

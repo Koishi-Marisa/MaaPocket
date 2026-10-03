@@ -1,4 +1,175 @@
 {
+  "bilibili_overlay": {
+    "directory": "resource_bilibili",
+    "new_nodes": [
+      "BilibiliLoginButton",
+      "BilibiliLoginDispatch",
+      "BilibiliLoginRecord",
+      "BilibiliPrivacyAgree",
+      "BilibiliPrivacyPolicy"
+    ],
+    "node_count": 6,
+    "note": "B服 登录分支用 OCR 识别；本仓库没有随包附带 OCR 模型，补上模型之前这些节点不会命中，链路会回落到基线候选表。",
+    "ocr_model_path": "resource/model/ocr/{rec.onnx,det.onnx,keys.txt}",
+    "overridden_nodes": [
+      "GameEnterCheck"
+    ],
+    "requires_ocr_model": [
+      "BilibiliLoginButton",
+      "BilibiliLoginRecord",
+      "BilibiliPrivacyAgree",
+      "BilibiliPrivacyPolicy"
+    ],
+    "resource_name": "B服",
+    "source": "March7thAssistant/tasks/game/__init__.py:104-115"
+  },
+  "config_migration_notes": [
+    {
+      "detail": "Server 选项（com.miHoYo.hkrpg / com.miHoYo.hkrpg.bilibili）+ StartUpGame.package",
+      "item": "config.example.yaml:46-48 game_title_name / game_process_name / game_path",
+      "status": "landed"
+    },
+    {
+      "detail": "StartupWait 选项 → WaitGameReady.post_delay + GameEnterRetry.max_hit（上游是 wait_until(check_and_click_enter, timeout) 的整体超时，这里拆成『等多久开始找』与『找不到重试几轮』两个可覆盖字段）",
+      "item": "config.example.yaml:55 start_game_timeout",
+      "status": "landed"
+    },
+    {
+      "detail": "迁移基线里只有 screen/cloud/enter_cloud_game.png 这一张云游戏截图，没有云游戏客户端包名、也没有 cloud/ 下的浏览器授权/免责声明/引导点击节点（上游 tasks/game/__init__.py:119-152），无法构成可用的云游戏启动链路。",
+      "item": "config.example.yaml:59 cloud_game_enable / :62-63 云游戏排队与登录超时",
+      "status": "not_landed"
+    },
+    {
+      "detail": "副本名/次数/花萼偏好都没有对应的 pipeline 节点：迁移只做到 screen/guide3 入口（march7th:kind=screen-anchor，next 为空），副本列表界面的模板与点击链完全没有迁移。",
+      "item": "config.example.yaml:90-109 power_* / instance_type / calyx_golden_preference / instance_names / instance_names_challenge_count / tp_before_instance",
+      "status": "not_landed"
+    },
+    {
+      "detail": "培养目标流程（instance/drop 两种方案）在迁移后的 pipeline 里没有任何节点。",
+      "item": "config.example.yaml:112-114 build_target_*",
+      "status": "not_landed"
+    },
+    {
+      "detail": "遗器分解/清理策略是 bag_relicset 界面内部的选中与分解逻辑，迁移只到 Screen_bag_relicset。",
+      "item": "config.example.yaml:118-120 break_down_level_four_relicset / weekly_relic_*",
+      "status": "not_landed"
+    },
+    {
+      "detail": "队伍选择在 configure_team 界面内部，迁移只到 Screen_configure_team（next 为空）。",
+      "item": "config.example.yaml:124-128 instance_team_*",
+      "status": "not_landed"
+    },
+    {
+      "detail": "合成数量由 consumables/material 界面内部的拖动与输入决定，迁移后这两条边是 __UNMAPPED_* 占位（DoNothing），没有可覆盖的字段。",
+      "item": "config.example.yaml:131-132 merge_immersifier / merge_immersifier_limit",
+      "status": "not_landed"
+    },
+    {
+      "detail": "体力补充弹窗没有迁移；guide3 之后的界面没有节点。",
+      "item": "config.example.yaml:135-136 use_reserved_trailblaze_power / use_fuel",
+      "status": "not_landed"
+    },
+    {
+      "detail": "历战余响的时间窗控制属于调度器逻辑，pipeline 里只有 NavTo_guide3。",
+      "item": "config.example.yaml:139-141 echo_of_war_*",
+      "status": "not_landed"
+    },
+    {
+      "detail": "支援角色选择在 visa 界面内部，迁移只到 Screen_visa。",
+      "item": "config.example.yaml:144-159 borrow_*",
+      "status": "not_landed"
+    },
+    {
+      "detail": "映射为对应任务的 default_check（见 TASK_DEFAULT_CHECK）",
+      "item": "config.example.yaml:162-170 reward_*_enable",
+      "status": "landed"
+    },
+    {
+      "detail": "映射为 daily / himekotry / memoryone / buildtarget 的 default_check",
+      "item": "config.example.yaml:173-176 daily_*_enable",
+      "status": "landed"
+    },
+    {
+      "detail": "activity 的 default_check；其余子活动（gardenofplenty / realmofthestrange / planarfissure / journey_highlights_notification）里只有 journey_highlights_notification 有独立任务可映射，剩下三个在本迁移里没有独立任务。",
+      "item": "config.example.yaml:190-196 activity_*_enable",
+      "status": "landed"
+    },
+    {
+      "detail": "资产/余烬兑换没有对应的迁移任务（上游 assets 模块整体不在 TASK_TABLE 里）。",
+      "item": "config.example.yaml:199-208 asset_*",
+      "status": "not_landed"
+    },
+    {
+      "detail": "CurrencyWarsMode 选项 → Task_currency_wars.next",
+      "item": "config.example.yaml:212 currencywars_type",
+      "status": "landed"
+    },
+    {
+      "detail": "博弈内的玩法参数没有迁移到 pipeline（只到 mode_select 屏幕）。",
+      "item": "config.example.yaml:213-217 currencywars_rank_difficulty / bonus_enable / fast_mode / strategy",
+      "status": "not_landed"
+    },
+    {
+      "detail": "DivergentMode 选项 → Task_divergent_universe.next（类型）；难度/奖励/稳定模式未迁移",
+      "item": "config.example.yaml:222-228 weekly_divergent_*",
+      "status": "landed"
+    },
+    {
+      "detail": "站台优先级配置需要差分宇宙内部节点，迁移里一个都没有。",
+      "item": "config.example.yaml:231-242 divergent_station_*",
+      "status": "not_landed"
+    },
+    {
+      "detail": "UniverseCategory 选项 → Task_universe.next（divergent/universe）",
+      "item": "config.example.yaml:244-252 universe_*",
+      "status": "landed"
+    },
+    {
+      "detail": "divergent_type（normal/cycle）已并入 DivergentMode；队伍流派/命途/难度未迁移",
+      "item": "config.example.yaml:259-262 divergent_type / divergent_team_type / universe_fate / universe_difficulty",
+      "status": "partially_landed"
+    },
+    {
+      "detail": "锄大地模块（tasks/daily/fight.py）的导航只迁到 NavTo_main，地图/购买/队伍配置全在战斗循环里，没有 pipeline 落点。",
+      "item": "config.example.yaml:265-278 fight_*",
+      "status": "not_landed"
+    },
+    {
+      "detail": "忘却之庭层数与两队配置在 memory 界面内部；迁移只到 Screen_memory / guide4。",
+      "item": "config.example.yaml:285-309 forgottenhall_*",
+      "status": "not_landed"
+    },
+    {
+      "detail": "虚构叙事层数与队伍配置同样没有迁移节点。",
+      "item": "config.example.yaml:313-337 purefiction_*",
+      "status": "not_landed"
+    },
+    {
+      "detail": "末日幻影层数与队伍配置同样没有迁移节点。",
+      "item": "config.example.yaml:341-365 apocalyptic_*",
+      "status": "not_landed"
+    },
+    {
+      "detail": "这些是 PC 端调度器与游戏窗口控制行为，属于 App 侧（MaaPocket core）职责，不属于资源包。",
+      "item": "config.example.yaml:368-389 auto_battle_detect_enable / auto_set_resolution_enable / loop_mode / scheduled_time / power_limit / refresh_hour",
+      "status": "not_landed"
+    },
+    {
+      "detail": "热键只影响 PC 端的自动战斗/地图/传送，对应边在迁移后是 __UNMAPPED_* DoNothing 占位。",
+      "item": "config.example.yaml:395-398 hotkey_*",
+      "status": "not_landed"
+    },
+    {
+      "detail": "Android 侧只有前台截图一种方式，没有可切换的字段。",
+      "item": "config.example.yaml:445 use_background_screenshot",
+      "status": "not_landed"
+    },
+    {
+      "detail": "兑换码需要 InputText 动作落点；迁移只到 Screen_redemption，没有输入框坐标/节点，也没有 InputText 节点可覆盖。",
+      "item": "config.example.yaml:461 redemption_code",
+      "status": "not_landed"
+    }
+  ],
   "counts": {
     "distinct_forms": 10,
     "edges_emitted": 110,
@@ -9,10 +180,13 @@
     "expressions_unmapped": 20,
     "expressions_unparsed": 0,
     "images_copied": 395,
+    "options_emitted": 5,
     "screens_emitted": 56,
     "screens_in_source": 56,
-    "tasks_emitted": 30,
+    "tasks_default_check": 9,
+    "tasks_emitted": 32,
     "tasks_skipped": 14,
+    "tasks_with_options": 5,
     "unmapped_nodes": 20
   },
   "design_resolution": {
@@ -159,6 +333,10 @@
       "status": "UNMAPPED"
     }
   ],
+  "game_control_tasks": [
+    "start_up_game",
+    "close_game"
+  ],
   "generator": "migrate_march7th.py",
   "images": {
     "bytes": 3883745,
@@ -168,10 +346,10 @@
     "source_files": 395
   },
   "interface_json_replacement": {
-    "bytes": 10116,
+    "bytes": 17092,
     "classification": "previous-run-output",
     "path": "MaaPocket/app-hsr/src/main/assets/pi/interface.json",
-    "sha256": "b445f6850f91a3b828fa8c0d73bc541572653c250717d891b8e306ac975e8d8a"
+    "sha256": "71a7c980a0c7c3f0b13b437743fa5ea36f1d1b40482507f0cf5dae28fb86d37a"
   },
   "nav_guard_coverage": {
     "guards_emitted": 110,
@@ -181,11 +359,212 @@
     "unexpected": []
   },
   "omitted_edges": [],
-  "options": {
-    "force": true,
-    "include_unsupported": false,
-    "schemas": null
-  },
+  "options": [
+    {
+      "cases": [
+        {
+          "label": "国服（米哈游）",
+          "name": "Official",
+          "pipeline_override": {
+            "CloseGame": {
+              "package": "com.miHoYo.hkrpg"
+            },
+            "StartUpGame": {
+              "package": "com.miHoYo.hkrpg"
+            }
+          }
+        },
+        {
+          "label": "B服（哔哩哔哩）",
+          "name": "Bilibili",
+          "pipeline_override": {
+            "CloseGame": {
+              "package": "com.miHoYo.hkrpg.bilibili"
+            },
+            "StartUpGame": {
+              "package": "com.miHoYo.hkrpg.bilibili"
+            }
+          }
+        }
+      ],
+      "default_case": "Official",
+      "label": "服务器",
+      "name": "Server",
+      "type": "select",
+      "used_by_tasks": [
+        "close_game",
+        "start_up_game"
+      ]
+    },
+    {
+      "cases": [
+        {
+          "label": "快速（等 10 秒 / 重试 5 次）",
+          "name": "Fast",
+          "pipeline_override": {
+            "GameEnterRetry": {
+              "max_hit": 5
+            },
+            "WaitGameReady": {
+              "post_delay": 10000
+            }
+          }
+        },
+        {
+          "label": "标准（等 20 秒 / 重试 15 次 ≈ 90 秒）",
+          "name": "Normal",
+          "pipeline_override": {
+            "GameEnterRetry": {
+              "max_hit": 15
+            },
+            "WaitGameReady": {
+              "post_delay": 20000
+            }
+          }
+        },
+        {
+          "label": "慢速（等 40 秒 / 重试 40 次 ≈ 4 分钟）",
+          "name": "Slow",
+          "pipeline_override": {
+            "GameEnterRetry": {
+              "max_hit": 40
+            },
+            "WaitGameReady": {
+              "post_delay": 40000
+            }
+          }
+        }
+      ],
+      "default_case": "Normal",
+      "label": "启动等待",
+      "name": "StartupWait",
+      "type": "select",
+      "used_by_tasks": [
+        "start_up_game"
+      ]
+    },
+    {
+      "cases": [
+        {
+          "label": "只到玩法选择界面",
+          "name": "OnlyModeSelect",
+          "pipeline_override": {
+            "Task_divergent_universe": {
+              "next": [
+                "NavTo_divergent_mode_select"
+              ]
+            }
+          }
+        },
+        {
+          "label": "常规演算",
+          "name": "Normal",
+          "pipeline_override": {
+            "Task_divergent_universe": {
+              "next": [
+                "NavTo_divergent_mode_select_normal"
+              ]
+            }
+          }
+        },
+        {
+          "label": "周期演算",
+          "name": "Cycle",
+          "pipeline_override": {
+            "Task_divergent_universe": {
+              "next": [
+                "NavTo_divergent_mode_select_cycle"
+              ]
+            }
+          }
+        }
+      ],
+      "default_case": "Cycle",
+      "label": "差分宇宙玩法",
+      "name": "DivergentMode",
+      "type": "select",
+      "used_by_tasks": [
+        "divergent_universe"
+      ]
+    },
+    {
+      "cases": [
+        {
+          "label": "差分宇宙",
+          "name": "Divergent",
+          "pipeline_override": {
+            "Task_universe": {
+              "next": [
+                "NavTo_divergent_main"
+              ]
+            }
+          }
+        },
+        {
+          "label": "模拟宇宙",
+          "name": "Universe",
+          "pipeline_override": {
+            "Task_universe": {
+              "next": [
+                "NavTo_universe_main"
+              ]
+            }
+          }
+        }
+      ],
+      "default_case": "Divergent",
+      "label": "宇宙类别",
+      "name": "UniverseCategory",
+      "type": "select",
+      "used_by_tasks": [
+        "universe"
+      ]
+    },
+    {
+      "cases": [
+        {
+          "label": "只到博弈首页",
+          "name": "OnlyHomepage",
+          "pipeline_override": {
+            "Task_currency_wars": {
+              "next": [
+                "NavTo_currency_wars_homepage"
+              ]
+            }
+          }
+        },
+        {
+          "label": "标准博弈",
+          "name": "Normal",
+          "pipeline_override": {
+            "Task_currency_wars": {
+              "next": [
+                "NavTo_currency_wars_mode_select_normal"
+              ]
+            }
+          }
+        },
+        {
+          "label": "超频博弈",
+          "name": "Overclock",
+          "pipeline_override": {
+            "Task_currency_wars": {
+              "next": [
+                "NavTo_currency_wars_mode_select_overclock"
+              ]
+            }
+          }
+        }
+      ],
+      "default_case": "Overclock",
+      "label": "货币战争玩法",
+      "name": "CurrencyWarsMode",
+      "type": "select",
+      "used_by_tasks": [
+        "currency_wars"
+      ]
+    }
+  ],
   "original_placeholder_interface": {
     "author": "another agent (guess, not generated by this script)",
     "defects": [
@@ -200,17 +579,17 @@
     "path": "MaaPocket/app-hsr/src/main/assets/pi/interface.json"
   },
   "out": "D:\\Trea\\二游自动化\\MaaPocket\\app-hsr\\src\\main\\assets\\pi",
-  "out_cleaned": true,
+  "out_cleaned": false,
   "pipeline_files": [
     {
-      "bytes": 10116,
+      "bytes": 17092,
       "path": "interface.json",
-      "sha256": "b445f6850f91a3b828fa8c0d73bc541572653c250717d891b8e306ac975e8d8a"
+      "sha256": "71a7c980a0c7c3f0b13b437743fa5ea36f1d1b40482507f0cf5dae28fb86d37a"
     },
     {
-      "bytes": 5539,
+      "bytes": 8524,
       "path": "resource/locale/zh_cn.json",
-      "sha256": "9afddfb5974c2d0e59096fac289636a2524066bdb2ec395b2650500992bd1df4"
+      "sha256": "4be5f4f5cc0ec84eeb0915846d72288d5fbb993202726b30f372276fca0dcd93"
     },
     {
       "bytes": 14039,
@@ -523,6 +902,11 @@
       "sha256": "50f8733352a30cedef3d8eacb0f8c4f1fd59bd96f958dff48e21bbcfadb8695d"
     },
     {
+      "bytes": 859,
+      "path": "resource/pipeline/task/close_game.json",
+      "sha256": "3e1098e99647f01de9d72b61bcbb5d46c439cf55d96c6b5fc6a860343ae0a7c0"
+    },
+    {
       "bytes": 698,
       "path": "resource/pipeline/task/currency_wars.json",
       "sha256": "ab0fbbd038d663e10fd942d72963cc5a9d2d851fa2214bc7564973260386b18d"
@@ -628,6 +1012,11 @@
       "sha256": "f6e8d700ad157ca481c68dfa0c474180671ac212bd80dcf89338e32d17c7e3f2"
     },
     {
+      "bytes": 3690,
+      "path": "resource/pipeline/task/start_up_game.json",
+      "sha256": "b4fa49f1206e9db3d2ea7cb340fb553609f2e015c0f43d6deed12495e5ef5c81"
+    },
+    {
       "bytes": 616,
       "path": "resource/pipeline/task/synthesis.json",
       "sha256": "35360ae574d4655009aacbfe8ef904a60ab09555c80bf019b749aeaa1056f059"
@@ -646,13 +1035,44 @@
       "bytes": 670,
       "path": "resource/pipeline/task/weekly_relic_cleanup.json",
       "sha256": "9425dcb74a87039e8eb1f66cdfd97e347ffe6665ddf8fbabb124cbd7854d1a4a"
+    },
+    {
+      "bytes": 3817,
+      "path": "resource_bilibili/pipeline/bilibili_login.json",
+      "sha256": "83c8773343944b7c33c7a70fbb71dc10a8ffd4be4fcc687fed5a050688588c72"
     }
   ],
   "pipeline_node_names": {
     "dangling_references": [],
     "duplicates": [],
-    "total": 427
+    "overlay_overrides": [
+      {
+        "files": [
+          "resource/pipeline/task/start_up_game.json",
+          "resource_bilibili/pipeline/bilibili_login.json"
+        ],
+        "name": "GameEnterCheck"
+      }
+    ],
+    "total": 442
   },
+  "resource_layers": [
+    {
+      "name": "国服",
+      "path": [
+        "./resource"
+      ],
+      "role": "baseline（March7thAssistant 全量迁移结果）"
+    },
+    {
+      "name": "B服",
+      "path": [
+        "./resource",
+        "./resource_bilibili"
+      ],
+      "role": "baseline + B服 overlay（只覆盖 GameEnterCheck，并新增 B服 登录节点）"
+    }
+  ],
   "schema_validation": {
     "interface": {
       "checked": 1,
@@ -664,7 +1084,7 @@
     "ok": true,
     "performed": true,
     "pipeline": {
-      "checked": 87,
+      "checked": 90,
       "errors": [],
       "ok": true,
       "schema": "D:\\Trea\\二游自动化\\_research\\maafw_dev\\tools\\pipeline.schema.json",
@@ -2328,6 +2748,136 @@
       "sha256": "42338c87b6d6cd738aecaa5cca72a2479ed0ede961f726ae3243c900edb29782"
     }
   },
+  "task_default_check": {
+    "achievement": {
+      "default_check": false,
+      "evidence": "config.example.yaml:169 reward_achievement_enable"
+    },
+    "activity": {
+      "default_check": true,
+      "evidence": "config.example.yaml:190 activity_enable"
+    },
+    "apocalyptic": {
+      "default_check": false,
+      "evidence": ""
+    },
+    "assist": {
+      "default_check": true,
+      "evidence": "config.example.yaml:165 reward_assist_enable"
+    },
+    "buildtarget": {
+      "default_check": false,
+      "evidence": "config.example.yaml:112 build_target_enable"
+    },
+    "close_game": {
+      "default_check": false,
+      "evidence": ""
+    },
+    "currency_wars": {
+      "default_check": false,
+      "evidence": ""
+    },
+    "daily": {
+      "default_check": true,
+      "evidence": "config.example.yaml:173 daily_enable"
+    },
+    "dispatch": {
+      "default_check": true,
+      "evidence": "config.example.yaml:163 reward_dispatch_enable"
+    },
+    "divergent_universe": {
+      "default_check": false,
+      "evidence": ""
+    },
+    "echoofwar": {
+      "default_check": false,
+      "evidence": ""
+    },
+    "ember_exchange": {
+      "default_check": false,
+      "evidence": ""
+    },
+    "fight": {
+      "default_check": false,
+      "evidence": ""
+    },
+    "himekotry": {
+      "default_check": false,
+      "evidence": "config.example.yaml:175 daily_himeko_try_enable"
+    },
+    "instance": {
+      "default_check": false,
+      "evidence": ""
+    },
+    "journey_highlights_notification": {
+      "default_check": false,
+      "evidence": "config.example.yaml:196 activity_journey_highlights_notification_enable"
+    },
+    "mail": {
+      "default_check": true,
+      "evidence": "config.example.yaml:164 reward_mail_enable"
+    },
+    "memoryofchaos": {
+      "default_check": false,
+      "evidence": ""
+    },
+    "memoryone": {
+      "default_check": false,
+      "evidence": "config.example.yaml:176 daily_memory_one_enable"
+    },
+    "message": {
+      "default_check": false,
+      "evidence": "config.example.yaml:170 reward_message_enable"
+    },
+    "photo": {
+      "default_check": false,
+      "evidence": ""
+    },
+    "power": {
+      "default_check": true,
+      "evidence": "config.example.yaml:90 power_enable"
+    },
+    "purefiction": {
+      "default_check": false,
+      "evidence": ""
+    },
+    "quest": {
+      "default_check": true,
+      "evidence": "config.example.yaml:166 reward_quest_enable"
+    },
+    "redemption": {
+      "default_check": true,
+      "evidence": "config.example.yaml:168 reward_redemption_code_enable"
+    },
+    "relicset": {
+      "default_check": false,
+      "evidence": ""
+    },
+    "srpass": {
+      "default_check": true,
+      "evidence": "config.example.yaml:167 reward_srpass_enable"
+    },
+    "start_up_game": {
+      "default_check": false,
+      "evidence": ""
+    },
+    "synthesis": {
+      "default_check": false,
+      "evidence": ""
+    },
+    "team": {
+      "default_check": false,
+      "evidence": ""
+    },
+    "universe": {
+      "default_check": false,
+      "evidence": ""
+    },
+    "weekly_relic_cleanup": {
+      "default_check": false,
+      "evidence": ""
+    }
+  },
   "tasks": [
     {
       "confidence": "medium",
@@ -2628,6 +3178,26 @@
       "name": "team",
       "rationale": "tasks/base/team.py:18 显式 screen.change_to('configure_team')。",
       "source_module": "tasks/base/team.py"
+    },
+    {
+      "confidence": "high",
+      "entry": "Task_start_up_game",
+      "entry_screen": "",
+      "group": "base",
+      "label": "启动游戏",
+      "name": "start_up_game",
+      "rationale": "tasks/game/__init__.py:71 start_game() 是上游唯一的游戏启动入口；:186 用 check_and_click_enter() 轮询点击『进入』。迁移为 StartApp（包名可由 Server 选项覆盖）→ 等待加载 → 找『进入』→ 导航到主界面。",
+      "source_module": "tasks/game/__init__.py"
+    },
+    {
+      "confidence": "low",
+      "entry": "Task_close_game",
+      "entry_screen": "",
+      "group": "base",
+      "label": "关闭游戏",
+      "name": "close_game",
+      "rationale": "上游没有独立的『关闭游戏』任务，只有 LocalGameController 的 Windows 窗口控制（tasks/game/starrailcontroller.py，Android 上无对应物）。这里用 StopApp 提供最小可用的关闭动作。",
+      "source_module": "tasks/game/starrailcontroller.py"
     }
   ],
   "tasks_skipped": [
@@ -2688,9 +3258,27 @@
       "reason": "Activity 的抽象基类，其导航已并入 activity 任务。"
     }
   ],
+  "tasks_with_options": {
+    "close_game": [
+      "Server"
+    ],
+    "currency_wars": [
+      "CurrencyWarsMode"
+    ],
+    "divergent_universe": [
+      "DivergentMode"
+    ],
+    "start_up_game": [
+      "Server",
+      "StartupWait"
+    ],
+    "universe": [
+      "UniverseCategory"
+    ]
+  },
   "totals": {
-    "files_written": 90,
-    "generated_bytes": 304794,
+    "files_written": 93,
+    "generated_bytes": 323121,
     "image_bytes": 3883745
   },
   "underscore_dirs": [],

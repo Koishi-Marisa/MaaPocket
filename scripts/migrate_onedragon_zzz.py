@@ -113,6 +113,447 @@ MERGED_SCREEN_FILE = "_od_merged.yml"
 
 
 # --------------------------------------------------------------------------
+# 可调选项（PI-V2 `option`）
+# --------------------------------------------------------------------------
+# 上游每个应用都有 `*_config.py` / `*_setting.py` 的配置项，但绝大多数只影响
+# Python 侧的决策逻辑；本迁移包没有生成对应的流程节点，因此没有 pipeline 落点，
+# 硬映射就是编造。凡是列进来的，`pipeline_override` 改的都是
+# `resource/pipeline/<screen_id>.json` 里**真实存在**的节点字段（只用到 `enabled`，
+# 上游没有节点写过这个字段，所以是纯新增，不会覆盖任何原有语义）。
+#
+# `enabled` 的语义与上游布尔配置一一对应：
+#   上游 True/False -> 节点 enabled True/False。
+
+GAME_REGION_NODES = {
+    "CN": [
+        "enter_game__国服-账号密码",
+        "enter_game__国服-账号输入区域",
+        "enter_game__国服-密码输入区域",
+        "enter_game__国服-同意按钮",
+        "enter_game__国服-账号密码进入游戏",
+        "enter_game__国服-账号密码-新",
+        "enter_game__国服-账号输入区域-新",
+        "enter_game__国服-密码输入区域-新",
+        "enter_game__国服-同意按钮-新",
+        "enter_game__国服-账号密码进入游戏-新",
+        "enter_game__国服-返回按钮",
+    ],
+    "CNB": [
+        "enter_game__B服-登录",
+        "enter_game__B服-账号输入区域",
+        "enter_game__B服-密码输入区域",
+        "enter_game__B服-同意按钮",
+        "enter_game__B服-账号删除区域",
+        "enter_game__B服新-手机号登录",
+        "enter_game__B服新-隐私政策提示",
+        "enter_game__B服新-同意隐私政策",
+        "enter_game__B服新-登录记录",
+        "enter_game__B服新-切换账号",
+        "enter_game__B服新-账号列表",
+    ],
+    "INTL": [
+        "enter_game__国际服-点击登录",
+        "enter_game__国际服-账号输入区域",
+        "enter_game__国际服-密码输入区域",
+        "enter_game__国际服-账号密码进入游戏",
+        "enter_game__国际服-换服",
+        "enter_game__国际服-换服-欧洲",
+        "enter_game__国际服-换服-美国",
+        "enter_game__国际服-换服-亚洲",
+        "enter_game__国际服-换服-港澳台",
+    ],
+}
+
+
+def _region_case(case_name, label, keys, region):
+    """区服 case：打开本区服的登录节点，关掉其它两组的登录节点。"""
+    enable = list(GAME_REGION_NODES[region])
+    disable = []
+    for other in keys:
+        if other != region:
+            disable.extend(GAME_REGION_NODES[other])
+    return {"name": case_name, "label": label, "enable": enable, "disable": disable}
+
+
+def _toggle_case(case_name, label, nodes, on):
+    return {
+        "name": case_name,
+        "label": label,
+        "enable": list(nodes) if on else [],
+        "disable": [] if on else list(nodes),
+    }
+
+
+def _pick_case(case_name, label, nodes, chosen):
+    """在若干互斥节点里挑一个打开，其余关掉。"""
+    return {
+        "name": case_name,
+        "label": label,
+        "enable": [chosen],
+        "disable": [n for n in nodes if n != chosen],
+    }
+
+
+# 上游依据：
+#   src/one_dragon/base/config/game_account_config.py:18-25 GameRegionEnum
+#     CN=ConfigItem('国服','cn') / CNB=ConfigItem('B服','cn_b') /
+#     AMERICA=ConfigItem('美服','us') / EUROPE=ConfigItem('欧服','eu') /
+#     ASIA=ConfigItem('亚服','asia') / TWHKMO=ConfigItem('港澳台服','twhkmo')
+#   该文件 :47-48 的注释说明"国服 / B服 / 国际服 是三个不同的游戏客户端"，
+#   国际服的四个区服共用同一个客户端，所以这里只分三档。
+_REGION_KEYS = ("CN", "CNB", "INTL")
+
+TASK_OPTIONS = [
+    {
+        "name": "GameRegion",
+        "label": "游戏区服",
+        "description": "选择运行的游戏客户端。国服 / B服 / 国际服是三个不同的客户端，登录画面不同。",
+        "default_case": "CN",
+        "tasks": ["TaskOneDragon"],
+        "upstream": [
+            "src/one_dragon/base/config/game_account_config.py:18 GameRegionEnum",
+        ],
+        "cases": [
+            _region_case("CN", "国服", _REGION_KEYS, "CN"),
+            _region_case("CNB", "B服", _REGION_KEYS, "CNB"),
+            _region_case("INTL", "国际服（亚/美/欧/港澳台）", _REGION_KEYS, "INTL"),
+        ],
+    },
+    {
+        "name": "AutoUltimate",
+        "label": "自动释放终结技",
+        "description": "对应上游「自动终结技」开关，打开后会点击终结技按钮。",
+        "default_case": "Off",
+        "tasks": ["TaskAutoBattle", "TaskOneDragon"],
+        "upstream": [
+            "src/zzz_od/application/battle_assistant/battle_assistant_config.py:61 auto_ultimate_enabled",
+        ],
+        "cases": [
+            _toggle_case("On", "开启", ["battle__按键-终结技"], True),
+            _toggle_case("Off", "关闭", ["battle__按键-终结技"], False),
+        ],
+    },
+    {
+        "name": "DriveDiscDismantleLevel",
+        "label": "驱动盘拆解等级",
+        "description": "对应上游 dismantle_level，决定快速选择时勾到哪个档位。",
+        "default_case": "LevelA",
+        "tasks": ["TaskDriveDiscDismantle"],
+        "upstream": [
+            "src/zzz_od/application/drive_disc_dismantle/drive_disc_dismantle_config.py:28 dismantle_level",
+        ],
+        "cases": [
+            _pick_case(
+                "LevelA",
+                "A及以下",
+                ["drive_disc_dismantle__按钮-A及以下", "drive_disc_dismantle__按钮-S及以下", "drive_disc_dismantle__按钮-B"],
+                "drive_disc_dismantle__按钮-A及以下",
+            ),
+            _pick_case(
+                "LevelS",
+                "S及以下",
+                ["drive_disc_dismantle__按钮-A及以下", "drive_disc_dismantle__按钮-S及以下", "drive_disc_dismantle__按钮-B"],
+                "drive_disc_dismantle__按钮-S及以下",
+            ),
+            _pick_case(
+                "LevelB",
+                "仅B",
+                ["drive_disc_dismantle__按钮-A及以下", "drive_disc_dismantle__按钮-S及以下", "drive_disc_dismantle__按钮-B"],
+                "drive_disc_dismantle__按钮-B",
+            ),
+        ],
+    },
+    {
+        "name": "DriveDiscDismantleAbandon",
+        "label": "同时拆解已弃置",
+        "description": "对应上游 dismantle_abandon，决定是否先点「全选已弃置」。",
+        "default_case": "Off",
+        "tasks": ["TaskDriveDiscDismantle"],
+        "upstream": [
+            "src/zzz_od/application/drive_disc_dismantle/drive_disc_dismantle_config.py:40 dismantle_abandon",
+        ],
+        "cases": [
+            _toggle_case("On", "是", ["drive_disc_dismantle__按钮-全选已弃置"], True),
+            _toggle_case("Off", "否", ["drive_disc_dismantle__按钮-全选已弃置"], False),
+        ],
+    },
+    {
+        "name": "DailySigninTarget",
+        "label": "每日签到目标",
+        "description": "对应上游 selected_sign，二选一：嗷呜（报亭刮刮卡）或好味面包房。",
+        "default_case": "HouHouBakery",
+        "tasks": ["TaskDailySignin"],
+        "upstream": [
+            "src/zzz_od/application/daily_signin/daily_signin_config.py:12 selected_sign",
+        ],
+        "cases": [
+            _pick_case("HouHouBakery", "好味面包房（盲盒）", ["hou_hou_bakery__盲盒", "news_stand__刮刮卡"], "hou_hou_bakery__盲盒"),
+            _pick_case("NewsStand", "报亭（刮刮卡）", ["hou_hou_bakery__盲盒", "news_stand__刮刮卡"], "news_stand__刮刮卡"),
+        ],
+    },
+    {
+        "name": "SuibianYumchaSin",
+        "label": "饮茶仙定期采办",
+        "description": "对应上游 yum_cha_sin，是否做随便观的定期采办。",
+        "default_case": "On",
+        "tasks": ["TaskSuibianTemple"],
+        "upstream": [
+            "src/zzz_od/application/suibian_temple/suibian_temple_config.py:16 yum_cha_sin",
+        ],
+        "cases": [
+            _toggle_case("On", "开启", ["suibian_temple_yumchaxian__按钮-定期采办"], True),
+            _toggle_case("Off", "关闭", ["suibian_temple_yumchaxian__按钮-定期采办"], False),
+        ],
+    },
+    {
+        "name": "SuibianYumchaRefresh",
+        "label": "定期采办自动刷新",
+        "description": "对应上游 yum_cha_sin_period_refresh，采办时是否点刷新。",
+        "default_case": "On",
+        "tasks": ["TaskSuibianTemple"],
+        "upstream": [
+            "src/zzz_od/application/suibian_temple/suibian_temple_config.py:25 yum_cha_sin_period_refresh",
+        ],
+        "cases": [
+            _toggle_case("On", "开启", ["suibian_temple_yumchaxian__按钮-定期采办-刷新"], True),
+            _toggle_case("Off", "关闭", ["suibian_temple_yumchaxian__按钮-定期采办-刷新"], False),
+        ],
+    },
+    {
+        "name": "SuibianPawnshop",
+        "label": "当铺兑换货币",
+        "description": "对应上游 pawnshop_omnicoin_enabled / pawnshop_crest_enabled 两个开关的组合。",
+        "default_case": "Both",
+        "tasks": ["TaskSuibianTemple"],
+        "upstream": [
+            "src/zzz_od/application/suibian_temple/suibian_temple_config.py:133 pawnshop_omnicoin_enabled",
+            "src/zzz_od/application/suibian_temple/suibian_temple_config.py:154 pawnshop_crest_enabled",
+        ],
+        "cases": [
+            _toggle_case("Both", "百通宝 + 云纹徽", ["suibian_temple_pawnshop__按钮-百通宝-周期", "suibian_temple_pawnshop__按钮-云纹徽-周期"], True),
+            _pick_case(
+                "Omnicoin",
+                "仅百通宝",
+                ["suibian_temple_pawnshop__按钮-百通宝-周期", "suibian_temple_pawnshop__按钮-云纹徽-周期"],
+                "suibian_temple_pawnshop__按钮-百通宝-周期",
+            ),
+            _pick_case(
+                "Crest",
+                "仅云纹徽",
+                ["suibian_temple_pawnshop__按钮-百通宝-周期", "suibian_temple_pawnshop__按钮-云纹徽-周期"],
+                "suibian_temple_pawnshop__按钮-云纹徽-周期",
+            ),
+        ],
+    },
+    {
+        "name": "SuibianBooboxPurchase",
+        "label": "邦布盲盒购买",
+        "description": "对应上游 boo_box_purchase_enabled，是否做邦布盲盒聘用。",
+        "default_case": "Off",
+        "tasks": ["TaskSuibianTemple"],
+        "upstream": [
+            "src/zzz_od/application/suibian_temple/suibian_temple_config.py:97 boo_box_purchase_enabled",
+        ],
+        "cases": [
+            _toggle_case("On", "开启", ["suibian_temple_boobox__按钮-聘用"], True),
+            _toggle_case("Off", "关闭", ["suibian_temple_boobox__按钮-聘用"], False),
+        ],
+    },
+]
+
+
+# 上游有、但迁移包里没有对应流程节点（或只影响 Python 侧决策）的配置项。
+# 这些不是"忘了迁移"，是**没有落点**：写进报告，不编造 pipeline_override。
+UNMAPPED_CONFIG_KEYS = [
+    # (上游文件:行, 键, 未迁移原因)
+    ("battle_assistant/battle_assistant_config.py:12", "dodge_assistant_config",
+     "指向另一个应用的配置名，迁移包里没有「闪避助手」流程"),
+    ("battle_assistant/battle_assistant_config.py:20", "screenshot_interval",
+     "纯运行参数（截图轮询间隔），不是画面交互，没有节点可改"),
+    ("battle_assistant/battle_assistant_config.py:28", "control_method",
+     "PC 输入方式（键鼠 / 手柄），Android 上不存在这个选择"),
+    ("battle_assistant/battle_assistant_config.py:43", "auto_battle_config",
+     "上游的「战斗配置」是 YAML 脚本，迁移包没有对应的战斗逻辑 agent"),
+    ("battle_assistant/battle_assistant_config.py:52", "use_merged_file",
+     "YAML 载入细节，不影响画面"),
+    ("charge_plan/charge_plan_config.py:300", "loop",
+     "体力计划里有「循环」按钮（charge_plan__按钮-循环），但本 option 只做了登录节点组，未纳入"),
+    ("charge_plan/charge_plan_config.py:308", "daily_reset_plan_times",
+     "完成后的后处理逻辑，没有节点"),
+    ("charge_plan/charge_plan_config.py:316", "last_daily_reset_dt",
+     "运行时记录，不是用户配置"),
+    ("charge_plan/charge_plan_config.py:324", "skip_plan",
+     "跳过体力计划，迁移包里没有对应节点"),
+    ("charge_plan/charge_plan_config.py:332", "double_reward",
+     "双倍奖励开关，迁移包里没有对应节点"),
+    ("charge_plan/charge_plan_config.py:340", "combat_simulation_double_reward_config",
+     "复合配置，没有节点"),
+    ("charge_plan/charge_plan_config.py:349", "restore_charge",
+     "恢复体力方式（Enum），迁移包没有对应节点"),
+    ("coffee/coffee_config.py:26", "transport_point",
+     "传送点选择，需要地图寻路；迁移包只迁了画面识别，没有寻路"),
+    ("coffee/coffee_config.py:35", "run_charge_plan_afterwards",
+     "跑完咖啡后触发另一个应用，跨应用编排，没有节点"),
+    ("commission_assistant/commission_assistant_config.py:33", "pause_in_background",
+     "窗口失焦暂停，Android 前台应用概念不同"),
+    ("commission_assistant/commission_assistant_config.py:41", "dialog_click_interval",
+     "点击间隔，纯运行参数"),
+    ("commission_assistant/commission_assistant_config.py:49", "story_mode",
+     "剧情处理方式，迁移包里没有「跳过剧情」按钮节点"),
+    ("commission_assistant/commission_assistant_config.py:57", "dialog_option",
+     "对话框选项位置，落在 commission_assistant__右侧选项区域 / __中间选项区域 两个区域节点上，"
+     "但这两个节点的语义是「点哪里」而不是「选哪个」，改 enabled 会把整个区域点关掉，风险大于收益"),
+    ("commission_assistant/commission_assistant_config.py:65", "dodge_config",
+     "同 dodge_assistant_config"),
+    ("commission_assistant/commission_assistant_config.py:73", "dodge_switch",
+     "PC 快捷键，Android 没有键盘映射"),
+    ("commission_assistant/commission_assistant_config.py:81", "auto_battle",
+     "战斗配置名，同 auto_battle_config"),
+    ("commission_assistant/commission_assistant_config.py:89", "auto_battle_switch",
+     "PC 快捷键"),
+    ("commission_assistant/commission_assistant_config.py:97", "sleep_after_empty_screen",
+     "等待时长，纯运行参数"),
+    ("devtools/operation_debug/operation_debug_config.py:17", "operation_template",
+     "devtools 应用在迁移包里没有 pipeline 文件"),
+    ("devtools/operation_debug/operation_debug_config.py:25", "repeat_enabled",
+     "devtools 应用在迁移包里没有 pipeline 文件"),
+    ("devtools/screenshot_helper/screenshot_helper_config.py:16", "frequency_second",
+     "devtools 应用在迁移包里没有 pipeline 文件"),
+    ("devtools/screenshot_helper/screenshot_helper_config.py:24", "length_second",
+     "devtools 应用在迁移包里没有 pipeline 文件"),
+    ("devtools/screenshot_helper/screenshot_helper_config.py:32", "key_save",
+     "devtools 应用在迁移包里没有 pipeline 文件"),
+    ("devtools/screenshot_helper/screenshot_helper_config.py:40", "dodge_detect",
+     "devtools 应用在迁移包里没有 pipeline 文件"),
+    ("devtools/screenshot_helper/screenshot_helper_config.py:48", "screenshot_before_key",
+     "devtools 应用在迁移包里没有 pipeline 文件"),
+    ("devtools/screenshot_helper/screenshot_helper_config.py:56", "mini_map_angle_detect",
+     "devtools 应用在迁移包里没有 pipeline 文件"),
+    ("hollow_zero/lost_void/lost_void_config.py:27", "daily_plan_times",
+     "次数上限，需要逐轮计数，pipeline 没有对应节点"),
+    ("hollow_zero/lost_void/lost_void_config.py:35", "weekly_plan_times",
+     "次数上限，同 daily_plan_times"),
+    ("hollow_zero/lost_void/lost_void_config.py:43", "extra_task",
+     "额外任务类型选择，没有节点"),
+    ("hollow_zero/lost_void/lost_void_config.py:55", "mission_name",
+     "副本名，靠 OCR 匹配，没有对应节点"),
+    ("hollow_zero/lost_void/lost_void_config.py:63", "challenge_config",
+     "挑战配置 YAML 名，迁移包没有对应逻辑"),
+    ("hollow_zero/lost_void/lost_void_challenge_config.py:110", "predefined_team_idx",
+     "配队索引，需要队伍选择界面建模，未迁移"),
+    ("hollow_zero/lost_void/lost_void_challenge_config.py:122", "choose_team_by_priority",
+     "配队策略，同 predefined_team_idx"),
+    ("hollow_zero/lost_void/lost_void_challenge_config.py:134", "manually_choose_agent",
+     "手动选代理人，同 predefined_team_idx"),
+    ("hollow_zero/lost_void/lost_void_challenge_config.py:146", "team_info",
+     "队伍成员列表，同 predefined_team_idx"),
+    ("hollow_zero/lost_void/lost_void_challenge_config.py:154", "auto_battle",
+     "战斗配置名"),
+    ("hollow_zero/lost_void/lost_void_challenge_config.py:166", "artifact_priority_new",
+     "鸣徽优先级，需要空洞内部商店/掉落建模"),
+    ("hollow_zero/lost_void/lost_void_challenge_config.py:174", "artifact_priority",
+     "鸣徽优先级，同上"),
+    ("hollow_zero/lost_void/lost_void_challenge_config.py:196", "artifact_priority_2",
+     "鸣徽优先级，同上"),
+    ("hollow_zero/lost_void/lost_void_challenge_config.py:208", "region_type_priority",
+     "区域类型优先级，同上"),
+    ("hollow_zero/lost_void/lost_void_challenge_config.py:220", "period_buff_no",
+     "周期增益编号，同上"),
+    ("hollow_zero/lost_void/lost_void_challenge_config.py:228", "buy_only_priority_1",
+     "购买策略，同上"),
+    ("hollow_zero/lost_void/lost_void_challenge_config.py:236", "buy_only_priority_2",
+     "购买策略，同上"),
+    ("hollow_zero/lost_void/lost_void_challenge_config.py:247", "store_gold",
+     "购买策略，同上"),
+    ("hollow_zero/lost_void/lost_void_challenge_config.py:258", "store_blood",
+     "购买策略，同上"),
+    ("hollow_zero/lost_void/lost_void_challenge_config.py:269", "store_blood_min",
+     "购买策略，同上"),
+    ("hollow_zero/lost_void/lost_void_challenge_config.py:277", "investigation_strategy",
+     "调查战略名，同上"),
+    ("hollow_zero/lost_void/lost_void_challenge_config.py:288", "chase_new_mode",
+     "玩法开关，同上"),
+    ("hollow_zero/withered_domain/withered_domain_config.py:35", "mission_name",
+     "副本名，同上"),
+    ("hollow_zero/withered_domain/withered_domain_config.py:43", "challenge_config",
+     "挑战配置名，同上"),
+    ("hollow_zero/withered_domain/withered_domain_config.py:55", "weekly_plan_times",
+     "次数上限，同上"),
+    ("hollow_zero/withered_domain/withered_domain_config.py:63", "daily_plan_times",
+     "次数上限，同上"),
+    ("hollow_zero/withered_domain/withered_domain_config.py:71", "extra_task",
+     "额外任务类型，同上"),
+    ("hollow_zero/withered_domain/withered_domain_config.py:79", "extra_exit",
+     "额外退出条件，同上"),
+    ("intel_board/intel_board_config.py:18", "predefined_team_idx",
+     "配队索引，未迁移"),
+    ("intel_board/intel_board_config.py:27", "auto_battle_config",
+     "战斗配置名"),
+    ("intel_board/intel_board_config.py:36", "exp_grind_mode",
+     "刷经验模式，迁移包没有对应节点"),
+    ("life_on_line/life_on_line_config.py:18", "daily_plan_times",
+     "次数上限，未迁移"),
+    ("life_on_line/life_on_line_config.py:31", "predefined_team_idx",
+     "配队索引，未迁移"),
+    ("notorious_hunt/notorious_hunt_config.py:76", "weekly_challenge_start_weekday",
+     "起始星期，需要日期判断，pipeline 没有对应节点"),
+    ("notorious_hunt/notorious_hunt_config.py:84", "loop",
+     "循环开关，迁移包里没有对应节点"),
+    ("random_play/random_play_config.py:29", "transport_point",
+     "传送点选择，需要地图寻路"),
+    ("random_play/random_play_config.py:37", "agent_name_1",
+     "随机玩法的代理人，需要选人界面建模"),
+    ("random_play/random_play_config.py:45", "agent_name_2",
+     "同上"),
+    ("shiyu_defense/shiyu_defense_config.py:38", "team_list",
+     "配队列表，需要队伍选择界面建模"),
+    ("shiyu_defense/shiyu_defense_config.py:125", "critical_max_node_idx",
+     "高难节点索引，需要关卡建模"),
+    ("suibian_temple/suibian_temple_config.py:34", "adventure_duration",
+     "游历时长，落在 suibian_temple_adventure__弹窗-游历时间选择 上，但该弹窗没有独立选项节点，"
+     "只能整块开关，做不到「选哪个时长」"),
+    ("suibian_temple/suibian_temple_config.py:43", "adventure_mission_1",
+     "游历委托选择，同 adventure_duration"),
+    ("suibian_temple/suibian_temple_config.py:52", "adventure_mission_2",
+     "同上"),
+    ("suibian_temple/suibian_temple_config.py:61", "adventure_mission_3",
+     "同上"),
+    ("suibian_temple/suibian_temple_config.py:70", "adventure_mission_4",
+     "同上"),
+    ("suibian_temple/suibian_temple_config.py:79", "craft_drag_times",
+     "制造拖拽次数，纯运行参数"),
+    ("suibian_temple/suibian_temple_config.py:88", "good_goods_purchase_enabled",
+     "好物铺购买，迁移包里没有好物铺画面"),
+    ("suibian_temple/suibian_temple_config.py:106", "boo_box_adventure_price",
+     "邦布盲盒价格档位，落在 __区域-邦布类型 之外的文本节点上，没有独立选择节点"),
+    ("suibian_temple/suibian_temple_config.py:115", "boo_box_craft_price",
+     "同上"),
+    ("suibian_temple/suibian_temple_config.py:124", "boo_box_sell_price",
+     "同上"),
+    ("suibian_temple/suibian_temple_config.py:175", "pawnshop_crest_unlimited_denny_enabled",
+     "当铺「不限量兑换丁尼」子开关，迁移包里没有对应节点"),
+    ("suibian_temple/suibian_temple_config.py:184", "auto_manage_enabled",
+     "自动管理（种田逻辑），迁移包没有对应画面"),
+    ("world_patrol/world_patrol_config.py:22", "auto_battle",
+     "战斗配置名"),
+    ("world_patrol/world_patrol_config.py:30", "route_list",
+     "路线文件选择，world_patrol 在迁移包里没有 pipeline 文件"),
+    ("world_patrol/world_patrol_config.py:38", "ui_disappear_action",
+     "UI 消失后的处置，同上"),
+    ("world_patrol/world_patrol_config.py:46", "ui_disappear_seconds",
+     "等待时长，同上"),
+    ("world_patrol/world_patrol_config.py:54", "route_retry_times",
+     "重试次数，同上"),
+    ("world_patrol/world_patrol_config.py:62", "route_retry_action",
+     "重试策略，同上"),
+    ("world_patrol/world_patrol_config.py:70", "daily_loop_count",
+     "循环次数，同上"),
+    ("world_patrol/world_patrol_config.py:78", "loop_interval_seconds",
+     "循环间隔，同上"),
+]
+
+
+# --------------------------------------------------------------------------
 # Minimal YAML reader
 # --------------------------------------------------------------------------
 # PyYAML is not available in the target environment and must not be a runtime
@@ -1552,7 +1993,68 @@ class Migration(object):
         return tasks
 
     # -- interface + locale ---------------------------------------------
+    def build_option_defs(self, task_names):
+        """把 `TASK_OPTIONS` 编译成 PI-V2 的 `option` 映射 + `task` 名 -> option 列表。
+
+        `task_names` 是本包真实生成的 task 名集合；引用了不存在的 task 直接报错，
+        避免出现"option 定义了但挂不上"的静默失效。
+        """
+        options = {}
+        per_task = {}
+        records = []
+        for spec in TASK_OPTIONS:
+            for task_name in spec["tasks"]:
+                if task_name not in task_names:
+                    raise SystemExit(
+                        "选项 %s 挂到了不存在的 task %s（可用: %s）"
+                        % (spec["name"], task_name, ", ".join(sorted(task_names)))
+                    )
+            cases = []
+            for case in spec["cases"]:
+                override = {}
+                for node in case.get("enable", []):
+                    override[node] = {"enabled": True}
+                for node in case.get("disable", []):
+                    override[node] = {"enabled": False}
+                cases.append(
+                    {
+                        "name": case["name"],
+                        "label": "$option.%s.case.%s.label" % (spec["name"], case["name"]),
+                        "pipeline_override": override,
+                    }
+                )
+            options[spec["name"]] = {
+                # `type` 必须写死成 "select"：`optionDefinition` 是 oneOf，不写 `type`
+                # 时两 case 的选项会同时命中 selectOption 与 switchOption 两个分支
+                # （两个分支都只要求 `cases`），schema 校验报
+                # "matched 2 oneOf branches (expected 1)"。上游 MaaEnd 的选项也是这么写的。
+                "type": "select",
+                "label": "$option.%s.label" % spec["name"],
+                "description": "$option.%s.description" % spec["name"],
+                "default_case": spec["default_case"],
+                "cases": cases,
+            }
+            for task_name in spec["tasks"]:
+                per_task.setdefault(task_name, []).append(spec["name"])
+            records.append(
+                {
+                    "name": spec["name"],
+                    "label": spec["label"],
+                    "default_case": spec["default_case"],
+                    "tasks": list(spec["tasks"]),
+                    "cases": [c["name"] for c in spec["cases"]],
+                    "landing_nodes": sorted(
+                        {n for c in spec["cases"] for n in c.get("enable", []) + c.get("disable", [])}
+                    ),
+                    "upstream": list(spec["upstream"]),
+                }
+            )
+        return options, per_task, records
+
     def build_interface(self, tasks):
+        task_names = {t["name"] for t in tasks}
+        options, per_task, option_records = self.build_option_defs(task_names)
+
         interface = {
             "interface_version": 2,
             "name": "MaaPocketZZZ",
@@ -1573,18 +2075,21 @@ class Migration(object):
             "resource": [{"name": "国服", "path": ["./resource"]}],
             "group": [{"name": g, "label": "$group.%s.label" % g} for g, _ in GROUPS],
             "task": [
-                {
-                    "name": t["name"],
-                    "label": "$task.%s.label" % t["name"],
-                    "entry": t["entry"],
-                    "group": [t["group"]],
-                    "description": "$task.%s.description" % t["name"],
-                }
+                dict(
+                    [
+                        ("name", t["name"]),
+                        ("label", "$task.%s.label" % t["name"]),
+                        ("entry", t["entry"]),
+                        ("group", [t["group"]]),
+                        ("description", "$task.%s.description" % t["name"]),
+                    ]
+                    + ([("option", list(per_task[t["name"]]))] if t["name"] in per_task else [])
+                )
                 for t in tasks
             ],
             # `option` is an OBJECT map (title "配置项定义": "为一个对象映射"),
             # not an array -- unlike `global_option` and `import`.
-            "option": {},
+            "option": options,
             "agent": [],
             "import": [],
             "languages": {"zh_cn": "locales/interface/zh_cn.json"},
@@ -1600,6 +2105,7 @@ class Migration(object):
             "controller": {"Android": {"label": "Android 设备"}},
             "group": {g: {"label": label} for g, label in GROUPS},
             "task": {},
+            "option": {},
         }
         for task in tasks:
             locale["task"][task["name"]] = {
@@ -1607,7 +2113,39 @@ class Migration(object):
                 "description": "上游应用 %s（包 %s，app_id=%s）；迁移置信度：%s"
                 % (task["app_name"], task["package"], task["app_id"], task["confidence"]),
             }
+        for spec in TASK_OPTIONS:
+            locale["option"][spec["name"]] = {
+                "label": spec["label"],
+                "description": spec["description"],
+                "case": {c["name"]: {"label": c["label"]} for c in spec["cases"]},
+            }
         self.emit_json("locales/interface/zh_cn.json", locale)
+
+        self.report["options"] = {
+            "design": (
+                "只映射有真实 pipeline 落点的配置项；pipeline_override 仅使用 `enabled` 字段，"
+                "上游 pipeline 没有任何节点写过 `enabled`，因此是纯新增、不覆盖既有语义。"
+            ),
+            "definitions": option_records,
+            "unmapped_upstream_config": [
+                {"source": src, "key": key, "reason": reason} for src, key, reason in UNMAPPED_CONFIG_KEYS
+            ],
+            "server_selection": {
+                "needed": True,
+                "reason": (
+                    "国服 / B服 / 国际服是三个不同的游戏客户端，登录画面节点（enter_game__国服-* / "
+                    "enter_game__B服* / enter_game__国际服-*）都已迁入，因此需要区服选择。"
+                ),
+                "implementation": (
+                    "做成 GameRegion 选项，只切换登录节点组的 enabled，不改 resource 名称"
+                    "（仍是「国服」/ ./resource），也不加 StartApp。"
+                ),
+                "missing": (
+                    "上游是 PC 工具，靠 game_path 找 exe，仓库里没有硬编码 Android 包名，"
+                    "所以迁移包里没有真实包名可用，无法生成 StartApp 覆盖。"
+                ),
+            },
+        }
         return interface
 
     # -- report ----------------------------------------------------------

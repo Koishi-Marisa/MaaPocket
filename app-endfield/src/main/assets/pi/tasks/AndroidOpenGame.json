@@ -37,7 +37,7 @@
                             "action": {
                                 "type": "StartApp",
                                 "param": {
-                                    "package": "com.hypergryph.endfield/com.u8.sdk.U8UnityContext"
+                                    "package": "com.hypergryph.endfield"
                                 }
                             }
                         },
@@ -59,7 +59,7 @@
                             "action": {
                                 "type": "StartApp",
                                 "param": {
-                                    "package": "com.hypergryph.endfield.bilibili/com.u8.sdk.U8UnityContext"
+                                    "package": "com.hypergryph.endfield.bilibili"
                                 }
                             }
                         },
@@ -81,7 +81,7 @@
                             "action": {
                                 "type": "StartApp",
                                 "param": {
-                                    "package": "com.gryphline.endfield.gp/com.u8.sdk.U8UnityContext"
+                                    "package": "com.gryphline.endfield.gp"
                                 }
                             }
                         },
@@ -103,7 +103,7 @@
                             "action": {
                                 "type": "StartApp",
                                 "param": {
-                                    "package": "com.hypergryph.endfield.vn/com.u8.sdk.U8UnityContext"
+                                    "package": "com.hypergryph.endfield.vn"
                                 }
                             }
                         },
@@ -136,7 +136,7 @@
                             "action": {
                                 "type": "StartApp",
                                 "param": {
-                                    "package": "com.hypergryph.cloud.endfield/com.hypergryph.cloud.endfield.splash.SplashActivity"
+                                    "package": "com.hypergryph.cloud.endfield"
                                 }
                             }
                         },

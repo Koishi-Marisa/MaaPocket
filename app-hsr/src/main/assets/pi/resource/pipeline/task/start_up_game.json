@@ -1,0 +1,124 @@
+{
+  "Task_start_up_game": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "StartUpGame"
+    ],
+    "attach": {
+      "march7th:kind": "task-entry",
+      "march7th:task_id": "start_up_game",
+      "march7th:entry_screen": "click_enter",
+      "march7th:source_module": "tasks/game/__init__.py",
+      "march7th:confidence": "high",
+      "march7th:rationale": "tasks/game/__init__.py:71 start_game() → :186 wait_until(check_and_click_enter, start_game_timeout*60)。"
+    }
+  },
+  "StartUpGame": {
+    "recognition": "DirectHit",
+    "action": "StartApp",
+    "package": "com.miHoYo.hkrpg",
+    "next": [
+      "WaitGameReady"
+    ],
+    "attach": {
+      "march7th:kind": "game-launch",
+      "march7th:default_package": "com.miHoYo.hkrpg",
+      "march7th:note": "package 由 interface.json 的 Server 选项覆盖（国服 com.miHoYo.hkrpg / B服 com.miHoYo.hkrpg.bilibili）。"
+    }
+  },
+  "WaitGameReady": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 20000,
+    "next": [
+      "GameEnterCheck"
+    ],
+    "attach": {
+      "march7th:kind": "game-launch-wait",
+      "march7th:note": "上游 tasks/game/__init__.py:173 与 :180 各 sleep 10s 之后才开始找『进入』；这里合并成一个 post_delay，由 interface.json 的 StartupWait 选项调。"
+    }
+  },
+  "GameEnterCheck": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "ClickEnter",
+      "ClickStartGame",
+      "GameEnterRetry",
+      "NavTo_main"
+    ],
+    "attach": {
+      "march7th:kind": "game-enter-check",
+      "march7th:overridden_by": "resource_bilibili/pipeline/bilibili_login.json",
+      "march7th:note": "对应上游 check_and_click_enter()（tasks/game/__init__.py:74-117）。候选表按顺序：点『进入』→ 点『开始游戏』→ 等一会重试（最多 15 次）→ 回主界面。B服 资源树会用同名节点覆盖它，插入登录分支。"
+    }
+  },
+  "ClickEnter": {
+    "recognition": "TemplateMatch",
+    "template": "screen/click_enter.png",
+    "threshold": 0.9,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "GameEnterDone"
+    ],
+    "attach": {
+      "march7th:kind": "game-enter-click",
+      "march7th:source": "tasks/game/__init__.py:76",
+      "march7th:note": "对应 ./assets/images/screen/click_enter.png（阈值 0.9）。"
+    }
+  },
+  "ClickStartGame": {
+    "recognition": "TemplateMatch",
+    "template": "screen/start_game.png",
+    "threshold": 0.9,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "GameEnterDone"
+    ],
+    "attach": {
+      "march7th:kind": "game-enter-click",
+      "march7th:source": "tasks/game/__init__.py:83",
+      "march7th:note": "对应 ./assets/images/screen/start_game.png（阈值 0.9）。"
+    }
+  },
+  "GameEnterRetry": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 6000,
+    "max_hit": 15,
+    "next": [
+      "GameEnterCheck"
+    ],
+    "attach": {
+      "march7th:kind": "game-enter-retry",
+      "march7th:note": "上游 check_and_click_enter() 返回 False 后由 wait_until(..., start_game_timeout*60) 重试（默认 10 分钟）。这里用 max_hit 15 × 6s ≈ 90s 收敛，避免无界循环。"
+    }
+  },
+  "GameEnterDone": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 6000,
+    "next": [
+      "NavTo_main"
+    ],
+    "attach": {
+      "march7th:kind": "game-enter-done",
+      "march7th:note": "点完『进入/开始游戏』后等游戏加载，再交给 NavTo_main 路由。"
+    }
+  }
+}

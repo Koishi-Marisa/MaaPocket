@@ -1,0 +1,28 @@
+{
+  "Task_close_game": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "CloseGame"
+    ],
+    "attach": {
+      "march7th:kind": "task-entry",
+      "march7th:task_id": "close_game",
+      "march7th:entry_screen": "",
+      "march7th:source_module": "tasks/game/starrailcontroller.py",
+      "march7th:confidence": "low",
+      "march7th:rationale": "上游没有『关闭游戏』任务；LocalGameController 只有 Windows 窗口控制，Android 上用 StopApp 代替。"
+    }
+  },
+  "CloseGame": {
+    "recognition": "DirectHit",
+    "action": "StopApp",
+    "package": "com.miHoYo.hkrpg",
+    "next": [],
+    "attach": {
+      "march7th:kind": "game-stop",
+      "march7th:default_package": "com.miHoYo.hkrpg",
+      "march7th:note": "package 由 interface.json 的 Server 选项覆盖（国服 / B服）。"
+    }
+  }
+}

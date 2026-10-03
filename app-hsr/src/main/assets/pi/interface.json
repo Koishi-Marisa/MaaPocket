@@ -13,10 +13,7 @@
       "name": "Android",
       "type": "Adb",
       "label": "Android（ADB）",
-      "display_long_side": 1920,
-      "attach_resource_path": [
-        "./resource"
-      ]
+      "display_long_side": 1920
     }
   ],
   "resource": [
@@ -25,6 +22,14 @@
       "label": "国服",
       "path": [
         "./resource"
+      ]
+    },
+    {
+      "name": "B服",
+      "label": "B服（哔哩哔哩）",
+      "path": [
+        "./resource",
+        "./resource_bilibili"
       ]
     }
   ],
@@ -74,7 +79,7 @@
       "label": "日常",
       "entry": "Task_daily",
       "description": "Daily 本身没有单一 change_to；它是调度器，把工作分给 buildtarget/fight/synthesis 等子模块（tasks/daily/daily.py:131 currency_wars_homepage、:142 divergent_main、:222 guide2 都是交接点）。入口取 main 是因为所有子任务都从主界面出发。",
-      "default_check": false,
+      "default_check": true,
       "group": [
         "daily"
       ]
@@ -134,7 +139,7 @@
       "label": "兑换码",
       "entry": "Task_redemption",
       "description": "tasks/daily/redemption.py:197 显式 screen.change_to('redemption')。",
-      "default_check": false,
+      "default_check": true,
       "group": [
         "daily"
       ]
@@ -154,7 +159,7 @@
       "label": "清体力",
       "entry": "Task_power",
       "description": "tasks/power/power.py:244 显式 screen.change_to('guide3')。",
-      "default_check": false,
+      "default_check": true,
       "group": [
         "power"
       ]
@@ -194,7 +199,7 @@
       "label": "邮件",
       "entry": "Task_mail",
       "description": "RewardManager 构造 Mail('邮件', …, 'mail')，第三参数即入口屏幕（tasks/reward/__init__.py）。",
-      "default_check": false,
+      "default_check": true,
       "group": [
         "reward"
       ]
@@ -204,7 +209,7 @@
       "label": "支援",
       "entry": "Task_assist",
       "description": "RewardManager 构造 Assist('支援', …, 'visa')。",
-      "default_check": false,
+      "default_check": true,
       "group": [
         "reward"
       ]
@@ -214,7 +219,7 @@
       "label": "委托",
       "entry": "Task_dispatch",
       "description": "RewardManager 构造 Dispatch('委托', …, 'dispatch')。",
-      "default_check": false,
+      "default_check": true,
       "group": [
         "reward"
       ]
@@ -224,7 +229,7 @@
       "label": "每日实训",
       "entry": "Task_quest",
       "description": "RewardManager 构造 Quest('每日实训', …, 'guide2')。",
-      "default_check": false,
+      "default_check": true,
       "group": [
         "reward"
       ]
@@ -234,7 +239,7 @@
       "label": "无名勋礼",
       "entry": "Task_srpass",
       "description": "tasks/reward/srpass.py:14 显式 screen.change_to('pass1')。",
-      "default_check": false,
+      "default_check": true,
       "group": [
         "reward"
       ]
@@ -267,6 +272,9 @@
       "default_check": false,
       "group": [
         "weekly"
+      ],
+      "option": [
+        "CurrencyWarsMode"
       ]
     },
     {
@@ -277,6 +285,9 @@
       "default_check": false,
       "group": [
         "weekly"
+      ],
+      "option": [
+        "DivergentMode"
       ]
     },
     {
@@ -297,6 +308,9 @@
       "default_check": false,
       "group": [
         "weekly"
+      ],
+      "option": [
+        "UniverseCategory"
       ]
     },
     {
@@ -344,7 +358,7 @@
       "label": "活动",
       "entry": "Task_activity",
       "description": "tasks/activity/__init__.py:58 与 tasks/activity/activitytemplate.py:23 都显式 screen.change_to('activity')。",
-      "default_check": false,
+      "default_check": true,
       "group": [
         "activity"
       ]
@@ -368,7 +382,226 @@
       "group": [
         "base"
       ]
+    },
+    {
+      "name": "start_up_game",
+      "label": "启动游戏",
+      "entry": "Task_start_up_game",
+      "description": "tasks/game/__init__.py:71 start_game() 是上游唯一的游戏启动入口；:186 用 check_and_click_enter() 轮询点击『进入』。迁移为 StartApp（包名可由 Server 选项覆盖）→ 等待加载 → 找『进入』→ 导航到主界面。",
+      "default_check": false,
+      "group": [
+        "base"
+      ],
+      "option": [
+        "Server",
+        "StartupWait"
+      ]
+    },
+    {
+      "name": "close_game",
+      "label": "关闭游戏",
+      "entry": "Task_close_game",
+      "description": "上游没有独立的『关闭游戏』任务，只有 LocalGameController 的 Windows 窗口控制（tasks/game/starrailcontroller.py，Android 上无对应物）。这里用 StopApp 提供最小可用的关闭动作。",
+      "default_check": false,
+      "group": [
+        "base"
+      ],
+      "option": [
+        "Server"
+      ]
     }
   ],
+  "option": {
+    "Server": {
+      "type": "select",
+      "label": "服务器",
+      "description": "游戏客户端包名。国服 com.miHoYo.hkrpg / B服 com.miHoYo.hkrpg.bilibili。要跑 B服 还需要把资源包切到「B服」，才会叠加 B服 登录分支。",
+      "cases": [
+        {
+          "name": "Official",
+          "label": "国服（米哈游）",
+          "description": "包名 com.miHoYo.hkrpg。",
+          "pipeline_override": {
+            "StartUpGame": {
+              "package": "com.miHoYo.hkrpg"
+            },
+            "CloseGame": {
+              "package": "com.miHoYo.hkrpg"
+            }
+          }
+        },
+        {
+          "name": "Bilibili",
+          "label": "B服（哔哩哔哩）",
+          "description": "包名 com.miHoYo.hkrpg.bilibili。同时请把资源包切到「B服」，否则不会有『点登录』这一步。",
+          "pipeline_override": {
+            "StartUpGame": {
+              "package": "com.miHoYo.hkrpg.bilibili"
+            },
+            "CloseGame": {
+              "package": "com.miHoYo.hkrpg.bilibili"
+            }
+          }
+        }
+      ],
+      "default_case": "Official"
+    },
+    "StartupWait": {
+      "type": "select",
+      "label": "启动等待",
+      "description": "StartApp 之后等多久再去找『进入』，以及找不到时最多重试几轮。对齐上游 config.example.yaml:55 start_game_timeout（默认 10 分钟）的等待语义：落到 WaitGameReady.post_delay 与 GameEnterRetry.max_hit。",
+      "cases": [
+        {
+          "name": "Fast",
+          "label": "快速（等 10 秒 / 重试 5 次）",
+          "pipeline_override": {
+            "WaitGameReady": {
+              "post_delay": 10000
+            },
+            "GameEnterRetry": {
+              "max_hit": 5
+            }
+          }
+        },
+        {
+          "name": "Normal",
+          "label": "标准（等 20 秒 / 重试 15 次 ≈ 90 秒）",
+          "pipeline_override": {
+            "WaitGameReady": {
+              "post_delay": 20000
+            },
+            "GameEnterRetry": {
+              "max_hit": 15
+            }
+          }
+        },
+        {
+          "name": "Slow",
+          "label": "慢速（等 40 秒 / 重试 40 次 ≈ 4 分钟）",
+          "pipeline_override": {
+            "WaitGameReady": {
+              "post_delay": 40000
+            },
+            "GameEnterRetry": {
+              "max_hit": 40
+            }
+          }
+        }
+      ],
+      "default_case": "Normal"
+    },
+    "DivergentMode": {
+      "type": "select",
+      "label": "差分宇宙玩法",
+      "description": "对齐上游 config.example.yaml:223 weekly_divergent_type （normal=常规演算、cycle=周期演算，上游默认 cycle）与 :259 divergent_type。落到 Task_divergent_universe.next。",
+      "cases": [
+        {
+          "name": "OnlyModeSelect",
+          "label": "只到玩法选择界面",
+          "pipeline_override": {
+            "Task_divergent_universe": {
+              "next": [
+                "NavTo_divergent_mode_select"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Normal",
+          "label": "常规演算",
+          "pipeline_override": {
+            "Task_divergent_universe": {
+              "next": [
+                "NavTo_divergent_mode_select_normal"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cycle",
+          "label": "周期演算",
+          "pipeline_override": {
+            "Task_divergent_universe": {
+              "next": [
+                "NavTo_divergent_mode_select_cycle"
+              ]
+            }
+          }
+        }
+      ],
+      "default_case": "Cycle"
+    },
+    "UniverseCategory": {
+      "type": "select",
+      "label": "宇宙类别",
+      "description": "对齐上游 config.example.yaml:246 universe_category（divergent=差分宇宙、universe=模拟宇宙）。落到 Task_universe.next。",
+      "cases": [
+        {
+          "name": "Divergent",
+          "label": "差分宇宙",
+          "pipeline_override": {
+            "Task_universe": {
+              "next": [
+                "NavTo_divergent_main"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Universe",
+          "label": "模拟宇宙",
+          "pipeline_override": {
+            "Task_universe": {
+              "next": [
+                "NavTo_universe_main"
+              ]
+            }
+          }
+        }
+      ],
+      "default_case": "Divergent"
+    },
+    "CurrencyWarsMode": {
+      "type": "select",
+      "label": "货币战争玩法",
+      "description": "对齐上游 config.example.yaml:212 currencywars_type（normal=标准博弈、overclock=超频博弈，上游默认 overclock）。落到 Task_currency_wars.next。",
+      "cases": [
+        {
+          "name": "OnlyHomepage",
+          "label": "只到博弈首页",
+          "pipeline_override": {
+            "Task_currency_wars": {
+              "next": [
+                "NavTo_currency_wars_homepage"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Normal",
+          "label": "标准博弈",
+          "pipeline_override": {
+            "Task_currency_wars": {
+              "next": [
+                "NavTo_currency_wars_mode_select_normal"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Overclock",
+          "label": "超频博弈",
+          "pipeline_override": {
+            "Task_currency_wars": {
+              "next": [
+                "NavTo_currency_wars_mode_select_overclock"
+              ]
+            }
+          }
+        }
+      ],
+      "default_case": "Overclock"
+    }
+  },
   "agent": []
 }

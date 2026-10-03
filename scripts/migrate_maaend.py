@@ -102,7 +102,7 @@ import re
 import shutil
 import subprocess
 import sys
-from typing import Any, Dict, Iterable, List, Optional, Sequence, Set, Tuple
+from typing import Any, Dict, Iterable, Iterator, List, Optional, Sequence, Set, Tuple
 
 # Windows 控制台是 ANSI 代码页，路径里的中文 print 会崩；显式换成 UTF-8。
 if sys.platform == "win32":
@@ -964,6 +964,78 @@ def collect_strings(obj: Any, out: Set[str]) -> None:
 
 
 # --------------------------------------------------------------------------------------
+# Android intent 归一
+# --------------------------------------------------------------------------------------
+# MaaFramework 的 StartApp / StopApp 允许写 "<package>/<activity>"；PC 端的 ADB 控制器
+# 自己会把包名和 Activity 拆开，所以上游这么写没问题。
+#
+# 但 MaaPocket 在 Android 上不用 ADB 控制器，用的是 AndroidNative 控制器，链路是：
+#   MaaFramework -> AndroidNativeControlUnitMgr::start_app(intent)
+#     -> bridge_input.cpp DispatchInputMessage(START_GAME)
+#     -> DriverClass.startApp(packageName, displayId, forceStop)
+#     -> ActivityUtils.startApp -> PackageManager.getLaunchIntentForPackage(packageName)
+# 这一路上 intent 字符串是**原样透传**的，`getLaunchIntentForPackage("pkg/activity")`
+# 必定返回 null，游戏起不来。所以迁移时统一把 "<pkg>/<activity>" 削成纯包名。
+#
+# 另有一个修不掉的问题写在 KNOWN_LIMITATIONS.md 里：StopApp 在 MaaPocket 的
+# bridge_input.cpp 里落进 `default: return 0`，是静默 no-op（不关游戏，也不报错）。
+INTENT_ACTION_TYPES = ("StartApp", "StopApp")
+
+
+def iter_intent_actions(value: Any) -> Iterator[Tuple[Dict[str, Any], Dict[str, Any]]]:
+    """递归找出所有 StartApp / StopApp 动作，产出 (持有者, 参数所在字典)。
+
+    V2 形态是 `{"action": {"type": "StartApp", "param": {...}}}`，参数在 `param` 里；
+    V1 形态是 `{"action": "StartApp", "package": "..."}`，参数就在节点顶层。
+    """
+    if isinstance(value, dict):
+        action = value.get("action")
+        if isinstance(action, dict) and action.get("type") in INTENT_ACTION_TYPES:
+            param = action.get("param")
+            yield value, param if isinstance(param, dict) else action
+        elif isinstance(action, str) and action in INTENT_ACTION_TYPES:
+            yield value, value
+        for child in value.values():
+            for item in iter_intent_actions(child):
+                yield item
+    elif isinstance(value, list):
+        for child in value:
+            for item in iter_intent_actions(child):
+                yield item
+
+
+def normalise_android_intents(text: str) -> Tuple[Optional[str], List[Dict[str, str]]]:
+    """把 "<pkg>/<activity>" 的 StartApp / StopApp 包名削成纯包名。
+
+    返回 (新文本, 改动清单)；没有任何改动时返回 (None, [])，调用方照原样写字节，
+    这样没被改到的文件（包括带注释的 JSONC）保持逐字节不变。
+    """
+    try:
+        data = loads_jsonc(text)
+    except ValueError:
+        return None, []
+    if not isinstance(data, dict):
+        return None, []
+    changes: List[Dict[str, str]] = []
+    for holder, target in iter_intent_actions(data):
+        package = target.get("package")
+        if not isinstance(package, str) or "/" not in package:
+            continue
+        bare = package.split("/", 1)[0]
+        target["package"] = bare
+        changes.append(
+            {
+                "action": str(holder.get("action", {}).get("type") if isinstance(holder.get("action"), dict) else holder.get("action")),
+                "from": package,
+                "to": bare,
+            }
+        )
+    if not changes:
+        return None, []
+    return json.dumps(data, ensure_ascii=False, indent=4) + "\n", changes
+
+
+# --------------------------------------------------------------------------------------
 # 迁移主体
 # --------------------------------------------------------------------------------------
 
@@ -981,6 +1053,7 @@ class Migration:
         self.content_hashes: Dict[str, str] = {}
         self.parse_errors: List[Dict[str, str]] = []
         self.warnings: List[str] = []
+        self.intent_rewrites: List[Dict[str, Any]] = []
 
         # 分析用的内存数据
         self.base_pipeline: Dict[str, str] = {}   # resource 相对路径 -> 文本
@@ -1072,6 +1145,11 @@ class Migration:
                     self.base_pipeline[rel[len("pipeline/"):]] = data.decode("utf-8", "replace")
                 if dst_prefix == "resource_adb" and rel.startswith("pipeline/"):
                     self.adb_pipeline[rel[len("pipeline/"):]] = data.decode("utf-8", "replace")
+                if b'"StartApp"' in data or b'"StopApp"' in data:
+                    rewritten, changes = normalise_android_intents(data.decode("utf-8", "replace"))
+                    if rewritten is not None:
+                        self.intent_rewrites.append({"file": dst, "changes": changes})
+                        data = rewritten.encode("utf-8")
                 self.emit_bytes(dst, data)
                 count += 1
                 total += len(data)
@@ -1622,6 +1700,8 @@ class Migration:
         add("| 键类：本次把 PC 修饰键改成 `DoNothing` | %d |" % len(self.key_neutralized))
         add("| 键类：上游本身就是死代码 | %d |" % len(self.key_dead))
         add("| 键类：**无法表示**（本文件下方逐条列出） | %d |" % len(self.key_unresolved))
+        add("| `StartApp` intent 被削成纯包名 | %d 处 |"
+            % sum(len(e["changes"]) for e in self.intent_rewrites))
         add("")
 
         add("## 2. 已改写：`Scroll` -> `Swipe`")
@@ -1797,6 +1877,54 @@ class Migration:
             hits = ", ".join("`%s`" % h for h in item["hits"][:5])
             more = "" if len(item["hits"]) <= 5 else " …(+%d)" % (len(item["hits"]) - 5)
             add("| `%s` | `%s` | `%s` | %s%s |" % (item["file"], item["name"], item["entry"], hits, more))
+        add("")
+
+        add("## 9. 启动 / 关闭游戏：`StartApp` 与 `StopApp`")
+        add("")
+        add("上游用任务片段里的 `option`（`tasks/AndroidOpenGame.json` 的 `ClientVersion`）"
+            "按渠道切换 `StartUpGame` / `CloseGame` 两个节点的 `action`。它在 PC 端能跑，"
+            "是因为 ADB 控制器自己会拆 `\"<package>/<activity>\"`。MaaPocket 在 Android 上"
+            "用的是 AndroidNative 控制器，这条链路是：")
+        add("")
+        add("```")
+        add("MaaFramework")
+        add("  -> MaaAndroidNativeControlUnitMgr::start_app(intent)      # intent 原样存进 StartGameArgs.package_name")
+        add("  -> MaaPocket/core/src/main/cpp/bridge_input.cpp")
+        add("       DispatchInputMessage(START_GAME) -> UpcallStartApp(packageName, displayId, forceStop)")
+        add("  -> MaaPocket/core/src/main/java/com/maapocket/core/remote/internal/ActivityUtils.kt:103-136")
+        add("       packageManager.getLaunchIntentForPackage(packageName)")
+        add("  -> PackageManager")
+        add("```")
+        add("")
+        add("`getLaunchIntentForPackage()` 只吃**纯包名**；传 `\"<pkg>/<activity>\"` 会返回 `null`，"
+            "`ActivityUtils.startApp` 打一行 `Cannot create launch intent for app ...` 然后返回 `false`，"
+            "游戏根本不会启动。所以本脚本在迁移时把所有 `StartApp` / `StopApp` 的 `package` 削成纯包名：")
+        add("")
+        if self.intent_rewrites:
+            add("| 文件 | 动作 | 原值 | 新值 |")
+            add("| --- | --- | --- | --- |")
+            for record in self.intent_rewrites:
+                for change in record["changes"]:
+                    add("| `%s` | `%s` | `%s` | `%s` |"
+                        % (record["file"], change["action"], change["from"], change["to"]))
+        else:
+            add("（本次没有需要改写的 intent）")
+        add("")
+        add("`option` 的 `default_case` 保持上游的 `CN`（不替用户选渠道）：真机是 B 服时，"
+            "在任务详情里把「渠道」切到 `Bilibili` 即可，该 case 的包名已是 "
+            "`com.hypergryph.endfield.bilibili`。")
+        add("")
+        add("### `StopApp` 在 Android 上是静默 no-op")
+        add("")
+        add("`MaaPocket/core/src/main/cpp/bridge_input.cpp` 的 `DispatchInputMessage()` 只处理")
+        add("`TOUCH_DOWN` / `TOUCH_MOVE` / `TOUCH_UP` / `KEY_DOWN` / `KEY_UP` / `START_GAME`，")
+        add("`STOP_GAME` 落进 `default: return 0;` —— 返回值 0 表示成功，但什么也没做：")
+        add("**不会关闭游戏，也不会报错**。所以 `CloseGame` 节点（`resource/pipeline/OpenGame.json`）"
+            "在 Android 上只能算是走到就过。上游 `StuckRepairAction` 靠 `CloseGame` 重启游戏的"
+            "自愈路径因此在设备上不会生效，`ResetStartUpGame` 也只能清命中计数、不能真的重开。")
+        add("")
+        add("修这个要动 `core/src/main/cpp/bridge_input.cpp` 和 `ActivityUtils.kt`（补一个 `stopApp` "
+            "upcall 并加 `case STOP_GAME`），属于仓库代码而不是迁移产物，本次不碰。")
         add("")
         return "\n".join(lines) + "\n"
 
@@ -2241,6 +2369,19 @@ class Migration:
             },
             "tasks": task_analysis,
             "overlay": overlay_info,
+            "android_intents": {
+                "policy": (
+                    "MaaPocket 在 Android 上用 AndroidNative 控制器，StartApp/StopApp 的 intent "
+                    "字符串一路原样透传到 PackageManager.getLaunchIntentForPackage()，"
+                    "\"<pkg>/<activity>\" 形式必定解析失败，因此统一削成纯包名。"
+                ),
+                "rewrites": self.intent_rewrites,
+                "stop_app_note": (
+                    "StopApp 在 MaaPocket 的 core/src/main/cpp/bridge_input.cpp 里落进 "
+                    "DispatchInputMessage 的 `default: return 0`，是静默 no-op："
+                    "不会关闭游戏，也不会报错。上游 CloseGame 节点因此只在 PC/ADB 端有效。"
+                ),
+            },
             "parse_errors": self.parse_errors,
             "duplicate_nodes": self.duplicate_nodes,
             "unknown_top_level_keys": self.unknown_top_level_keys,

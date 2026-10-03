@@ -63,7 +63,10 @@
       "group": [
         "battle_assistant"
       ],
-      "description": "$task.TaskAutoBattle.description"
+      "description": "$task.TaskAutoBattle.description",
+      "option": [
+        "AutoUltimate"
+      ]
     },
     {
       "name": "TaskChargePlan",
@@ -108,7 +111,10 @@
       "group": [
         "standalone"
       ],
-      "description": "$task.TaskDailySignin.description"
+      "description": "$task.TaskDailySignin.description",
+      "option": [
+        "DailySigninTarget"
+      ]
     },
     {
       "name": "TaskDodgeAssistant",
@@ -126,7 +132,11 @@
       "group": [
         "standalone"
       ],
-      "description": "$task.TaskDriveDiscDismantle.description"
+      "description": "$task.TaskDriveDiscDismantle.description",
+      "option": [
+        "DriveDiscDismantleLevel",
+        "DriveDiscDismantleAbandon"
+      ]
     },
     {
       "name": "TaskEmail",
@@ -216,7 +226,11 @@
       "group": [
         "one_dragon"
       ],
-      "description": "$task.TaskOneDragon.description"
+      "description": "$task.TaskOneDragon.description",
+      "option": [
+        "GameRegion",
+        "AutoUltimate"
+      ]
     },
     {
       "name": "TaskOperationDebug",
@@ -297,7 +311,13 @@
       "group": [
         "standalone"
       ],
-      "description": "$task.TaskSuibianTemple.description"
+      "description": "$task.TaskSuibianTemple.description",
+      "option": [
+        "SuibianYumchaSin",
+        "SuibianYumchaRefresh",
+        "SuibianPawnshop",
+        "SuibianBooboxPurchase"
+      ]
     },
     {
       "name": "TaskTrigramsCollection",
@@ -327,7 +347,572 @@
       "description": "$task.TaskWorldPatrol.description"
     }
   ],
-  "option": {},
+  "option": {
+    "GameRegion": {
+      "type": "select",
+      "label": "$option.GameRegion.label",
+      "description": "$option.GameRegion.description",
+      "default_case": "CN",
+      "cases": [
+        {
+          "name": "CN",
+          "label": "$option.GameRegion.case.CN.label",
+          "pipeline_override": {
+            "enter_game__国服-账号密码": {
+              "enabled": true
+            },
+            "enter_game__国服-账号输入区域": {
+              "enabled": true
+            },
+            "enter_game__国服-密码输入区域": {
+              "enabled": true
+            },
+            "enter_game__国服-同意按钮": {
+              "enabled": true
+            },
+            "enter_game__国服-账号密码进入游戏": {
+              "enabled": true
+            },
+            "enter_game__国服-账号密码-新": {
+              "enabled": true
+            },
+            "enter_game__国服-账号输入区域-新": {
+              "enabled": true
+            },
+            "enter_game__国服-密码输入区域-新": {
+              "enabled": true
+            },
+            "enter_game__国服-同意按钮-新": {
+              "enabled": true
+            },
+            "enter_game__国服-账号密码进入游戏-新": {
+              "enabled": true
+            },
+            "enter_game__国服-返回按钮": {
+              "enabled": true
+            },
+            "enter_game__B服-登录": {
+              "enabled": false
+            },
+            "enter_game__B服-账号输入区域": {
+              "enabled": false
+            },
+            "enter_game__B服-密码输入区域": {
+              "enabled": false
+            },
+            "enter_game__B服-同意按钮": {
+              "enabled": false
+            },
+            "enter_game__B服-账号删除区域": {
+              "enabled": false
+            },
+            "enter_game__B服新-手机号登录": {
+              "enabled": false
+            },
+            "enter_game__B服新-隐私政策提示": {
+              "enabled": false
+            },
+            "enter_game__B服新-同意隐私政策": {
+              "enabled": false
+            },
+            "enter_game__B服新-登录记录": {
+              "enabled": false
+            },
+            "enter_game__B服新-切换账号": {
+              "enabled": false
+            },
+            "enter_game__B服新-账号列表": {
+              "enabled": false
+            },
+            "enter_game__国际服-点击登录": {
+              "enabled": false
+            },
+            "enter_game__国际服-账号输入区域": {
+              "enabled": false
+            },
+            "enter_game__国际服-密码输入区域": {
+              "enabled": false
+            },
+            "enter_game__国际服-账号密码进入游戏": {
+              "enabled": false
+            },
+            "enter_game__国际服-换服": {
+              "enabled": false
+            },
+            "enter_game__国际服-换服-欧洲": {
+              "enabled": false
+            },
+            "enter_game__国际服-换服-美国": {
+              "enabled": false
+            },
+            "enter_game__国际服-换服-亚洲": {
+              "enabled": false
+            },
+            "enter_game__国际服-换服-港澳台": {
+              "enabled": false
+            }
+          }
+        },
+        {
+          "name": "CNB",
+          "label": "$option.GameRegion.case.CNB.label",
+          "pipeline_override": {
+            "enter_game__B服-登录": {
+              "enabled": true
+            },
+            "enter_game__B服-账号输入区域": {
+              "enabled": true
+            },
+            "enter_game__B服-密码输入区域": {
+              "enabled": true
+            },
+            "enter_game__B服-同意按钮": {
+              "enabled": true
+            },
+            "enter_game__B服-账号删除区域": {
+              "enabled": true
+            },
+            "enter_game__B服新-手机号登录": {
+              "enabled": true
+            },
+            "enter_game__B服新-隐私政策提示": {
+              "enabled": true
+            },
+            "enter_game__B服新-同意隐私政策": {
+              "enabled": true
+            },
+            "enter_game__B服新-登录记录": {
+              "enabled": true
+            },
+            "enter_game__B服新-切换账号": {
+              "enabled": true
+            },
+            "enter_game__B服新-账号列表": {
+              "enabled": true
+            },
+            "enter_game__国服-账号密码": {
+              "enabled": false
+            },
+            "enter_game__国服-账号输入区域": {
+              "enabled": false
+            },
+            "enter_game__国服-密码输入区域": {
+              "enabled": false
+            },
+            "enter_game__国服-同意按钮": {
+              "enabled": false
+            },
+            "enter_game__国服-账号密码进入游戏": {
+              "enabled": false
+            },
+            "enter_game__国服-账号密码-新": {
+              "enabled": false
+            },
+            "enter_game__国服-账号输入区域-新": {
+              "enabled": false
+            },
+            "enter_game__国服-密码输入区域-新": {
+              "enabled": false
+            },
+            "enter_game__国服-同意按钮-新": {
+              "enabled": false
+            },
+            "enter_game__国服-账号密码进入游戏-新": {
+              "enabled": false
+            },
+            "enter_game__国服-返回按钮": {
+              "enabled": false
+            },
+            "enter_game__国际服-点击登录": {
+              "enabled": false
+            },
+            "enter_game__国际服-账号输入区域": {
+              "enabled": false
+            },
+            "enter_game__国际服-密码输入区域": {
+              "enabled": false
+            },
+            "enter_game__国际服-账号密码进入游戏": {
+              "enabled": false
+            },
+            "enter_game__国际服-换服": {
+              "enabled": false
+            },
+            "enter_game__国际服-换服-欧洲": {
+              "enabled": false
+            },
+            "enter_game__国际服-换服-美国": {
+              "enabled": false
+            },
+            "enter_game__国际服-换服-亚洲": {
+              "enabled": false
+            },
+            "enter_game__国际服-换服-港澳台": {
+              "enabled": false
+            }
+          }
+        },
+        {
+          "name": "INTL",
+          "label": "$option.GameRegion.case.INTL.label",
+          "pipeline_override": {
+            "enter_game__国际服-点击登录": {
+              "enabled": true
+            },
+            "enter_game__国际服-账号输入区域": {
+              "enabled": true
+            },
+            "enter_game__国际服-密码输入区域": {
+              "enabled": true
+            },
+            "enter_game__国际服-账号密码进入游戏": {
+              "enabled": true
+            },
+            "enter_game__国际服-换服": {
+              "enabled": true
+            },
+            "enter_game__国际服-换服-欧洲": {
+              "enabled": true
+            },
+            "enter_game__国际服-换服-美国": {
+              "enabled": true
+            },
+            "enter_game__国际服-换服-亚洲": {
+              "enabled": true
+            },
+            "enter_game__国际服-换服-港澳台": {
+              "enabled": true
+            },
+            "enter_game__国服-账号密码": {
+              "enabled": false
+            },
+            "enter_game__国服-账号输入区域": {
+              "enabled": false
+            },
+            "enter_game__国服-密码输入区域": {
+              "enabled": false
+            },
+            "enter_game__国服-同意按钮": {
+              "enabled": false
+            },
+            "enter_game__国服-账号密码进入游戏": {
+              "enabled": false
+            },
+            "enter_game__国服-账号密码-新": {
+              "enabled": false
+            },
+            "enter_game__国服-账号输入区域-新": {
+              "enabled": false
+            },
+            "enter_game__国服-密码输入区域-新": {
+              "enabled": false
+            },
+            "enter_game__国服-同意按钮-新": {
+              "enabled": false
+            },
+            "enter_game__国服-账号密码进入游戏-新": {
+              "enabled": false
+            },
+            "enter_game__国服-返回按钮": {
+              "enabled": false
+            },
+            "enter_game__B服-登录": {
+              "enabled": false
+            },
+            "enter_game__B服-账号输入区域": {
+              "enabled": false
+            },
+            "enter_game__B服-密码输入区域": {
+              "enabled": false
+            },
+            "enter_game__B服-同意按钮": {
+              "enabled": false
+            },
+            "enter_game__B服-账号删除区域": {
+              "enabled": false
+            },
+            "enter_game__B服新-手机号登录": {
+              "enabled": false
+            },
+            "enter_game__B服新-隐私政策提示": {
+              "enabled": false
+            },
+            "enter_game__B服新-同意隐私政策": {
+              "enabled": false
+            },
+            "enter_game__B服新-登录记录": {
+              "enabled": false
+            },
+            "enter_game__B服新-切换账号": {
+              "enabled": false
+            },
+            "enter_game__B服新-账号列表": {
+              "enabled": false
+            }
+          }
+        }
+      ]
+    },
+    "AutoUltimate": {
+      "type": "select",
+      "label": "$option.AutoUltimate.label",
+      "description": "$option.AutoUltimate.description",
+      "default_case": "Off",
+      "cases": [
+        {
+          "name": "On",
+          "label": "$option.AutoUltimate.case.On.label",
+          "pipeline_override": {
+            "battle__按键-终结技": {
+              "enabled": true
+            }
+          }
+        },
+        {
+          "name": "Off",
+          "label": "$option.AutoUltimate.case.Off.label",
+          "pipeline_override": {
+            "battle__按键-终结技": {
+              "enabled": false
+            }
+          }
+        }
+      ]
+    },
+    "DriveDiscDismantleLevel": {
+      "type": "select",
+      "label": "$option.DriveDiscDismantleLevel.label",
+      "description": "$option.DriveDiscDismantleLevel.description",
+      "default_case": "LevelA",
+      "cases": [
+        {
+          "name": "LevelA",
+          "label": "$option.DriveDiscDismantleLevel.case.LevelA.label",
+          "pipeline_override": {
+            "drive_disc_dismantle__按钮-A及以下": {
+              "enabled": true
+            },
+            "drive_disc_dismantle__按钮-S及以下": {
+              "enabled": false
+            },
+            "drive_disc_dismantle__按钮-B": {
+              "enabled": false
+            }
+          }
+        },
+        {
+          "name": "LevelS",
+          "label": "$option.DriveDiscDismantleLevel.case.LevelS.label",
+          "pipeline_override": {
+            "drive_disc_dismantle__按钮-S及以下": {
+              "enabled": true
+            },
+            "drive_disc_dismantle__按钮-A及以下": {
+              "enabled": false
+            },
+            "drive_disc_dismantle__按钮-B": {
+              "enabled": false
+            }
+          }
+        },
+        {
+          "name": "LevelB",
+          "label": "$option.DriveDiscDismantleLevel.case.LevelB.label",
+          "pipeline_override": {
+            "drive_disc_dismantle__按钮-B": {
+              "enabled": true
+            },
+            "drive_disc_dismantle__按钮-A及以下": {
+              "enabled": false
+            },
+            "drive_disc_dismantle__按钮-S及以下": {
+              "enabled": false
+            }
+          }
+        }
+      ]
+    },
+    "DriveDiscDismantleAbandon": {
+      "type": "select",
+      "label": "$option.DriveDiscDismantleAbandon.label",
+      "description": "$option.DriveDiscDismantleAbandon.description",
+      "default_case": "Off",
+      "cases": [
+        {
+          "name": "On",
+          "label": "$option.DriveDiscDismantleAbandon.case.On.label",
+          "pipeline_override": {
+            "drive_disc_dismantle__按钮-全选已弃置": {
+              "enabled": true
+            }
+          }
+        },
+        {
+          "name": "Off",
+          "label": "$option.DriveDiscDismantleAbandon.case.Off.label",
+          "pipeline_override": {
+            "drive_disc_dismantle__按钮-全选已弃置": {
+              "enabled": false
+            }
+          }
+        }
+      ]
+    },
+    "DailySigninTarget": {
+      "type": "select",
+      "label": "$option.DailySigninTarget.label",
+      "description": "$option.DailySigninTarget.description",
+      "default_case": "HouHouBakery",
+      "cases": [
+        {
+          "name": "HouHouBakery",
+          "label": "$option.DailySigninTarget.case.HouHouBakery.label",
+          "pipeline_override": {
+            "hou_hou_bakery__盲盒": {
+              "enabled": true
+            },
+            "news_stand__刮刮卡": {
+              "enabled": false
+            }
+          }
+        },
+        {
+          "name": "NewsStand",
+          "label": "$option.DailySigninTarget.case.NewsStand.label",
+          "pipeline_override": {
+            "news_stand__刮刮卡": {
+              "enabled": true
+            },
+            "hou_hou_bakery__盲盒": {
+              "enabled": false
+            }
+          }
+        }
+      ]
+    },
+    "SuibianYumchaSin": {
+      "type": "select",
+      "label": "$option.SuibianYumchaSin.label",
+      "description": "$option.SuibianYumchaSin.description",
+      "default_case": "On",
+      "cases": [
+        {
+          "name": "On",
+          "label": "$option.SuibianYumchaSin.case.On.label",
+          "pipeline_override": {
+            "suibian_temple_yumchaxian__按钮-定期采办": {
+              "enabled": true
+            }
+          }
+        },
+        {
+          "name": "Off",
+          "label": "$option.SuibianYumchaSin.case.Off.label",
+          "pipeline_override": {
+            "suibian_temple_yumchaxian__按钮-定期采办": {
+              "enabled": false
+            }
+          }
+        }
+      ]
+    },
+    "SuibianYumchaRefresh": {
+      "type": "select",
+      "label": "$option.SuibianYumchaRefresh.label",
+      "description": "$option.SuibianYumchaRefresh.description",
+      "default_case": "On",
+      "cases": [
+        {
+          "name": "On",
+          "label": "$option.SuibianYumchaRefresh.case.On.label",
+          "pipeline_override": {
+            "suibian_temple_yumchaxian__按钮-定期采办-刷新": {
+              "enabled": true
+            }
+          }
+        },
+        {
+          "name": "Off",
+          "label": "$option.SuibianYumchaRefresh.case.Off.label",
+          "pipeline_override": {
+            "suibian_temple_yumchaxian__按钮-定期采办-刷新": {
+              "enabled": false
+            }
+          }
+        }
+      ]
+    },
+    "SuibianPawnshop": {
+      "type": "select",
+      "label": "$option.SuibianPawnshop.label",
+      "description": "$option.SuibianPawnshop.description",
+      "default_case": "Both",
+      "cases": [
+        {
+          "name": "Both",
+          "label": "$option.SuibianPawnshop.case.Both.label",
+          "pipeline_override": {
+            "suibian_temple_pawnshop__按钮-百通宝-周期": {
+              "enabled": true
+            },
+            "suibian_temple_pawnshop__按钮-云纹徽-周期": {
+              "enabled": true
+            }
+          }
+        },
+        {
+          "name": "Omnicoin",
+          "label": "$option.SuibianPawnshop.case.Omnicoin.label",
+          "pipeline_override": {
+            "suibian_temple_pawnshop__按钮-百通宝-周期": {
+              "enabled": true
+            },
+            "suibian_temple_pawnshop__按钮-云纹徽-周期": {
+              "enabled": false
+            }
+          }
+        },
+        {
+          "name": "Crest",
+          "label": "$option.SuibianPawnshop.case.Crest.label",
+          "pipeline_override": {
+            "suibian_temple_pawnshop__按钮-云纹徽-周期": {
+              "enabled": true
+            },
+            "suibian_temple_pawnshop__按钮-百通宝-周期": {
+              "enabled": false
+            }
+          }
+        }
+      ]
+    },
+    "SuibianBooboxPurchase": {
+      "type": "select",
+      "label": "$option.SuibianBooboxPurchase.label",
+      "description": "$option.SuibianBooboxPurchase.description",
+      "default_case": "Off",
+      "cases": [
+        {
+          "name": "On",
+          "label": "$option.SuibianBooboxPurchase.case.On.label",
+          "pipeline_override": {
+            "suibian_temple_boobox__按钮-聘用": {
+              "enabled": true
+            }
+          }
+        },
+        {
+          "name": "Off",
+          "label": "$option.SuibianBooboxPurchase.case.Off.label",
+          "pipeline_override": {
+            "suibian_temple_boobox__按钮-聘用": {
+              "enabled": false
+            }
+          }
+        }
+      ]
+    }
+  },
   "agent": [],
   "import": [],
   "languages": {

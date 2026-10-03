@@ -29,6 +29,7 @@
 | 键类：本次把 PC 修饰键改成 `DoNothing` | 24 |
 | 键类：上游本身就是死代码 | 0 |
 | 键类：**无法表示**（本文件下方逐条列出） | 47 |
+| `StartApp` intent 被削成纯包名 | 5 处 |
 
 ## 2. 已改写：`Scroll` -> `Swipe`
 
@@ -1413,4 +1414,39 @@ cpp-algo 构建器。cpp-algo 注册的自定义识别/动作全集（`agent/cpp
 | `tasks/AutoEcoFarm.json` | `AutoEcoFarm` | `AutoEcoFarmTask` | `_AutoEcoFarmCancelMove`, `_AutoEcoFarmEnterCameraModeFallback`, `_AutoEcoFarmEnterCameraModeFallbackRelease`, `_AutoEcoFarmEnterCameraModeFallbackReleaseOnError`, `_AutoEcoFarmJump` …(+11) |
 | `tasks/ImportBluePrints.json` | `ImportBluePrints` | `ImportBluePrints` | `__ScenePrivateWorldFactoryEnterMenuBluePrint` |
 | `tasks/ProtocolSpace.json` | `ProtocolSpace` | `ProtocolSpaceSchedule` | `ProtocolSpaceTouchExitTouch`, `ProtocolSpaceTouchExitTouchRetry` |
+
+## 9. 启动 / 关闭游戏：`StartApp` 与 `StopApp`
+
+上游用任务片段里的 `option`（`tasks/AndroidOpenGame.json` 的 `ClientVersion`）按渠道切换 `StartUpGame` / `CloseGame` 两个节点的 `action`。它在 PC 端能跑，是因为 ADB 控制器自己会拆 `"<package>/<activity>"`。MaaPocket 在 Android 上用的是 AndroidNative 控制器，这条链路是：
+
+```
+MaaFramework
+  -> MaaAndroidNativeControlUnitMgr::start_app(intent)      # intent 原样存进 StartGameArgs.package_name
+  -> MaaPocket/core/src/main/cpp/bridge_input.cpp
+       DispatchInputMessage(START_GAME) -> UpcallStartApp(packageName, displayId, forceStop)
+  -> MaaPocket/core/src/main/java/com/maapocket/core/remote/internal/ActivityUtils.kt:103-136
+       packageManager.getLaunchIntentForPackage(packageName)
+  -> PackageManager
+```
+
+`getLaunchIntentForPackage()` 只吃**纯包名**；传 `"<pkg>/<activity>"` 会返回 `null`，`ActivityUtils.startApp` 打一行 `Cannot create launch intent for app ...` 然后返回 `false`，游戏根本不会启动。所以本脚本在迁移时把所有 `StartApp` / `StopApp` 的 `package` 削成纯包名：
+
+| 文件 | 动作 | 原值 | 新值 |
+| --- | --- | --- | --- |
+| `tasks/AndroidOpenGame.json` | `StartApp` | `com.hypergryph.endfield/com.u8.sdk.U8UnityContext` | `com.hypergryph.endfield` |
+| `tasks/AndroidOpenGame.json` | `StartApp` | `com.hypergryph.endfield.bilibili/com.u8.sdk.U8UnityContext` | `com.hypergryph.endfield.bilibili` |
+| `tasks/AndroidOpenGame.json` | `StartApp` | `com.gryphline.endfield.gp/com.u8.sdk.U8UnityContext` | `com.gryphline.endfield.gp` |
+| `tasks/AndroidOpenGame.json` | `StartApp` | `com.hypergryph.endfield.vn/com.u8.sdk.U8UnityContext` | `com.hypergryph.endfield.vn` |
+| `tasks/AndroidOpenGame.json` | `StartApp` | `com.hypergryph.cloud.endfield/com.hypergryph.cloud.endfield.splash.SplashActivity` | `com.hypergryph.cloud.endfield` |
+
+`option` 的 `default_case` 保持上游的 `CN`（不替用户选渠道）：真机是 B 服时，在任务详情里把「渠道」切到 `Bilibili` 即可，该 case 的包名已是 `com.hypergryph.endfield.bilibili`。
+
+### `StopApp` 在 Android 上是静默 no-op
+
+`MaaPocket/core/src/main/cpp/bridge_input.cpp` 的 `DispatchInputMessage()` 只处理
+`TOUCH_DOWN` / `TOUCH_MOVE` / `TOUCH_UP` / `KEY_DOWN` / `KEY_UP` / `START_GAME`，
+`STOP_GAME` 落进 `default: return 0;` —— 返回值 0 表示成功，但什么也没做：
+**不会关闭游戏，也不会报错**。所以 `CloseGame` 节点（`resource/pipeline/OpenGame.json`）在 Android 上只能算是走到就过。上游 `StuckRepairAction` 靠 `CloseGame` 重启游戏的自愈路径因此在设备上不会生效，`ResetStartUpGame` 也只能清命中计数、不能真的重开。
+
+修这个要动 `core/src/main/cpp/bridge_input.cpp` 和 `ActivityUtils.kt`（补一个 `stopApp` upcall 并加 `case STOP_GAME`），属于仓库代码而不是迁移产物，本次不碰。
 

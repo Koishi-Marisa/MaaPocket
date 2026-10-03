@@ -773,6 +773,530 @@ GROUP_TABLE = [
 
 
 # --------------------------------------------------------------------------- #
+# 启动 / 关闭游戏 + B服（Bilibili）支持
+# --------------------------------------------------------------------------- #
+#
+# 上游 `tasks/game/__init__.py:71` 的 `start_game()` 是唯一的启动入口，它内部的
+# `check_and_click_enter()`（:74-117）轮询点击「进入」，其中 :104-115 是 B服 专属分支
+# （注释原文：「适配B服，需要点击"登录"，强制使用前台截图方式（#901）」）。
+#
+# 迁移策略：
+#   * 基线（resource/pipeline/task/start_up_game.json + close_game.json）只放
+#     「启动 → 等待 → 找进入 → 回主界面」的通用链路；包名默认官服。
+#   * B服 多出来的「点登录」这一步放在**独立 overlay 资源树**
+#     `resource_bilibili/pipeline/bilibili_login.json`，用 interface.json 里第二条
+#     `resource`（path = ["./resource", "./resource_bilibili"]）叠加，只覆盖
+#     `GameEnterCheck` 一个基线节点 + 新增 B服 登录节点，不复制整棵基线树。
+#   * 官方服 / B服 的包名切换由 interface.json 的 `Server` 选项覆盖
+#     `StartUpGame.package` / `CloseGame.package`。
+#
+# ⚠️ B服 登录分支用的是 MaaFramework 的 OCR 识别（上游同样用文本识别：
+#    `auto.find_element(("bilibili游戏隐私政策提示", "登录记录"), "text", ...)`）。
+#    OCR 需要资源包自带 `model/ocr/{rec.onnx,det.onnx,keys.txt}`；本仓库没有任何
+#    工程带这个目录，因此这两个 OCR 节点在补模型之前不会命中，链路会直接回落到
+#    基线候选表（不会报错卡死）。详见 docs/hsr_bilibili_and_options.md。
+RESOURCE_BILIBILI_NAME = "B服"
+RESOURCE_BILIBILI_DIR = "resource_bilibili"
+HSR_OFFICIAL_PACKAGE = "com.miHoYo.hkrpg"
+HSR_BILIBILI_PACKAGE = "com.miHoYo.hkrpg.bilibili"
+
+# 上游没有「关闭游戏」任务（只有 Windows 窗口控制），这里补一个最小可用的 StopApp。
+EXTRA_TASK_TABLE = [
+    ("start_up_game", "启动游戏", "base", "tasks/game/__init__.py", "high",
+     "tasks/game/__init__.py:71 start_game() 是上游唯一的游戏启动入口；:186 用 "
+     "check_and_click_enter() 轮询点击『进入』。迁移为 StartApp（包名可由 Server 选项覆盖）"
+     "→ 等待加载 → 找『进入』→ 导航到主界面。"),
+    ("close_game", "关闭游戏", "base", "tasks/game/starrailcontroller.py", "low",
+     "上游没有独立的『关闭游戏』任务，只有 LocalGameController 的 Windows 窗口控制"
+     "（tasks/game/starrailcontroller.py，Android 上无对应物）。这里用 StopApp 提供"
+     "最小可用的关闭动作。"),
+]
+
+
+def build_game_control_nodes():
+    """基线资源树的启动 / 关闭游戏节点（每次调用返回全新 dict）。"""
+    return {
+        "start_up_game": {
+            "Task_start_up_game": {
+                "recognition": "DirectHit",
+                "action": "DoNothing",
+                "next": ["StartUpGame"],
+                "attach": {
+                    "march7th:kind": "task-entry",
+                    "march7th:task_id": "start_up_game",
+                    "march7th:entry_screen": "click_enter",
+                    "march7th:source_module": "tasks/game/__init__.py",
+                    "march7th:confidence": "high",
+                    "march7th:rationale": (
+                        "tasks/game/__init__.py:71 start_game() → :186 "
+                        "wait_until(check_and_click_enter, start_game_timeout*60)。"),
+                },
+            },
+            "StartUpGame": {
+                "recognition": "DirectHit",
+                "action": "StartApp",
+                "package": HSR_OFFICIAL_PACKAGE,
+                "next": ["WaitGameReady"],
+                "attach": {
+                    "march7th:kind": "game-launch",
+                    "march7th:default_package": HSR_OFFICIAL_PACKAGE,
+                    "march7th:note": ("package 由 interface.json 的 Server 选项覆盖"
+                                      "（国服 com.miHoYo.hkrpg / B服 com.miHoYo.hkrpg.bilibili）。"),
+                },
+            },
+            "WaitGameReady": {
+                "recognition": "DirectHit",
+                "action": "DoNothing",
+                "post_delay": 20000,
+                "next": ["GameEnterCheck"],
+                "attach": {
+                    "march7th:kind": "game-launch-wait",
+                    "march7th:note": ("上游 tasks/game/__init__.py:173 与 :180 各 sleep 10s 之后"
+                                      "才开始找『进入』；这里合并成一个 post_delay，"
+                                      "由 interface.json 的 StartupWait 选项调。"),
+                },
+            },
+            "GameEnterCheck": {
+                "recognition": "DirectHit",
+                "action": "DoNothing",
+                "next": ["ClickEnter", "ClickStartGame", "GameEnterRetry", "NavTo_main"],
+                "attach": {
+                    "march7th:kind": "game-enter-check",
+                    "march7th:overridden_by": "resource_bilibili/pipeline/bilibili_login.json",
+                    "march7th:note": ("对应上游 check_and_click_enter()（tasks/game/__init__.py:74-117）。"
+                                      "候选表按顺序：点『进入』→ 点『开始游戏』→ 等一会重试（最多 15 次）"
+                                      "→ 回主界面。B服 资源树会用同名节点覆盖它，插入登录分支。"),
+                },
+            },
+            "ClickEnter": {
+                "recognition": "TemplateMatch",
+                "template": "screen/click_enter.png",
+                "threshold": 0.9,
+                "roi": [0, 0, 0, 0],
+                "action": "Click",
+                "target": True,
+                "next": ["GameEnterDone"],
+                "attach": {
+                    "march7th:kind": "game-enter-click",
+                    "march7th:source": "tasks/game/__init__.py:76",
+                    "march7th:note": "对应 ./assets/images/screen/click_enter.png（阈值 0.9）。",
+                },
+            },
+            "ClickStartGame": {
+                "recognition": "TemplateMatch",
+                "template": "screen/start_game.png",
+                "threshold": 0.9,
+                "roi": [0, 0, 0, 0],
+                "action": "Click",
+                "target": True,
+                "next": ["GameEnterDone"],
+                "attach": {
+                    "march7th:kind": "game-enter-click",
+                    "march7th:source": "tasks/game/__init__.py:83",
+                    "march7th:note": "对应 ./assets/images/screen/start_game.png（阈值 0.9）。",
+                },
+            },
+            "GameEnterRetry": {
+                "recognition": "DirectHit",
+                "action": "DoNothing",
+                "post_delay": 6000,
+                "max_hit": 15,
+                "next": ["GameEnterCheck"],
+                "attach": {
+                    "march7th:kind": "game-enter-retry",
+                    "march7th:note": ("上游 check_and_click_enter() 返回 False 后由 "
+                                      "wait_until(..., start_game_timeout*60) 重试（默认 10 分钟）。"
+                                      "这里用 max_hit 15 × 6s ≈ 90s 收敛，避免无界循环。"),
+                },
+            },
+            "GameEnterDone": {
+                "recognition": "DirectHit",
+                "action": "DoNothing",
+                "post_delay": 6000,
+                "next": ["NavTo_main"],
+                "attach": {
+                    "march7th:kind": "game-enter-done",
+                    "march7th:note": "点完『进入/开始游戏』后等游戏加载，再交给 NavTo_main 路由。",
+                },
+            },
+        },
+        "close_game": {
+            "Task_close_game": {
+                "recognition": "DirectHit",
+                "action": "DoNothing",
+                "next": ["CloseGame"],
+                "attach": {
+                    "march7th:kind": "task-entry",
+                    "march7th:task_id": "close_game",
+                    "march7th:entry_screen": "",
+                    "march7th:source_module": "tasks/game/starrailcontroller.py",
+                    "march7th:confidence": "low",
+                    "march7th:rationale": (
+                        "上游没有『关闭游戏』任务；LocalGameController 只有 Windows 窗口控制，"
+                        "Android 上用 StopApp 代替。"),
+                },
+            },
+            "CloseGame": {
+                "recognition": "DirectHit",
+                "action": "StopApp",
+                "package": HSR_OFFICIAL_PACKAGE,
+                "next": [],
+                "attach": {
+                    "march7th:kind": "game-stop",
+                    "march7th:default_package": HSR_OFFICIAL_PACKAGE,
+                    "march7th:note": "package 由 interface.json 的 Server 选项覆盖（国服 / B服）。",
+                },
+            },
+        },
+    }
+
+
+def build_bilibili_overlay_nodes():
+    """B服 overlay 资源树的节点（每次调用返回全新 dict）。
+
+    只放两样东西：被覆盖的基线节点 ``GameEnterCheck``，以及 B服 专属的登录分支节点。
+    """
+    ocr_requires = "resource/model/ocr/{rec.onnx,det.onnx,keys.txt}"
+    return {
+        "GameEnterCheck": {
+            "recognition": "DirectHit",
+            "action": "DoNothing",
+            "next": ["BilibiliLoginDispatch"],
+            "attach": {
+                "march7th:kind": "overlay-override",
+                "march7th:overrides": "GameEnterCheck",
+                "march7th:source": "tasks/game/__init__.py:104-115",
+                "march7th:note": ("B服 资源树覆盖基线节点：先走 B服 登录分支。"
+                                  "分支内部会在没有任何 B服 文本命中时回落到基线的 "
+                                  "ClickEnter / ClickStartGame / GameEnterRetry / NavTo_main 候选表。"),
+            },
+        },
+        "BilibiliLoginDispatch": {
+            "recognition": "DirectHit",
+            "action": "DoNothing",
+            "next": ["BilibiliPrivacyPolicy", "BilibiliLoginRecord",
+                     "ClickEnter", "ClickStartGame", "GameEnterRetry", "NavTo_main"],
+            "attach": {
+                "march7th:kind": "bilibili-login-dispatch",
+                "march7th:source": "tasks/game/__init__.py:105-115",
+                "march7th:note": (
+                    "上游 :105 用文本识别同时探测『bilibili游戏隐私政策提示』与『登录记录』。"
+                    "两者都没命中时（上游的 else 分支 :110-115）会依次点 5 张模板 "
+                    "bilibili_login.png / bilibili_login_2.png / bilibili_login_3.png / "
+                    "bilibili_agree_update.png / bilibili_agree_update_2.png —— 这 5 张图在 "
+                    "refs/March7thAssistant/assets 下不存在（全仓 glob 0 命中），无法迁移，"
+                    "所以这里直接回落到基线候选表。"),
+            },
+        },
+        "BilibiliPrivacyPolicy": {
+            "recognition": "OCR",
+            "expected": ["bilibili游戏隐私政策提示"],
+            "threshold": 0.3,
+            "action": "DoNothing",
+            "next": ["BilibiliPrivacyAgree", "GameEnterRetry", "NavTo_main"],
+            "attach": {
+                "march7th:kind": "bilibili-login-probe",
+                "march7th:source": "tasks/game/__init__.py:106",
+                "march7th:requires": ocr_requires,
+                "march7th:note": ("上游 :106 的 matched_text == 'bilibili游戏隐私政策提示' 分支；"
+                                  "上游那一步强制前台截图（use_background_screenshot=False），"
+                                  "Android 侧本来就是前台截图，无需额外参数。"),
+            },
+        },
+        "BilibiliPrivacyAgree": {
+            "recognition": "OCR",
+            "expected": ["同意"],
+            "threshold": 0.3,
+            "action": "Click",
+            "target": True,
+            "post_delay": 2000,
+            "max_hit": 8,
+            "next": ["BilibiliLoginDispatch"],
+            "attach": {
+                "march7th:kind": "bilibili-login-click",
+                "march7th:source": "tasks/game/__init__.py:107",
+                "march7th:requires": ocr_requires,
+                "march7th:note": ("上游 :107 auto.click_element('同意', 'text')。"
+                                  "max_hit 8 用于收敛『协议弹窗反复出现』的情况。"),
+            },
+        },
+        "BilibiliLoginRecord": {
+            "recognition": "OCR",
+            "expected": ["登录记录"],
+            "threshold": 0.3,
+            "action": "DoNothing",
+            "next": ["BilibiliLoginButton", "GameEnterRetry", "NavTo_main"],
+            "attach": {
+                "march7th:kind": "bilibili-login-probe",
+                "march7th:source": "tasks/game/__init__.py:108",
+                "march7th:requires": ocr_requires,
+                "march7th:note": "上游 :108 的 matched_text == '登录记录' 分支。",
+            },
+        },
+        "BilibiliLoginButton": {
+            "recognition": "OCR",
+            "expected": ["登录"],
+            "threshold": 0.3,
+            "action": "Click",
+            "target": True,
+            "post_delay": 2000,
+            "max_hit": 8,
+            "next": ["BilibiliLoginDispatch"],
+            "attach": {
+                "march7th:kind": "bilibili-login-click",
+                "march7th:source": "tasks/game/__init__.py:109",
+                "march7th:requires": ocr_requires,
+                "march7th:note": "上游 :109 auto.click_element('登录', 'text')。max_hit 8 用于收敛循环。",
+            },
+        },
+    }
+
+
+# --------------------------------------------------------------------------- #
+# interface.json 的可调项（option）
+# --------------------------------------------------------------------------- #
+#
+# 规则（Deliverable 2）：只有在上游 config.example.yaml 里**确实存在**该配置项、
+# 且迁移后的 pipeline 里**确实有落点**（节点名 + 字段）时才生成 option；否则写进
+# docs/hsr-bilibili-and-options.md 的「未迁移」清单。
+#
+# default_case 取**上游 config.example.yaml 的默认值**（而不是迁移前的浅入口），
+# 因为 option 本身就是「把上游配置项搬过来」；代价是 DivergentMode / CurrencyWarsMode
+# 两个任务的默认路线会比迁移基线多走一跳（见 docs 里的对照表）。
+OPTION_TABLE = [
+    {
+        "name": "Server",
+        "type": "select",
+        "label": "服务器",
+        "description": ("游戏客户端包名。国服 com.miHoYo.hkrpg / "
+                        "B服 com.miHoYo.hkrpg.bilibili。要跑 B服 还需要把资源包切到「B服」，"
+                        "才会叠加 B服 登录分支。"),
+        "default_case": "Official",
+        "cases": [
+            {
+                "name": "Official",
+                "label": "国服（米哈游）",
+                "description": "包名 com.miHoYo.hkrpg。",
+                "pipeline_override": {
+                    "StartUpGame": {"package": HSR_OFFICIAL_PACKAGE},
+                    "CloseGame": {"package": HSR_OFFICIAL_PACKAGE},
+                },
+            },
+            {
+                "name": "Bilibili",
+                "label": "B服（哔哩哔哩）",
+                "description": ("包名 com.miHoYo.hkrpg.bilibili。同时请把资源包切到「B服」，"
+                                "否则不会有『点登录』这一步。"),
+                "pipeline_override": {
+                    "StartUpGame": {"package": HSR_BILIBILI_PACKAGE},
+                    "CloseGame": {"package": HSR_BILIBILI_PACKAGE},
+                },
+            },
+        ],
+    },
+    {
+        "name": "StartupWait",
+        "type": "select",
+        "label": "启动等待",
+        "description": ("StartApp 之后等多久再去找『进入』，以及找不到时最多重试几轮。"
+                        "对齐上游 config.example.yaml:55 start_game_timeout（默认 10 分钟）的"
+                        "等待语义：落到 WaitGameReady.post_delay 与 GameEnterRetry.max_hit。"),
+        "default_case": "Normal",
+        "cases": [
+            {"name": "Fast", "label": "快速（等 10 秒 / 重试 5 次）",
+             "pipeline_override": {"WaitGameReady": {"post_delay": 10000},
+                                   "GameEnterRetry": {"max_hit": 5}}},
+            {"name": "Normal", "label": "标准（等 20 秒 / 重试 15 次 ≈ 90 秒）",
+             "pipeline_override": {"WaitGameReady": {"post_delay": 20000},
+                                   "GameEnterRetry": {"max_hit": 15}}},
+            {"name": "Slow", "label": "慢速（等 40 秒 / 重试 40 次 ≈ 4 分钟）",
+             "pipeline_override": {"WaitGameReady": {"post_delay": 40000},
+                                   "GameEnterRetry": {"max_hit": 40}}},
+        ],
+    },
+    {
+        "name": "DivergentMode",
+        "type": "select",
+        "label": "差分宇宙玩法",
+        "description": ("对齐上游 config.example.yaml:223 weekly_divergent_type "
+                        "（normal=常规演算、cycle=周期演算，上游默认 cycle）与 :259 divergent_type。"
+                        "落到 Task_divergent_universe.next。"),
+        "default_case": "Cycle",
+        "cases": [
+            {"name": "OnlyModeSelect", "label": "只到玩法选择界面",
+             "pipeline_override": {"Task_divergent_universe": {"next": ["NavTo_divergent_mode_select"]}}},
+            {"name": "Normal", "label": "常规演算",
+             "pipeline_override": {"Task_divergent_universe": {"next": ["NavTo_divergent_mode_select_normal"]}}},
+            {"name": "Cycle", "label": "周期演算",
+             "pipeline_override": {"Task_divergent_universe": {"next": ["NavTo_divergent_mode_select_cycle"]}}},
+        ],
+    },
+    {
+        "name": "UniverseCategory",
+        "type": "select",
+        "label": "宇宙类别",
+        "description": ("对齐上游 config.example.yaml:246 universe_category"
+                        "（divergent=差分宇宙、universe=模拟宇宙）。落到 Task_universe.next。"),
+        "default_case": "Divergent",
+        "cases": [
+            {"name": "Divergent", "label": "差分宇宙",
+             "pipeline_override": {"Task_universe": {"next": ["NavTo_divergent_main"]}}},
+            {"name": "Universe", "label": "模拟宇宙",
+             "pipeline_override": {"Task_universe": {"next": ["NavTo_universe_main"]}}},
+        ],
+    },
+    {
+        "name": "CurrencyWarsMode",
+        "type": "select",
+        "label": "货币战争玩法",
+        "description": ("对齐上游 config.example.yaml:212 currencywars_type"
+                        "（normal=标准博弈、overclock=超频博弈，上游默认 overclock）。"
+                        "落到 Task_currency_wars.next。"),
+        "default_case": "Overclock",
+        "cases": [
+            {"name": "OnlyHomepage", "label": "只到博弈首页",
+             "pipeline_override": {"Task_currency_wars": {"next": ["NavTo_currency_wars_homepage"]}}},
+            {"name": "Normal", "label": "标准博弈",
+             "pipeline_override": {"Task_currency_wars": {"next": ["NavTo_currency_wars_mode_select_normal"]}}},
+            {"name": "Overclock", "label": "超频博弈",
+             "pipeline_override": {"Task_currency_wars": {"next": ["NavTo_currency_wars_mode_select_overclock"]}}},
+        ],
+    },
+]
+
+# task_id -> [option name, ...]
+TASK_OPTION_TABLE = {
+    "start_up_game": ["Server", "StartupWait"],
+    "close_game": ["Server"],
+    "divergent_universe": ["DivergentMode"],
+    "universe": ["UniverseCategory"],
+    "currency_wars": ["CurrencyWarsMode"],
+}
+
+# task_id -> default_check。取上游 config.example.yaml 里对应的 *_enable 默认值：
+# 这是 PC 端「这次跑要不要做这一步」的开关，最贴近 PI-V2 的 default_check 语义。
+# 未列出的任务保持 False。
+TASK_DEFAULT_CHECK = {
+    "power": True,                            # power_enable:90 = true
+    "daily": True,                            # daily_enable:173 = true
+    "mail": True,                             # reward_mail_enable:164 = true
+    "assist": True,                           # reward_assist_enable:165 = true
+    "dispatch": True,                         # reward_dispatch_enable:163 = true
+    "quest": True,                            # reward_quest_enable:166 = true
+    "srpass": True,                           # reward_srpass_enable:167 = true
+    "redemption": True,                       # reward_redemption_code_enable:168 = true
+    "activity": True,                         # activity_enable:190 = true
+    "achievement": False,                     # reward_achievement_enable:169 = false
+    "message": False,                         # reward_message_enable:170 = false
+    "himekotry": False,                       # daily_himeko_try_enable:175 = false
+    "memoryone": False,                       # daily_memory_one_enable:176 = false
+    "buildtarget": False,                     # build_target_enable:112 = false
+    "journey_highlights_notification": False,  # activity_journey_highlights_notification_enable:196 = false
+}
+
+TASK_DEFAULT_CHECK_EVIDENCE = {
+    "power": "config.example.yaml:90 power_enable",
+    "daily": "config.example.yaml:173 daily_enable",
+    "mail": "config.example.yaml:164 reward_mail_enable",
+    "assist": "config.example.yaml:165 reward_assist_enable",
+    "dispatch": "config.example.yaml:163 reward_dispatch_enable",
+    "quest": "config.example.yaml:166 reward_quest_enable",
+    "srpass": "config.example.yaml:167 reward_srpass_enable",
+    "redemption": "config.example.yaml:168 reward_redemption_code_enable",
+    "activity": "config.example.yaml:190 activity_enable",
+    "achievement": "config.example.yaml:169 reward_achievement_enable",
+    "message": "config.example.yaml:170 reward_message_enable",
+    "himekotry": "config.example.yaml:175 daily_himeko_try_enable",
+    "memoryone": "config.example.yaml:176 daily_memory_one_enable",
+    "buildtarget": "config.example.yaml:112 build_target_enable",
+    "journey_highlights_notification":
+        "config.example.yaml:196 activity_journey_highlights_notification_enable",
+}
+
+# 上游配置项 -> 落点 / 未迁移原因。report 与 docs 都用它，避免文档与脚本说法不一致。
+CONFIG_MIGRATION_NOTES = [
+    ("config.example.yaml:46-48 game_title_name / game_process_name / game_path",
+     "landed", "Server 选项（com.miHoYo.hkrpg / com.miHoYo.hkrpg.bilibili）+ StartUpGame.package"),
+    ("config.example.yaml:55 start_game_timeout",
+     "landed",
+     "StartupWait 选项 → WaitGameReady.post_delay + GameEnterRetry.max_hit"
+     "（上游是 wait_until(check_and_click_enter, timeout) 的整体超时，这里拆成"
+     "『等多久开始找』与『找不到重试几轮』两个可覆盖字段）"),
+    ("config.example.yaml:59 cloud_game_enable / :62-63 云游戏排队与登录超时",
+     "not_landed",
+     "迁移基线里只有 screen/cloud/enter_cloud_game.png 这一张云游戏截图，没有云游戏客户端包名、"
+     "也没有 cloud/ 下的浏览器授权/免责声明/引导点击节点（上游 tasks/game/__init__.py:119-152），"
+     "无法构成可用的云游戏启动链路。"),
+    ("config.example.yaml:90-109 power_* / instance_type / calyx_golden_preference / "
+     "instance_names / instance_names_challenge_count / tp_before_instance",
+     "not_landed",
+     "副本名/次数/花萼偏好都没有对应的 pipeline 节点：迁移只做到 screen/guide3 入口"
+     "（march7th:kind=screen-anchor，next 为空），副本列表界面的模板与点击链完全没有迁移。"),
+    ("config.example.yaml:112-114 build_target_*",
+     "not_landed", "培养目标流程（instance/drop 两种方案）在迁移后的 pipeline 里没有任何节点。"),
+    ("config.example.yaml:118-120 break_down_level_four_relicset / weekly_relic_*",
+     "not_landed",
+     "遗器分解/清理策略是 bag_relicset 界面内部的选中与分解逻辑，迁移只到 Screen_bag_relicset。"),
+    ("config.example.yaml:124-128 instance_team_*",
+     "not_landed", "队伍选择在 configure_team 界面内部，迁移只到 Screen_configure_team（next 为空）。"),
+    ("config.example.yaml:131-132 merge_immersifier / merge_immersifier_limit",
+     "not_landed",
+     "合成数量由 consumables/material 界面内部的拖动与输入决定，迁移后这两条边是 "
+     "__UNMAPPED_* 占位（DoNothing），没有可覆盖的字段。"),
+    ("config.example.yaml:135-136 use_reserved_trailblaze_power / use_fuel",
+     "not_landed", "体力补充弹窗没有迁移；guide3 之后的界面没有节点。"),
+    ("config.example.yaml:139-141 echo_of_war_*",
+     "not_landed", "历战余响的时间窗控制属于调度器逻辑，pipeline 里只有 NavTo_guide3。"),
+    ("config.example.yaml:144-159 borrow_*",
+     "not_landed", "支援角色选择在 visa 界面内部，迁移只到 Screen_visa。"),
+    ("config.example.yaml:162-170 reward_*_enable",
+     "landed", "映射为对应任务的 default_check（见 TASK_DEFAULT_CHECK）"),
+    ("config.example.yaml:173-176 daily_*_enable",
+     "landed", "映射为 daily / himekotry / memoryone / buildtarget 的 default_check"),
+    ("config.example.yaml:190-196 activity_*_enable",
+     "landed", "activity 的 default_check；其余子活动（gardenofplenty / realmofthestrange / "
+               "planarfissure / journey_highlights_notification）里只有 journey_highlights_notification "
+               "有独立任务可映射，剩下三个在本迁移里没有独立任务。"),
+    ("config.example.yaml:199-208 asset_*",
+     "not_landed", "资产/余烬兑换没有对应的迁移任务（上游 assets 模块整体不在 TASK_TABLE 里）。"),
+    ("config.example.yaml:212 currencywars_type",
+     "landed", "CurrencyWarsMode 选项 → Task_currency_wars.next"),
+    ("config.example.yaml:213-217 currencywars_rank_difficulty / bonus_enable / fast_mode / strategy",
+     "not_landed", "博弈内的玩法参数没有迁移到 pipeline（只到 mode_select 屏幕）。"),
+    ("config.example.yaml:222-228 weekly_divergent_*",
+     "landed", "DivergentMode 选项 → Task_divergent_universe.next（类型）；难度/奖励/稳定模式未迁移"),
+    ("config.example.yaml:231-242 divergent_station_*",
+     "not_landed", "站台优先级配置需要差分宇宙内部节点，迁移里一个都没有。"),
+    ("config.example.yaml:244-252 universe_*",
+     "landed", "UniverseCategory 选项 → Task_universe.next（divergent/universe）"),
+    ("config.example.yaml:259-262 divergent_type / divergent_team_type / universe_fate / universe_difficulty",
+     "partially_landed", "divergent_type（normal/cycle）已并入 DivergentMode；队伍流派/命途/难度未迁移"),
+    ("config.example.yaml:265-278 fight_*",
+     "not_landed",
+     "锄大地模块（tasks/daily/fight.py）的导航只迁到 NavTo_main，"
+     "地图/购买/队伍配置全在战斗循环里，没有 pipeline 落点。"),
+    ("config.example.yaml:285-309 forgottenhall_*",
+     "not_landed", "忘却之庭层数与两队配置在 memory 界面内部；迁移只到 Screen_memory / guide4。"),
+    ("config.example.yaml:313-337 purefiction_*",
+     "not_landed", "虚构叙事层数与队伍配置同样没有迁移节点。"),
+    ("config.example.yaml:341-365 apocalyptic_*",
+     "not_landed", "末日幻影层数与队伍配置同样没有迁移节点。"),
+    ("config.example.yaml:368-389 auto_battle_detect_enable / auto_set_resolution_enable / "
+     "loop_mode / scheduled_time / power_limit / refresh_hour",
+     "not_landed", "这些是 PC 端调度器与游戏窗口控制行为，属于 App 侧（MaaPocket core）职责，不属于资源包。"),
+    ("config.example.yaml:395-398 hotkey_*",
+     "not_landed",
+     "热键只影响 PC 端的自动战斗/地图/传送，对应边在迁移后是 __UNMAPPED_* DoNothing 占位。"),
+    ("config.example.yaml:445 use_background_screenshot",
+     "not_landed", "Android 侧只有前台截图一种方式，没有可切换的字段。"),
+    ("config.example.yaml:461 redemption_code",
+     "not_landed",
+     "兑换码需要 InputText 动作落点；迁移只到 Screen_redemption，没有输入框坐标/节点，"
+     "也没有 InputText 节点可覆盖。"),
+]
+
+
+# --------------------------------------------------------------------------- #
 # Minimal JSON Schema validator (draft 2020-12 subset)
 # --------------------------------------------------------------------------- #
 #
@@ -1168,10 +1692,15 @@ def main(argv=None):
         except Exception:
             old_obj = None
         ctl = old_obj.get("controller") if isinstance(old_obj, dict) else None
-        looks_like_ours = bool(
-            isinstance(ctl, list) and ctl and isinstance(ctl[0], dict)
-            and ctl[0].get("attach_resource_path") == ["./resource"]
-        )
+        ctl0 = ctl[0] if (isinstance(ctl, list) and ctl
+                          and isinstance(ctl[0], dict)) else None
+        # `name` 是本迁移自己生成 interface.json 时写入的固定值，用它当指纹最稳：
+        # 早先这里用 controller[0].attach_resource_path == ["./resource"] 判定，但
+        # 现在生成结果**故意不再写** attach_resource_path（见下方 DECISION 注释），
+        # 那个判定会把上一次的输出误判成「别的 agent 放的占位文件」。
+        looks_like_ours = bool(isinstance(old_obj, dict)
+                               and old_obj.get("name") == "MaaPocketHSR"
+                               and ctl0 is not None)
         replaced_interface = {
             "path": os.path.relpath(iface_path, REPO_DIR).replace("\\", "/"),
             "bytes": len(old),
@@ -1180,12 +1709,16 @@ def main(argv=None):
                                else "placeholder-from-another-agent"),
         }
         if not looks_like_ours:
-            replaced_interface["reasons"] = [
-                "controller[0] 缺少 attach_resource_path（interface.schema.json 允许但 PI-V2 惯例要求）",
-                "顶层存在 interface.schema.json 未定义的 `message` 键",
-                "resource[0].name 是「官服」而不是本次统一使用的「国服」",
-                "task 为空数组，没有任何迁移出来的任务",
-            ]
+            reasons = []
+            if ctl0 is None:
+                reasons.append("controller 缺失或不是对象数组")
+            if isinstance(old_obj, dict) and old_obj.get("name") != "MaaPocketHSR":
+                reasons.append("顶层 name 不是本迁移生成的 MaaPocketHSR")
+            if isinstance(old_obj, dict) and "message" in old_obj:
+                reasons.append("顶层存在 interface.schema.json 未定义的 `message` 键")
+            if isinstance(old_obj, dict) and not old_obj.get("task"):
+                reasons.append("task 为空数组或缺失，没有任何迁移出来的任务")
+            replaced_interface["reasons"] = reasons or ["结构与本迁移的产物不同"]
     if args.force and os.path.isdir(out):
         shutil.rmtree(out)
         report["out_cleaned"] = True
@@ -1538,24 +2071,70 @@ def main(argv=None):
             "source_module": module, "confidence": confidence,
             "rationale": rationale,
         })
+    # 5c-bis. 启动 / 关闭游戏 + B服 overlay ---------------------------------
+    # 这两条任务不在上游的 TASK_TABLE 里（上游没有对应的「任务」模块），单独补。
+    game_control = build_game_control_nodes()
+    for (tid, label, group, module, confidence, rationale) in EXTRA_TASK_TABLE:
+        if tid not in game_control:
+            raise SystemExit("[FATAL] EXTRA_TASK_TABLE 里的 %s 没有节点定义" % tid)
+        if group not in task_group_names:
+            raise SystemExit("[FATAL] 任务 %s 的 group %s 未定义" % (tid, group))
+        add_file(os.path.join(pipeline_dir, "task", "%s.json" % tid),
+                 game_control[tid])
+        task_entries.append({
+            "name": tid, "label": label, "group": group,
+            "entry": "Task_%s" % tid, "entry_screen": "",
+            "source_module": module, "confidence": confidence,
+            "rationale": rationale,
+        })
     report["tasks"] = task_entries
     report["tasks_skipped"] = [{"module": m, "reason": r} for m, r in TASK_SKIPPED]
+    report["game_control_tasks"] = [t[0] for t in EXTRA_TASK_TABLE]
+
+    # B服 overlay：独立资源树，只放覆盖节点 + B服 专属节点，不复制基线。
+    bilibili_overlay = build_bilibili_overlay_nodes()
+    overlay_pipeline_dir = os.path.join(out, RESOURCE_BILIBILI_DIR, "pipeline")
+    add_file(os.path.join(overlay_pipeline_dir, "bilibili_login.json"),
+             bilibili_overlay)
+    report["bilibili_overlay"] = {
+        "resource_name": RESOURCE_BILIBILI_NAME,
+        "directory": RESOURCE_BILIBILI_DIR,
+        "node_count": len(bilibili_overlay),
+        "overridden_nodes": ["GameEnterCheck"],
+        "new_nodes": sorted(n for n in bilibili_overlay if n != "GameEnterCheck"),
+        "source": "March7thAssistant/tasks/game/__init__.py:104-115",
+        "requires_ocr_model": sorted(
+            n for n, v in bilibili_overlay.items() if v.get("recognition") == "OCR"),
+        "ocr_model_path": "resource/model/ocr/{rec.onnx,det.onnx,keys.txt}",
+        "note": ("B服 登录分支用 OCR 识别；本仓库没有随包附带 OCR 模型，"
+                 "补上模型之前这些节点不会命中，链路会回落到基线候选表。"),
+    }
 
     # -- 5d. cross-file node-name and reference integrity ------------------- #
     # MaaFramework merges every file under pipeline/ into one flat namespace,
     # so duplicate node names and dangling `next` references are real breakage.
-    node_names, name_dupes, dangling = {}, [], []
+    node_names, name_dupes, dangling, overlay_overrides = {}, [], [], []
     pipeline_objects = {}
+    pipeline_prefixes = ("resource/pipeline/",
+                         "%s/pipeline/" % RESOURCE_BILIBILI_DIR)
     for g in generated:
-        if not g["path"].startswith("resource/pipeline/"):
+        if not g["path"].startswith(pipeline_prefixes):
             continue
         with open(os.path.join(out, g["path"]), "r", encoding="utf-8") as fh:
             obj = json.load(fh)
         pipeline_objects[g["path"]] = obj
         for name in obj:
             if name in node_names:
-                name_dupes.append({"name": name,
-                                   "files": [node_names[name], g["path"]]})
+                entry = {"name": name, "files": [node_names[name], g["path"]]}
+                if (g["path"].startswith(RESOURCE_BILIBILI_DIR + "/")
+                        or node_names[name].startswith(RESOURCE_BILIBILI_DIR + "/")):
+                    # Cross-resource-tree duplicate: this is how the B服 overlay
+                    # is SUPPOSED to work (resource.path loads base first, then
+                    # the overlay overwrites the same node name).  It is not a
+                    # name clash inside a single flat namespace.
+                    overlay_overrides.append(entry)
+                else:
+                    name_dupes.append(entry)
             else:
                 node_names[name] = g["path"]
     for path, obj in pipeline_objects.items():
@@ -1568,6 +2147,7 @@ def main(argv=None):
                 dangling.append({"from": name, "file": path, "ref": tgt})
     report["pipeline_node_names"] = {
         "total": len(node_names), "duplicates": name_dupes,
+        "overlay_overrides": overlay_overrides,
         "dangling_references": dangling,
     }
     # Guard-coverage invariant: every single-hop edge <from> -> <to> must have a
@@ -1597,15 +2177,70 @@ def main(argv=None):
         "interface_welcome": "模板尚未在手机端重新采集，识别可能直接失败。请先读 RECAPTURE.md。",
         "controller_android_label": "Android（ADB）",
         "resource_cn_label": "国服",
+        "resource_bilibili_label": "B服（哔哩哔哩）",
     }
     for gid, glabel in GROUP_TABLE:
         locale["group_%s_label" % gid] = glabel
     for t in task_entries:
         locale["task_%s_label" % t["name"]] = t["label"]
         locale["task_%s_description" % t["name"]] = t["rationale"]
+    for opt in OPTION_TABLE:
+        locale["option_%s_label" % opt["name"]] = opt["label"]
+        if opt.get("description"):
+            locale["option_%s_description" % opt["name"]] = opt["description"]
+        for case in opt["cases"]:
+            locale["option_%s_case_%s_label" % (opt["name"], case["name"])] = case["label"]
     add_file(os.path.join(out, "resource", "locale", "zh_cn.json"), locale)
 
     # -- 7. interface.json ------------------------------------------------- #
+    # option 名必须唯一，否则后面 task.option 的引用会指向不确定的定义。
+    option_names = [opt["name"] for opt in OPTION_TABLE]
+    if len(set(option_names)) != len(option_names):
+        raise SystemExit("[FATAL] OPTION_TABLE 里有重名 option: %s" % option_names)
+    option_names = set(option_names)
+
+    interface_options = {}
+    for opt in OPTION_TABLE:
+        definition = {"type": opt["type"], "label": opt["label"]}
+        if opt.get("description"):
+            definition["description"] = opt["description"]
+        cases = []
+        for case in opt["cases"]:
+            item = {"name": case["name"], "label": case["label"]}
+            if case.get("description"):
+                item["description"] = case["description"]
+            item["pipeline_override"] = case["pipeline_override"]
+            cases.append(item)
+        if opt["type"] == "switch" and len(cases) != 2:
+            raise SystemExit("[FATAL] switch option %s 必须正好两个 case" % opt["name"])
+        definition["cases"] = cases
+        if opt.get("default_case"):
+            case_names = {c["name"] for c in cases}
+            if opt["default_case"] not in case_names:
+                raise SystemExit("[FATAL] option %s 的 default_case %s 不在 cases 里"
+                                 % (opt["name"], opt["default_case"]))
+            definition["default_case"] = opt["default_case"]
+        interface_options[opt["name"]] = definition
+
+    interface_tasks = []
+    for t in task_entries:
+        item = {
+            "name": t["name"],
+            "label": t["label"],
+            "entry": t["entry"],
+            "description": t["rationale"],
+            "default_check": TASK_DEFAULT_CHECK.get(t["name"], False),
+            "group": [t["group"]],
+        }
+        referenced = TASK_OPTION_TABLE.get(t["name"])
+        if referenced:
+            unknown = [n for n in referenced if n not in option_names]
+            if unknown:
+                raise SystemExit("[FATAL] 任务 %s 引用了未定义的 option: %s"
+                                 % (t["name"], unknown))
+            item["option"] = list(referenced)
+        interface_tasks.append(item)
+
     interface = {
         "interface_version": 2,
         "name": "MaaPocketHSR",
@@ -1629,30 +2264,29 @@ def main(argv=None):
                 # display_short_side / display_long_side are documented as
                 # mutually exclusive, so only one may be set.
                 "display_long_side": DESIGN_W,
-                "attach_resource_path": ["./resource"],
+                # DECISION: no `attach_resource_path` here.  Docs
+                # (3.3-ProjectInterfaceV2.md:181 and :289) state that
+                # attach_resource_path is loaded AFTER resource.path, so
+                # keeping ["./resource"] would reload the BASE tree on top of
+                # the B服 overlay and silently undo the GameEnterCheck override.
+                # It was redundant anyway: resource.path already lists
+                # "./resource" for every resource layer.
             }
         ],
         "resource": [
             {"name": RESOURCE_NAME, "label": locale["resource_cn_label"],
-             "path": ["./resource"]}
+             "path": ["./resource"]},
+            {"name": RESOURCE_BILIBILI_NAME,
+             "label": locale["resource_bilibili_label"],
+             # Layered tree: base first (already loaded for 国服), then the
+             # overlay that redefines only the nodes B服 needs.
+             "path": ["./resource", "./%s" % RESOURCE_BILIBILI_DIR]},
         ],
         "languages": {"zh_cn": "./resource/locale/zh_cn.json"},
         "group": [{"name": gid, "label": glabel, "default_expand": True}
                   for gid, glabel in GROUP_TABLE],
-        "task": [
-            {
-                "name": t["name"],
-                "label": t["label"],
-                "entry": t["entry"],
-                "description": t["rationale"],
-                "default_check": False,
-                "group": [t["group"]],
-            }
-            for t in task_entries
-        ],
-        # NOTE: interface.schema.json types `option` as an *object* (not an
-        # array), so an empty list here is a validation failure.  We emit no
-        # options at all rather than an empty object.
+        "task": interface_tasks,
+        "option": interface_options,
         "agent": [],
     }
     add_file(os.path.join(out, "interface.json"), interface)
@@ -1673,7 +2307,53 @@ def main(argv=None):
         "tasks_emitted": len(task_entries),
         "tasks_skipped": len(TASK_SKIPPED),
         "images_copied": copied,
+        "options_emitted": len(OPTION_TABLE),
+        "tasks_with_options": len([t for t in task_entries
+                                   if TASK_OPTION_TABLE.get(t["name"])]),
+        "tasks_default_check": len([t for t in task_entries
+                                    if TASK_DEFAULT_CHECK.get(t["name"], False)]),
     }
+    report["options"] = [
+        {
+            "name": opt["name"],
+            "type": opt["type"],
+            "label": opt["label"],
+            "default_case": opt.get("default_case"),
+            "cases": [
+                {
+                    "name": case["name"],
+                    "label": case["label"],
+                    "pipeline_override": case["pipeline_override"],
+                }
+                for case in opt["cases"]
+            ],
+            "used_by_tasks": sorted(t["name"] for t in task_entries
+                                    if opt["name"] in TASK_OPTION_TABLE.get(t["name"], [])),
+        }
+        for opt in OPTION_TABLE
+    ]
+    report["tasks_with_options"] = {
+        t["name"]: list(TASK_OPTION_TABLE[t["name"]])
+        for t in task_entries if TASK_OPTION_TABLE.get(t["name"])
+    }
+    report["task_default_check"] = {
+        t["name"]: {
+            "default_check": TASK_DEFAULT_CHECK.get(t["name"], False),
+            "evidence": TASK_DEFAULT_CHECK_EVIDENCE.get(t["name"], ""),
+        }
+        for t in task_entries
+    }
+    report["resource_layers"] = [
+        {"name": RESOURCE_NAME, "path": ["./resource"],
+         "role": "baseline（March7thAssistant 全量迁移结果）"},
+        {"name": RESOURCE_BILIBILI_NAME,
+         "path": ["./resource", "./%s" % RESOURCE_BILIBILI_DIR],
+         "role": "baseline + B服 overlay（只覆盖 GameEnterCheck，并新增 B服 登录节点）"},
+    ]
+    report["config_migration_notes"] = [
+        {"item": item, "status": status, "detail": detail}
+        for item, status, detail in CONFIG_MIGRATION_NOTES
+    ]
     report["screen_graph"] = {
         "screens": [{"id": s, "name": screen_by_id[s].get("name"),
                      "node": screen_nodes[s],
@@ -1703,7 +2383,8 @@ def main(argv=None):
     if schema_dir and os.path.isfile(os.path.join(schema_dir, "pipeline.schema.json")):
         pipeline_instances = {}
         for g in generated:
-            if g["path"].startswith("resource/pipeline/"):
+            if g["path"].startswith(("resource/pipeline/",
+                                     "%s/pipeline/" % RESOURCE_BILIBILI_DIR)):
                 with open(os.path.join(out, g["path"]), "r", encoding="utf-8") as fh:
                     pipeline_instances[g["path"]] = json.load(fh)
         validation["performed"] = True
@@ -1747,6 +2428,12 @@ def main(argv=None):
           % (len(expressions), len(unmapped_exprs)))
     print("[migrate_march7th] tasks    : %d emitted, %d skipped"
           % (len(task_entries), len(TASK_SKIPPED)))
+    print("[migrate_march7th] options  : %d defined, used by %d tasks"
+          % (len(OPTION_TABLE),
+             len([t for t in task_entries if TASK_OPTION_TABLE.get(t["name"])])))
+    print("[migrate_march7th] resources: %s"
+          % ", ".join("%s<%s>" % (r["name"], " + ".join(r["path"]))
+                      for r in report["resource_layers"]))
     print("[migrate_march7th] images   : %d copied (%d bytes)"
           % (copied, image_bytes))
     if validation.get("performed"):

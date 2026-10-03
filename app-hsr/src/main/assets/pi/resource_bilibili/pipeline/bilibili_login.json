@@ -1,0 +1,110 @@
+{
+  "GameEnterCheck": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "BilibiliLoginDispatch"
+    ],
+    "attach": {
+      "march7th:kind": "overlay-override",
+      "march7th:overrides": "GameEnterCheck",
+      "march7th:source": "tasks/game/__init__.py:104-115",
+      "march7th:note": "B服 资源树覆盖基线节点：先走 B服 登录分支。分支内部会在没有任何 B服 文本命中时回落到基线的 ClickEnter / ClickStartGame / GameEnterRetry / NavTo_main 候选表。"
+    }
+  },
+  "BilibiliLoginDispatch": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "BilibiliPrivacyPolicy",
+      "BilibiliLoginRecord",
+      "ClickEnter",
+      "ClickStartGame",
+      "GameEnterRetry",
+      "NavTo_main"
+    ],
+    "attach": {
+      "march7th:kind": "bilibili-login-dispatch",
+      "march7th:source": "tasks/game/__init__.py:105-115",
+      "march7th:note": "上游 :105 用文本识别同时探测『bilibili游戏隐私政策提示』与『登录记录』。两者都没命中时（上游的 else 分支 :110-115）会依次点 5 张模板 bilibili_login.png / bilibili_login_2.png / bilibili_login_3.png / bilibili_agree_update.png / bilibili_agree_update_2.png —— 这 5 张图在 refs/March7thAssistant/assets 下不存在（全仓 glob 0 命中），无法迁移，所以这里直接回落到基线候选表。"
+    }
+  },
+  "BilibiliPrivacyPolicy": {
+    "recognition": "OCR",
+    "expected": [
+      "bilibili游戏隐私政策提示"
+    ],
+    "threshold": 0.3,
+    "action": "DoNothing",
+    "next": [
+      "BilibiliPrivacyAgree",
+      "GameEnterRetry",
+      "NavTo_main"
+    ],
+    "attach": {
+      "march7th:kind": "bilibili-login-probe",
+      "march7th:source": "tasks/game/__init__.py:106",
+      "march7th:requires": "resource/model/ocr/{rec.onnx,det.onnx,keys.txt}",
+      "march7th:note": "上游 :106 的 matched_text == 'bilibili游戏隐私政策提示' 分支；上游那一步强制前台截图（use_background_screenshot=False），Android 侧本来就是前台截图，无需额外参数。"
+    }
+  },
+  "BilibiliPrivacyAgree": {
+    "recognition": "OCR",
+    "expected": [
+      "同意"
+    ],
+    "threshold": 0.3,
+    "action": "Click",
+    "target": true,
+    "post_delay": 2000,
+    "max_hit": 8,
+    "next": [
+      "BilibiliLoginDispatch"
+    ],
+    "attach": {
+      "march7th:kind": "bilibili-login-click",
+      "march7th:source": "tasks/game/__init__.py:107",
+      "march7th:requires": "resource/model/ocr/{rec.onnx,det.onnx,keys.txt}",
+      "march7th:note": "上游 :107 auto.click_element('同意', 'text')。max_hit 8 用于收敛『协议弹窗反复出现』的情况。"
+    }
+  },
+  "BilibiliLoginRecord": {
+    "recognition": "OCR",
+    "expected": [
+      "登录记录"
+    ],
+    "threshold": 0.3,
+    "action": "DoNothing",
+    "next": [
+      "BilibiliLoginButton",
+      "GameEnterRetry",
+      "NavTo_main"
+    ],
+    "attach": {
+      "march7th:kind": "bilibili-login-probe",
+      "march7th:source": "tasks/game/__init__.py:108",
+      "march7th:requires": "resource/model/ocr/{rec.onnx,det.onnx,keys.txt}",
+      "march7th:note": "上游 :108 的 matched_text == '登录记录' 分支。"
+    }
+  },
+  "BilibiliLoginButton": {
+    "recognition": "OCR",
+    "expected": [
+      "登录"
+    ],
+    "threshold": 0.3,
+    "action": "Click",
+    "target": true,
+    "post_delay": 2000,
+    "max_hit": 8,
+    "next": [
+      "BilibiliLoginDispatch"
+    ],
+    "attach": {
+      "march7th:kind": "bilibili-login-click",
+      "march7th:source": "tasks/game/__init__.py:109",
+      "march7th:requires": "resource/model/ocr/{rec.onnx,det.onnx,keys.txt}",
+      "march7th:note": "上游 :109 auto.click_element('登录', 'text')。max_hit 8 用于收敛循环。"
+    }
+  }
+}

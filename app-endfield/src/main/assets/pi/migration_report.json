@@ -1,6 +1,6 @@
 {
     "generator": "MaaPocket/scripts/migrate_maaend.py",
-    "generated_at": "2026-10-03T13:40:10Z",
+    "generated_at": "2026-10-03T14:55:19Z",
     "source": {
         "path": "D:\\Trea\\二游自动化\\refs\\MaaEnd",
         "git_head": "ae43a184c02408410061c858a46205cf90606a26",
@@ -9,9 +9,9 @@
         "license": "AGPL-3.0"
     },
     "arguments": {
-        "source": "D:\\Trea\\二游自动化\\refs\\MaaEnd",
-        "out": "D:\\Trea\\二游自动化\\MaaPocket\\app-endfield\\src\\main\\assets\\pi",
-        "schemas": "D:\\Trea\\二游自动化\\_research\\maafw_dev\\tools",
+        "source": "..\\refs\\MaaEnd",
+        "out": "app-endfield\\src\\main\\assets\\pi",
+        "schemas": "..\\_research\\maafw_dev\\tools",
         "force": true
     },
     "design": {
@@ -44,7 +44,7 @@
                 "dest": "tasks",
                 "entries": 68,
                 "files_copied": 68,
-                "bytes_copied": 4679517,
+                "bytes_copied": 4679361,
                 "skipped_non_blob": []
             },
             "assets/resource": {
@@ -5548,6 +5548,42 @@
             "resource_android/pipeline/StashBackpack.json"
         ]
     },
+    "android_intents": {
+        "policy": "MaaPocket 在 Android 上用 AndroidNative 控制器，StartApp/StopApp 的 intent 字符串一路原样透传到 PackageManager.getLaunchIntentForPackage()，\"<pkg>/<activity>\" 形式必定解析失败，因此统一削成纯包名。",
+        "rewrites": [
+            {
+                "file": "tasks/AndroidOpenGame.json",
+                "changes": [
+                    {
+                        "action": "StartApp",
+                        "from": "com.hypergryph.endfield/com.u8.sdk.U8UnityContext",
+                        "to": "com.hypergryph.endfield"
+                    },
+                    {
+                        "action": "StartApp",
+                        "from": "com.hypergryph.endfield.bilibili/com.u8.sdk.U8UnityContext",
+                        "to": "com.hypergryph.endfield.bilibili"
+                    },
+                    {
+                        "action": "StartApp",
+                        "from": "com.gryphline.endfield.gp/com.u8.sdk.U8UnityContext",
+                        "to": "com.gryphline.endfield.gp"
+                    },
+                    {
+                        "action": "StartApp",
+                        "from": "com.hypergryph.endfield.vn/com.u8.sdk.U8UnityContext",
+                        "to": "com.hypergryph.endfield.vn"
+                    },
+                    {
+                        "action": "StartApp",
+                        "from": "com.hypergryph.cloud.endfield/com.hypergryph.cloud.endfield.splash.SplashActivity",
+                        "to": "com.hypergryph.cloud.endfield"
+                    }
+                ]
+            }
+        ],
+        "stop_app_note": "StopApp 在 MaaPocket 的 core/src/main/cpp/bridge_input.cpp 里落进 DispatchInputMessage 的 `default: return 0`，是静默 no-op：不会关闭游戏，也不会报错。上游 CloseGame 节点因此只在 PC/ADB 端有效。"
+    },
     "parse_errors": [],
     "duplicate_nodes": [],
     "unknown_top_level_keys": {},
@@ -5583,8 +5619,8 @@
     },
     "stats": {
         "files_written": 3104,
-        "bytes_written": 44355448,
-        "pack_digest_sha256": "077e7f9fe3174b5428f09c994c5f5e3eb2193dbb01233312830d54ebb319e996",
+        "bytes_written": 44358309,
+        "pack_digest_sha256": "4a1b3bcf2603bdff00ecde07ed97a00be5590a9bb6bdb44f052853e308aef282",
         "pack_digest_note": "sha256 over sorted '<relpath>\\0<sha256(file)>\\n' for every pack file except migration_report.json. `files_written`/`bytes_written` likewise EXCLUDE migration_report.json (it cannot describe its own size); add it separately when measuring the pack on disk. generated_at is the only non-deterministic field, so two runs with the same source HEAD must produce the same pack_digest_sha256."
     },
     "files": [
