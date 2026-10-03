@@ -5,6 +5,7 @@ import android.os.SystemClock
 import com.maapocket.core.bridge.NativeBridgeLib
 import com.maapocket.core.constant.DefaultDisplayConfig
 import com.maapocket.core.maa.DriverClass
+import com.maapocket.core.maafw.MaaAgentRuntime
 import com.maapocket.core.maafw.MaaController
 import com.maapocket.core.maafw.MaaDef
 import com.maapocket.core.maafw.MaaEventCallback
@@ -13,11 +14,18 @@ import com.maapocket.core.maafw.MaaFw
 import com.maapocket.core.maafw.MaaResource
 import com.maapocket.core.maafw.MaaSinks
 import com.maapocket.core.maafw.MaaTasker
+import com.maapocket.core.pi.AgentHandle
+import com.maapocket.core.pi.AgentHandshakeException
+import com.maapocket.core.pi.AgentLauncher
+import com.maapocket.core.pi.AgentSpawnException
+import com.maapocket.core.pi.PiAgentEnv
 import com.maapocket.core.privilege.RemoteProtocol.Cmd
 import com.maapocket.core.privilege.RemoteProtocol.ErrorCode
 import com.maapocket.core.privilege.RemoteProtocol.Event
 import com.maapocket.core.third.Ln
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
@@ -149,6 +157,15 @@ class RemoteEngine(
     private var taskSinkId = 0L
 
     /**
+     * 已经握手成功的 agent 子进程（PI 的 `child_exec`，如 `agent/go-service`），key = 标签。
+     *
+     * 与其它 Maa 句柄一样由 [maaLock] 保护，但**关闭动作一律在锁外**：`AgentHandle.close()`
+     * 要 `disconnect` + `destroy` + 最多 2s 宽限 + 强杀，拿着 [maaLock] 做这件事会把
+     * `maa.state` / `task.stop` 一起堵住。所以取快照 → 出锁 → 逐个关。
+     */
+    private val agents = LinkedHashMap<String, AgentHandle>()
+
+    /**
      * MaaFramework 是否真的加载好了。**运行时真实判定**，不再是常量——
      * `MaaFw.ensureLoaded` 成功后才为 true。
      */
@@ -177,6 +194,9 @@ class RemoteEngine(
         server.on(Cmd.MAA_TASK_RUN) { params -> maaTaskRun(params) }
         server.on(Cmd.MAA_TASK_STOP) { _ -> maaTaskStop() }
         server.on(Cmd.MAA_STATE) { _ -> maaState() }
+        // agent：外挂扩展进程，必须由本进程拉起（见 agentStart 的注释）。
+        server.on(Cmd.AGENT_START) { params -> agentStart(params) }
+        server.on(Cmd.AGENT_STOP) { params -> agentStop(params) }
     }
 
     // ------------------------------------------------------------------ engine.*
@@ -879,7 +899,243 @@ class RemoteEngine(
             put("taskId", taskId.get().takeIf { it >= 0 })
             put("displayId", display?.displayId ?: DefaultDisplayConfig.DISPLAY_NONE)
             put("nodes", runCatching { currentResource?.nodeList()?.size }.getOrNull())
+            put("agentCount", agentCount())
+            put("agents", agentsState())
         }
+    }
+
+    // ------------------------------------------------------------------ agent.start / agent.stop
+
+    /**
+     * 起一个 agent 子进程（PI 的 `child_exec`，如 `agent/go-service`）并完成握手。
+     *
+     * 参数：
+     * ```
+     * {
+     *   executable: String,       // 必填。绝对路径，且能从本进程 execve（nativeLibraryDir 里的 lib*.so）
+     *   args: [String] = [],      // 声明里的 child_args；identifier 由本方法追加到末尾，不要自己带
+     *   workingDir: String?,      // CWD，AgentWorkspace 铺好的目录（其中 maafw 必须齐 4 个 .so）
+     *   nativeLibDir: String?,    // 填 LD_LIBRARY_PATH / MAAFW_BINARY_PATH（防御性，Go agent 只认 CWD/maafw）
+     *   label: String?,           // 日志前缀兼幂等键；缺省用可执行文件名
+     *   identifier: String?,      // null（缺省）= 让 MaaFramework 自己生成 socket 标识
+     *   timeoutMs: Long?,         // 握手上限，缺省 AgentLauncher.DEFAULT_CONNECT_TIMEOUT_MS（20s）
+     *   env: {PI_*: String}       // 见 PiAgentEnv；未知的键被忽略，并在返回值 ignoredEnv 里如实列出
+     * }
+     * ```
+     *
+     * 返回 `{label, identifier, pid?, ready, alive, connected, customActions, customRecognitions,
+     * envKeys, ignoredEnv, reused}`。
+     *
+     * **幂等**：同一个 [label] 上已经有一个活着的 agent 时不再起第二个，直接把它的状态回给调用方
+     * （`reused=true`）。app 的 `prepare()` 可以被反复调用，少了这条约束就会按一次多一个子进程。
+     *
+     * 资源必须是**本进程里已经 `resource.load` 出来的那一个**：`MaaAgentClient.bindResource`
+     * 绑的必须是真正在跑 pipeline 的资源，自己另建一个等于把 agent 的自定义动作注册到一个
+     * 没人在用的资源上（pipeline 依旧卡在 Custom 节点）。所以这里只读 [resource]，不新建。
+     *
+     * 线程：`launch()` 阻塞到握手成功或超时，本方法在 `RemoteServer` 的 worker 线程上跑，
+     * 调用方（app）要给它一个大于 [timeoutMs] 的请求超时。
+     */
+    private fun agentStart(params: JsonObject?): JsonObject {
+        val api = requireMaa()
+
+        val executablePath = params.str("executable")
+            ?: throw RemoteProtocolException(
+                ErrorCode.BAD_PARAMS,
+                "executable is required",
+                "params=$params",
+            )
+        val executable = File(executablePath)
+        if (!executable.isFile) {
+            throw RemoteProtocolException(
+                ErrorCode.BAD_PARAMS,
+                "agent executable does not exist: ${executable.absolutePath}",
+                "AgentWorkspace 只铺工作目录，可执行文件本身必须留在 nativeLibraryDir（见 docs/agents.md §3）",
+            )
+        }
+        val label = params.str("label")?.takeIf { it.isNotBlank() } ?: executable.name
+
+        // 已经有活着的同名 agent：直接复用，不要再 execve 一个。
+        val existing = synchronized(maaLock) { agents[label] }
+        if (existing != null && existing.alive) {
+            val pid = runCatching { existing.process.pid() }.getOrNull()
+            Ln.i("RemoteEngine: agent '$label' already running (pid=$pid), reusing")
+            return describeAgent(label, existing) + buildJsonObject { put("reused", true) }
+        }
+
+        val currentResource = resource
+            ?: throw RemoteProtocolException(
+                ErrorCode.NOT_READY,
+                "no resource loaded; send resource.load first",
+                "agent.start 必须绑到正在跑 pipeline 的那个 MaaResource 上",
+            )
+        if (!currentResource.loaded) {
+            throw RemoteProtocolException(
+                ErrorCode.NOT_READY,
+                "resource is not loaded (MaaResourceLoaded() == false)",
+                "在没加载成功的资源上绑 agent 只会让它的自定义动作静默失效；先重跑 resource.load 并检查 failedPath",
+            )
+        }
+
+        val workingDir = params.str("workingDir")?.let { File(it) }
+        if (workingDir != null && !workingDir.isDirectory) {
+            throw RemoteProtocolException(
+                ErrorCode.BAD_PARAMS,
+                "workingDir is not a directory: ${workingDir.absolutePath}",
+                "AgentWorkspace.prepare() 失败了？Go agent 的 logger 写不了 <CWD>/debug 会直接 log.Fatal",
+            )
+        }
+        val nativeLibDir = params.str("nativeLibDir")?.let { File(it) }
+        val timeoutMs = (params.long("timeoutMs") ?: AgentLauncher.DEFAULT_CONNECT_TIMEOUT_MS)
+            .coerceIn(MIN_AGENT_CONNECT_TIMEOUT_MS, MAX_AGENT_CONNECT_TIMEOUT_MS)
+        val identifier = params.str("identifier")?.takeIf { it.isNotBlank() }
+
+        val env = params.envMap()
+        val piEnv = PiAgentEnv(
+            interfaceVersion = env["PI_INTERFACE_VERSION"],
+            clientName = env["PI_CLIENT_NAME"],
+            clientVersion = env["PI_CLIENT_VERSION"],
+            clientLanguage = env["PI_CLIENT_LANGUAGE"],
+            clientMaafwVersion = env["PI_CLIENT_MAAFW_VERSION"],
+            version = env["PI_VERSION"],
+            controllerJson = env["PI_CONTROLLER"],
+            resourceJson = env["PI_RESOURCE"],
+        )
+        // PiAgentEnv.toMap() 会丢掉空值，所以这里既能报"实际写进子进程的键"，也能报"没认识的键"。
+        val applied = piEnv.toMap().keys
+        val ignored = env.keys - applied
+        if (ignored.isNotEmpty()) {
+            Ln.w("RemoteEngine: agent '$label' env 里有本版本不认的键，已忽略：${ignored.sorted()}")
+        }
+
+        val runtime = MaaAgentRuntime(
+            executable = executable,
+            args = params.stringList("args"),
+            nativeLibDir = nativeLibDir,
+            workingDir = workingDir,
+        )
+        val launcher = AgentLauncher(
+            api = api,
+            resource = currentResource,
+            log = { line -> Ln.i("RemoteEngine: $line") },
+            connectTimeoutMs = timeoutMs,
+        )
+
+        val handle = try {
+            launcher.launch(label, runtime, piEnv, identifier)
+        } catch (e: AgentSpawnException) {
+            // execve 都没成功：路径 / x 位 / CWD 的问题，如实把原因转给 app（它要显示给用户）。
+            throw RemoteProtocolException(
+                ErrorCode.INTERNAL,
+                "agent spawn failed: ${e.message}",
+                "label=$label exe=${executable.absolutePath} cwd=${workingDir?.absolutePath ?: "继承父进程"}",
+            )
+        } catch (e: AgentHandshakeException) {
+            // 进程起来了但没握上手：九成是 <CWD>/maafw 的 4 个 .so 不全或 CWD 不可写。
+            throw RemoteProtocolException(
+                ErrorCode.NOT_READY,
+                "agent handshake failed: ${e.message}",
+                "label=$label cwd=${workingDir?.absolutePath ?: "继承父进程"}",
+            )
+        }
+
+        // 同一个 label 上可能还挂着一个已经死掉的旧句柄，先摘掉并关掉它，别让 agents 只增不减。
+        val replaced = synchronized(maaLock) { agents.put(label, handle) }
+        if (replaced != null && replaced !== handle) {
+            runCatching { replaced.close() }.onFailure { Ln.w("RemoteEngine: stale agent '$label' close failed: ${it.message}") }
+        }
+
+        Ln.i(
+            "RemoteEngine: agent '$label' ready pid=${runCatching { handle.process.pid() }.getOrNull()} " +
+                "identifier=${runCatching { handle.client.identifier() }.getOrDefault("")} env=${applied.sorted()}",
+        )
+        return describeAgent(label, handle) + buildJsonObject {
+            put("reused", false)
+            put("envKeys", stringArray(applied.sorted()))
+            put("ignoredEnv", stringArray(ignored.sorted()))
+        }
+    }
+
+    /**
+     * 停 agent 子进程。`{label: String}` 停一个；`{all: true}` 或省略 label 停全部。
+     *
+     * 返回 `{stopped: Int, labels: [String], remaining: Int}`。
+     */
+    private fun agentStop(params: JsonObject?): JsonObject {
+        val label = params.str("label")?.takeIf { it.isNotBlank() }
+        val all = params.bool("all") ?: false
+        val stopped = if (label != null && !all) stopAgents(listOf(label)) else stopAgents(null)
+        return buildJsonObject {
+            put("stopped", stopped.size)
+            put("labels", stringArray(stopped))
+            put("remaining", agentCount())
+        }
+    }
+
+    /**
+     * 摘掉并关闭 agent。`labels == null` = 全部。
+     *
+     * 快照在 [maaLock] 里取、关闭在锁外做：`close()` 最多会等 2s 宽限再强杀，
+     * 不能在锁里做（否则 `maa.state` / `task.stop` 会被一起堵住）。
+     */
+    private fun stopAgents(labels: List<String>?): List<String> {
+        val snapshot: List<Pair<String, AgentHandle>> = synchronized(maaLock) {
+            val picked = if (labels == null) {
+                agents.map { it.key to it.value }
+            } else {
+                labels.mapNotNull { name -> agents[name]?.let { name to it } }
+            }
+            picked.forEach { (name, _) -> agents.remove(name) }
+            picked
+        }
+        snapshot.forEach { (name, handle) ->
+            val pid = runCatching { handle.process.pid() }.getOrNull()
+            runCatching { handle.close() }
+                .onFailure { Ln.w("RemoteEngine: agent '$name' close failed: ${it.message}") }
+            Ln.i("RemoteEngine: agent '$name' stopped (pid=$pid)")
+        }
+        return snapshot.map { it.first }
+    }
+
+    private fun releaseAgents(): List<String> = stopAgents(null)
+
+    private fun agentCount(): Int = synchronized(maaLock) { agents.size }
+
+    /** 给 `maa.state` / `agent.start` 用的单条 agent 快照。可以在锁外调用（内部只读句柄）。 */
+    private fun describeAgent(label: String, handle: AgentHandle): JsonObject = buildJsonObject {
+        put("label", label)
+        put("identifier", runCatching { handle.client.identifier() }.getOrDefault(""))
+        put("pid", runCatching { handle.process.pid() }.getOrNull())
+        put("ready", handle.alive)
+        put("alive", handle.alive)
+        put("connected", runCatching { handle.client.connected }.getOrDefault(false))
+        put("customActions", stringArray(runCatching { handle.client.customActionList() }.getOrDefault(emptyList())))
+        put(
+            "customRecognitions",
+            stringArray(runCatching { handle.client.customRecognitionList() }.getOrDefault(emptyList())),
+        )
+    }
+
+    /**
+     * 全部 agent 的快照（先取快照再逐个读句柄，避免拿着 [maaLock] 调 native 查询）。
+     */
+    private fun agentsState(): JsonArray {
+        val snapshot = synchronized(maaLock) { agents.map { it.key to it.value } }
+        return JsonArray(snapshot.map { (label, handle) -> describeAgent(label, handle) })
+    }
+
+    /** `JsonArray` 构造，省得每次写 `buildJsonArray { … }`。 */
+    private fun stringArray(values: List<String>): JsonArray = JsonArray(values.map { JsonPrimitive(it) })
+
+    /**
+     * `agent.start` 的 `env` 对象。只接受字符串值：元素不是字符串就丢掉——
+     * 宁可少一个环境变量，也不要让一条 `agent.start` 因为一个坏值整条失败。
+     */
+    private fun JsonObject?.envMap(): Map<String, String> {
+        val element = this?.get("env") as? JsonObject ?: return emptyMap()
+        return element.mapNotNull { (key, value) ->
+            runCatching { key to value.jsonPrimitive.content }.getOrNull()
+        }.toMap()
     }
 
     // ------------------------------------------------------------------ 收尾
@@ -887,13 +1143,20 @@ class RemoteEngine(
     /**
      * 进程退出前的清理。由 `RemoteMain` 的 shutdown hook / 异常处理器调用。
      *
-     * 顺序：预览 → tasker（先 stop 再关）→ resource → controller → display → native preview。
+     * 顺序：预览 → tasker（先 stop 再关）→ agent → resource → controller → display → native preview。
      * 先停 tasker 是有讲究的：它还可能在回调里用 controller 取帧，反过来先关 controller
      * 会让 native 侧在正在跑的推理里拿到空指针。
+     *
+     * agent 排在 tasker **之后**、resource **之前**：
+     * - 之后的理由与 tasker 同源——正在跑的 pipeline 可能正把 Custom 节点派给 agent 子进程，
+     *   先把 tasker 停干净（`stopAndWait`）再拆 agent，才不会让 native 侧拿着半截调用；
+     * - 之前的理由是硬约束——`MaaAgentClient` 绑的就是 [resource]，资源先 `close()`
+     *   会让 agent 的 client 挂在一个已销毁的句柄上（socket + 子进程双双泄漏）。
      */
     fun shutdown() {
         stopPreviewInternal()
         runCatching { releaseTasker() }.onFailure { Ln.w("RemoteEngine: tasker shutdown failed: ${it.message}") }
+        runCatching { releaseAgents() }.onFailure { Ln.w("RemoteEngine: agent shutdown failed: ${it.message}") }
         runCatching { releaseResource() }.onFailure { Ln.w("RemoteEngine: resource shutdown failed: ${it.message}") }
         runCatching { releaseController() }.onFailure { Ln.w("RemoteEngine: controller shutdown failed: ${it.message}") }
         runCatching { display?.stop() }.onFailure { Ln.w("RemoteEngine: display stop failed: ${it.message}") }
@@ -937,6 +1200,10 @@ class RemoteEngine(
     }
 
     private fun releaseResource() {
+        // agent 绑在这个 resource 上，必须先走：`resource.load` 会先 releaseResource() 再建新资源，
+        // 漏了这一步，重载资源就会把旧 agent 留在一个已经 close 掉的资源上。
+        // 注意 stopAgents 自己取快照后在锁外关闭，所以这里不会嵌套拿 maaLock。
+        runCatching { releaseAgents() }.onFailure { Ln.w("RemoteEngine: agent release failed: ${it.message}") }
         synchronized(maaLock) {
             val current = resource ?: return
             resource = null
@@ -1072,5 +1339,22 @@ class RemoteEngine(
         private const val DEFAULT_TASK_TIMEOUT_MS = 30 * 60_000L
 
         private const val TASKER_STOP_TIMEOUT_MS = 60_000L
+
+        /**
+         * `agent.start` 握手上限的下界。
+         *
+         * 子进程要 dlopen 四个 .so 再跑 Go runtime 的 init，冷启动在低端机上就要几百毫秒；
+         * 给个 1s 的下界防止调用方传个荒唐的小值，把一次正常的慢启动误判成握手失败
+         * （那样会杀掉一个其实马上就能起来的 agent）。
+         */
+        private const val MIN_AGENT_CONNECT_TIMEOUT_MS = 1_000L
+
+        /**
+         * `agent.start` 握手上限的上界，5 分钟。
+         *
+         * 握手本身不该慢（慢就是坏了），但它是同步阻塞在 worker 线程上的：
+         * 封顶是为了让一条坏的 `agent.start` 不至于把 helper 的整个命令通道占死太久。
+         */
+        private const val MAX_AGENT_CONNECT_TIMEOUT_MS = 5 * 60_000L
     }
 }

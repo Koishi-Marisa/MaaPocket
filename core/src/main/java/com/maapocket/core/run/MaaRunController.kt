@@ -15,6 +15,8 @@ import com.maapocket.core.privilege.PrivilegeStatus
 import com.maapocket.core.privilege.PrivilegedSession
 import com.maapocket.core.privilege.RemoteFrame
 import com.maapocket.core.privilege.RemoteProtocol
+import com.maapocket.core.privilege.RemoteRequestException
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -61,6 +63,7 @@ import java.util.ArrayDeque
  *   engine.setup     { userDir, nativeLibraryDir, requireMaa: true }
  *   maa.controller.start { displayId, width, height }   // 内部 dlopen <nativeLibraryDir>/libbridge.so
  *   resource.load    { paths: [...低优先级 → 高优先级...] }
+ *   agent.start      { executable, args, workingDir, env: PI_* }   // 每个 PI 声明的 agent 一条
  *   task.run         { entry, pipelineOverride }        // 每个选中的 task 一条，串行
  *   task.stop                                            // 用户按停止时
  * ```
@@ -126,10 +129,42 @@ class MaaRunController(private val context: Context) {
 
         /** 准备失败的 agent 声明（`child_exec`），供 UI 醒目提示。 */
         val agentFailures: List<String> = emptyList(),
+
+        /**
+         * 已经在特权 helper 进程里**真正跑起来**的 agent（`agent.start` 的返回值）。
+         *
+         * 与 [agentsReady] 的分工：`agentsReady` 只说「工作目录铺好了」，这个列表才是
+         * 「进程起来了、自定义识别/动作注册上了」。UI 回答「Custom 节点到底能不能跑」
+         * 应该看这个列表，而不是 `agentsReady`。
+         */
+        val agentRuntimes: List<AgentRuntimeState> = emptyList(),
+
+        /**
+         * helper 进程不认识 `agent.start`（版本不匹配：app 升级后旧的 helper 进程还在跑）。
+         *
+         * 置 true 时 [agentRuntimes] 必然为空。**刻意不把 [agentsReady] 打成 false**：
+         * 旧 helper = 旧行为（agent 起不来、任务照跑、Custom 节点由 MaaFramework 自己报错），
+         * 不能因为一条命令不支持就让整个「准备」变成不可用。
+         */
+        val agentStartUnsupported: Boolean = false,
     ) {
         val busy: Boolean get() = phase == Phase.EXTRACTING || phase == Phase.PREPARING ||
             phase == Phase.RUNNING || phase == Phase.STOPPING
     }
+
+    /** 一个已在 helper 进程里跑起来的 agent 子进程（`agent.start` 的返回）。 */
+    data class AgentRuntimeState(
+        /** 幂等键：`agent.start` 的 `label`,取自 [AgentWorkspace.Prepared.agentName]。 */
+        val label: String,
+        /** MaaFramework 生成的连接标识（socket 名），agent 侧取 `argv` 最后一项。 */
+        val identifier: String,
+        val pid: Long?,
+        val ready: Boolean,
+        /** agent 注册的自定义识别名（pipeline 里 `custom_recognition` 用得到）。 */
+        val customRecognitions: List<String>,
+        /** agent 注册的自定义动作名（pipeline 里 `custom_action` 用得到）。 */
+        val customActions: List<String>,
+    )
 
     private val _state = MutableStateFlow(State())
     val state: StateFlow<State> = _state.asStateFlow()
@@ -162,14 +197,14 @@ class MaaRunController(private val context: Context) {
     private var stopRequested = false
 
     /**
-     * 已备好工作目录、但**尚未启动**的 agent（见 [prepareAgentWorkspaces]）。
+     * 已备好工作目录的 agent（见 [prepareAgentWorkspaces]），随后由 [startAgents] 交给 helper 启动。
      *
      * 真正握手（`MaaAgentClient.create / bindResource / connect`）必须发生在持有 `MaaResource`
      * 的特权 helper 进程里 —— 见 `com.maapocket.core.pi.AgentLauncher` 的类注释。App 进程在这里
      * 只负责把工作目录（可执行文件 + `maafw/` + `debug/` + `locales/`）铺好，因为那只需要普通
-     * 文件权限，不需要 MaaFramework。
+     * 文件权限，不需要 MaaFramework；启动则通过 `agent.start` 委托给 helper。
      *
-     * 公开只读：helper 侧的命令一旦落地，启动方需要拿到这份「可执行文件 + args + 工作目录」清单。
+     * 公开只读：启动方（[startAgents]）需要拿到这份「可执行文件 + args + 工作目录」清单。
      */
     var preparedAgents: List<AgentWorkspace.Prepared> = emptyList()
         private set
@@ -177,9 +212,9 @@ class MaaRunController(private val context: Context) {
     /**
      * 由**本进程**持有的 agent 句柄，[shutdown] 时统一 `close()`。
      *
-     * 目前恒为空：MaaEnd 的 agent 必须由 helper 进程启动，App 进程拿不到可用的 `MaaAgentClient`。
-     * 保留这个列表是为了让「谁启动谁负责关」的收尾语义现在就位，而不是等 helper 侧的
-     * `agent.start` 落地后再回来补清理逻辑（那时很容易漏）。
+     * 恒为空，而且**应该**一直为空：MaaEnd 的 agent 由 helper 进程启动，`MaaAgentClient`
+     * 也活在 helper 里，App 进程根本拿不到可关闭的句柄。保留这个列表是为了让「谁启动谁负责关」
+     * 的收尾语义在代码里显式存在（App 侧的收尾动作是发 `shutdown`，由 helper 关掉 agent）。
      */
     private val agentHandles = mutableListOf<AutoCloseable>()
 
@@ -264,6 +299,12 @@ class MaaRunController(private val context: Context) {
             if (android.os.Build.VERSION.SDK_INT >= 28) it.longVersionCode else it.versionCode.toLong()
         }
     }.getOrDefault(0L)
+
+    /** 给 `PI_CLIENT_VERSION` 用；拿不到就不注入（规范允许省略）。 */
+    @Suppress("DEPRECATION")
+    private fun appVersionName(): String? = runCatching {
+        context.packageManager.getPackageInfo(context.packageName, 0).versionName?.takeIf { it.isNotBlank() }
+    }.getOrNull()
 
     // ------------------------------------------------------------------ 启动
 
@@ -351,31 +392,35 @@ class MaaRunController(private val context: Context) {
                 fail("资源加载失败：${loaded["failedPath"]}", null)
                 return
             }
-            _state.update { it.copy(resourceLoaded = true, phase = Phase.IDLE) }
+            _state.update { it.copy(resourceLoaded = true) }
 
             plan.warnings.forEach { log("警告: $it") }
 
-            // 5. agent：只准备运行环境，不启动。
-            //    启动（握手）必须由持有 MaaResource 的特权 helper 进程做，而 RemoteProtocol
-            //    目前还没有 agent.start 命令；详见 prepareAgentWorkspaces() 的注释。
+            // 5. agent：App 进程只铺工作目录（普通文件权限就够），握手（`create / identifier /
+            //    起子进程 / bindResource / connect`）必须由持有 MaaResource 的 helper 进程做，
+            //    所以这里铺完目录紧接着发 `agent.start`，由 helper 侧的 AgentLauncher 完成握手。
             prepareAgentWorkspaces(plan)
+            startAgents(s)
+            // phase 到这里才回 IDLE：`busy` 含着 PREPARING，提前放行会让 UI 在 agent 还没起来时
+            // 就允许「开始任务」（agent 没起来 = Custom 节点必失败）。
+            _state.update { it.copy(phase = Phase.IDLE) }
         } catch (t: Throwable) {
             fail("准备失败", t)
         }
     }
 
     /**
-     * 为 [plan] 里声明的每个 agent 准备运行环境，并更新 [State.agentsReady] / [State.agentFailures]。
+     * 为 [plan] 里声明的每个 agent **铺工作目录**，并更新 [State.agentsReady] / [State.agentFailures]。
      *
-     * ## 为什么「只准备、不启动」
+     * ## 为什么只做「铺目录」这一半
      * 上游契约要求 `create → identifier → 起子进程 → bindResource → connect` 这一串必须作用在
      * **同一个** `MaaResource` 上（见 `MaaAgentClient.kt` 的文档）。本模块所在的 App 进程刻意不加载
      * `libMaaFramework.so`（资源和控制器都活在特权 helper 进程里，见本文件类注释），因此 App 进程
      * 根本没有可用的 `MaaApi` / `MaaResource` 可以传进去。在 App 进程里另建一个 MaaResource 不只是
      * 浪费，还会让 agent 把自定义动作注册到一个**没人在跑 pipeline 的**资源上，静默失效。
      *
-     * 所以这里只做「铺目录」这一半：[AgentLauncher] 已经把另外一半（`launch()`）实现好了，
-     * helper 侧实现 `agent.start` 时直接调它即可。工作目录是幂等的，重复准备不会重复解包。
+     * 所以这里只做「铺目录」（纯文件操作，App 权限就够），另外一半由 [startAgents] 发 `agent.start`
+     * 让 helper 侧的 `AgentLauncher` 做。工作目录是幂等的，重复准备不会重复解包。
      *
      * ## 失败语义（对应 docs/agents.md §7.3）
      * - 设备上没有产物（如 `agent/cpp-algo`）→ 只告警、跳过，**不算失败**；
@@ -427,10 +472,8 @@ class MaaRunController(private val context: Context) {
 
         preparedAgents = batch.prepared
         if (batch.prepared.isNotEmpty()) {
-            // 说清楚当前的真实边界：目录铺好了，但进程还没起。
-            // agent 的握手（bindResource/connect）必须在持有 MaaResource 的 helper 进程里做，
-            // 而 RemoteProtocol 目前没有对应的命令，所以这里只能到此为止。
-            log("注意: agent 环境已就绪但**尚未启动** —— 握手需要 helper 进程支持 agent.start，MaaEnd 的 Custom 节点在该命令落地前仍会失败")
+            // 这里只到「目录铺好」为止；接下来由 prepare() 调 startAgents() 发 agent.start 让 helper 拉起进程。
+            log("agent 工作目录已就绪（${batch.prepared.size} 个），下一步由 helper 执行 agent.start")
         }
         val failures = batch.failed.map { it.declared }
         _state.update {
@@ -444,6 +487,165 @@ class MaaRunController(private val context: Context) {
                 },
             )
         }
+    }
+
+    /**
+     * 让特权 helper 进程把 [preparedAgents] 里的每一个 agent 子进程拉起来（`agent.start`）。
+     *
+     * 为什么命令要发给 helper 而不是在这里做：握手的第一步 `MaaAgentClient.create` 与第四步
+     * `bindResource(resource)` 必须作用在**同一个** `MaaResource` 上，而这个资源活在 helper 进程里
+     * （App 进程刻意不加载 `libMaaFramework.so`）。在 App 进程另建一个资源只会让 agent 把自定义
+     * 动作注册到一个没人在跑 pipeline 的资源上，静默失效——所以这里只发命令 + 记结果。
+     *
+     * ## 降级（旧 helper）
+     * helper 不认识 `agent.start` 时，`RemoteServer` 会回 `E_NO_SUCH_CMD`，
+     * [PrivilegedSession.exec] 把它转成 `RemoteRequestException`。这种情况**只告警、不失败**：
+     * 置 [State.agentStartUnsupported]，保持 [State.agentsReady] 不变（= 旧行为，任务照跑，
+     * Custom 节点由 MaaFramework 自己报错）。把 prepare 打成 FAILED 才是真的倒退。
+     *
+     * 其余错误（握手超时、`execve` 失败）才记进 [State.agentFailures] 并置 `agentsReady = false`，
+     * 让 [runTasks] 在启动任务前拦住——MaaEnd 约 40% 的 pipeline 节点是 Custom 类型，
+     * 跑到一半才失败比直接拦住更糟。
+     */
+    private suspend fun startAgents(session: PrivilegedSession) = withContext(Dispatchers.IO) {
+        val pending = preparedAgents
+        if (pending.isEmpty()) return@withContext
+
+        val env = piAgentEnv()
+        val started = mutableListOf<AgentRuntimeState>()
+        val failed = mutableListOf<String>()
+        var unsupported = false
+
+        for (p in pending) {
+            val label = p.agentName
+            val params = buildJsonObject {
+                put("executable", p.runtime.executable.absolutePath)
+                put("args", buildJsonArray { p.runtime.args.forEach { add(JsonPrimitive(it)) } })
+                p.runtime.workingDir?.let { put("workingDir", it.absolutePath) }
+                p.runtime.nativeLibDir?.let { put("nativeLibDir", it.absolutePath) }
+                put("label", label)
+                put("timeoutMs", AGENT_CONNECT_TIMEOUT_MS)
+                put("env", buildJsonObject { env.forEach { (k, v) -> put(k, v) } })
+            }
+
+            val result = try {
+                session.exec(RemoteProtocol.Cmd.AGENT_START, params, timeoutMs = AGENT_START_TIMEOUT_MS)
+            } catch (e: RemoteRequestException) {
+                when (e.code) {
+                    RemoteProtocol.ErrorCode.NO_SUCH_CMD, RemoteProtocol.ErrorCode.UNSUPPORTED -> {
+                        unsupported = true
+                        log(
+                            "警告: helper 进程不支持 agent.start（${e.code}）——agent 未启动，" +
+                                "MaaEnd 的 Custom 节点会失败。app 升级后旧 helper 进程可能仍在运行，" +
+                                "彻底关掉 app 再重开可让它用上新代码。",
+                        )
+                        break
+                    }
+                    else -> {
+                        failed += p.declared
+                        log("✗ agent「${p.declared}」启动失败（${e.code}）：${e.message}")
+                        null
+                    }
+                }
+            } catch (c: CancellationException) {
+                // 取消不是「某个 agent 启动失败」：整段 prepare 正在被取消，继续遍历没有意义。
+                throw c
+            } catch (t: Throwable) {
+                failed += p.declared
+                log("✗ agent「${p.declared}」启动失败：${t.message}")
+                null
+            }
+
+            if (result != null) {
+                val state = parseAgentRuntime(label, result)
+                started += state
+                log(
+                    "agent「${p.declared}」已启动 → label=${state.label} identifier=${state.identifier} " +
+                        "pid=${state.pid} ready=${state.ready} " +
+                        "recognitions=${state.customRecognitions.size} actions=${state.customActions.size}",
+                )
+                if (state.customRecognitions.isNotEmpty()) {
+                    log("  custom_recognition: ${state.customRecognitions.joinToString()}")
+                }
+                if (state.customActions.isNotEmpty()) {
+                    log("  custom_action: ${state.customActions.joinToString()}")
+                }
+            }
+        }
+
+        _state.update {
+            it.copy(
+                agentRuntimes = started,
+                agentStartUnsupported = unsupported,
+                agentsReady = if (unsupported) it.agentsReady else failed.isEmpty(),
+                agentFailures = if (unsupported) it.agentFailures else failed,
+                lastError = when {
+                    unsupported -> it.lastError
+                    failed.isEmpty() -> it.lastError
+                    else -> "agent 启动失败：${failed.joinToString()}（Custom 节点会失败，详见日志）"
+                },
+            )
+        }
+    }
+
+    /**
+     * `agent.start` 的返回值 → [AgentRuntimeState]。
+     *
+     * 全部字段按「缺了也不炸」处理：helper 那边 `pid` 是 `Long?`（拿不到就不写），
+     * 自定义列表在句柄失效时可能为空数组。
+     */
+    private fun parseAgentRuntime(label: String, result: JsonObject): AgentRuntimeState = AgentRuntimeState(
+        label = result["label"]?.jsonPrimitive?.contentOrNull ?: label,
+        identifier = result["identifier"]?.jsonPrimitive?.contentOrNull.orEmpty(),
+        pid = result["pid"]?.jsonPrimitive?.contentOrNull?.toLongOrNull(),
+        ready = result["ready"]?.jsonPrimitive?.contentOrNull == "true",
+        customRecognitions = result.stringArray("customRecognitions"),
+        customActions = result.stringArray("customActions"),
+    )
+
+    private fun JsonObject.stringArray(key: String): List<String> {
+        val array = this[key] as? kotlinx.serialization.json.JsonArray ?: return emptyList()
+        return array.mapNotNull { it.jsonPrimitive.contentOrNull }
+    }
+
+    /**
+     * 8 个 `PI_*` 环境变量（PI V2 规范自 v2.5.0 起要求 Client 注入，见 `docs/agents.md` §2）。
+     *
+     * Go agent 的 `pkg/pienv` 逐个 `os.Getenv`，缺值可容忍；所以这里**只放有真实取值的键**，
+     * 拿不到的键直接不写（规范明确允许省略），而不是塞空串或编一个值。
+     *
+     * - `PI_INTERFACE_VERSION`：Client 实现的 PI 扩展面版本。取 [PI_EXTENSION_VERSION]，
+     *   即本实现遵循的规范级别（v2.5.0 = 注入 `PI_*` + agent 契约），**不是** interface.json
+     *   里那个数值型 `interface_version`；
+     * - `PI_VERSION`：资源包自身版本（assets/pi/interface.json 的 `version`）；
+     * - `PI_CLIENT_MAAFW_VERSION`：来自 [State.maaVersion]，目前恒为 null（没人写这个字段），
+     *   拿不到就不注入——填一个猜的版本比不填更糟；
+     * - `PI_CONTROLLER` / `PI_RESOURCE`：单行压缩 JSON。**刻意只给 name/type**：
+     *   Go agent 真正用到的是 `pienv.ControllerType()`（判断是否 `Win32`），
+     *   `name` + `type` 就足以给出正确答案；把 i18n 未解析的整份 PI 模型吐给它反而可能
+     *   把 `$xxx` 引用键带进去（规范要求 i18n 已解析、不含 `$` 前缀键）。
+     */
+    private fun piAgentEnv(): Map<String, String> {
+        val current = _state.value
+        val controllerType = _repository?.controllers()?.firstOrNull { it.name == _controllerName }?.type
+            ?.takeIf { it.isNotBlank() }
+            ?: PiRepository.ON_DEVICE_PI_TYPE
+        val env = LinkedHashMap<String, String>(8)
+        env["PI_INTERFACE_VERSION"] = PI_EXTENSION_VERSION
+        env["PI_CLIENT_NAME"] = PI_CLIENT_NAME
+        appVersionName()?.let { env["PI_CLIENT_VERSION"] = it }
+        env["PI_CLIENT_LANGUAGE"] = java.util.Locale.getDefault().toString()
+        current.maaVersion?.let { env["PI_CLIENT_MAAFW_VERSION"] = it }
+        readAssetVersion()?.let { env["PI_VERSION"] = it }
+        env["PI_CONTROLLER"] = if (_controllerName.isEmpty()) {
+            """{"type":"$controllerType"}"""
+        } else {
+            """{"name":"$_controllerName","type":"$controllerType"}"""
+        }
+        if (_resourceName.isNotEmpty()) {
+            env["PI_RESOURCE"] = """{"name":"$_resourceName"}"""
+        }
+        return env
     }
 
     // ------------------------------------------------------------------ 跑任务
@@ -561,8 +763,9 @@ class MaaRunController(private val context: Context) {
 
     /** 彻底收尾：停预览、断会话。 */
     fun shutdown() {
-        // agent 子进程必须先于 helper 会话退掉：它们是通过 helper 的 socket 跟 MaaAgentClient
-        // 配对的，helper 先死会让 agent 卡在 recv 上不退（`AgentHandle.close()` 内部有 2s 宽限 + 强杀）。
+        // App 进程自己从不持有 agent 句柄（列表恒为空），agent 由 helper 关：
+        // 下面那条 `shutdown` 命令会让 RemoteEngine 先断 agent、再断 tasker/resource/controller。
+        // 这段清理保留着，是为了「谁启动谁负责关」这条语义在代码里始终显式存在。
         agentHandles.forEach { handle -> runCatching { handle.close() } }
         agentHandles.clear()
         preparedAgents = emptyList()
@@ -580,6 +783,8 @@ class MaaRunController(private val context: Context) {
                 engineReady = false,
                 agentsReady = false,
                 agentFailures = emptyList(),
+                agentRuntimes = emptyList(),
+                agentStartUnsupported = false,
             )
         }
     }
@@ -664,6 +869,34 @@ class MaaRunController(private val context: Context) {
 
         /** 单个 task 的上限：MaaEnd 的长任务（导航、模拟作战）动辄十几分钟。 */
         const val TASK_TIMEOUT_MS = 60L * 60_000L
+
+        /**
+         * `agent.start` 里交给 helper 的**握手上限**（helper 侧还会 clamp 到 1s..5min）。
+         *
+         * 20s 与 [com.maapocket.core.pi.AgentLauncher.DEFAULT_CONNECT_TIMEOUT_MS] 一致：
+         * 子进程要 dlopen 四个 .so 再跑 Go runtime 的 init，冷启动在低端机上就要几百毫秒。
+         */
+        const val AGENT_CONNECT_TIMEOUT_MS = 20_000L
+
+        /**
+         * `agent.start` 这一条远程请求自己的超时，比 [AGENT_CONNECT_TIMEOUT_MS] 宽 10s。
+         *
+         * 必须**大于**握手上限：helper 是同步阻塞着握手的，若请求超时先到，app 会认定失败
+         * 并把 prepare 打成 FAILED，而 helper 那边其实刚刚成功——留下一个没人管的 agent 子进程。
+         */
+        const val AGENT_START_TIMEOUT_MS = 30_000L
+
+        /**
+         * 本实现遵循的 PI 扩展面版本（= `PI_INTERFACE_VERSION`）。
+         *
+         * v2.5.0 是规范里开始要求 Client 注入 8 个 `PI_*` 变量的版本，也正是本实现覆盖的范围：
+         * 注入 `PI_*` + 实现 agent 握手（`create / identifier / 子进程 / bindResource / connect`）。
+         * **不是** interface.json 里那个数值型 `interface_version`（那也是 2，但含义完全不同）。
+         */
+        const val PI_EXTENSION_VERSION = "2.5.0"
+
+        /** `PI_CLIENT_NAME`：规范里这个变量指的是 Client 实现的名字。 */
+        const val PI_CLIENT_NAME = "MaaPocket"
 
         /** 缺省虚拟屏尺寸：兜底用，正常应由 PI 的 display_short_side 或用户设置决定。 */
         val JSON: Json = Json { ignoreUnknownKeys = true; encodeDefaults = true }

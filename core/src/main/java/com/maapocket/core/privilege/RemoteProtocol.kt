@@ -157,6 +157,27 @@ object RemoteProtocol {
 
         /** 汇总状态（有没有加载、控制器/资源/任务各自的就绪情况）。 */
         const val MAA_STATE = "maa.state"
+
+        // ---------------------------------------------------------------- agent
+        // 外挂扩展进程（PI 的 `child_exec`，如 `agent/go-service`）。
+
+        /**
+         * 起一个 agent 子进程并完成 `MaaAgentClient` 握手。
+         *
+         * **必须由 helper 执行**：`MaaAgentClient.bindResource` 要绑**正在跑 pipeline 的那个**
+         * `MaaResource`，而它只活在 helper 进程里（app 进程刻意不加载 `libMaaFramework.so`）。
+         * 参数与返回值见 `RemoteEngine.agentStart`。
+         */
+        const val AGENT_START = "agent.start"
+
+        /**
+         * 停掉 agent 子进程。`{label?: String}` 停一个，`{all: true}` 或省略 label 停全部。
+         *
+         * 为什么需要单独一条命令：agent 绑在 `resource.load` 建出来的那个 `MaaResource` 上，
+         * 而 app 可以重复 `prepare()`（换资源包 / 重试）——重载资源时如果不先把 agent 停掉，
+         * 旧子进程会挂在一个已经 `close()` 的资源上，socket 与进程都要泄漏。
+         */
+        const val AGENT_STOP = "agent.stop"
     }
 
     /** 特权进程 → app 的主动事件名。 */

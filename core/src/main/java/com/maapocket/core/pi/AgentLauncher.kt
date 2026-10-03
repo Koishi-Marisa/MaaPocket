@@ -98,10 +98,17 @@ class AgentLauncher(
      * 启动并握手。成功返回的句柄必须被 `close()`，否则会漏一个子进程 + 一条 socket。
      *
      * @param label 日志前缀，通常用 agent 名字。
+     * @param identifier 交给 MaaFramework 的 socket 标识；`null`（默认）= 让框架自己生成一个。
+     *   只有在调用方需要**预先知道**标识时才传值，顺序不变。
      * @throws AgentSpawnException 进程没起来。
      * @throws AgentHandshakeException 进程起来了但 bind/connect/alive 失败。
      */
-    fun launch(label: String, runtime: MaaAgentRuntime, env: PiAgentEnv = PiAgentEnv()): AgentHandle {
+    fun launch(
+        label: String,
+        runtime: MaaAgentRuntime,
+        env: PiAgentEnv = PiAgentEnv(),
+        identifier: String? = null,
+    ): AgentHandle {
         val executable = runtime.executable
         if (!executable.isFile) throw AgentSpawnException("agent 可执行文件不存在：${executable.absolutePath}")
         if (!executable.canExecute()) {
@@ -111,8 +118,8 @@ class AgentLauncher(
             )
         }
 
-        // ① 建 client（identifier 传 null，让框架生成）
-        val client = MaaAgentClient.create(api, null)
+        // ① 建 client（identifier 默认传 null，让框架生成）
+        val client = MaaAgentClient.create(api, identifier)
         var process: Process? = null
         try {
             // ② 取回标识
