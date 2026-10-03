@@ -264,6 +264,25 @@ class MaaRunController(private val context: Context) {
     private var lastPrivilegeLine: String? = null
 
     /**
+     * 按可用性给后端排序后取最优的一个：**Ready > PermissionRequired > Denied > Unsupported**。
+     *
+     * 「未授权」排在「不支持」前面是刻意的：Shizuku 未授权只差一次系统弹窗，而 `su` 不存在
+     * 是死路。未 root 但有 Shizuku 的机器上，这一条决定了「准备」会不会一上来就报
+     * 「root 不可用」。同档位保留 `privilegeOptions` 的原始顺序（`minByOrNull` 取首个最小）。
+     *
+     * 尚未探测过（列表为空）时返回 null，调用方应自行先调 [refreshPrivilegeOptions]。
+     */
+    fun preferredKind(): PrivilegeKind? =
+        _state.value.privilegeOptions.minByOrNull { (_, availability) ->
+            when (availability) {
+                is PrivilegeAvailability.Ready -> 0
+                is PrivilegeAvailability.PermissionRequired -> 1
+                is PrivilegeAvailability.Denied -> 2
+                is PrivilegeAvailability.Unsupported -> 3
+            }
+        }?.first
+
+    /**
      * 只申请授权、**不跑任务** —— 给 UI 上的「授权」按钮用。
      *
      * 存在的理由：Shizuku 未授权时 [PrivilegedSession.start] 会**直接返回**（连系统弹窗都不弹），
@@ -395,11 +414,27 @@ class MaaRunController(private val context: Context) {
         }
         _state.update { it.copy(phase = Phase.PREPARING, lastError = null) }
 
+        // 设备上真正的后端可能和用户选的不一样 —— 「未 root 但有 Shizuku」是绝大多数机器。
+        // 先确保探测结果是最新的；若选中的后端不是 Ready，就自动改用优先级最高的那个并写清
+        // 楚为什么。否则用户只会看到一句「root 不可用」，而 shizuku 明明只差一次授权。
+        // 用户在权限卡里的显式选择会被记进 kindPickedByUser，这里只影响「准备」这一轮。
+        var effectiveKind = kind
+        if (_state.value.privilegeOptions.isEmpty()) refreshPrivilegeOptions()
+        val chosen = _state.value.privilegeOptions.firstOrNull { it.first == effectiveKind }
+        if (chosen == null || chosen.second !is PrivilegeAvailability.Ready) {
+            val better = preferredKind()
+            if (better != null && better != effectiveKind) {
+                val why = chosen?.second?.let { describe(it) } ?: "未探测到"
+                log("${effectiveKind.label} 当前不可用（$why），本轮自动改用 ${better.label}")
+                effectiveKind = better
+            }
+        }
+
         try {
             // 1. 特权进程
-            val s = session?.takeIf { it.kind == kind && it.isConnected } ?: run {
+            val s = session?.takeIf { it.kind == effectiveKind && it.isConnected } ?: run {
                 session?.stop()
-                PrivilegedSession(context, kind).also { session = it }
+                PrivilegedSession(context, effectiveKind).also { session = it }
             }
             hookEvents(s)
 
@@ -411,13 +446,13 @@ class MaaRunController(private val context: Context) {
             // requestPermission 内部用 CountDownLatch 等异步回调，**不能**在主线程调 ——
             // prepareInner 已经整体跑在 Dispatchers.IO 上，所以这里是安全的。
             if (!s.isConnected && status.availability is PrivilegeAvailability.PermissionRequired) {
-                log("${kind.label} 尚未授权，发起授权请求（请留意系统弹窗）…")
+                log("${effectiveKind.label} 尚未授权，发起授权请求（请留意系统弹窗）…")
                 var granted: PrivilegeAvailability? = null
                 s.requestPermission(timeoutMs = 30_000L) { granted = it }
                 status = s.status.value
                 _state.update { it.copy(privilege = status) }
                 if (granted?.isReady == true) {
-                    log("${kind.label} 已授权，重新拉起特权进程")
+                    log("${effectiveKind.label} 已授权，重新拉起特权进程")
                     status = s.start()
                     _state.update { it.copy(privilege = status) }
                 }
@@ -429,13 +464,13 @@ class MaaRunController(private val context: Context) {
                 // 用户按它去排查什么都找不到 —— 这正是「先处理日志报错」要修的东西。
                 val why = status.detail?.takeIf { it.isNotBlank() } ?: status.state.name
                 fail(
-                    "特权进程未连上（${kind.label} uid=${status.uid}）：$why" +
-                        "；launcher 日志 ${ProcessSpawner.launcherLogFile(context, kind).absolutePath}",
+                    "特权进程未连上（${effectiveKind.label} uid=${status.uid}）：$why" +
+                        "；launcher 日志 ${ProcessSpawner.launcherLogFile(context, effectiveKind).absolutePath}",
                     null,
                 )
                 return
             }
-            log("privileged session up: kind=${kind.label} token=${s.token}")
+            log("privileged session up: kind=${effectiveKind.label} token=${s.token}")
 
             // 2. engine.setup
             val userDir = File(context.getExternalFilesDir(null), "Maa")

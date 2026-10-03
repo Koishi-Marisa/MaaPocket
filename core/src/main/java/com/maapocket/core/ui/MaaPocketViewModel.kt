@@ -128,10 +128,11 @@ class MaaPocketViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch {
             controller.refreshPrivilegeOptions()
             if (!kindPickedByUser) {
-                val ready = controller.state.value.privilegeOptions
-                    .firstOrNull { it.second.isReady }
-                    ?.first
-                if (ready != null) _privilegeKind.value = ready
+                // 这里以前只在「有后端已经 Ready」时才改选，于是：设备未 root、Shizuku 只差
+                // 一次授权时，选择一直停在默认的 root 上 —— 真机点「准备」直接得到
+                // 「特权进程未连上（root uid=-1）：root 不可用」，而 shizuku 明明可用。
+                // 现在交给 controller 的统一优先级（Ready > 未授权 > 被拒 > 不支持）。
+                controller.preferredKind()?.let { _privilegeKind.value = it }
             }
         }
     }
