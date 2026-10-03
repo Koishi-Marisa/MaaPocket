@@ -898,7 +898,7 @@ private fun PreviewCard(
             }
         }
         Text(
-            text = "关闭只停止本地渲染 —— core 没有暴露远端截图开关。",
+            text = "预览帧由特权进程按 5fps 推来；关掉会真的停掉远端抓帧，省电。",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
