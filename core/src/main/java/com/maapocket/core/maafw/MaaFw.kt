@@ -65,7 +65,25 @@ object MaaFw {
 
         return runCatching {
             System.setProperty("jna.tmpdir", resolveTmpDir(nativeLibraryDir, tmpDir).absolutePath)
-            Log.i(TAG, "loading lib$LIBRARY_NAME.so (jna.tmpdir=${System.getProperty("jna.tmpdir")})")
+            // The helper process is a bare `app_process` started from su/Shizuku, so its
+            // java.library.path does NOT contain the APK's native lib dir. Point JNA at it
+            // explicitly, otherwise Native.load() cannot find libMaaFramework.so (which lives in
+            // /data/app/~~<hash>/<pkg>-<hash>/lib/<abi>/ because useLegacyPackaging extracts it).
+            nativeLibraryDir?.let { dir ->
+                if (dir.isDirectory) {
+                    val existing = System.getProperty("jna.library.path")
+                    if (existing.isNullOrEmpty()) {
+                        System.setProperty("jna.library.path", dir.absolutePath)
+                    } else if (!existing.contains(dir.absolutePath)) {
+                        System.setProperty("jna.library.path", "$existing:${dir.absolutePath}")
+                    }
+                }
+            }
+            Log.i(
+                TAG,
+                "loading lib$LIBRARY_NAME.so (jna.tmpdir=${System.getProperty("jna.tmpdir")}, " +
+                    "jna.library.path=${System.getProperty("jna.library.path")})",
+            )
             instance = Native.load(LIBRARY_NAME, MaaFrameworkApi::class.java)
             Log.i(TAG, "lib$LIBRARY_NAME.so loaded, version=${MaaVersion()}")
         }.onFailure {

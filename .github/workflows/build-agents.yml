@@ -1,0 +1,254 @@
+name: build-agents
+
+# 交叉编译 MaaEnd 的 Go agent（agent/go-service）为 Android ELF。
+#
+# 这条线和 prepare-packs.yml 是配套的，但管的是不同东西：
+#   - prepare-packs.yml 搬的是 MaaEnd 的**资源**（pipeline / resource / locales），
+#     把它们迁成 PI-V2 资源工程塞进 app-*/src/main/assets/pi。
+#   - 这条线补的是**代码**：assets/interface.json 里
+#       "agent": [ { "child_exec": "agent/go-service" }, ... ]
+#     指向的那个可执行文件。缺了它，pipeline 里的 "type": "Custom" 节点会在
+#     第一个自定义识别处直接卡死（框架加载得了 pipeline，但没人注册那些动作）。
+#
+# 两个产物必须来自**同一个 MaaEnd ref**：agent 注册的自定义识别/动作名要和
+# 资源包里 pipeline 的用法对得上。因此下面 MAAEND_REF 的默认值与
+# prepare-packs.yml 的 MAAEND_REF 刻意保持一致——改一个就要改另一个。
+#
+# agent/cpp-algo 不在这条线里，原因见 MaaPocket/docs/agents.md 的「尚未解决」一节：
+# 它依赖 MaaUtils 子模块 + MaaDeps 预编译包 + Boost/ONNX Runtime/OpenCV/WebView2，
+# 且源码树里有一批只对 Win32 成立的 .cpp 没有加平台守卫。
+
+on:
+  workflow_dispatch:
+    inputs:
+      maaend_ref:
+        description: 'MaaEnd/MaaEnd 的 ref/commit（留空用默认固定快照）'
+        required: false
+        type: string
+        default: ''
+      abis:
+        description: '逗号分隔的 ABI 列表'
+        required: false
+        type: string
+        default: 'arm64-v8a,x86_64'
+      go_version:
+        description: 'Go 工具链版本（必须 >= agent/go-service/go.mod 里的 go 指令）'
+        required: false
+        type: string
+        default: '1.25.6'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/build_go_agent.py'
+      - '.github/workflows/build-agents.yml'
+
+concurrency:
+  group: build-agents-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  MAAEND_REPO: MaaEnd/MaaEnd
+  # 固定 ref（上游 HEAD 快照），与 prepare-packs.yml 的 MAAEND_REF 对齐。
+  MAAEND_REF: ${{ github.event.inputs.maaend_ref || 'ae43a184c02408410061c858a46205cf90606a26' }}
+  GO_VERSION: ${{ github.event.inputs.go_version || '1.25.6' }}
+  AGENT_OUT: dist/agents
+  # 把工具链钉死成本 job 安装的那一个。若 go.mod 的 go 指令被上游抬到更高版本，
+  # 编译会以 "go.mod requires go >= X (running go Y)" 明确失败——那时应当同步抬
+  # GO_VERSION 输入/默认值，而不是让 Go 偷偷下另一个工具链、让 agents.json 里
+  # 记录的 go_version 变成谎话。
+  GOTOOLCHAIN: local
+
+jobs:
+  # abis 是个自由文本输入，没法直接喂给 matrix。先用一个小 job 把它规整成
+  # 去重后的 JSON 数组，再交给 build job 的 matrix 展开。
+  plan:
+    name: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      abis: ${{ steps.plan.outputs.abis }}
+    steps:
+      - name: Normalize abi list
+        id: plan
+        shell: bash
+        env:
+          RAW_ABIS: ${{ github.event.inputs.abis || 'arm64-v8a,x86_64' }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os
+
+          raw = os.environ.get("RAW_ABIS", "")
+          abis, seen = [], set()
+          for item in raw.split(","):
+              abi = item.strip()
+              if abi and abi not in seen:
+                  seen.add(abi)
+                  abis.append(abi)
+          if not abis:
+              abis = ["arm64-v8a", "x86_64"]
+          print(f"abis = {abis}")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+              fh.write("abis=" + json.dumps(abis) + "\n")
+          PY
+
+  build:
+    name: go agent (${{ matrix.abi }})
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      # 一个 ABI 失败不该连累另一个——两个 ABI 的失败原因通常完全不同。
+      fail-fast: false
+      matrix:
+        abi: ${{ fromJSON(needs.plan.outputs.abis) }}
+
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+
+      # 完整 checkout（不加 sparse-checkout）：脚本要吃 assets/locales/，
+      # 稀疏检出会把它漏掉。也**不**需要 --recurse-submodules：
+      # go-service 不依赖 agent/cpp-algo/MaaUtils。
+      - name: Checkout MaaEnd (upstream, pinned)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.MAAEND_REPO }}
+          ref: ${{ env.MAAEND_REF }}
+          path: upstream/MaaEnd
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Go ${{ env.GO_VERSION }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+          # 仓库根没有 go.mod，必须显式指到上游模块，否则 setup-go 缓存不生效。
+          cache-dependency-path: upstream/MaaEnd/agent/go-service/go.sum
+
+      # 先探一遍输入齐不齐：缺什么就点名什么，别等 go build 抛一个看不懂的错。
+      - name: Preflight - check MaaEnd inputs
+        shell: bash
+        run: |
+          set -uo pipefail
+          missing=0
+          for f in upstream/MaaEnd/agent/go-service/go.mod \
+                   upstream/MaaEnd/agent/go-service/go.sum \
+                   upstream/MaaEnd/assets/locales/go-service/zh_cn.json \
+                   upstream/MaaEnd/assets/locales/interface/zh_cn.json; do
+            if [ -f "$f" ]; then
+              echo "OK    $f"
+            else
+              echo "::error file=$f::缺少必需输入 $f（MaaEnd ref $MAAEND_REF 上不存在）"
+              missing=1
+            fi
+          done
+          if [ "$missing" -eq 1 ]; then
+            echo "::error::MaaEnd 输入不完整，无法编译 go-service；"
+            echo "::error::常见原因：ref 写错、或用 sparse-checkout 漏掉了 assets/locales。"
+            exit 1
+          fi
+
+      - name: Build go agent (${{ matrix.abi }})
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/build_go_agent.py \
+            --source upstream/MaaEnd \
+            --out "$AGENT_OUT" \
+            --abi "${{ matrix.abi }}"
+
+      # 独立复核一遍。脚本自己已经做过 ELF 校验（这是它失败的原因），
+      # 这里再从头 20 字节读一次，顺便把结论写进 job summary；
+      # 校验不过就以 ::error:: 结束 job，而不是让 artifact 静静传上去。
+      - name: Verify ELF machine and summarize
+        shell: bash
+        env:
+          ABI: ${{ matrix.abi }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os, struct, sys
+          from pathlib import Path
+
+          EXPECTED = {
+              "arm64-v8a": (0xB7, "AArch64", 2),   # EM_AARCH64, ELFCLASS64
+              "x86_64": (0x3E, "x86-64", 2),       # EM_X86_64
+          }
+
+          abi = os.environ["ABI"]
+          out = Path(os.environ["AGENT_OUT"])
+          manifest_path = out / "agents.json"
+
+          if not manifest_path.is_file():
+            print(f"::error file={manifest_path}::清单不存在，构建步骤没有产出 agents.json")
+            sys.exit(1)
+
+          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          entry = (manifest.get("abis") or {}).get(abi)
+          if not entry:
+            print(f"::error::agents.json 里没有 abi={abi} 的条目")
+            sys.exit(1)
+
+          agent = entry["agents"][0]
+          binary = out / agent["relativePath"]
+          if not binary.is_file():
+            print(f"::error file={binary}::清单指向的二进制不存在")
+            sys.exit(1)
+
+          head = binary.read_bytes()[:20]
+          if head[:4] != b"\x7fELF":
+            print(f"::error file={binary}::magic 不是 \\x7fELF：{head[:4]!r}")
+            sys.exit(1)
+
+          ei_class, ei_data = head[4], head[5]
+          e_type, e_machine = struct.unpack_from("<HH", head, 16)
+          want_machine, want_name, want_class = EXPECTED[abi]
+
+          problems = []
+          if ei_data != 1:
+            problems.append(f"EI_DATA={ei_data}，期望 1(little-endian)")
+          if ei_class != want_class:
+            problems.append(f"EI_CLASS={ei_class}，期望 {want_class}")
+          if e_machine != want_machine:
+            problems.append(f"e_machine=0x{e_machine:02X}，期望 0x{want_machine:02X}({want_name})")
+          if e_type == 2:
+            problems.append("e_type=ET_EXEC，Android 5.0+ 只接受 PIE")
+
+          sha256 = hashlib.sha256(binary.read_bytes()).hexdigest()
+          if sha256 != agent["sha256"]:
+            problems.append(f"sha256 与清单不符：{sha256} != {agent['sha256']}")
+
+          if problems:
+            for problem in problems:
+              print(f"::error file={binary}::{problem}")
+            sys.exit(1)
+
+          size_mb = binary.stat().st_size / (1024 * 1024)
+          print(f"OK: {binary} -> {want_name}, ET_DYN, {size_mb:.2f} MB, sha256={sha256[:16]}…")
+
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as fh:
+            fh.write(f"### go agent / {abi}\n\n")
+            fh.write("| 项 | 值 |\n| --- | --- |\n")
+            fh.write(f"| 产物 | `{agent['relativePath']}` |\n")
+            fh.write(f"| ELF | {want_name} ({want_class * 32} 位, little-endian, ET_DYN) |\n")
+            fh.write(f"| size | {size_mb:.2f} MB |\n")
+            fh.write(f"| sha256 | `{sha256}` |\n")
+            fh.write(f"| MaaEnd ref | `{manifest['source'].get('gitHead') or os.environ['MAAEND_REF']}` |\n")
+            fh.write(f"| 工具链 | `{manifest['toolchain']['go_version']}` |\n")
+            fh.write(f"| bundle | {entry['bundle']['fileCount']} 个文件 |\n")
+          PY
+
+      # if-no-files-found: error —— 走到这里构建已经成功，没东西可传就是真出问题了。
+      - name: Upload go agent (${{ matrix.abi }})
+        uses: actions/upload-artifact@v4
+        with:
+          name: maaend-go-agent-${{ matrix.abi }}
+          path: ${{ env.AGENT_OUT }}
+          if-no-files-found: error
+          retention-days: 30

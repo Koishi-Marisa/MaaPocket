@@ -94,6 +94,23 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
+      # MaaEnd 的 assets/resource/model 是一个 git submodule（MaaEnd/MaaEnd-AI），
+      # actions/checkout 默认不拉 submodule —— 不拉的话 assets/resource/model/ 会是个
+      # 空目录，Custom 识别用的模型就没了，打出来的包在真机上跑 AI 识别会失败。
+      # 只 init 这一个：另外两个 submodule（agent/cpp-algo/MaaUtils、tests/MaaEndTestset）
+      # 对打包没用，拉上只会拖慢 CI。
+      - name: Init MaaEnd model submodule (assets/resource/model)
+        working-directory: refs/MaaEnd
+        shell: bash
+        run: |
+          set -euo pipefail
+          # --depth 1 是为了别把整个模型仓库拖下来；万一上游把 submodule pin 到一个
+          # 不是 tip 的 commit，浅拉会失败（"reference is not a tree"），那时退回全量。
+          git submodule update --init --depth 1 assets/resource/model \
+            || git submodule update --init assets/resource/model
+          test -d assets/resource/model
+          echo "model files: $(find assets/resource/model -type f | wc -l)"
+
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:

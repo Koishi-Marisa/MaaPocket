@@ -90,6 +90,13 @@ KEEP_SO = [
     "libMaaReplayControlUnit.so",      # 回放控制器：离线复跑录制，CI/回归很有用
     "libMaaAgentClient.so",            # agent-client：宿主进程侧
     "libMaaAgentServer.so",            # agent-server：agent 子进程侧（go-service 需要）
+    # 注意：**不能**丢 libMaaToolkit.so。桌面上它确实是「枚举 adb 设备 / 遍历窗口 / 读写 GUI 配置」
+    # 的工具箱，Android 用不到那些功能；但 maa-framework-go（MaaEnd 的 go-service agent 用的
+    # Go binding）在 `internal/native/native.go` 的 `Initialize()` 里**无条件**依次 open
+    # libMaaFramework / libMaaToolkit / libMaaAgentServer / libMaaAgentClient 四个库并对每个
+    # 导出符号做 resolve 预检，少一个就直接 `LibraryLoadError` 退出。
+    # 实测消耗：上游 v5.14.2 Android zip 里 libMaaToolkit.so 约 1.1 MB，代价可接受。
+    "libMaaToolkit.so",                # maa-framework-go 的 Initialize() 硬依赖
     "libonnxruntime.so",               # NeuralNetworkDetect / 部分 OCR 后端
     "libopencv_world4.so",             # 模板匹配、颜色匹配、图像处理
 ]
@@ -102,9 +109,9 @@ EXCLUDED_SO = {
     "libfastdeploy_ppocr.so":
         "桌面端的 FastDeploy PPOCR 后端。Android 上 OCR 走 libonnxruntime.so + 内建模型，"
         "这个是纯桌面产物，带进 APK 只会白占约 23 MB。",
-    "libMaaToolkit.so":
-        "桌面端工具箱（枚举 adb 设备 / 遍历桌面窗口 / 读写 GUI 配置）。它依赖桌面窗口系统，"
-        "Android 上用不到；Android 侧的能力由 libMaaAndroidNativeControlUnit.so 提供。",
+    "libMaaCustomControlUnit.so.bak":
+        "已废弃条目占位：原先把 libMaaToolkit.so 排在这里，理由是「桌面工具箱 Android 用不到」。"
+        "该判断是错的 —— maa-framework-go 的 Initialize() 无条件加载它，见 KEEP_SO 里的长注释。",
 }
 
 # 路径级的排除（不是单个文件）：
@@ -291,7 +298,13 @@ def download(url: str, dest: Path, attempts: int = 3) -> None:
             print("\n  [warn] 下载失败（第 %d/%d 次）: %s" % (attempt, attempts, exc))
             if attempt < attempts:
                 time.sleep(2 * attempt)
-    raise SystemExit("[FATAL] 下载 %s 失败: %s" % (url, last_error))
+    raise SystemExit(
+        "[FATAL] 下载失败（已重试 %d 次）\n"
+        "        尝试过的 URL: %s\n"
+        "        最后错误    : %s\n"
+        "        排查提示    : tag 是否写错（--tag）、该 ABI 是否确实有产物、"
+        "能否直连 github.com；可用 --zip <本地 zip> 绕过下载。" % (attempts, url, last_error)
+    )
 
 
 # --------------------------------------------------------------------------------------
@@ -495,9 +508,15 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     missing_abis = [a for a in abis if a not in zip_sources]
     if missing_abis:
+        tried = "\n".join(
+            "        %-10s %s"
+            % (a, RELEASE_URL.format(repo=GITHUB_REPO, tag=tag, name=zip_name_for(tag, a)))
+            for a in missing_abis
+        )
         raise SystemExit(
-            "[FATAL] 这些 ABI 没拿到 zip: %s（用 --zip 指定本地包，或不要给 --zip 让它下载）"
-            % ", ".join(missing_abis)
+            "[FATAL] 这些 ABI 没拿到 zip:\n%s\n"
+            "        上面的 URL 就是本脚本会去下（并缓存到 .maafw/cache/）的地址；"
+            "用 --zip <本地 zip>（每个 ABI 一个）可以绕过下载。" % tried
         )
 
     # ---- 2. 展开 jniLibs -------------------------------------------------------------

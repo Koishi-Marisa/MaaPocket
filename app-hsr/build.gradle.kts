@@ -2,7 +2,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
+    // 注意：**不要**加 alias(libs.plugins.kotlin.android) —— AGP 9 的内建 Kotlin 会和它冲突。
+    // 版本由根 build.gradle.kts 的 `alias(libs.plugins.kotlin.jvm) apply false` 统一抬升。
     alias(libs.plugins.kotlin.compose)
 }
 

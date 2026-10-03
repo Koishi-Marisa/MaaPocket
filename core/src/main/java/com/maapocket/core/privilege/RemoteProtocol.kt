@@ -78,6 +78,20 @@ object RemoteProtocol {
      *  不需要任何额外握手。token 是 32 位十六进制 UUID，长度远低于 sun_path 上限。 */
     fun socketNameFor(token: String): String = SOCKET_PREFIX + token
 
+    /**
+     * `RemoteMain.java` 用的 [Event.FATAL] 载荷构造器。
+     *
+     * 为什么单独开一个：`jsonObjectOf` 是 `internal`（Kotlin 的 internal 顶层函数在字节码里会被
+     * 改名成 `jsonObjectOf$core`），Java 调不到；而 `@JvmStatic` 打在 `object` 的成员上会生成
+     * 真正的静态方法，Java 侧就是 `RemoteProtocol.fatalData(...)`，不用碰 `kotlin.Pair`。
+     */
+    @JvmStatic
+    fun fatalData(threadName: String, error: Throwable): JsonObject = buildJsonObject {
+        put("thread", threadName)
+        put("throwable", error.toString())
+        put("stack", error.stackTraceToString())
+    }
+
     /** 协议级错误码。app 侧按 [RemoteError.code] 分支，不解析 message。 */
     object ErrorCode {
         const val PROTOCOL = "E_PROTOCOL"
@@ -122,6 +136,26 @@ object RemoteProtocol {
 
         /** 走 `DriverClass.startApp`（虚拟屏/主屏启动游戏并等首帧）。 */
         const val APP_START = "app.start"
+
+        // ---------------------------------------------------------------- MaaFramework
+        // 以下 5 条把 MaaFramework 真正跑起来。**必须跑在特权进程里**：MaaFramework 与外部库
+        // `bridge`（`GetLockedPixels`/`UnlockPixels`/`DispatchInputMessage` 是进程内符号）
+        // 必须同进程，而只有特权进程能建虚拟屏、能注输入。
+
+        /** 建 AndroidNative 控制器并 `postConnection` 到虚拟屏。 */
+        const val MAA_CONTROLLER_START = "maa.controller.start"
+
+        /** 按顺序叠加加载 resource 目录（后者优先级高）。 */
+        const val MAA_RESOURCE_LOAD = "resource.load"
+
+        /** 跑一条 task，进度用 [Event.JOB_PROGRESS] 主动推送。 */
+        const val MAA_TASK_RUN = "task.run"
+
+        /** 请求停止正在跑的 task。 */
+        const val MAA_TASK_STOP = "task.stop"
+
+        /** 汇总状态（有没有加载、控制器/资源/任务各自的就绪情况）。 */
+        const val MAA_STATE = "maa.state"
     }
 
     /** 特权进程 → app 的主动事件名。 */
