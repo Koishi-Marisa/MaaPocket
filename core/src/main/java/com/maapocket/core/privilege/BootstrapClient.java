@@ -96,7 +96,7 @@ public final class BootstrapClient {
 
         // ---------------------------------------------------------- 2) 调过去
         final Bundle reply = callProvider(
-                packageName, appUid, BootstrapProtocol.METHOD_ATTACH, extras, "attach");
+                packageName, appUid, BootstrapProtocol.METHOD_ATTACH, extras, "attach", true);
         if (reply == null) {
             Ln.e("BootstrapClient: provider.call() returned null (token=" + shortToken(token) + ")");
             err("provider.call() returned null");
@@ -118,8 +118,9 @@ public final class BootstrapClient {
      * @return null 表示这次没取到（provider 不在 / 被拒），调用方下一轮再试。
      */
     public static Bundle previewSurface(String packageName, int appUid) {
+        // verbose=false：这条每 500ms 轮询一次，成功也打日志会把整个 launcher 日志刷爆。
         return callProvider(packageName, appUid, BootstrapProtocol.METHOD_PREVIEW_SURFACE, null,
-                "previewSurface");
+                "previewSurface", false);
     }
 
     /**
@@ -129,7 +130,7 @@ public final class BootstrapClient {
      * 重建（进程被杀又拉起），缓存住的 {@code IContentProvider} 未必还有效。
      */
     private static Bundle callProvider(String packageName, int appUid, String method,
-                                       Bundle extras, String what) {
+                                       Bundle extras, String what, boolean verbose) {
         final String authority = packageName + BootstrapProtocol.AUTHORITY_SUFFIX;
         // uid 非正说明 --uid= 没解析出来（launcher 理论上拦掉了），退到 user 0 而不是崩。
         //
@@ -140,7 +141,9 @@ public final class BootstrapClient {
         final int userId = appUid > 0 ? appUid / 100_000 : 0;
         final IBinder providerToken = new Binder();
 
-        err(what + " authority=" + authority + " userId=" + userId + " appUid=" + appUid);
+        if (verbose) {
+            err(what + " authority=" + authority + " userId=" + userId + " appUid=" + appUid);
+        }
 
         IContentProvider provider = null;
         try {
@@ -153,7 +156,9 @@ public final class BootstrapClient {
                     break;
                 }
                 Ln.w("BootstrapClient: provider not ready (attempt " + attempt + "/" + MAX_ATTEMPTS + "): " + authority);
-                err("provider not ready, attempt " + attempt + "/" + MAX_ATTEMPTS);
+                if (verbose) {
+                    err("provider not ready, attempt " + attempt + "/" + MAX_ATTEMPTS);
+                }
                 sleep(RETRY_INTERVAL_MS);
             }
             if (provider == null) {

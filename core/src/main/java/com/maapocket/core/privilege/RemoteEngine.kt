@@ -730,6 +730,18 @@ class RemoteEngine(
         }
         controller = created
 
+        // MaaFramework 默认把截图缩到「长边 1280 / 短边 720」再送识别，而资源包的模板是按本机
+        // 虚拟屏的原生分辨率采集的（崩铁/绝区零 1920x1080）。缩小 1.5 倍后模板必然失配：
+        // 实测 127x34 的 click_enter.png 在 1280x720 缩略图上的最佳分只有 0.2429，与日志里
+        // MaaFramework 报的 0.2322@(309,311) 对得上（同帧缩到 1280 前后位置也从 (897,982)
+        // 落到 (320,299)）。所以这里要求它原样使用我们给的帧；再顺手把长边钉成帧的真实长边
+        // 作为兜底——MaaDef.h 写明长/短边**只能设一个**，另一个按宽高比自动推导。
+        val rawOk = runCatching { created.setScreenshotUseRawSize(true) }.getOrDefault(false)
+        val longSide = maxOf(width, height)
+        val longOk = runCatching { created.setScreenshotTargetLongSide(longSide) }
+            .getOrDefault(false)
+        Ln.i("RemoteEngine: screenshot options raw=$rawOk long=$longSide->$longOk frame=${width}x$height")
+
         val connectId = created.postConnection()
         if (!created.awaitSucceeded(connectId, CONTROLLER_CONNECT_TIMEOUT_MS)) {
             releaseController()
