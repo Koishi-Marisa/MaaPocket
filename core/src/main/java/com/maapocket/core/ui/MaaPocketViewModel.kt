@@ -312,6 +312,9 @@ class MaaPocketViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun setPreviewEnabled(enabled: Boolean) {
         _previewEnabled.value = enabled
+        // 只改本地开关是不够的：helper 里的 `previewLoop()` 由 `capture.preview` 驱动，
+        // 不发这条命令它永远不跑，预览框会一直是空的。
+        controller.setPreviewEnabled(enabled)
     }
 
     fun clearLogs() {

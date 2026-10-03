@@ -49,6 +49,7 @@ import kotlinx.serialization.json.put
 import timber.log.Timber
 import java.io.File
 import java.util.ArrayDeque
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * 运行编排：把「用户在 UI 上的选择」变成特权进程里的一串命令。
@@ -194,6 +195,15 @@ class MaaRunController(private val context: Context) {
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
     val preview: SharedFlow<Bitmap> = _preview.asSharedFlow()
+
+    /**
+     * UI 侧预览开关的**最新意图**。默认 true，与 `MaaPocketViewModel._previewEnabled` 一致。
+     *
+     * 为什么要存一份：`setPreviewEnabled` 可能在 `prepare` 之前就被点（那时还没有 session），
+     * 也可能在 helper 重启后需要重放。真正的下发点有两处——用户点开关时、以及
+     * `display.start` 建好屏之后——两处都读这个标记。
+     */
+    private val previewWanted = AtomicBoolean(true)
 
     // ------------------------------------------------------------------ 内部
 
@@ -540,6 +550,19 @@ class MaaRunController(private val context: Context) {
             if (virtualDisplayId == DefaultDisplayConfig.DISPLAY_NONE) {
                 fail("虚拟屏没建起来（display.start 返回 displayId=$virtualDisplayId）", null)
                 return
+            }
+            // 屏建好了才开始推预览帧：帧源就是这块屏，早于此只会拿到空帧。
+            // 这里用 exec 而不是 notify，就是为了把 `preview` 开关的成败写进 App 日志——
+            // 「预览有没有画面」全靠这一条，静默失败最难查。
+            if (previewWanted.get()) {
+                runCatching {
+                    s.exec(
+                        RemoteProtocol.Cmd.CAPTURE_PREVIEW,
+                        previewParams(true),
+                        timeoutMs = 20_000L,
+                    )
+                }.onSuccess { log("capture.preview → $it") }
+                    .onFailure { log("预览开启失败：${it.message}") }
             }
 
             // 4. controller（内部 dlopen <nativeLibraryDir>/libbridge.so）
@@ -1015,11 +1038,60 @@ class MaaRunController(private val context: Context) {
     }
 
     private fun decodePreview(frame: RemoteFrame) {
-        val inline = frame.data?.get("inline")?.jsonPrimitive?.contentOrNull ?: return
-        runCatching {
-            val bytes = Base64.decode(inline, Base64.DEFAULT)
-            BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-        }.getOrNull()?.let { _preview.tryEmit(it) }
+        // helper 侧 `previewLoop()` 内联时写的是 `dataBase64`（见 RemoteProtocol 里
+        // Event.FRAME 的注释）。这里以前只认 `inline`，所以即使预览开了也解不出图。
+        val encoded = frame.data?.get("dataBase64")?.jsonPrimitive?.contentOrNull
+            ?: frame.data?.get("inline")?.jsonPrimitive?.contentOrNull
+        val bitmap = if (encoded != null) {
+            runCatching {
+                val bytes = Base64.decode(encoded, Base64.DEFAULT)
+                BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            }.getOrNull()
+        } else {
+            // 帧大到超过内联上限时 helper 退化成落盘 + 只回绝对路径。App 自己有
+            // 读外部私有目录的权限，所以这条路也接上，免得画面一大就黑。
+            frame.data?.get("path")?.jsonPrimitive?.contentOrNull?.let(::decodePreviewFile)
+        }
+        if (bitmap != null) _preview.tryEmit(bitmap)
+    }
+
+    private fun decodePreviewFile(path: String): Bitmap? {
+        val f = File(path)
+        if (!f.isFile || f.length() !in 1..MAX_PREVIEW_FILE_BYTES) return null
+        return runCatching { BitmapFactory.decodeFile(path) }.getOrNull()
+    }
+
+    // ------------------------------------------------------------------ 预览开关
+
+    /**
+     * 真正把预览开关下发给 helper。
+     *
+     * 以前这个方法只改了 App 自己的 `_previewEnabled`，**从没发过一条 `capture.preview`**，
+     * 于是 helper 的 `previewLoop()` 永远不跑、`Event.FRAME` 永远不来，
+     * UI 上就是一个永远空的预览框——这正是「游戏能启动但预览没画面」的直接原因。
+     */
+    fun setPreviewEnabled(enabled: Boolean) {
+        previewWanted.set(enabled)
+        sendPreviewCommand(enabled)
+    }
+
+    private fun sendPreviewCommand(enabled: Boolean) {
+        val s = session ?: return
+        if (!s.isConnected) return
+        runCatching { s.notify(RemoteProtocol.Cmd.CAPTURE_PREVIEW, previewParams(enabled)) }
+            .onFailure { log("预览开关下发失败：${it.message}") }
+    }
+
+    private fun previewParams(enabled: Boolean): JsonObject = buildJsonObject {
+        put("enable", enabled)
+        if (enabled) {
+            // 优先 inline：少一次磁盘往返，也不依赖 helper 往外部私有目录写文件是否被允许。
+            // 帧超过 [PREVIEW_INLINE_MAX_BYTES] 时 helper 会自己退化成落盘 + 回路径，
+            // 那条路由 [decodePreviewFile] 兜住。
+            put("inline", true)
+            put("intervalMs", PREVIEW_INTERVAL_MS)
+            put("maxBytes", PREVIEW_INLINE_MAX_BYTES)
+        }
     }
 
     // ------------------------------------------------------------------ 选择态
@@ -1082,5 +1154,22 @@ class MaaRunController(private val context: Context) {
 
         /** 缺省虚拟屏尺寸：兜底用，正常应由 PI 的 display_short_side 或用户设置决定。 */
         val JSON: Json = Json { ignoreUnknownKeys = true; encodeDefaults = true }
+
+        /**
+         * 预览帧间隔。5 fps 足够看「游戏在不在动」，又不至于每帧都走一遍 JPEG 编码
+         * 把 helper 的 CPU 吃满（helper 与游戏共用一颗 SoC）。
+         */
+        const val PREVIEW_INTERVAL_MS = 200
+
+        /**
+         * 内联预览帧的字节上限。协议一行 JSON 的上限是 1 MiB，base64 膨胀 4/3 ⇒
+         * 384 KiB 编码后约 512 KiB，留足余量。720p 的 JPEG(q80) 通常 80–150 KiB，
+         * 超过这个数的只有极花的画面，那时 helper 会退化成落盘路径，
+         * 由 [decodePreviewFile] 兜住。
+         */
+        const val PREVIEW_INLINE_MAX_BYTES = 384 * 1024
+
+        /** 落盘兜底路径允许读取的上限，防止 helper 写出坏文件把 App OOM。 */
+        const val MAX_PREVIEW_FILE_BYTES = 4L * 1024 * 1024
     }
 }
