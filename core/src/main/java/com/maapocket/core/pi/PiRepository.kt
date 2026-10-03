@@ -159,15 +159,45 @@ class PiRepository private constructor(
 
     fun groups(): List<PiGroup> = pi.group
 
-    fun tasks(): List<PiTask> = pi.task
+    /**
+     * 设备上真正能跑的任务。
+     *
+     * 上游 `interface.json` 的每个 task 可以带一个 `controller` 白名单（**存的是
+     * controller 的 `name`，不是 `type`**）；空列表 = 对所有 controller 都可用。
+     * MaaEnd 的 `tasks/AutoEcoFarm.json` 之类就把它写成了
+     * `["Linux-Gamescope","Linux-ScreenCast","Linux-Wlroots","Win32-Front"]` ——
+     * 这是上游自己声明的「仅桌面」。那些任务里全是 WASD / 鼠标语义的节点，
+     * 在手机上要么被转成 `DoNothing`、要么进了 `KNOWN_LIMITATIONS.md`，**放出来只会让用户困惑**。
+     *
+     * 之前这里只按 `group` 过滤，`PiTask.controller` 解析了却从没人读
+     * （MaaEnd 迁移子代理在 65ce037 的报告里点名了这件事），于是 app 会把
+     * 「上游明说桌面限定」的任务也列进 UI。这里补上这道闸。
+     *
+     * @param activeControllers 设备上实际可用的 controller **名字**集合。默认取
+     *   [onDeviceControllers]（type == `Adb` 的那些）。**空集合视为「不设限」**：
+     *   资源包没声明任何 Adb controller 时（理论上不该发生）宁可全放出来，
+     *   也不要因为一个空的过滤集合把整个包的任务清空。
+     */
+    fun tasks(
+        activeControllers: Set<String> = onDeviceControllers().map { it.name }.toSet(),
+    ): List<PiTask> = pi.task.filter { isAvailableOn(it, activeControllers) }
 
-    /** 按 group 分组；无 group 的归入 null 桶。保持 `group` 声明顺序。 */
-    fun tasksByGroup(): LinkedHashMap<String?, List<PiTask>> {
+    /** 单个任务在当前 controller 下是否可用。空 `controller` 白名单 = 通用任务。 */
+    fun isAvailableOn(task: PiTask, activeControllers: Set<String>): Boolean {
+        if (task.controller.isEmpty()) return true
+        if (activeControllers.isEmpty()) return true
+        return task.controller.any { it in activeControllers }
+    }
+
+    /** 按 group 分组；无 group 的归入 null 桶。保持 `group` 声明顺序。沿用 [tasks] 的 controller 闸。 */
+    fun tasksByGroup(
+        activeControllers: Set<String> = onDeviceControllers().map { it.name }.toSet(),
+    ): LinkedHashMap<String?, List<PiTask>> {
         val order = groups().map { it.name }
         val map = LinkedHashMap<String?, MutableList<PiTask>>()
         for (g in order) map[g] = mutableListOf()
         map[null] = mutableListOf()
-        for (t in tasks()) {
+        for (t in tasks(activeControllers)) {
             val g = t.group.firstOrNull { map.containsKey(it) }
             map.getOrPut(g) { mutableListOf() }.add(t)
         }
