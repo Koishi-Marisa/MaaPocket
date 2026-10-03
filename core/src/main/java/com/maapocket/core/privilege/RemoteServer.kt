@@ -164,6 +164,15 @@ class RemoteServer(
      * 把特权进程自己留下的两条管道端交给服务端。**由 `RemoteMain` 的引导线程调用**，
      * 替代了原来的 `serve()` + `LocalServerSocket.accept()`。
      *
+     * 参数是**特权进程视角**（不是 app 视角），命名容易搞反，所以直接叫 read/write：
+     * - [readEnd]  = 特权进程**读**的那一端 = `down[0]`（app 写、特权进程读）
+     * - [writeEnd] = 特权进程**写**的那一端 = `up[1]`  （特权进程写、app 读）
+     *
+     * 曾经这里叫 `fromRemote`/`toRemote`（app 视角的名字），而调用方按特权进程视角传
+     * `(up[1], down[0])`，结果把**写端**当成了输入流 —— 真机上表现为管道刚接上就
+     * `connection closed (cause=IOException)`（读一个只写的 FD 就是 EBADF），
+     * app 侧同时报 `hello failed`。名字改成 read/write 就是为了不再犯。
+     *
      * 只允许一个客户端（语义与原来的 accept 循环一致）：已经有一个非空连接时直接返回 false，
      * 调用方应当关掉这两端并退出——只要能走到这里，说明 app 侧已经认过 token 了，
      * 第二条只可能是陈旧进程或者出 bug 的重试。
@@ -171,7 +180,7 @@ class RemoteServer(
      * FD 的所有权在这里转移：成功时由 [Connection] 的读/写循环（以及 [Connection.close]）
      * 负责关闭从这两个 FD 包出来的流；失败时调用方负责关原始 FD。
      */
-    fun attachClient(fromRemote: ParcelFileDescriptor, toRemote: ParcelFileDescriptor): Boolean {
+    fun attachClient(readEnd: ParcelFileDescriptor, writeEnd: ParcelFileDescriptor): Boolean {
         if (closed.get()) {
             Ln.w("RemoteServer: 服务端已停机，拒绝管道接入")
             return false
@@ -181,8 +190,8 @@ class RemoteServer(
             return false
         }
         val conn = Connection(
-            ParcelFileDescriptor.AutoCloseInputStream(fromRemote),
-            ParcelFileDescriptor.AutoCloseOutputStream(toRemote),
+            ParcelFileDescriptor.AutoCloseInputStream(readEnd),
+            ParcelFileDescriptor.AutoCloseOutputStream(writeEnd),
         )
         active.set(conn)
         conn.start()

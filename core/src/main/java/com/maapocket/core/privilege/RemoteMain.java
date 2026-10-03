@@ -238,7 +238,12 @@ public final class RemoteMain {
                 appPid = r.appPid > 0 ? r.appPid : appPid;
                 Ln.i(TAG + ": bootstrap attached appPid=" + r.appPid + " appUid=" + r.appUid);
 
-                if (!srv.attachClient(up[1], down[0])) {
+                // 参数是**特权进程视角**：先读端再写端。
+                //   读端 = down[0]（app 写 → 特权进程读）
+                //   写端 = up[1]  （特权进程写 → app 读）
+                // 这里曾经传反成 (up[1], down[0])，把只写的 FD 当输入流，真机上管道刚接上就
+                // `connection closed (cause=IOException)`（EBADF），app 侧同时 `hello failed`。
+                if (!srv.attachClient(down[0], up[1])) {
                     Ln.e(TAG + ": server refused client attach; exiting");
                     closeQuietly(up[1]);
                     closeQuietly(down[0]);
@@ -331,8 +336,14 @@ public final class RemoteMain {
         if (uid == 0) {
             Ln.i(TAG + ": sdk>=34 and uid=0 -> input injection allowed (--keep-root took effect)");
         } else {
-            Ln.w(TAG + ": sdk>=34 but uid=" + uid + " (expected 0): input.* will fail with"
-                    + " INJECT_EVENTS permission; Shizuku must itself run as root, or use the root backend");
+            // Android 14+ 的注入要求 uid 0 **或者**该 uid 已被授予 INJECT_EVENTS。实测
+            // HONOR AGI-AN00 / Android 15 上 com.android.shell（uid 2000）已经 granted，
+            // 所以这里不能断言「一定失败」。真正失败时 InputManager.java:105-117 会打出
+            // 准确原因与「USB 调试（安全设置）」提示。
+            Ln.i(TAG + ": sdk>=34, uid=" + uid + " (not root): input injection requires either"
+                    + " uid 0 or INJECT_EVENTS granted to this uid; if input.* reports"
+                    + " \"INJECT_EVENTS permission\", enable Developer options >"
+                    + " \"USB debugging (Security settings)\" and reboot");
         }
     }
 

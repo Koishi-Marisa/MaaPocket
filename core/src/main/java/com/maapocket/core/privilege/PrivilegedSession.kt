@@ -140,11 +140,15 @@ class PrivilegedSession(
 
         val runsAsRoot = backendRunsAsRoot()
         if (inputInjectionNeedsRoot && !runsAsRoot) {
-            // 需求 5：Android 14+ 起注入输入要求 uid 0。Shizuku 以 shell(2000) 跑时，
-            // 连上去也点不动游戏。这里不阻断启动（截图/其它命令仍然可用），但明确告警。
-            Ln.w(
-                "PrivilegedSession: SDK ${android.os.Build.VERSION.SDK_INT} 需要 root uid 才能注入输入，" +
-                    "但 $kind 后端不以 root 运行（uid=${backendUid()}）；input.* 会失败",
+            // 需求 5：Android 14+ 的注入要求 uid 0 **或者**该 uid 已被授予 INJECT_EVENTS。
+            // 实测（HONOR AGI-AN00 / Android 15，`dumpsys package com.android.shell`）uid 2000
+            // 已经 granted INJECT_EVENTS —— 所以「非 root 就一定点不动」是错的，这里不能断言失败。
+            // 真正失败时由 InputManager.java:105-117 打准确原因 + 「USB 调试（安全设置）」提示。
+            Ln.i(
+                "PrivilegedSession: SDK ${android.os.Build.VERSION.SDK_INT}，" +
+                    "$kind 后端以 uid=${backendUid()} 运行（非 root）：注入输入只有在 uid 0 或" +
+                    "该 uid 已被授予 INJECT_EVENTS 时才可用；若 input.* 报 INJECT_EVENTS permission，" +
+                    "请开启「开发者选项 → USB 调试（安全设置）」后重启设备",
             )
         }
 
