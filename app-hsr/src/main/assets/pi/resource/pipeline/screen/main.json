@@ -568,6 +568,7 @@
   "NavTo_main": {
     "recognition": "DirectHit",
     "action": "DoNothing",
+    "timeout": 120000,
     "next": [
       "Nav_main_from_apocalyptic",
       "Nav_main_from_camera",

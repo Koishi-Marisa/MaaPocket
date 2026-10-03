@@ -535,6 +535,12 @@ class MaaRunController(private val context: Context) {
             // （主屏），于是 StartApp 把游戏拉在主屏前台，MaaFramework 拿到的也是主屏画面。
             // 建了虚拟屏之后 displayId != 0，StartApp 才会 launchDisplayId 到那块屏上，
             // 游戏就在后台跑，用户自己的手机前台不受影响。
+            log(
+                "显示分辨率 → ${displayWidth ?: DefaultDisplayConfig.WIDTH}x" +
+                    "${displayHeight ?: DefaultDisplayConfig.HEIGHT}" +
+                    "（必须等于资源包采集时的分辨率，模板才 1:1 匹配；" +
+                    "由 PI controller.display_* 决定，见 PiDisplaySize）",
+            )
             val disp = s.exec(
                 RemoteProtocol.Cmd.DISPLAY_START,
                 buildJsonObject {

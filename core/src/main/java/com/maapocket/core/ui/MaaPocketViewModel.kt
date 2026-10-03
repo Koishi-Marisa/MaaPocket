@@ -4,6 +4,8 @@ import android.app.Application
 import android.graphics.Bitmap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.maapocket.core.constant.DefaultDisplayConfig
+import com.maapocket.core.pi.PiDisplaySize
 import com.maapocket.core.pi.PiInstalledPackages
 import com.maapocket.core.pi.PiOption
 import com.maapocket.core.pi.PiRepository
@@ -92,11 +94,19 @@ class MaaPocketViewModel(application: Application) : AndroidViewModel(applicatio
     private val _privilegeKind = MutableStateFlow(PrivilegeKind.ROOT)
     val privilegeKind: StateFlow<PrivilegeKind> = _privilegeKind.asStateFlow()
 
-    private val _displayWidth = MutableStateFlow("")
+    // 预填默认值，让用户看得见真正生效的分辨率。**这里只是解包前的占位**：
+    // 解包之后就由 `applyPackDisplaySize` 按资源包自己声明的 PI `display_*` 字段改写
+    // （崩铁 1920x1080、绝区零 1920x1080、终末地 1280x720）。虚拟屏必须正好等于
+    // 资源包采集时的分辨率，模板才 1:1 匹配，见 `PiDisplaySize` 与
+    // `DefaultDisplayConfig.WIDTH` 的注释。清空输入框 = 回落到默认。
+    private val _displayWidth = MutableStateFlow(DefaultDisplayConfig.WIDTH.toString())
     val displayWidth: StateFlow<String> = _displayWidth.asStateFlow()
 
-    private val _displayHeight = MutableStateFlow("")
+    private val _displayHeight = MutableStateFlow(DefaultDisplayConfig.HEIGHT.toString())
     val displayHeight: StateFlow<String> = _displayHeight.asStateFlow()
+
+    /** 用户手动改过分辨率输入框之后，就不再按资源包的声明自动改写（他比我更清楚）。 */
+    private var displaySizePickedByUser = false
 
     private val _plan = MutableStateFlow<PiSelection.PiRunPlan?>(null)
     val plan: StateFlow<PiSelection.PiRunPlan?> = _plan.asStateFlow()
@@ -187,6 +197,7 @@ class MaaPocketViewModel(application: Application) : AndroidViewModel(applicatio
         _controllerName.value = cName
         _resourceName.value = rName
         controller.setSelection(cName, rName)
+        applyPackDisplaySize(repo, cName)
         _selectedTasks.value = PiSelection.defaultChecked(repo).map { it.name }.toSet()
         // 换包必须丢弃旧包的选项值，否则同名 option 会带着上一款游戏的取值生效。
         _optionValues.value = emptyMap()
@@ -197,7 +208,22 @@ class MaaPocketViewModel(application: Application) : AndroidViewModel(applicatio
     fun selectController(name: String) {
         _controllerName.value = name
         controller.setSelection(name, _resourceName.value)
+        _repository.value?.let { applyPackDisplaySize(it, name) }
         invalidatePlan()
+    }
+
+    /**
+     * 把输入框换成资源包自己声明的分辨率（PI `controller.display_*`）。
+     *
+     * 不同游戏的资源包采集分辨率不一样（崩铁/绝区零 1920x1080、终末地 1280x720），
+     * 虚拟屏必须正好等于它，模板才 1:1 匹配；写死任何一个都会让另一款游戏整包失配。
+     * 用户手动改过就不动他的值。
+     */
+    private fun applyPackDisplaySize(repo: PiRepository, controllerName: String) {
+        if (displaySizePickedByUser) return
+        val res = PiDisplaySize.of(repo, controllerName) ?: return
+        _displayWidth.value = res.width.toString()
+        _displayHeight.value = res.height.toString()
     }
 
     fun selectResource(name: String) {
@@ -272,10 +298,12 @@ class MaaPocketViewModel(application: Application) : AndroidViewModel(applicatio
     // ---------------------------------------------------------------- 显示尺寸
 
     fun setDisplayWidth(text: String) {
+        displaySizePickedByUser = true
         _displayWidth.value = text.filter { it.isDigit() }.take(5)
     }
 
     fun setDisplayHeight(text: String) {
+        displaySizePickedByUser = true
         _displayHeight.value = text.filter { it.isDigit() }.take(5)
     }
 
