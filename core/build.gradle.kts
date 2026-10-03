@@ -18,7 +18,12 @@ android {
 
     defaultConfig {
         minSdk = 28
-        targetSdk = 36
+        // **不要**在这里写 targetSdk：AGP 9 已经从 library 模块的 defaultConfig 里
+        // 移除了这个属性，写了会直接
+        //   e: core/build.gradle.kts:21:9: Unresolved reference 'targetSdk'.
+        // 库本来也不该固定 targetSdk —— 它由最终打包它的 application 模块决定
+        // （app-hsr / app-zzz / app-endfield 各自的 defaultConfig 里有 targetSdk = 36）。
+        // 参考 refs/MAA-Meow：targetSdk 只出现在 app/build.gradle.kts:81。
 
         ndk {
             abiFilters += maapocketAbis
@@ -94,6 +99,7 @@ dependencies {
 
     implementation(libs.timber)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.coroutines.android)
 
     testImplementation(libs.junit)
 }

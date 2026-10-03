@@ -14,6 +14,10 @@ shizuku = "13.1.5"
 libsu = "6.0.0"
 timber = "5.0.1"
 kotlinxSerializationJson = "1.11.0"
+# 显式声明。PrivilegedSession / RemoteConnector / MaaRunController 都在用
+# Flow / CompletableDeferred / withTimeout，之前只靠 lifecycle-runtime-ktx 传递引入，
+# 升依赖时有断链风险。版本与 refs/MAA-Meow 对齐。
+kotlinxCoroutines = "1.11.0"
 
 junit = "4.13.2"
 
@@ -38,6 +42,7 @@ shizuku-provider = { group = "dev.rikka.shizuku", name = "provider", version.ref
 libsu = { group = "com.github.topjohnwu.libsu", name = "core", version.ref = "libsu" }
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
 
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 
