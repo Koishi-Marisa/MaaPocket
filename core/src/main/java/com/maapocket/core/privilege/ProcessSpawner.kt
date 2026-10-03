@@ -34,8 +34,19 @@ data class LauncherInvocation(
     val token: String,
     /** 特权进程据此创建/连接 LocalSocket；由 token 推导，双方无需额外握手。 */
     val socketName: String,
-    /** 未包装的完整命令行（含 `mkdir -p` 前缀）。 */
+    /**
+     * 未包装的**纯 launcher 命令行**，第一个词就是 `liblauncher.so` 的路径。
+     *
+     * ⚠️ 这里**绝对不能**再拼任何前置命令（尤其 `mkdir -p ... ;`）。Shizuku 后端的包装是
+     * `... ; exec <rawCommand> </dev/null >/dev/null 2>&1`，`exec` 会把 shell **整体替换成它后面
+     * 那一条命令**：一旦 rawCommand 以 `mkdir` 开头，被替换掉的就是 `mkdir`，它建完目录就以 0
+     * 退出，launcher 一个字节都没跑。真机上的表现极具误导性 ——
+     * `connect failed: ... (launcher already exited code=0)`，且 `--log-file` 指向的目录存在但为空。
+     * 需要的前置准备工作请放进 [logDir]（由后端包在 `exec` 之前）。
+     */
     val rawCommand: String,
+    /** 需要 `mkdir -p` 出来的目录（launcher 日志的父目录）；由**后端**在 `exec` 之前建好。 */
+    val logDir: String,
     /** 是否要求特权进程保持 root（Android 14+ 注入需要，见 [keepRootForInputInjection]）。 */
     val keepRoot: Boolean,
 )
@@ -177,9 +188,6 @@ object ProcessSpawner {
         val keepRoot = keepRootForInputInjection
 
         val sb = StringBuilder()
-        // 日志目录先建好：launcher 打开日志文件时目录不存在会静默丢日志。
-        sb.append("mkdir -p ").append(shellQuote(logFile.parentFile?.absolutePath ?: "."))
-            .append(" 2>/dev/null; ")
         sb.append(shellQuote(launcher.absolutePath))
         sb.append(" --apk=").append(shellQuote(apkPath))
         sb.append(" --process-name=").append(shellQuote(processName))
@@ -204,6 +212,7 @@ object ProcessSpawner {
             token = token,
             socketName = RemoteProtocol.socketNameFor(token),
             rawCommand = raw,
+            logDir = logFile.parentFile?.absolutePath ?: ".",
             keepRoot = keepRoot,
         )
     }

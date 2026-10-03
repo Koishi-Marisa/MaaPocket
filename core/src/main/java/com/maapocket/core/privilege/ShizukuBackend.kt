@@ -139,7 +139,11 @@ class ShizukuBackend(private val context: Context) : PrivilegeBackend {
 
     /** 见类 KDoc。public 是为了让单元测试/日志能直接看到最终命令行。 */
     fun wrapCommand(invocation: LauncherInvocation): String =
-        "test -x ${ProcessSpawner.shellQuote(invocation.launcherPath)} || exit 126; " +
+        // `mkdir` 必须在 `exec` **之前**、作为独立的一条命令。写成 `exec mkdir ...; launcher ...`
+        // 会把 shell 替换成 mkdir —— 它建完目录就退出，launcher 根本不会被执行，
+        // 上层只会看到 "launcher already exited code=0"。这个坑真机上踩过一次，见 LauncherInvocation.rawCommand。
+        "mkdir -p ${ProcessSpawner.shellQuote(invocation.logDir)} 2>/dev/null; " +
+            "test -x ${ProcessSpawner.shellQuote(invocation.launcherPath)} || exit 126; " +
             "exec ${invocation.rawCommand} </dev/null >/dev/null 2>&1"
 
     private fun requireServer(): IShizukuService {

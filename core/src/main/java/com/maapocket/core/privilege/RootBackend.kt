@@ -120,7 +120,8 @@ class RootBackend(private val context: Context) : PrivilegeBackend {
     }
 
     fun wrapCommand(invocation: LauncherInvocation): String =
-        "${invocation.rawCommand} >/dev/null 2>&1 &"
+        "mkdir -p ${ProcessSpawner.shellQuote(invocation.logDir)} 2>/dev/null; " +
+            "${invocation.rawCommand} >/dev/null 2>&1 &"
 
     override fun killResidual(processName: String) {
         val result = Shell.cmd(ProcessSpawner.killByNameCommand(processName)).exec()
