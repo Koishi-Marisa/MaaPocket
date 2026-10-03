@@ -17,8 +17,17 @@ public final class Ln {
     public static final String TAG = "MaaPocket";
     private static final String PREFIX = "[MP] ";
 
-    private static final PrintStream CONSOLE_OUT = new PrintStream(new FileOutputStream(FileDescriptor.out));
-    private static final PrintStream CONSOLE_ERR = new PrintStream(new FileOutputStream(FileDescriptor.err));
+    /**
+     * 真机实测：这两个流**必须开 autoFlush**。
+     *
+     * 不回刷时 `print(... + '\n')` 只是往 8 KiB 的缓冲里塞，普通 INFO 行要等到缓冲满
+     * 或者进程正常 close 才落盘；而特权进程是被 `RemoteMain` 的看门狗 `halt` 掉的，
+     * 缓冲里的东西全丢。结果是 `maapocket-shizuku-launcher.log` 里只剩得到
+     * `Ln.w`/`Ln.e` 那几行（走 CONSOLE_ERR 恰好刷出来的），INFO 一行都没有 ——
+     * 「日志里什么都看不到」有一部分就是这么来的。
+     */
+    private static final PrintStream CONSOLE_OUT = new PrintStream(new FileOutputStream(FileDescriptor.out), true);
+    private static final PrintStream CONSOLE_ERR = new PrintStream(new FileOutputStream(FileDescriptor.err), true);
     private static Level threshold = Level.DEBUG;
 
     private Ln() {

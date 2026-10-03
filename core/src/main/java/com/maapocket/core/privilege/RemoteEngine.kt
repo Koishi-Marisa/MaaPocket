@@ -533,6 +533,7 @@ class RemoteEngine(
                         // 默认只给落盘路径：JSON 行有 1 MiB 上限，持续内联大帧会打爆协议。
                         val file = File(frameDir, "preview-${System.currentTimeMillis()}.jpg")
                         runCatching { file.writeBytes(bytes) }
+                        pruneFrameDir(frameDir)
                         meta + buildJsonObject { put("path", file.absolutePath) }
                     }
                     val accepted = eventSink.emit(Event.FRAME, data)
@@ -540,6 +541,13 @@ class RemoteEngine(
                 }
             } catch (e: Throwable) {
                 Ln.w("RemoteEngine: preview tick failed: ${e.message}")
+                // `Ln.*` 在 logcat 里看不到（实测），而「预览为什么是黑的」只能靠现场证据回答。
+                // 落一个小文件，adb 一 pull 就知道是取帧抛异常还是取到的是黑图。
+                runCatching {
+                    File(frameDir, PREVIEW_ERROR_FILE).writeText(
+                        "${e.javaClass.name}: ${e.message}\n",
+                    )
+                }
             }
             val cost = SystemClock.elapsedRealtime() - started
             val sleep = previewIntervalMs - cost
@@ -555,6 +563,26 @@ class RemoteEngine(
     }
 
     private var previewDropped = 0L
+
+    /**
+     * 只保留最近 [PREVIEW_KEEP_FILES] 张落盘帧。
+     *
+     * 落盘帧是排查「识别为什么对不上」的唯一证据（虚拟屏没有可用的 `screencap -d`，
+     * 见 `_research` 里的结论），所以要一直在，但绝不能无限长：5fps 跑一小时就是 1.8 万张。
+     * 每 [PREVIEW_PRUNE_EVERY] 帧扫一次目录，按 `lastModified()` 删最旧的。
+     */
+    private fun pruneFrameDir(dir: File) {
+        if (previewPruneTick++ % PREVIEW_PRUNE_EVERY != 0) return
+        val frames = dir.listFiles()
+            ?.filter { it.isFile && it.name.startsWith("preview-") && it.name.endsWith(".jpg") }
+            ?: return
+        if (frames.size <= PREVIEW_KEEP_FILES) return
+        frames.sortedBy { it.lastModified() }
+            .take(frames.size - PREVIEW_KEEP_FILES)
+            .forEach { runCatching { it.delete() } }
+    }
+
+    private var previewPruneTick = 0
 
     private fun stopPreviewInternal() {
         previewStop = true
@@ -1372,6 +1400,9 @@ class RemoteEngine(
 
         private const val FRAME_DIR_NAME = "frames"
 
+        /** 取帧抛异常时把原因写在这里；`Ln.*` 在 logcat 里看不到，只能靠文件传话。 */
+        private const val PREVIEW_ERROR_FILE = "preview-error.txt"
+
         /** 外部库名：MaaFramework 靠它拿帧/注输入（与 `bridge` 同进程，见类注释）。 */
         private const val BRIDGE_LIB_NAME = "libbridge.so"
 
@@ -1389,6 +1420,12 @@ class RemoteEngine(
         private const val MAX_PREVIEW_INTERVAL_MS = 5_000
 
         private const val PREVIEW_JOIN_TIMEOUT_MS = 1_000L
+
+        /** 落盘帧的保留张数：5fps × 60 = 12 秒的胶片，足够看清「失败那一刻屏上是什么」。 */
+        private const val PREVIEW_KEEP_FILES = 60
+
+        /** 每这么多帧扫一次 `frames/`，别每帧都 listFiles。 */
+        private const val PREVIEW_PRUNE_EVERY = 10
 
         private const val SHUTDOWN_PREVIEW_JOIN_MS = 1_000L
 

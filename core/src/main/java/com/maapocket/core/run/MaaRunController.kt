@@ -1091,12 +1091,15 @@ class MaaRunController(private val context: Context) {
     private fun previewParams(enabled: Boolean): JsonObject = buildJsonObject {
         put("enable", enabled)
         if (enabled) {
-            // 优先 inline：少一次磁盘往返，也不依赖 helper 往外部私有目录写文件是否被允许。
-            // 帧超过 [PREVIEW_INLINE_MAX_BYTES] 时 helper 会自己退化成落盘 + 回路径，
-            // 那条路由 [decodePreviewFile] 兜住。
-            put("inline", true)
+            // 落盘而不是内联。理由有三条：
+            // 1. 1920x1080 的 JPEG 内联成 base64 后逼近 1 MiB 的单行上限，协议里那句
+            //    「持续内联大帧会打爆协议」不是吓唬人；
+            // 2. `<userDir>/frames/` 里的 JPEG 是排查「识别为什么对不上」的唯一证据——
+            //    虚拟屏没有可用的 `screencap -d`，adb 拿不到那块屏的像素；
+            // 3. 落盘那条路 [decodePreviewFile] 本来就兜着，帧大了自然走它，不如直接走。
+            // helper 侧会自己只保留最近 PREVIEW_KEEP_FILES 张（见 RemoteEngine.pruneFrameDir）。
+            put("inline", false)
             put("intervalMs", PREVIEW_INTERVAL_MS)
-            put("maxBytes", PREVIEW_INLINE_MAX_BYTES)
         }
     }
 
@@ -1166,14 +1169,6 @@ class MaaRunController(private val context: Context) {
          * 把 helper 的 CPU 吃满（helper 与游戏共用一颗 SoC）。
          */
         const val PREVIEW_INTERVAL_MS = 200
-
-        /**
-         * 内联预览帧的字节上限。协议一行 JSON 的上限是 1 MiB，base64 膨胀 4/3 ⇒
-         * 384 KiB 编码后约 512 KiB，留足余量。720p 的 JPEG(q80) 通常 80–150 KiB，
-         * 超过这个数的只有极花的画面，那时 helper 会退化成落盘路径，
-         * 由 [decodePreviewFile] 兜住。
-         */
-        const val PREVIEW_INLINE_MAX_BYTES = 384 * 1024
 
         /** 落盘兜底路径允许读取的上限，防止 helper 写出坏文件把 App OOM。 */
         const val MAX_PREVIEW_FILE_BYTES = 4L * 1024 * 1024
