@@ -888,6 +888,7 @@ class MaaRunController(private val context: Context) {
             _state.update {
                 it.copy(phase = Phase.RUNNING, taskCount = chosen.size, taskIndex = 0, lastError = null)
             }
+            val failedTasks = mutableListOf<String>()
             try {
                 chosen.forEachIndexed { index, task ->
                     if (stopRequested) return@launch
@@ -906,12 +907,33 @@ class MaaRunController(private val context: Context) {
                     val ok = result["succeeded"]?.jsonPrimitive?.contentOrNull == "true"
                     log("◀ ${task.name} succeeded=$ok status=${result["status"]}")
                     if (!ok) {
-                        fail("任务「${task.name}」失败", null)
-                        return@launch
+                        // 启动任务失败时整轮没有意义（后面的任务都假设游戏已经在跑），直接中止；
+                        // 其余任务失败只记一笔继续跑 —— 迁移过来的资源包还有粗糙的地方，
+                        // 一个任务失败就把整轮掐掉，用户完全看不到哪些任务是可用的。
+                        if (task.group.contains(PiRepository.STARTUP_GROUP)) {
+                            fail("启动任务「${task.name}」失败，已终止本轮", null)
+                            return@launch
+                        }
+                        failedTasks += task.name
+                        log("✗ 任务「${task.name}」失败（status=${result["status"]}），跳过继续")
+                        return@forEachIndexed
                     }
                 }
-                _state.update { it.copy(phase = Phase.DONE, currentTask = null, taskRunning = false) }
-                log("全部任务完成")
+                if (failedTasks.isEmpty()) {
+                    _state.update { it.copy(phase = Phase.DONE, currentTask = null, taskRunning = false) }
+                    log("全部任务完成")
+                } else {
+                    val summary = "有 ${failedTasks.size} 个任务失败：${failedTasks.joinToString("、")}"
+                    _state.update {
+                        it.copy(
+                            phase = Phase.DONE,
+                            currentTask = null,
+                            taskRunning = false,
+                            lastError = summary,
+                        )
+                    }
+                    log("本轮结束：成功 ${chosen.size - failedTasks.size}/${chosen.size}，$summary")
+                }
             } catch (t: Throwable) {
                 if (stopRequested) {
                     _state.update { it.copy(phase = Phase.IDLE, currentTask = null, taskRunning = false) }
