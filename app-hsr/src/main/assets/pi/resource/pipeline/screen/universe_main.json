@@ -128,6 +128,42 @@
       "march7th:note": "在 universe_report 上时，沿上游第一条 universe_report -> universe_main 边前进"
     }
   },
+  "__NavRecheck_universe_main_from_guide5": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_universe_main",
+      "NavTo_guide5"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_guide5 之前先复查 Screen_universe_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_universe_main_from_universe_expansion": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_universe_main",
+      "NavTo_universe_expansion"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_universe_expansion 之前先复查 Screen_universe_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_universe_main_from_universe_report": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_universe_main",
+      "NavTo_universe_report"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_universe_report 之前先复查 Screen_universe_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
   "NavTo_universe_main": {
     "recognition": "DirectHit",
     "action": "DoNothing",
@@ -136,9 +172,9 @@
       "Nav_universe_main_from_guide5",
       "Nav_universe_main_from_universe_expansion",
       "Nav_universe_main_from_universe_report",
-      "NavTo_guide5",
-      "NavTo_universe_expansion",
-      "NavTo_universe_report"
+      "__NavRecheck_universe_main_from_guide5",
+      "__NavRecheck_universe_main_from_universe_expansion",
+      "__NavRecheck_universe_main_from_universe_report"
     ],
     "attach": {
       "march7th:kind": "nav-router",

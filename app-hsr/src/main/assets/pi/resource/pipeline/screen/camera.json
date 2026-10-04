@@ -78,6 +78,30 @@
       "march7th:note": "在 photo_preview 上时，沿上游第一条 photo_preview -> camera 边前进"
     }
   },
+  "__NavRecheck_camera_from_menu": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_camera",
+      "NavTo_menu"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_menu 之前先复查 Screen_camera：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_camera_from_photo_preview": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_camera",
+      "NavTo_photo_preview"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_photo_preview 之前先复查 Screen_camera：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
   "NavTo_camera": {
     "recognition": "DirectHit",
     "action": "DoNothing",
@@ -85,8 +109,8 @@
       "Screen_camera",
       "Nav_camera_from_menu",
       "Nav_camera_from_photo_preview",
-      "NavTo_menu",
-      "NavTo_photo_preview"
+      "__NavRecheck_camera_from_menu",
+      "__NavRecheck_camera_from_photo_preview"
     ],
     "attach": {
       "march7th:kind": "nav-router",

@@ -127,6 +127,30 @@
       "march7th:note": "在 guide5 上时，沿上游第一条 guide5 -> divergent_main 边前进"
     }
   },
+  "__NavRecheck_divergent_main_from_guide5": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_divergent_main",
+      "NavTo_guide5"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_guide5 之前先复查 Screen_divergent_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_divergent_main_from_divergent_mode_select": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_divergent_main",
+      "NavTo_divergent_mode_select"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_divergent_mode_select 之前先复查 Screen_divergent_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
   "NavTo_divergent_main": {
     "recognition": "DirectHit",
     "action": "DoNothing",
@@ -134,8 +158,8 @@
       "Screen_divergent_main",
       "Nav_divergent_main_from_guide5",
       "Nav_divergent_main_from_divergent_mode_select",
-      "NavTo_guide5",
-      "NavTo_divergent_mode_select"
+      "__NavRecheck_divergent_main_from_guide5",
+      "__NavRecheck_divergent_main_from_divergent_mode_select"
     ],
     "attach": {
       "march7th:kind": "nav-router",

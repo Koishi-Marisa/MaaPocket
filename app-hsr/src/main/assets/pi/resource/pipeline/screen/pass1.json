@@ -125,6 +125,42 @@
       "march7th:note": "在 start_srpass 上时，沿上游第一条 start_srpass -> pass1 边前进"
     }
   },
+  "__NavRecheck_pass1_from_menu": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_pass1",
+      "NavTo_menu"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_menu 之前先复查 Screen_pass1：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_pass1_from_pass2": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_pass1",
+      "NavTo_pass2"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_pass2 之前先复查 Screen_pass1：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_pass1_from_start_srpass": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_pass1",
+      "NavTo_start_srpass"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_start_srpass 之前先复查 Screen_pass1：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
   "NavTo_pass1": {
     "recognition": "DirectHit",
     "action": "DoNothing",
@@ -133,9 +169,9 @@
       "Nav_pass1_from_menu",
       "Nav_pass1_from_pass2",
       "Nav_pass1_from_start_srpass",
-      "NavTo_menu",
-      "NavTo_pass2",
-      "NavTo_start_srpass"
+      "__NavRecheck_pass1_from_menu",
+      "__NavRecheck_pass1_from_pass2",
+      "__NavRecheck_pass1_from_start_srpass"
     ],
     "attach": {
       "march7th:kind": "nav-router",

@@ -124,6 +124,30 @@
       "march7th:note": "在 stellar_warp 上时，沿上游第一条 stellar_warp -> himeko_try 边前进"
     }
   },
+  "__NavRecheck_himeko_try_from_stellar_warp": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_himeko_try",
+      "NavTo_stellar_warp"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_stellar_warp 之前先复查 Screen_himeko_try：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_himeko_try_from_himeko_prepare": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_himeko_try",
+      "NavTo_himeko_prepare"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_himeko_prepare 之前先复查 Screen_himeko_try：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
   "NavTo_himeko_try": {
     "recognition": "DirectHit",
     "action": "DoNothing",
@@ -131,8 +155,8 @@
       "Screen_himeko_try",
       "Nav_himeko_try_from_stellar_warp",
       "Nav_himeko_try_from_himeko_prepare",
-      "NavTo_stellar_warp",
-      "NavTo_himeko_prepare"
+      "__NavRecheck_himeko_try_from_stellar_warp",
+      "__NavRecheck_himeko_try_from_himeko_prepare"
     ],
     "attach": {
       "march7th:kind": "nav-router",

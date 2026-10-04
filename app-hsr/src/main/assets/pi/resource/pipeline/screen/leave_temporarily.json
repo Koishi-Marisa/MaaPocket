@@ -84,13 +84,25 @@
       "march7th:note": "在 universe_map 上时，沿上游第一条 universe_map -> leave_temporarily 边前进"
     }
   },
+  "__NavRecheck_leave_temporarily_from_universe_map": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_leave_temporarily",
+      "NavTo_universe_map"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_universe_map 之前先复查 Screen_leave_temporarily：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
   "NavTo_leave_temporarily": {
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
       "Screen_leave_temporarily",
       "Nav_leave_temporarily_from_universe_map",
-      "NavTo_universe_map"
+      "__NavRecheck_leave_temporarily_from_universe_map"
     ],
     "attach": {
       "march7th:kind": "nav-router",

@@ -103,6 +103,30 @@
       "march7th:note": "在 start_game 上时，沿上游第一条 start_game -> click_enter 边前进"
     }
   },
+  "__NavRecheck_click_enter_from_enter_cloud_game": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_click_enter",
+      "NavTo_enter_cloud_game"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_enter_cloud_game 之前先复查 Screen_click_enter：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_click_enter_from_start_game": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_click_enter",
+      "NavTo_start_game"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_start_game 之前先复查 Screen_click_enter：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
   "NavTo_click_enter": {
     "recognition": "DirectHit",
     "action": "DoNothing",
@@ -110,8 +134,8 @@
       "Screen_click_enter",
       "Nav_click_enter_from_enter_cloud_game",
       "Nav_click_enter_from_start_game",
-      "NavTo_enter_cloud_game",
-      "NavTo_start_game"
+      "__NavRecheck_click_enter_from_enter_cloud_game",
+      "__NavRecheck_click_enter_from_start_game"
     ],
     "attach": {
       "march7th:kind": "nav-router",

@@ -374,6 +374,54 @@
       "march7th:note": "在 menu 上时，沿上游第一条 menu -> guide5 边前进"
     }
   },
+  "__NavRecheck_guide5_from_menu": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_guide5",
+      "NavTo_menu"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_menu 之前先复查 Screen_guide5：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_guide5_from_guide2": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_guide5",
+      "NavTo_guide2"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_guide2 之前先复查 Screen_guide5：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_guide5_from_guide3": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_guide5",
+      "NavTo_guide3"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_guide3 之前先复查 Screen_guide5：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_guide5_from_guide4": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_guide5",
+      "NavTo_guide4"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_guide4 之前先复查 Screen_guide5：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
   "NavTo_guide5": {
     "recognition": "DirectHit",
     "action": "DoNothing",
@@ -383,10 +431,10 @@
       "Nav_guide5_from_guide2",
       "Nav_guide5_from_guide3",
       "Nav_guide5_from_guide4",
-      "NavTo_menu",
-      "NavTo_guide2",
-      "NavTo_guide3",
-      "NavTo_guide4"
+      "__NavRecheck_guide5_from_menu",
+      "__NavRecheck_guide5_from_guide2",
+      "__NavRecheck_guide5_from_guide3",
+      "__NavRecheck_guide5_from_guide4"
     ],
     "attach": {
       "march7th:kind": "nav-router",

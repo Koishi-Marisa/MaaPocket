@@ -59,13 +59,25 @@
       "march7th:note": "在 memory_of_chaos 上时，沿上游第一条 memory_of_chaos -> memory 边前进"
     }
   },
+  "__NavRecheck_memory_from_memory_of_chaos": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_memory",
+      "NavTo_memory_of_chaos"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_memory_of_chaos 之前先复查 Screen_memory：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
   "NavTo_memory": {
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
       "Screen_memory",
       "Nav_memory_from_memory_of_chaos",
-      "NavTo_memory_of_chaos"
+      "__NavRecheck_memory_from_memory_of_chaos"
     ],
     "attach": {
       "march7th:kind": "nav-router",

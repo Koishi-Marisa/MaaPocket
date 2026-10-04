@@ -106,6 +106,30 @@
       "march7th:note": "在 menu 上时，沿上游第一条 menu -> consumables 边前进"
     }
   },
+  "__NavRecheck_consumables_from_menu": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_consumables",
+      "NavTo_menu"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_menu 之前先复查 Screen_consumables：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_consumables_from_material": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_consumables",
+      "NavTo_material"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_material 之前先复查 Screen_consumables：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
   "NavTo_consumables": {
     "recognition": "DirectHit",
     "action": "DoNothing",
@@ -113,8 +137,8 @@
       "Screen_consumables",
       "Nav_consumables_from_menu",
       "Nav_consumables_from_material",
-      "NavTo_menu",
-      "NavTo_material"
+      "__NavRecheck_consumables_from_menu",
+      "__NavRecheck_consumables_from_material"
     ],
     "attach": {
       "march7th:kind": "nav-router",

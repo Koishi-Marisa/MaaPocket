@@ -78,6 +78,30 @@
       "march7th:note": "在 map3d 上时，沿上游第一条 map3d -> map 边前进"
     }
   },
+  "__NavRecheck_map_from_main": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_map",
+      "NavTo_main"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_main 之前先复查 Screen_map：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_map_from_map3d": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_map",
+      "NavTo_map3d"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_map3d 之前先复查 Screen_map：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
   "NavTo_map": {
     "recognition": "DirectHit",
     "action": "DoNothing",
@@ -85,8 +109,8 @@
       "Screen_map",
       "Nav_map_from_main",
       "Nav_map_from_map3d",
-      "NavTo_main",
-      "NavTo_map3d"
+      "__NavRecheck_map_from_main",
+      "__NavRecheck_map_from_map3d"
     ],
     "attach": {
       "march7th:kind": "nav-router",

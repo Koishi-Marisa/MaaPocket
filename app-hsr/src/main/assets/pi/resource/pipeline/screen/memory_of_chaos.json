@@ -134,6 +134,30 @@
       "march7th:note": "在 prepare_fight 上时，沿上游第一条 prepare_fight -> memory_of_chaos 边前进"
     }
   },
+  "__NavRecheck_memory_of_chaos_from_guide4": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_memory_of_chaos",
+      "NavTo_guide4"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_guide4 之前先复查 Screen_memory_of_chaos：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_memory_of_chaos_from_prepare_fight": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_memory_of_chaos",
+      "NavTo_prepare_fight"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_prepare_fight 之前先复查 Screen_memory_of_chaos：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
   "NavTo_memory_of_chaos": {
     "recognition": "DirectHit",
     "action": "DoNothing",
@@ -141,8 +165,8 @@
       "Screen_memory_of_chaos",
       "Nav_memory_of_chaos_from_guide4",
       "Nav_memory_of_chaos_from_prepare_fight",
-      "NavTo_guide4",
-      "NavTo_prepare_fight"
+      "__NavRecheck_memory_of_chaos_from_guide4",
+      "__NavRecheck_memory_of_chaos_from_prepare_fight"
     ],
     "attach": {
       "march7th:kind": "nav-router",

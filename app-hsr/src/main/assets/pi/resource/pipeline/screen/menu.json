@@ -1496,6 +1496,234 @@
       "march7th:note": "在 visa 上时，沿上游第一条 visa -> menu 边前进"
     }
   },
+  "__NavRecheck_menu_from_main": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_menu",
+      "NavTo_main"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_main 之前先复查 Screen_menu：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_menu_from_guide2": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_menu",
+      "NavTo_guide2"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_guide2 之前先复查 Screen_menu：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_menu_from_guide3": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_menu",
+      "NavTo_guide3"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_guide3 之前先复查 Screen_menu：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_menu_from_guide4": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_menu",
+      "NavTo_guide4"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_guide4 之前先复查 Screen_menu：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_menu_from_guide5": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_menu",
+      "NavTo_guide5"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_guide5 之前先复查 Screen_menu：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_menu_from_pass1": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_menu",
+      "NavTo_pass1"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_pass1 之前先复查 Screen_menu：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_menu_from_activity": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_menu",
+      "NavTo_activity"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_activity 之前先复查 Screen_menu：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_menu_from_consumables": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_menu",
+      "NavTo_consumables"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_consumables 之前先复查 Screen_menu：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_menu_from_achievement": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_menu",
+      "NavTo_achievement"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_achievement 之前先复查 Screen_menu：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_menu_from_bag_consumables": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_menu",
+      "NavTo_bag_consumables"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_bag_consumables 之前先复查 Screen_menu：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_menu_from_bag_lc": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_menu",
+      "NavTo_bag_lc"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_bag_lc 之前先复查 Screen_menu：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_menu_from_bag_relicset": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_menu",
+      "NavTo_bag_relicset"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_bag_relicset 之前先复查 Screen_menu：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_menu_from_dispatch": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_menu",
+      "NavTo_dispatch"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_dispatch 之前先复查 Screen_menu：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_menu_from_mail": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_menu",
+      "NavTo_mail"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_mail 之前先复查 Screen_menu：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_menu_from_material": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_menu",
+      "NavTo_material"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_material 之前先复查 Screen_menu：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_menu_from_pass2": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_menu",
+      "NavTo_pass2"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_pass2 之前先复查 Screen_menu：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_menu_from_redemption": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_menu",
+      "NavTo_redemption"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_redemption 之前先复查 Screen_menu：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_menu_from_visa": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_menu",
+      "NavTo_visa"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_visa 之前先复查 Screen_menu：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_menu_from_character_warp": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_menu",
+      "NavTo_character_warp"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_character_warp 之前先复查 Screen_menu：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
   "NavTo_menu": {
     "recognition": "DirectHit",
     "action": "DoNothing",
@@ -1520,25 +1748,25 @@
       "Nav_menu_from_redemption",
       "Nav_menu_from_visa",
       "Nav_menu_from_character_warp",
-      "NavTo_main",
-      "NavTo_guide2",
-      "NavTo_guide3",
-      "NavTo_guide4",
-      "NavTo_guide5",
-      "NavTo_pass1",
-      "NavTo_activity",
-      "NavTo_consumables",
-      "NavTo_achievement",
-      "NavTo_bag_consumables",
-      "NavTo_bag_lc",
-      "NavTo_bag_relicset",
-      "NavTo_dispatch",
-      "NavTo_mail",
-      "NavTo_material",
-      "NavTo_pass2",
-      "NavTo_redemption",
-      "NavTo_visa",
-      "NavTo_character_warp"
+      "__NavRecheck_menu_from_main",
+      "__NavRecheck_menu_from_guide2",
+      "__NavRecheck_menu_from_guide3",
+      "__NavRecheck_menu_from_guide4",
+      "__NavRecheck_menu_from_guide5",
+      "__NavRecheck_menu_from_pass1",
+      "__NavRecheck_menu_from_activity",
+      "__NavRecheck_menu_from_consumables",
+      "__NavRecheck_menu_from_achievement",
+      "__NavRecheck_menu_from_bag_consumables",
+      "__NavRecheck_menu_from_bag_lc",
+      "__NavRecheck_menu_from_bag_relicset",
+      "__NavRecheck_menu_from_dispatch",
+      "__NavRecheck_menu_from_mail",
+      "__NavRecheck_menu_from_material",
+      "__NavRecheck_menu_from_pass2",
+      "__NavRecheck_menu_from_redemption",
+      "__NavRecheck_menu_from_visa",
+      "__NavRecheck_menu_from_character_warp"
     ],
     "attach": {
       "march7th:kind": "nav-router",

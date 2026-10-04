@@ -59,13 +59,25 @@
       "march7th:note": "在 guide4 上时，沿上游第一条 guide4 -> apocalyptic 边前进"
     }
   },
+  "__NavRecheck_apocalyptic_from_guide4": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_apocalyptic",
+      "NavTo_guide4"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_guide4 之前先复查 Screen_apocalyptic：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
   "NavTo_apocalyptic": {
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
       "Screen_apocalyptic",
       "Nav_apocalyptic_from_guide4",
-      "NavTo_guide4"
+      "__NavRecheck_apocalyptic_from_guide4"
     ],
     "attach": {
       "march7th:kind": "nav-router",

@@ -20,9 +20,16 @@
     }
   },
   "main__menu__0": {
-    "recognition": "DirectHit",
-    "action": "ClickKey",
-    "key": 111,
+    "recognition": "TemplateMatch",
+    "template": "screen/menu_button.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      200,
+      200
+    ],
+    "action": "Click",
     "next": [
       "Screen_menu"
     ],
@@ -34,10 +41,10 @@
       "march7th:edge_index": 0,
       "march7th:action_index": 0,
       "march7th:expression": "auto.press_key('esc')",
-      "march7th:kind": "press_key",
+      "march7th:kind": "tap-template",
       "march7th:upstream_key": "esc",
-      "march7th:android_keycode": 111,
-      "march7th:recapture_note": "上游按 esc 打开/关闭暂停菜单（49 次中的 48 次）。Android 客户端没有键盘，esc 不会到达游戏；手机上应改为 Android KEYCODE_BACK(4)，即把 key 由 111 改成 4，或改成点击屏幕上的返回/暂停按钮的模板匹配节点。"
+      "march7th:android_keycode": null,
+      "march7th:recapture_note": "上游按 esc 打开暂停菜单（49 次中的 48 次）。Android 客户端没有键盘，真机实测 ClickKey 111 会让崩铁弹出「确定要退出？」确认框——这曾在 NavTo_main 失败时把游戏推离大世界。MaaEnd 的同类节点（SceneManager/__ScenePrivateWorldEnterMenuList）从不按键，而是 TemplateMatch 屏幕上的菜单按钮后 Click。这里改成点左上角「手机」按钮（screen/menu_button.png，65x64，取自真机虚拟屏帧）。"
     }
   },
   "main__map__0": {
@@ -565,6 +572,234 @@
       "march7th:note": "在 universe_main 上时，沿上游第一条 universe_main -> main 边前进"
     }
   },
+  "__NavRecheck_main_from_menu": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_menu"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_menu 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_universe_main": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_universe_main"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_universe_main 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_camera": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_camera"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_camera 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_click_enter": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_click_enter"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_click_enter 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_currency_wars_homepage": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_currency_wars_homepage"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_currency_wars_homepage 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_divergent_main": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_divergent_main"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_divergent_main 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_map": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_map"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_map 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_memory_of_chaos": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_memory_of_chaos"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_memory_of_chaos 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_stellar_warp": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_stellar_warp"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_stellar_warp 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_apocalyptic": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_apocalyptic"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_apocalyptic 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_configure_team": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_configure_team"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_configure_team 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_incoming_message": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_incoming_message"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_incoming_message 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_leave_temporarily": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_leave_temporarily"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_leave_temporarily 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_memory": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_memory"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_memory 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_purefiction": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_purefiction"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_purefiction 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_universe_expansion": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_universe_expansion"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_universe_expansion 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_fight_exit": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_fight_exit"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_fight_exit 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_monthly_card": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_monthly_card"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_monthly_card 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_retreat": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_retreat"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_retreat 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
   "NavTo_main": {
     "recognition": "DirectHit",
     "action": "DoNothing",
@@ -590,25 +825,25 @@
       "Nav_main_from_fight_exit",
       "Nav_main_from_monthly_card",
       "Nav_main_from_retreat",
-      "NavTo_menu",
-      "NavTo_universe_main",
-      "NavTo_camera",
-      "NavTo_click_enter",
-      "NavTo_currency_wars_homepage",
-      "NavTo_divergent_main",
-      "NavTo_map",
-      "NavTo_memory_of_chaos",
-      "NavTo_stellar_warp",
-      "NavTo_apocalyptic",
-      "NavTo_configure_team",
-      "NavTo_incoming_message",
-      "NavTo_leave_temporarily",
-      "NavTo_memory",
-      "NavTo_purefiction",
-      "NavTo_universe_expansion",
-      "NavTo_fight_exit",
-      "NavTo_monthly_card",
-      "NavTo_retreat"
+      "__NavRecheck_main_from_menu",
+      "__NavRecheck_main_from_universe_main",
+      "__NavRecheck_main_from_camera",
+      "__NavRecheck_main_from_click_enter",
+      "__NavRecheck_main_from_currency_wars_homepage",
+      "__NavRecheck_main_from_divergent_main",
+      "__NavRecheck_main_from_map",
+      "__NavRecheck_main_from_memory_of_chaos",
+      "__NavRecheck_main_from_stellar_warp",
+      "__NavRecheck_main_from_apocalyptic",
+      "__NavRecheck_main_from_configure_team",
+      "__NavRecheck_main_from_incoming_message",
+      "__NavRecheck_main_from_leave_temporarily",
+      "__NavRecheck_main_from_memory",
+      "__NavRecheck_main_from_purefiction",
+      "__NavRecheck_main_from_universe_expansion",
+      "__NavRecheck_main_from_fight_exit",
+      "__NavRecheck_main_from_monthly_card",
+      "__NavRecheck_main_from_retreat"
     ],
     "attach": {
       "march7th:kind": "nav-router",

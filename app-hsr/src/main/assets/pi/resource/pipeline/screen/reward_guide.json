@@ -65,13 +65,25 @@
       "march7th:note": "在 activity 上时，沿上游第一条 activity -> reward_guide 边前进"
     }
   },
+  "__NavRecheck_reward_guide_from_activity": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_reward_guide",
+      "NavTo_activity"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_activity 之前先复查 Screen_reward_guide：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
   "NavTo_reward_guide": {
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
       "Screen_reward_guide",
       "Nav_reward_guide_from_activity",
-      "NavTo_activity"
+      "__NavRecheck_reward_guide_from_activity"
     ],
     "attach": {
       "march7th:kind": "nav-router",
