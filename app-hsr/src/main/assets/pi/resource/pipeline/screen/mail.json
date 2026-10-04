@@ -64,7 +64,8 @@
     "action": "DoNothing",
     "next": [
       "Nav_mail_from_menu",
-      "Screen_mail"
+      "Screen_mail",
+      "NavTo_menu"
     ],
     "attach": {
       "march7th:kind": "nav-router",

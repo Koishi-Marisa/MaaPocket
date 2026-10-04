@@ -133,7 +133,9 @@
     "next": [
       "Nav_currency_wars_homepage_from_currency_wars_mode_select",
       "Nav_currency_wars_homepage_from_guide5",
-      "Screen_currency_wars_homepage"
+      "Screen_currency_wars_homepage",
+      "NavTo_guide5",
+      "NavTo_currency_wars_mode_select"
     ],
     "attach": {
       "march7th:kind": "nav-router",

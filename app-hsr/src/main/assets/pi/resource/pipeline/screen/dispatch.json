@@ -64,7 +64,8 @@
     "action": "DoNothing",
     "next": [
       "Nav_dispatch_from_menu",
-      "Screen_dispatch"
+      "Screen_dispatch",
+      "NavTo_menu"
     ],
     "attach": {
       "march7th:kind": "nav-router",

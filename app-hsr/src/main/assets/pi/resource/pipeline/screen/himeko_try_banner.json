@@ -64,7 +64,8 @@
     "action": "DoNothing",
     "next": [
       "Nav_himeko_try_banner_from_himeko_try",
-      "Screen_himeko_try_banner"
+      "Screen_himeko_try_banner",
+      "NavTo_himeko_try"
     ],
     "attach": {
       "march7th:kind": "nav-router",

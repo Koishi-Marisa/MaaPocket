@@ -208,7 +208,11 @@
       "Nav_guide3_from_guide4",
       "Nav_guide3_from_guide5",
       "Nav_guide3_from_menu",
-      "Screen_guide3"
+      "Screen_guide3",
+      "NavTo_menu",
+      "NavTo_guide2",
+      "NavTo_guide4",
+      "NavTo_guide5"
     ],
     "attach": {
       "march7th:kind": "nav-router",

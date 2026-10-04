@@ -64,7 +64,8 @@
     "action": "DoNothing",
     "next": [
       "Nav_bag_consumables_from_menu",
-      "Screen_bag_consumables"
+      "Screen_bag_consumables",
+      "NavTo_menu"
     ],
     "attach": {
       "march7th:kind": "nav-router",

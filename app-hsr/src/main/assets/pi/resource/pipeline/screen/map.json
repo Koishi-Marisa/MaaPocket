@@ -84,7 +84,9 @@
     "next": [
       "Nav_map_from_main",
       "Nav_map_from_map3d",
-      "Screen_map"
+      "Screen_map",
+      "NavTo_main",
+      "NavTo_map3d"
     ],
     "attach": {
       "march7th:kind": "nav-router",

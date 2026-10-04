@@ -64,7 +64,8 @@
     "action": "DoNothing",
     "next": [
       "Nav_apocalyptic_from_guide4",
-      "Screen_apocalyptic"
+      "Screen_apocalyptic",
+      "NavTo_guide4"
     ],
     "attach": {
       "march7th:kind": "nav-router",

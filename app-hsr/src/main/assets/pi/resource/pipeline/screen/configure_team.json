@@ -64,7 +64,8 @@
     "action": "DoNothing",
     "next": [
       "Nav_configure_team_from_menu",
-      "Screen_configure_team"
+      "Screen_configure_team",
+      "NavTo_menu"
     ],
     "attach": {
       "march7th:kind": "nav-router",

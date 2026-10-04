@@ -64,7 +64,8 @@
     "action": "DoNothing",
     "next": [
       "Nav_visa_from_menu",
-      "Screen_visa"
+      "Screen_visa",
+      "NavTo_menu"
     ],
     "attach": {
       "march7th:kind": "nav-router",

@@ -140,7 +140,9 @@
     "next": [
       "Nav_memory_of_chaos_from_guide4",
       "Nav_memory_of_chaos_from_prepare_fight",
-      "Screen_memory_of_chaos"
+      "Screen_memory_of_chaos",
+      "NavTo_guide4",
+      "NavTo_prepare_fight"
     ],
     "attach": {
       "march7th:kind": "nav-router",

@@ -64,7 +64,8 @@
     "action": "DoNothing",
     "next": [
       "Nav_currency_wars_mode_select_overclock_from_currency_wars_mode_select",
-      "Screen_currency_wars_mode_select_overclock"
+      "Screen_currency_wars_mode_select_overclock",
+      "NavTo_currency_wars_mode_select"
     ],
     "attach": {
       "march7th:kind": "nav-router",

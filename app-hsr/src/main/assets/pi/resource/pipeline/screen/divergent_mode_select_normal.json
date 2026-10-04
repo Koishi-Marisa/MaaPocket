@@ -64,7 +64,8 @@
     "action": "DoNothing",
     "next": [
       "Nav_divergent_mode_select_normal_from_divergent_mode_select",
-      "Screen_divergent_mode_select_normal"
+      "Screen_divergent_mode_select_normal",
+      "NavTo_divergent_mode_select"
     ],
     "attach": {
       "march7th:kind": "nav-router",

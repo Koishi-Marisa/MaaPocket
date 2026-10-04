@@ -130,7 +130,9 @@
     "next": [
       "Nav_stellar_warp_from_himeko_try",
       "Nav_stellar_warp_from_main",
-      "Screen_stellar_warp"
+      "Screen_stellar_warp",
+      "NavTo_main",
+      "NavTo_himeko_try"
     ],
     "attach": {
       "march7th:kind": "nav-router",

@@ -109,7 +109,9 @@
     "next": [
       "Nav_click_enter_from_enter_cloud_game",
       "Nav_click_enter_from_start_game",
-      "Screen_click_enter"
+      "Screen_click_enter",
+      "NavTo_enter_cloud_game",
+      "NavTo_start_game"
     ],
     "attach": {
       "march7th:kind": "nav-router",

@@ -89,7 +89,8 @@
     "action": "DoNothing",
     "next": [
       "Nav_leave_temporarily_from_universe_map",
-      "Screen_leave_temporarily"
+      "Screen_leave_temporarily",
+      "NavTo_universe_map"
     ],
     "attach": {
       "march7th:kind": "nav-router",

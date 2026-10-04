@@ -112,7 +112,9 @@
     "next": [
       "Nav_consumables_from_material",
       "Nav_consumables_from_menu",
-      "Screen_consumables"
+      "Screen_consumables",
+      "NavTo_menu",
+      "NavTo_material"
     ],
     "attach": {
       "march7th:kind": "nav-router",

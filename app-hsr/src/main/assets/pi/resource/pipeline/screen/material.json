@@ -92,7 +92,8 @@
     "action": "DoNothing",
     "next": [
       "Nav_material_from_consumables",
-      "Screen_material"
+      "Screen_material",
+      "NavTo_consumables"
     ],
     "attach": {
       "march7th:kind": "nav-router",

@@ -64,7 +64,8 @@
     "action": "DoNothing",
     "next": [
       "Nav_achievement_from_menu",
-      "Screen_achievement"
+      "Screen_achievement",
+      "NavTo_menu"
     ],
     "attach": {
       "march7th:kind": "nav-router",

@@ -133,7 +133,9 @@
     "next": [
       "Nav_divergent_main_from_divergent_mode_select",
       "Nav_divergent_main_from_guide5",
-      "Screen_divergent_main"
+      "Screen_divergent_main",
+      "NavTo_guide5",
+      "NavTo_divergent_mode_select"
     ],
     "attach": {
       "march7th:kind": "nav-router",

@@ -95,7 +95,8 @@
     "action": "DoNothing",
     "next": [
       "Nav_universe_expansion_from_universe_main",
-      "Screen_universe_expansion"
+      "Screen_universe_expansion",
+      "NavTo_universe_main"
     ],
     "attach": {
       "march7th:kind": "nav-router",

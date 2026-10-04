@@ -64,7 +64,8 @@
     "action": "DoNothing",
     "next": [
       "Nav_incoming_message_from_main",
-      "Screen_incoming_message"
+      "Screen_incoming_message",
+      "NavTo_main"
     ],
     "attach": {
       "march7th:kind": "nav-router",

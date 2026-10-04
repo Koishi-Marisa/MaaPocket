@@ -84,7 +84,9 @@
     "next": [
       "Nav_camera_from_menu",
       "Nav_camera_from_photo_preview",
-      "Screen_camera"
+      "Screen_camera",
+      "NavTo_menu",
+      "NavTo_photo_preview"
     ],
     "attach": {
       "march7th:kind": "nav-router",

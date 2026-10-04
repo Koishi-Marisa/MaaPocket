@@ -113,7 +113,8 @@
     "action": "DoNothing",
     "next": [
       "Nav_himeko_prepare_from_himeko_try_banner",
-      "Screen_himeko_prepare"
+      "Screen_himeko_prepare",
+      "NavTo_himeko_try_banner"
     ],
     "attach": {
       "march7th:kind": "nav-router",

@@ -64,7 +64,8 @@
     "action": "DoNothing",
     "next": [
       "Nav_currency_wars_mode_select_normal_from_currency_wars_mode_select",
-      "Screen_currency_wars_mode_select_normal"
+      "Screen_currency_wars_mode_select_normal",
+      "NavTo_currency_wars_mode_select"
     ],
     "attach": {
       "march7th:kind": "nav-router",

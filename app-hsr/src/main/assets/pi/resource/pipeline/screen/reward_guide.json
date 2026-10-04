@@ -70,7 +70,8 @@
     "action": "DoNothing",
     "next": [
       "Nav_reward_guide_from_activity",
-      "Screen_reward_guide"
+      "Screen_reward_guide",
+      "NavTo_activity"
     ],
     "attach": {
       "march7th:kind": "nav-router",

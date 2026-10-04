@@ -64,7 +64,8 @@
     "action": "DoNothing",
     "next": [
       "Nav_redemption_from_menu",
-      "Screen_redemption"
+      "Screen_redemption",
+      "NavTo_menu"
     ],
     "attach": {
       "march7th:kind": "nav-router",

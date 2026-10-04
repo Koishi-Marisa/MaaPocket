@@ -92,7 +92,8 @@
     "action": "DoNothing",
     "next": [
       "Nav_pass2_from_pass1",
-      "Screen_pass2"
+      "Screen_pass2",
+      "NavTo_pass1"
     ],
     "attach": {
       "march7th:kind": "nav-router",

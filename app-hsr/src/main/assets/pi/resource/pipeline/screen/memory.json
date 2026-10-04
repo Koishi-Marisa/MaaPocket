@@ -64,7 +64,8 @@
     "action": "DoNothing",
     "next": [
       "Nav_memory_from_memory_of_chaos",
-      "Screen_memory"
+      "Screen_memory",
+      "NavTo_memory_of_chaos"
     ],
     "attach": {
       "march7th:kind": "nav-router",

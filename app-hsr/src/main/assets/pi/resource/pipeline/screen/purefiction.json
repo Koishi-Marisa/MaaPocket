@@ -64,7 +64,8 @@
     "action": "DoNothing",
     "next": [
       "Nav_purefiction_from_guide4",
-      "Screen_purefiction"
+      "Screen_purefiction",
+      "NavTo_guide4"
     ],
     "attach": {
       "march7th:kind": "nav-router",
