@@ -63,8 +63,8 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
-      "Nav_apocalyptic_from_guide4",
       "Screen_apocalyptic",
+      "Nav_apocalyptic_from_guide4",
       "NavTo_guide4"
     ],
     "attach": {

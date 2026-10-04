@@ -63,8 +63,8 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
-      "Nav_visa_from_menu",
       "Screen_visa",
+      "Nav_visa_from_menu",
       "NavTo_menu"
     ],
     "attach": {

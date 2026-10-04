@@ -94,8 +94,8 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
-      "Nav_universe_expansion_from_universe_main",
       "Screen_universe_expansion",
+      "Nav_universe_expansion_from_universe_main",
       "NavTo_universe_main"
     ],
     "attach": {

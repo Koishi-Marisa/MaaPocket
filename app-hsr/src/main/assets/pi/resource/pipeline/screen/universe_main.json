@@ -132,10 +132,10 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
+      "Screen_universe_main",
       "Nav_universe_main_from_guide5",
       "Nav_universe_main_from_universe_expansion",
       "Nav_universe_main_from_universe_report",
-      "Screen_universe_main",
       "NavTo_guide5",
       "NavTo_universe_expansion",
       "NavTo_universe_report"

@@ -88,8 +88,8 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
-      "Nav_leave_temporarily_from_universe_map",
       "Screen_leave_temporarily",
+      "Nav_leave_temporarily_from_universe_map",
       "NavTo_universe_map"
     ],
     "attach": {

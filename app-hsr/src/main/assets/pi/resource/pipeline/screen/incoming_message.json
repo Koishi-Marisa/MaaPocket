@@ -63,8 +63,8 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
-      "Nav_incoming_message_from_main",
       "Screen_incoming_message",
+      "Nav_incoming_message_from_main",
       "NavTo_main"
     ],
     "attach": {

@@ -147,10 +147,10 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
+      "Screen_divergent_mode_select",
       "Nav_divergent_mode_select_from_divergent_main",
       "Nav_divergent_mode_select_from_divergent_mode_select_cycle",
       "Nav_divergent_mode_select_from_divergent_mode_select_normal",
-      "Screen_divergent_mode_select",
       "NavTo_divergent_main",
       "NavTo_divergent_mode_select_cycle",
       "NavTo_divergent_mode_select_normal"

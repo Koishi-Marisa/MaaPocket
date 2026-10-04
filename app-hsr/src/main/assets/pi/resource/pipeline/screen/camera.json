@@ -82,9 +82,9 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
+      "Screen_camera",
       "Nav_camera_from_menu",
       "Nav_camera_from_photo_preview",
-      "Screen_camera",
       "NavTo_menu",
       "NavTo_photo_preview"
     ],

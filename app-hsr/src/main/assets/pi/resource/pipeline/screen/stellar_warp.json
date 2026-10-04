@@ -128,9 +128,9 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
-      "Nav_stellar_warp_from_himeko_try",
-      "Nav_stellar_warp_from_main",
       "Screen_stellar_warp",
+      "Nav_stellar_warp_from_main",
+      "Nav_stellar_warp_from_himeko_try",
       "NavTo_main",
       "NavTo_himeko_try"
     ],

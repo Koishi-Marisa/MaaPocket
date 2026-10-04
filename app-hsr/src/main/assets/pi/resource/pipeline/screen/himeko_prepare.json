@@ -112,8 +112,8 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
-      "Nav_himeko_prepare_from_himeko_try_banner",
       "Screen_himeko_prepare",
+      "Nav_himeko_prepare_from_himeko_try_banner",
       "NavTo_himeko_try_banner"
     ],
     "attach": {

@@ -69,8 +69,8 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
-      "Nav_reward_guide_from_activity",
       "Screen_reward_guide",
+      "Nav_reward_guide_from_activity",
       "NavTo_activity"
     ],
     "attach": {

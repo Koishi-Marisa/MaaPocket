@@ -63,8 +63,8 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
-      "Nav_bag_consumables_from_menu",
       "Screen_bag_consumables",
+      "Nav_bag_consumables_from_menu",
       "NavTo_menu"
     ],
     "attach": {

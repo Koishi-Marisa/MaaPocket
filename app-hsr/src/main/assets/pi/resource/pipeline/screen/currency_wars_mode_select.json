@@ -217,10 +217,10 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
+      "Screen_currency_wars_mode_select",
       "Nav_currency_wars_mode_select_from_currency_wars_homepage",
       "Nav_currency_wars_mode_select_from_currency_wars_mode_select_normal",
       "Nav_currency_wars_mode_select_from_currency_wars_mode_select_overclock",
-      "Screen_currency_wars_mode_select",
       "NavTo_currency_wars_homepage",
       "NavTo_currency_wars_mode_select_normal",
       "NavTo_currency_wars_mode_select_overclock"

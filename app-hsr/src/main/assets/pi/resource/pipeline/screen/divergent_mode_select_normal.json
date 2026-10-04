@@ -63,8 +63,8 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
-      "Nav_divergent_mode_select_normal_from_divergent_mode_select",
       "Screen_divergent_mode_select_normal",
+      "Nav_divergent_mode_select_normal_from_divergent_mode_select",
       "NavTo_divergent_mode_select"
     ],
     "attach": {

@@ -138,9 +138,9 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
+      "Screen_memory_of_chaos",
       "Nav_memory_of_chaos_from_guide4",
       "Nav_memory_of_chaos_from_prepare_fight",
-      "Screen_memory_of_chaos",
       "NavTo_guide4",
       "NavTo_prepare_fight"
     ],

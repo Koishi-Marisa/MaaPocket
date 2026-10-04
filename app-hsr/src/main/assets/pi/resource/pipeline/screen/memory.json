@@ -63,8 +63,8 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
-      "Nav_memory_from_memory_of_chaos",
       "Screen_memory",
+      "Nav_memory_from_memory_of_chaos",
       "NavTo_memory_of_chaos"
     ],
     "attach": {

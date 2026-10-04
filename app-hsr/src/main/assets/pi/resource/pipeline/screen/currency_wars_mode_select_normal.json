@@ -63,8 +63,8 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
-      "Nav_currency_wars_mode_select_normal_from_currency_wars_mode_select",
       "Screen_currency_wars_mode_select_normal",
+      "Nav_currency_wars_mode_select_normal_from_currency_wars_mode_select",
       "NavTo_currency_wars_mode_select"
     ],
     "attach": {

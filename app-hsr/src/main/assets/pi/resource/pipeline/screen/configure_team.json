@@ -63,8 +63,8 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
-      "Nav_configure_team_from_menu",
       "Screen_configure_team",
+      "Nav_configure_team_from_menu",
       "NavTo_menu"
     ],
     "attach": {

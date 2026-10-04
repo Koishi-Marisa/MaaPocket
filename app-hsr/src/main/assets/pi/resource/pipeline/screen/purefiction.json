@@ -63,8 +63,8 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
-      "Nav_purefiction_from_guide4",
       "Screen_purefiction",
+      "Nav_purefiction_from_guide4",
       "NavTo_guide4"
     ],
     "attach": {

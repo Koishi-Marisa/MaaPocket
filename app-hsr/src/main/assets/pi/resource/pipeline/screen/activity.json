@@ -171,9 +171,9 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
+      "Screen_activity",
       "Nav_activity_from_menu",
       "Nav_activity_from_reward_guide",
-      "Screen_activity",
       "NavTo_menu",
       "NavTo_reward_guide"
     ],

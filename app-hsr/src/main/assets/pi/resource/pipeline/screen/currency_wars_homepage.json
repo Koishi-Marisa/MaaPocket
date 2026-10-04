@@ -131,9 +131,9 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
-      "Nav_currency_wars_homepage_from_currency_wars_mode_select",
-      "Nav_currency_wars_homepage_from_guide5",
       "Screen_currency_wars_homepage",
+      "Nav_currency_wars_homepage_from_guide5",
+      "Nav_currency_wars_homepage_from_currency_wars_mode_select",
       "NavTo_guide5",
       "NavTo_currency_wars_mode_select"
     ],

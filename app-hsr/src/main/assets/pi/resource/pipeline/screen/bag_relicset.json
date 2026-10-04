@@ -63,8 +63,8 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
-      "Nav_bag_relicset_from_menu",
       "Screen_bag_relicset",
+      "Nav_bag_relicset_from_menu",
       "NavTo_menu"
     ],
     "attach": {

@@ -72,8 +72,8 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
-      "Nav_divergent_mode_select_cycle_from_divergent_mode_select",
       "Screen_divergent_mode_select_cycle",
+      "Nav_divergent_mode_select_cycle_from_divergent_mode_select",
       "NavTo_divergent_mode_select"
     ],
     "attach": {

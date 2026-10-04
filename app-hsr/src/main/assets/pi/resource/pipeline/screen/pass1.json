@@ -129,10 +129,10 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
+      "Screen_pass1",
       "Nav_pass1_from_menu",
       "Nav_pass1_from_pass2",
       "Nav_pass1_from_start_srpass",
-      "Screen_pass1",
       "NavTo_menu",
       "NavTo_pass2",
       "NavTo_start_srpass"

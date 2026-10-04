@@ -378,11 +378,11 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
+      "Screen_guide5",
+      "Nav_guide5_from_menu",
       "Nav_guide5_from_guide2",
       "Nav_guide5_from_guide3",
       "Nav_guide5_from_guide4",
-      "Nav_guide5_from_menu",
-      "Screen_guide5",
       "NavTo_menu",
       "NavTo_guide2",
       "NavTo_guide3",

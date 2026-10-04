@@ -110,9 +110,9 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
-      "Nav_consumables_from_material",
-      "Nav_consumables_from_menu",
       "Screen_consumables",
+      "Nav_consumables_from_menu",
+      "Nav_consumables_from_material",
       "NavTo_menu",
       "NavTo_material"
     ],
