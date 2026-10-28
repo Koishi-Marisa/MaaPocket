@@ -1,0 +1,190 @@
+name: maa-kotlin-ui apk
+
+# 构建「基于 MaaKotlinUI 的 MaaPocket」阶段 1 APK（崩铁·领取每日奖励）。
+# 工程在 maa-kotlin-ui/ 下，资源包（interface.json + resource/base）随源码入库。
+#
+# 产物：MaaPocket-HSR-stage1.apk（arm64-v8a，固定 keystore 签名，可直接覆盖安装）。
+# 首次/换版本时先在本地跑 scripts/setup_maaframework.py 也能得到同样的 jniLibs。
+
+on:
+  push:
+    paths:
+      - 'maa-kotlin-ui/**'
+      - 'keystore/**'
+      - '.github/workflows/maa-kotlin-ui.yml'
+  pull_request:
+    paths:
+      - 'maa-kotlin-ui/**'
+      - 'keystore/**'
+      - '.github/workflows/maa-kotlin-ui.yml'
+  workflow_dispatch:
+    inputs:
+      maafw_tag:
+        description: 'MaaFramework release tag'
+        required: false
+        type: string
+        default: 'v5.12.3'
+
+concurrency:
+  group: maa-kotlin-ui-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  PROJECT_DIR: maa-kotlin-ui
+  MAAFW_TAG: ${{ github.event.inputs.maafw_tag || 'v5.12.3' }}
+  NDK_VERSION: '25.2.9519653'
+  BUILD_TOOLS: '34.0.0'
+  ANDROID_PLATFORM: 'android-34'
+
+defaults:
+  run:
+    working-directory: maa-kotlin-ui
+
+jobs:
+  build:
+    name: Build HSR stage1 APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # 与仓库根目录 build.yml 一致：显式给 packages，避免新版 cmdline-tools 里
+      # `tools` 包不存在导致 setup-android 直接失败。
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools'
+
+      - name: Install platform / build-tools / NDK / CMake
+        shell: bash
+        run: |
+          set -euo pipefail
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager --install \
+            "platforms;${ANDROID_PLATFORM}" \
+            "build-tools;${BUILD_TOOLS}" \
+            "ndk;${NDK_VERSION}" \
+            "cmake;3.22.1"
+          sdkmanager --list_installed
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up Gradle cache
+        uses: gradle/actions/setup-gradle@v4
+
+      # MaaFramework 的 libMaaFramework.so / 头文件不进 git，构建前拉 release。
+      - name: Deploy MaaFramework native libraries
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/setup_maaframework.py --tag "$MAAFW_TAG"
+          echo "jniLibs:"
+          find app/src/main/jniLibs/arm64-v8a -maxdepth 1 -type f | sort
+          echo "headers:"
+          find app/src/main/cpp/include/MaaFramework -maxdepth 1 -type f | sort | head
+
+      # 资源包是本次重构的产出，必须真的打进 APK；缺了就别浪费时间编译。
+      - name: Preflight - stage1 resource pack
+        shell: bash
+        run: |
+          set -euo pipefail
+          for f in \
+            app/src/main/assets/interface.json \
+            app/src/main/assets/resource/base/pipeline/Startup.json \
+            app/src/main/assets/resource/base/pipeline/hsr/daily/claim_rewards.json \
+            app/src/main/assets/resource/base/adaptation/template_sets.json
+          do
+            [ -f "$f" ] || { echo "::error file=$f::阶段 1 资源包缺文件"; exit 1; }
+          done
+          python scripts/check_stage1_pack.py
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      # wrapper 默认走腾讯镜像（国内本地构建友好）。GitHub runner 在海外，
+      # 换成官方分发地址，避免镜像被墙/限速导致下载超时。
+      - name: Use official Gradle distribution in CI
+        shell: bash
+        run: |
+          set -euo pipefail
+          sed -i 's#mirrors.cloud.tencent.com/gradle/#services.gradle.org/distributions/#g' \
+            gradle/wrapper/gradle-wrapper.properties
+          grep distributionUrl gradle/wrapper/gradle-wrapper.properties
+
+      # AGP 7.2.2 + Gradle 7.4.2；gradle.properties 里写死了本机 aapt2 路径，
+      # 用 -P 覆盖成 runner 上的那一份。
+      - name: Assemble release APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./gradlew :app:assembleRelease \
+            --stacktrace \
+            -Pandroid.aapt2FromMavenOverride="$ANDROID_HOME/build-tools/${BUILD_TOOLS}/aapt2"
+
+      # 不签名的 release APK 不能直接安装；用仓库内固定 keystore 签名，
+      # 保证多次 CI 产物可以互相覆盖安装（调试 keystore 每次 runner 都不同）。
+      - name: Sign APK with fixed keystore
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          tools="$ANDROID_HOME/build-tools/${BUILD_TOOLS}"
+          unsigned=app/build/outputs/apk/release/app-release-unsigned.apk
+          [ -f "$unsigned" ] || { echo "::error::找不到 $unsigned"; exit 1; }
+          aligned=dist/MaaPocket-HSR-stage1-aligned.apk
+          "$tools/zipalign" -f -p 4 "$unsigned" "$aligned"
+          "$tools/apksigner" sign \
+            --ks ../keystore/maapocket.jks \
+            --ks-type PKCS12 \
+            --ks-key-alias maapocket \
+            --ks-pass pass:maapocket \
+            --key-pass pass:maapocket \
+            --out dist/MaaPocket-HSR-stage1.apk \
+            "$aligned"
+          rm -f "$aligned"
+          "$tools/apksigner" verify --verbose --print-certs dist/MaaPocket-HSR-stage1.apk
+
+      - name: Inspect APK contents
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk=dist/MaaPocket-HSR-stage1.apk
+          echo "=== 关键资源 ==="
+          unzip -l "$apk" | grep -E 'assets/interface.json|assets/resource/base/pipeline/hsr/daily/claim_rewards.json|assets/resource/base/adaptation/template_sets.json'
+          echo "=== 原生库 ==="
+          unzip -l "$apk" | grep -E 'lib/arm64-v8a/lib(MaaFramework|bridge|launcher)\.so'
+          ls -lh "$apk"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: MaaPocket-HSR-stage1-${{ github.sha }}
+          path: maa-kotlin-ui/dist/*.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload Gradle reports and logs (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maa-kotlin-ui-gradle-reports-${{ github.sha }}
+          path: |
+            maa-kotlin-ui/**/build/reports/**
+            maa-kotlin-ui/**/build/outputs/logs/**
+            /home/runner/.gradle/daemon/**/*.log
+          if-no-files-found: warn
+          retention-days: 7

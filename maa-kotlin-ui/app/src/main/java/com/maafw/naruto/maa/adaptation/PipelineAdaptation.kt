@@ -69,7 +69,9 @@ object PipelineAdaptation {
             val original = IntArray(4) { roi.optInt(it, 0) }
             val scaled = RoiScaler.scale(original, effective)
             if (scaled.contentEquals(original)) return@forEach
-            nodeJson(override, name).put("roi", JSONArray(scaled.toList()))
+            val roiArray = JSONArray()
+            scaled.forEach { roiArray.put(it) }
+            nodeJson(override, name).put("roi", roiArray)
             roiHits++
             if (details.none { it.startsWith("$name ") }) {
                 details += diagnose(name, node, override.optJSONObject(name))
