@@ -1247,7 +1247,7 @@ private fun extractFocusFromLine(line: String): String? {
                 }
                 // 手机端适配：分辨率缩放 roi + 选择当前分辨率的模板集。
                 // 结果与选项 override 浅合并，只在节点级覆盖 roi/template。
-                val adapted = PipelineAdaptation.apply(this@MainActivity, screenProfile, finalOverride)
+                val adapted = PipelineAdaptation.apply(applicationContext, screenProfile, finalOverride)
                 if (adapted.override.length() > 0) put("pipeline_override", adapted.override.toString())
                 if (adapted.details.isNotEmpty()) {
                     addLog(adapted.summary)
@@ -1480,7 +1480,7 @@ private fun extractFocusFromLine(line: String): String? {
                     put("enabled", true)
                     put("options", org.json.JSONObject(config.options))
                     // 断点续跑同样要走适配层，否则 1080p 下 roi/模板仍然是 720p 的值
-                    val adapted = PipelineAdaptation.apply(this@MainActivity, screenProfile, null)
+                    val adapted = PipelineAdaptation.apply(applicationContext, screenProfile, null)
                     if (adapted.override.length() > 0) put("pipeline_override", adapted.override.toString())
                 })
             }

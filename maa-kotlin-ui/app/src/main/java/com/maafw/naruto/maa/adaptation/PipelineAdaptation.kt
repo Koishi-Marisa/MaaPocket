@@ -41,6 +41,12 @@ object PipelineAdaptation {
         val manifest = TemplateSelector.load(context)
             ?: return Result(override, "适配层：无模板集清单，按资源包原值运行（$profile）", emptyList())
 
+        // 资源包声明了自己的基线（清单里的 baseline），以它为准，而不是写死 720p。
+        val effective = profile.copy(
+            baselineWidth = manifest.baselineWidth,
+            baselineHeight = manifest.baselineHeight,
+        )
+
         val nodes = pipelineCache.get() ?: loadPipelineNodes(context).also { pipelineCache.set(it) }
 
         var templateHits = 0
@@ -50,7 +56,7 @@ object PipelineAdaptation {
         // 1) template：只改清单里登记过、且确实存在于 pipeline 的节点
         manifest.nodes.keys.forEach { name ->
             val pipelineNode = nodes[name] ?: return@forEach
-            val template = TemplateSelector.resolve(manifest, name, profile) ?: return@forEach
+            val template = TemplateSelector.resolve(manifest, name, effective) ?: return@forEach
             nodeJson(override, name).put("template", template)
             templateHits++
             details += diagnose(name, pipelineNode, override.optJSONObject(name))
@@ -61,7 +67,7 @@ object PipelineAdaptation {
             val roi = node.optJSONArray("roi") ?: return@forEach
             if (roi.length() != 4) return@forEach
             val original = IntArray(4) { roi.optInt(it, 0) }
-            val scaled = RoiScaler.scale(original, profile)
+            val scaled = RoiScaler.scale(original, effective)
             if (scaled.contentEquals(original)) return@forEach
             nodeJson(override, name).put("roi", JSONArray(scaled.toList()))
             roiHits++
@@ -73,7 +79,7 @@ object PipelineAdaptation {
         val summary = String.format(
             Locale.US,
             "适配层：%s，模板节点=%d，roi缩放=%d",
-            profile, templateHits, roiHits,
+            effective, templateHits, roiHits,
         )
         if (templateHits == 0 && roiHits == 0) {
             Log.i(TAG, "$summary（清单节点=${manifest.nodes.size}，pipeline 节点=${nodes.size}）")

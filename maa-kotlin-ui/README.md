@@ -6,6 +6,9 @@
 
 > 侧重：**Android 侧 UI 与 MaaFramework 引擎集成**。游戏脚本 / 资源（`assets/resource/base` 等）属于业务资源，后续会从本仓库解耦，不在此描述。
 
+> **本工作区已切换为 MaaPocket 的重构基座。** 阶段 1 只包含《崩坏：星穹铁道》的「领取每日奖励」最小闭环；
+> 构建、手机端模板采集与真机验收步骤见 [docs/HSR_STAGE1.md](docs/HSR_STAGE1.md)。
+
 ---
 
 ## 功能特性

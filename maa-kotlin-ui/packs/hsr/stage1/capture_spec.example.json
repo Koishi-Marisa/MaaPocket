@@ -7,19 +7,22 @@
   ],
   "nodes": {
     "HSR_Daily_EnterMailbox": {
-      "asset": "hsr/daily_claim/mailbox_anchor",
+      "asset": "hsr/daily_claim/mail_anchor",
       "rect": null,
-      "_note": "邮箱界面的稳定锚点（标题图标 / 页签）。必须是邮箱独有、在主界面不会出现的元素；建议 >= 96x96。"
+      "_upstream": "assets/images/screen/mail.png",
+      "_note": "对应原 PC 项目的「邮箱界面锚点」。裁邮箱标题/页签等手机端稳定元素，建议 >= 96x96；不要只裁中文字。"
     },
-    "HSR_Daily_ClickClaimAll": {
-      "asset": "hsr/daily_claim/claim_all_button",
+    "HSR_Daily_ClickReceiveAll": {
+      "asset": "hsr/daily_claim/receive_all",
       "rect": null,
-      "_note": "「一键领取 / 全部领取」按钮。优先裁图标或按钮边框，不要只裁宋体文字。"
+      "_upstream": "assets/images/zh_CN/reward/mail/receive_all.png",
+      "_note": "对应原 PC 项目一键领取（receive_all.png）。手机端按钮更宽，建议连边框一起裁到 >= 128x64。"
     },
-    "HSR_Daily_PopupConfirm": {
-      "asset": "hsr/daily_claim/reward_confirm",
+    "HSR_Daily_CloseRewardPopup": {
+      "asset": "hsr/daily_claim/click_close",
       "rect": null,
-      "_note": "领取后的奖励弹窗「确认 / 点击任意处」按钮。没有该弹窗就删掉这个节点，pipeline 会自动落到 Exit。"
+      "_upstream": "assets/images/zh_CN/base/click_close.png",
+      "_note": "对应原 PC 项目领取后点击关闭（click_close.png，max_retries=10）。若手机端点任意处关闭，则裁弹窗任意稳定角标。"
     }
   }
 }

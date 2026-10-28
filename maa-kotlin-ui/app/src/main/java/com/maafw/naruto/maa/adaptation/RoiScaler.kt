@@ -25,14 +25,4 @@ object RoiScaler {
         )
     }
 
-    /** 把任意屏幕分辨率下的 roi 反向换算回 720p 基线，供采集工具/校验脚本使用。 */
-    fun toBaseline(roi: IntArray, profile: ScreenProfile): IntArray {
-        if (isFullScreen(roi) || profile.isBaseline) return roi
-        return intArrayOf(
-            (roi[0] / profile.scaleX).toInt(),
-            (roi[1] / profile.scaleY).toInt(),
-            (roi[2] / profile.scaleX).toInt(),
-            (roi[3] / profile.scaleY).toInt(),
-        )
-    }
 }

@@ -26,7 +26,7 @@
     {
       "name": "崩铁·领取每日奖励",
       "entry": "HSR_Daily_ClaimRewards",
-      "description": "阶段 1 最小任务：要求游戏已经停在邮箱界面。Enter(mailbox anchor) → Verify(claim button) → Click(一键领取) → 可选确认奖励弹窗 → Exit(BACK)。仅使用视觉识别，不做固定坐标点击。",
+      "description": "对齐原 PC 项目 tasks/reward/mail.py：屏幕在邮箱 → 识别 receive_all 并点击（阈值 0.8）→ 等 2 秒 → 最多点 10 次 click_close 关闭奖励弹窗 → BACK 退出。阶段 1 要求游戏已停在邮箱界面；导航由阶段 2 补。仅使用视觉识别，不做固定坐标点击。",
       "default_check": true,
       "group": [
         "daily"
