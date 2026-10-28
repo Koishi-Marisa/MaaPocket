@@ -10,9 +10,11 @@
 | `app/src/main/assets/resource/base/pipeline/hsr/daily/claim_rewards.json` | 8 个节点：Enter → Verify → Click → Wait → Close → Exit |
 | `app/src/main/assets/resource/base/pipeline/Startup.json` | 预启动包名 `com.miHoYo.hkrpg`（MaaKotlinUI 的 `prelaunchGame` 读 `start_up.package`） |
 | `app/src/main/java/com/maafw/naruto/maa/adaptation/` | ScreenProfile / RoiScaler / TemplateSelector / PipelineAdaptation |
-| `scripts/capture_templates.py` | 从虚拟屏无损截图裁剪模板、生成多分辨率清单、可选 OpenCV 自检 |
+| `scripts/auto_capture_templates.py` | **半自动采集**：用原 PC 模板在手机截图里多尺度定位，自动裁剪并更新清单 |
+| `scripts/capture_templates.py` | 手工指定 rect 的裁剪、网格辅助、多分辨率输出、OpenCV 自检 |
 | `scripts/check_stage1_pack.py` | 不连真机也能跑的资源包静态校验 |
-| `packs/hsr/stage1/capture_spec.example.json` | 裁剪 spec 骨架（`rect` 需要你填） |
+| `packs/hsr/stage1/auto_spec.example.json` | 自动采集 spec（填截图路径即可） |
+| `packs/hsr/stage1/capture_spec.example.json` | 手工裁剪 spec 骨架（`rect` 需要你填） |
 
 ## 2. 对齐原 PC 项目（March7thAssistant）
 
@@ -76,21 +78,49 @@ bash ./gradlew :app:assembleDebug
 
 分辨率等于虚拟屏（720p 下是 1280×720），这就是模板的唯一合法来源。
 
-### 3.3 量坐标
+### 3.3 自动定位（推荐先试，不用量坐标）
+
+工具会用原 PC 模板在手机截图里做**多尺度模板匹配**，命中框 + `pad` 直接裁成手机原生模板：
+
+- RGBA 参考图先按 alpha 包围盒裁紧，再用 `TM_SQDIFF_NORMED + mask`；
+- 不透明参考图用 `TM_CCOEFF_NORMED`；
+- 0.5×–2.0× 共 31 档缩放，覆盖 PC→手机 UI 尺寸差异。
 
 ```bash
-pip install pillow
+pip install pillow opencv-python
+
+cp packs/hsr/stage1/auto_spec.example.json packs/hsr/stage1/mail_720p.json
+# 改 source（截图路径）即可；reference_root 默认指向 ../app-hsr/.../resource/image
+
+# 先只看匹配分数，不写文件
+python scripts/auto_capture_templates.py \
+  --spec packs/hsr/stage1/mail_720p.json --dry-run
+
+# 分数满意后正式写入（会同时生成 debug_out 调试图）
+python scripts/auto_capture_templates.py \
+  --spec packs/hsr/stage1/mail_720p.json
+```
+
+每个节点可以单独调 `min_score`（默认 0.55）和 `pad`（默认 12）。
+
+**自动匹配的边界**：纯文字按钮、PC/手机排版变化很大的元素，分数会明显偏低——
+这时看 `debug_out` 调试图确认是不是找错了框，不要直接 `--allow-low-score` 硬写。
+匹配不到就退回 3.4 手工量坐标（工具会明确报出是哪个节点失败）。
+
+### 3.4 手工量坐标（自动匹配失败时）
+
+```bash
 python scripts/capture_templates.py --grid shots/mail_720p.png
 # 输出 shots/mail_720p_grid.png，红竖线=x，绿横线=y，步长 100px
 ```
 
-把 `packs/hsr/stage1/capture_spec.example.json` 复制成 `mail_720p.json`，
+把 `packs/hsr/stage1/capture_spec.example.json` 复制成 `mail_720p_manual.json`，
 把 `rect` 填成 `[x, y, w, h]`（截图自身像素坐标）。
 
-### 3.4 裁剪 + 自检
+### 3.5 裁剪 + 自检
 
 ```bash
-python scripts/capture_templates.py --spec packs/hsr/stage1/mail_720p.json --check
+python scripts/capture_templates.py --spec packs/hsr/stage1/mail_720p_manual.json --check
 ```
 
 产物：
@@ -110,7 +140,7 @@ app/src/main/assets/resource/base/adaptation/template_sets.json   # 节点 -> �
 `--check` 用的是 `TM_CCOEFF_NORMED`：同图应 ≥ 0.90；再用别的界面截图跑一次应 ≤ 0.60。
 达不到就换一块更有区分度的 UI 元素，而不是先降 threshold。
 
-### 3.5 静态校验
+### 3.6 静态校验
 
 ```bash
 python scripts/check_stage1_pack.py

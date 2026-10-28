@@ -1,0 +1,35 @@
+{
+  "source": "../../../shots/mail_720p.png",
+  "set": "720p",
+  "baseline": [
+    1280,
+    720
+  ],
+  "reference_root": "../../../../app-hsr/src/main/assets/pi/resource/image",
+  "scale_range": [
+    0.5,
+    2.0,
+    0.05
+  ],
+  "debug_out": "../../../shots/mail_720p_auto_debug.png",
+  "nodes": {
+    "HSR_Daily_EnterMailbox": {
+      "asset": "hsr/daily_claim/mail_anchor",
+      "ref": "screen/mail.png",
+      "pad": 12,
+      "min_score": 0.55
+    },
+    "HSR_Daily_ClickReceiveAll": {
+      "asset": "hsr/daily_claim/receive_all",
+      "ref": "zh_CN/reward/mail/receive_all.png",
+      "pad": 12,
+      "min_score": 0.55
+    },
+    "HSR_Daily_CloseRewardPopup": {
+      "asset": "hsr/daily_claim/click_close",
+      "ref": "zh_CN/base/click_close.png",
+      "pad": 12,
+      "min_score": 0.55
+    }
+  }
+}
