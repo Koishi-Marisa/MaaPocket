@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- 应用私有目录：用于共享截图、日志等 -->
+    <files-path name="internal_files" path="." />
+    <cache-path name="cache_files" path="." />
+    <external-files-path name="external_files" path="." />
+    <external-cache-path name="external_cache" path="." />
+    <!-- 允许读取外部存储根目录下的项目资源（调试用） -->
+    <external-path name="external_root" path="." />
+</paths>

@@ -1,0 +1,90 @@
+{
+  "HSR_Daily_ClaimRewards": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "HSR_Daily_EnterMailbox"
+    ]
+  },
+  "HSR_Daily_EnterMailbox": {
+    "recognition": "TemplateMatch",
+    "template": "hsr/daily_claim/mailbox_anchor.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "timeout": 8000,
+    "action": "DoNothing",
+    "next": [
+      "HSR_Daily_ClaimOrExit"
+    ]
+  },
+  "HSR_Daily_ClaimOrExit": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "HSR_Daily_ClickClaimAll",
+      "HSR_Daily_Exit"
+    ]
+  },
+  "HSR_Daily_ClickClaimAll": {
+    "recognition": "TemplateMatch",
+    "template": "hsr/daily_claim/claim_all_button.png",
+    "threshold": 0.85,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "timeout": 4000,
+    "action": "Click",
+    "target": true,
+    "next": [
+      "HSR_Daily_WaitClaim"
+    ]
+  },
+  "HSR_Daily_WaitClaim": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 1500,
+    "next": [
+      "HSR_Daily_PopupConfirm",
+      "HSR_Daily_Exit"
+    ]
+  },
+  "HSR_Daily_PopupConfirm": {
+    "recognition": "TemplateMatch",
+    "template": "hsr/daily_claim/reward_confirm.png",
+    "threshold": 0.85,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "timeout": 3000,
+    "max_hit": 3,
+    "action": "Click",
+    "target": true,
+    "next": [
+      "HSR_Daily_Exit"
+    ]
+  },
+  "HSR_Daily_Exit": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 4,
+    "post_delay": 500,
+    "next": [
+      "HSR_Daily_Done"
+    ]
+  },
+  "HSR_Daily_Done": {
+    "recognition": "DirectHit",
+    "action": "DoNothing"
+  }
+}

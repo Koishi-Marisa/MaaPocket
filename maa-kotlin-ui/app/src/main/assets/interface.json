@@ -1,0 +1,37 @@
+{
+  "interface_version": 2,
+  "name": "MaaPocket · 崩坏：星穹铁道（阶段 1）",
+  "version": "0.1.0-stage1",
+  "label": "崩坏：星穹铁道",
+  "description": "基于 MaaKotlinUI 的手机端资源包。阶段 1 只包含「领取每日奖励」一条最小可验证链路：邮箱锚点 → 一键领取 → 奖励弹窗确认 → 退出。模板必须由手机虚拟屏无损截图裁剪生成，见 docs/HSR_STAGE1.md。",
+  "welcome": "首次运行前请先按 docs/HSR_STAGE1.md 采集手机端模板；未采集时任务会在 HSR_Daily_EnterMailbox 识别失败。",
+  "controller": [
+    {
+      "name": "Android",
+      "type": "Adb",
+      "label": "Android（Shizuku / Root）",
+      "display_short_side": 720
+    }
+  ],
+  "resource": [
+    {
+      "name": "手机端 720p 基线",
+      "label": "手机端 720p 基线",
+      "path": [
+        "./resource/base"
+      ]
+    }
+  ],
+  "task": [
+    {
+      "name": "崩铁·领取每日奖励",
+      "entry": "HSR_Daily_ClaimRewards",
+      "description": "阶段 1 最小任务：要求游戏已经停在邮箱界面。Enter(mailbox anchor) → Verify(claim button) → Click(一键领取) → 可选确认奖励弹窗 → Exit(BACK)。仅使用视觉识别，不做固定坐标点击。",
+      "default_check": true,
+      "group": [
+        "daily"
+      ]
+    }
+  ],
+  "option": {}
+}

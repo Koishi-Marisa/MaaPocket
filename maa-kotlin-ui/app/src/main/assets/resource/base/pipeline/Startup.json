@@ -1,0 +1,7 @@
+{
+  "start_up": {
+    "recognition": "DirectHit",
+    "action": "StartApp",
+    "package": "com.miHoYo.hkrpg"
+  }
+}

@@ -1,0 +1,15 @@
+# 阶段 1 起，手机端资源包（interface.json + resource/base）是源码的一部分，必须入库。
+# 上游 narutomobile 资源同步脚本仍可用，但会覆盖本目录，执行前请先备份。
+.DS_Store
+.gradle/
+/local.properties
+/app/build/
+/build/
+app/src/main/native/obj/
+/cache/
+
+# JNI shared libraries (build artifacts)
+app/src/main/jniLibs/**/*.so
+
+# python
+*.pyc

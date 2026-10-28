@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.maafw.naruto">
+
+    <!-- 前台服务与通知 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+
+    <!-- 悬浮窗与存储（用于调试、截图、资源加载、导出日志） -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!-- 开始任务前清理后台内存（杀后台缓存进程，不杀自身/引擎/游戏/Shizuku） -->
+    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
+
+    <!-- Shizuku 权限 -->
+    <uses-permission android:name="moe.shizuku.manager.permission.API_V23" />
+    <uses-permission android:name="moe.shizuku.manager.permission.API_V11" />
+
+    <!-- 查询已安装包名（用于启动火影手游） -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+
+    <queries>
+        <package android:name="moe.shizuku.privileged.api" />
+        <package android:name="com.tencent.KiHan" />
+    </queries>
+
+    <application
+        android:name=".MaaFwApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MAAFWNaruto"
+        android:requestLegacyExternalStorage="true"
+        android:usesCleartextTraffic="true">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.MAAFWNaruto"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|density|keyboardHidden"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+        <!-- D1：外部 Intent 联动（Tasker/MacroDroid 发 com.maafw.naruto.LAUNCH_PROFILE 触发任务） -->
+        <intent-filter>
+            <action android:name="com.maafw.naruto.LAUNCH_PROFILE" />
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
+        </activity>
+<!-- Shizuku 服务入口喵 -->
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:enabled="true"
+            android:exported="true"
+            android:multiprocess="false" />
+
+        <service
+            android:name=".service.MaaEngineService"
+            android:foregroundServiceType="specialUse"
+            android:exported="false" />
+
+        <!-- 后台保活前台服务（设置开关控制） -->
+        <service
+            android:name=".service.KeepAliveService"
+            android:foregroundServiceType="specialUse"
+            android:exported="false" />
+
+        <!-- 定时任务闹钟接收器喵 -->
+        <receiver
+            android:name=".schedule.ScheduleAlarmReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.maafw.naruto.SCHEDULE_TRIGGER" />
+            </intent-filter>
+        </receiver>
+
+        <!-- 开机重新注册定时任务喵 -->
+        <receiver
+            android:name=".schedule.ScheduleBootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Root 引擎 binder 直达接收器（显式广播，绕过 Android16 的 ServiceManager/隐式广播限制）喵 -->
+        <receiver
+            android:name=".root.RootBinderReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.maafw.naruto.ROOT_ENGINE_BINDER" />
+            </intent-filter>
+        </receiver>
+
+        <!-- P1-5：Root 引擎 binder 回传 Provider（root 进程经 call() 回传引擎 binder） -->
+        <provider
+            android:name=".root.RootServiceBootstrapProvider"
+            android:authorities="${applicationId}.root.bootstrap"
+            android:exported="true"
+            android:grantUriPermissions="false" />
+
+        <!-- 无障碍防杀服务（非 root 保活：App 进程受系统保护，后台挂机稳定） -->
+        <service
+            android:name=".service.KeepAliveAccessibilityService"
+            android:label="@string/accessibility_keepalive_label"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
+        <!-- 文件共享提供者（用于导出日志、截图等） -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+    </application>
+</manifest>
