@@ -78,6 +78,11 @@ bash ./gradlew :app:assembleDebug
 
 分辨率等于虚拟屏（720p 下是 1280×720），这就是模板的唯一合法来源。
 
+如果手机连着 adb，可以跳过手动拷文件：自动采集工具会直接拉最新一张
+（`adb shell ls -t <目录>` + `adb pull`）。多设备时加 `--adb-serial <序列号>`。
+注意 Android 11+ 可能限制 shell 访问 `Android/data`；被限制时改用文件管理器把
+PNG 拷到 `maa-kotlin-ui/shots/`，把 spec 的 `source` 改成该路径。
+
 ### 3.3 自动定位（推荐先试，不用量坐标）
 
 工具会用原 PC 模板在手机截图里做**多尺度模板匹配**，命中框 + `pad` 直接裁成手机原生模板：
@@ -90,7 +95,8 @@ bash ./gradlew :app:assembleDebug
 pip install pillow opencv-python
 
 cp packs/hsr/stage1/auto_spec.example.json packs/hsr/stage1/mail_720p.json
-# 改 source（截图路径）即可；reference_root 默认指向 ../app-hsr/.../resource/image
+# 默认 source=adb:latest，自动拉最新截图；不想用 adb 就改成具体 PNG 路径。
+# reference_root 默认指向 ../app-hsr/.../resource/image
 
 # 先只看匹配分数，不写文件
 python scripts/auto_capture_templates.py \
@@ -99,6 +105,10 @@ python scripts/auto_capture_templates.py \
 # 分数满意后正式写入（会同时生成 debug_out 调试图）
 python scripts/auto_capture_templates.py \
   --spec packs/hsr/stage1/mail_720p.json
+
+# 想强制走 adb（即使 spec 里写了本地路径）：
+python scripts/auto_capture_templates.py \
+  --spec packs/hsr/stage1/mail_720p.json --adb-pull
 ```
 
 每个节点可以单独调 `min_score`（默认 0.55）和 `pad`（默认 12）。

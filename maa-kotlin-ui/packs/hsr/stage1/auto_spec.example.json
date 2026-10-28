@@ -1,5 +1,6 @@
 {
-  "source": "../../../shots/mail_720p.png",
+  "source": "adb:latest",
+  "_source_note": "adb:latest = 用 adb 自动拉取 App 截图目录里最新的一张；也可改成具体 PNG 路径",
   "set": "720p",
   "baseline": [
     1280,

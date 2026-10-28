@@ -49,13 +49,24 @@ spec::
       }
     }
 
-依赖：Pillow + opencv-python。
+自动拉图（可选）：
+    spec 里把 `source` 写成 `"adb:latest"`，或命令行加 `--adb-pull`，
+    工具会用 adb 从 App 的截图目录拉取最新一张虚拟屏 PNG 再开始匹配：
+
+        adb shell ls -t /storage/emulated/0/Android/data/com.maafw.naruto/files/screenshots
+        adb pull <最新文件> <项目>/shots/
+
+    这只用于开发期采集模板；APK 运行时仍然不依赖 PC / adb。
+
+依赖：Pillow + opencv-python（自动拉图额外需要 adb 在 PATH 上）。
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
@@ -85,6 +96,10 @@ from capture_templates import (  # noqa: E402
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_REF_ROOT = PROJECT_ROOT.parent / "app-hsr/src/main/assets/pi/resource/image"
+DEFAULT_SHOTS_DIR = PROJECT_ROOT / "shots"
+DEFAULT_ADB_REMOTE_DIR = (
+    "/storage/emulated/0/Android/data/com.maafw.naruto/files/screenshots"
+)
 
 
 class RefTemplate:
@@ -114,6 +129,58 @@ def load_ref(path: Path) -> RefTemplate:
         bgr = raw[:, :, :3] if raw.ndim == 3 else cv2.cvtColor(raw, cv2.COLOR_GRAY2BGR)
         mask = None
     return RefTemplate(bgr=bgr, mask=mask, source=path)
+
+
+def adb_pull_latest(serial: Optional[str], remote_dir: str, dest_dir: Path) -> Path:
+    """用 adb 拉取截图目录里最新的一张 PNG。"""
+    adb = shutil.which("adb")
+    if not adb:
+        raise RuntimeError("PATH 里找不到 adb；安装 platform-tools，或把 spec.source 改成具体 PNG 路径")
+
+    cmd = [adb] + (["-s", serial] if serial else [])
+    devices = subprocess.run(cmd + ["devices"], capture_output=True, text=True, timeout=30)
+    if devices.returncode != 0:
+        raise RuntimeError(
+            f"adb devices 失败：{devices.stderr.strip() or devices.stdout.strip()}"
+        )
+    ready = [
+        line.split("\t")[0].strip()
+        for line in devices.stdout.splitlines()[1:]
+        if "\tdevice" in line
+    ]
+    if not ready:
+        raise RuntimeError("没有处于 device 状态的手机；打开 USB 调试并在手机上确认授权")
+    if serial and serial not in ready:
+        raise RuntimeError(f"指定设备 {serial} 不在线（在线：{', '.join(ready)}）")
+
+    listing = subprocess.run(
+        cmd + ["shell", "ls", "-t", remote_dir],
+        capture_output=True, text=True, timeout=30,
+    )
+    if listing.returncode != 0:
+        raise RuntimeError(
+            "读取截图目录失败（Android 11+ 可能限制 shell 访问 Android/data）："
+            f"{listing.stderr.strip() or listing.stdout.strip()}"
+        )
+    names = [
+        line.strip() for line in listing.stdout.splitlines()
+        if line.strip().lower().endswith(".png")
+    ]
+    if not names:
+        raise RuntimeError(f"{remote_dir} 里没有 PNG；先在 App 里点一次「⋮ → 截图」")
+
+    latest = names[0]
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    local = dest_dir / latest
+    pull = subprocess.run(
+        cmd + ["pull", f"{remote_dir}/{latest}", str(local)],
+        capture_output=True, text=True, timeout=300,
+    )
+    if pull.returncode != 0 or not local.is_file() or local.stat().st_size == 0:
+        raise RuntimeError(f"adb pull 失败：{pull.stderr.strip() or pull.stdout.strip()}")
+
+    print(f"[ADB] 已拉取最新截图：{local}（{local.stat().st_size} 字节）")
+    return local
 
 
 def scales_from_range(raw) -> List[float]:
@@ -181,11 +248,30 @@ def resolve_path(base: Path, value: str) -> Path:
 
 
 def run(spec_path: Path, image_dir: Path, manifest_path: Path,
-        allow_small: bool, allow_low: bool, dry_run: bool) -> int:
+        allow_small: bool, allow_low: bool, dry_run: bool,
+        adb_pull: bool = False, adb_serial: Optional[str] = None,
+        adb_remote_dir: str = DEFAULT_ADB_REMOTE_DIR,
+        shots_dir: Optional[Path] = None) -> int:
     spec = json.loads(spec_path.read_text(encoding="utf-8"))
     base = spec_path.parent
 
-    source = resolve_path(base, spec["source"])
+    source_value = str(spec.get("source", "")).strip()
+    if adb_pull or source_value in {"adb", "adb:latest"}:
+        try:
+            source = adb_pull_latest(
+                adb_serial,
+                adb_remote_dir,
+                shots_dir or DEFAULT_SHOTS_DIR,
+            )
+        except Exception as exc:  # noqa: BLE001
+            print(f"[ERROR] {exc}", file=sys.stderr)
+            return 1
+    else:
+        if not source_value:
+            print("[ERROR] spec.source 为空（也可以写 adb:latest 自动拉图）", file=sys.stderr)
+            return 1
+        source = resolve_path(base, source_value)
+
     if not source.is_file():
         print(f"[ERROR] 截图不存在：{source}", file=sys.stderr)
         return 1
@@ -330,9 +416,17 @@ def main(argv=None) -> int:
     parser.add_argument("--allow-small", action="store_true", help="允许短边 < 64px（仅调试）")
     parser.add_argument("--allow-low-score", action="store_true", help="匹配分低于 min_score 也写入")
     parser.add_argument("--dry-run", action="store_true", help="只打印匹配结果，不写文件")
+    parser.add_argument("--adb-pull", action="store_true",
+                        help="先用 adb 拉取最新虚拟屏截图（spec.source 可写 adb:latest）")
+    parser.add_argument("--adb-serial", default=None, help="adb 设备序列号（多设备时指定）")
+    parser.add_argument("--adb-remote-dir", default=DEFAULT_ADB_REMOTE_DIR,
+                        help="手机上的截图目录")
+    parser.add_argument("--shots-dir", type=Path, default=DEFAULT_SHOTS_DIR,
+                        help="拉取到本地的目录（默认 maa-kotlin-ui/shots）")
     args = parser.parse_args(argv)
     return run(args.spec.resolve(), args.image_dir, args.manifest,
-               args.allow_small, args.allow_low_score, args.dry_run)
+               args.allow_small, args.allow_low_score, args.dry_run,
+               args.adb_pull, args.adb_serial, args.adb_remote_dir, args.shots_dir)
 
 
 if __name__ == "__main__":
