@@ -78,14 +78,21 @@ def build_interface(src: dict, has_locale: bool) -> dict:
             "→ 等 2 秒 → 最多点 10 次 zh_CN/base/click_close.png → BACK 退出。"
             "模板全部直接复用 PC 资源，虚拟屏需设为 1080p。"
         ),
-        "default_check": False,
+        "default_check": True,
         "group": ["reward"],
         # 让用户在任务面板里直接选国服 / B服；保存后 GamePackageResolver 会读这个值
         "option": ["Server"],
     }
 
     tasks = [claim_task]
-    tasks += [t for t in src.get("task", []) if t.get("entry") != CLAIM_ENTRY]
+    for task in src.get("task", []):
+        if task.get("entry") == CLAIM_ENTRY:
+            continue
+        # PC 任务的 default_check 全部关掉：首次启动时只跑手机端领取链，
+        # 避免上来就执行 10 个 PC 任务（B服 登录/OCR 节点会让它卡很久）。
+        t = dict(task)
+        t["default_check"] = False
+        tasks.append(t)
 
     out = dict(src)
     out["name"] = "MaaPocket 崩铁（PC 资源直用）"

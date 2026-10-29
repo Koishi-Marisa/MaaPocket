@@ -75,7 +75,7 @@
       "name": "崩铁·领取每日奖励（PC 模板）",
       "entry": "HSR_Daily_ClaimRewards",
       "description": "手机端最小入口：要求游戏已停在邮箱界面。识别 screen/mail.png → 点击 zh_CN/reward/mail/receive_all.png（0.8）→ 等 2 秒 → 最多点 10 次 zh_CN/base/click_close.png → BACK 退出。模板全部直接复用 PC 资源，虚拟屏需设为 1080p。",
-      "default_check": false,
+      "default_check": true,
       "group": [
         "reward"
       ],
@@ -88,7 +88,7 @@
       "label": "启动游戏",
       "entry": "Task_start_up_game",
       "description": "必须先运行：它会 StartApp 把游戏拉到后台虚拟屏，其余任务都依赖它。tasks/game/__init__.py:71 start_game() 是上游唯一的游戏启动入口；:186 用 check_and_click_enter() 轮询点击『进入』。迁移为 StartApp（包名可由 Server 选项覆盖）→ 等待加载 → 找『进入』→ 导航到主界面。",
-      "default_check": true,
+      "default_check": false,
       "group": [
         "startup"
       ],
@@ -102,7 +102,7 @@
       "label": "日常",
       "entry": "Task_daily",
       "description": "Daily 本身没有单一 change_to；它是调度器，把工作分给 buildtarget/fight/synthesis 等子模块（tasks/daily/daily.py:131 currency_wars_homepage、:142 divergent_main、:222 guide2 都是交接点）。入口取 main 是因为所有子任务都从主界面出发。",
-      "default_check": true,
+      "default_check": false,
       "group": [
         "daily"
       ]
@@ -162,7 +162,7 @@
       "label": "兑换码",
       "entry": "Task_redemption",
       "description": "tasks/daily/redemption.py:197 显式 screen.change_to('redemption')。",
-      "default_check": true,
+      "default_check": false,
       "group": [
         "daily"
       ]
@@ -182,7 +182,7 @@
       "label": "清体力",
       "entry": "Task_power",
       "description": "tasks/power/power.py:244 显式 screen.change_to('guide3')。",
-      "default_check": true,
+      "default_check": false,
       "group": [
         "power"
       ]
@@ -222,7 +222,7 @@
       "label": "邮件",
       "entry": "Task_mail",
       "description": "RewardManager 构造 Mail('邮件', …, 'mail')，第三参数即入口屏幕（tasks/reward/__init__.py）。",
-      "default_check": true,
+      "default_check": false,
       "group": [
         "reward"
       ]
@@ -232,7 +232,7 @@
       "label": "支援",
       "entry": "Task_assist",
       "description": "RewardManager 构造 Assist('支援', …, 'visa')。",
-      "default_check": true,
+      "default_check": false,
       "group": [
         "reward"
       ]
@@ -242,7 +242,7 @@
       "label": "委托",
       "entry": "Task_dispatch",
       "description": "RewardManager 构造 Dispatch('委托', …, 'dispatch')。",
-      "default_check": true,
+      "default_check": false,
       "group": [
         "reward"
       ]
@@ -252,7 +252,7 @@
       "label": "每日实训",
       "entry": "Task_quest",
       "description": "RewardManager 构造 Quest('每日实训', …, 'guide2')。",
-      "default_check": true,
+      "default_check": false,
       "group": [
         "reward"
       ]
@@ -262,7 +262,7 @@
       "label": "无名勋礼",
       "entry": "Task_srpass",
       "description": "tasks/reward/srpass.py:14 显式 screen.change_to('pass1')。",
-      "default_check": true,
+      "default_check": false,
       "group": [
         "reward"
       ]
@@ -381,7 +381,7 @@
       "label": "活动",
       "entry": "Task_activity",
       "description": "tasks/activity/__init__.py:58 与 tasks/activity/activitytemplate.py:23 都显式 screen.change_to('activity')。",
-      "default_check": true,
+      "default_check": false,
       "group": [
         "activity"
       ]

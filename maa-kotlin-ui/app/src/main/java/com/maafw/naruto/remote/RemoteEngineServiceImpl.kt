@@ -634,7 +634,10 @@ class RemoteEngineServiceImpl(private val context: Context) : IRemoteEngineServi
                 engine = maa
                 Ln.i("$TAG MaaFramework version ${maa.version}")
                 sendLog("MaaFramework 版本 ${maa.version}")
-                if (!maa.loadResource(resourceBase)) {
+                sendLog("开始加载资源：$resourceBase（pipeline 556 节点 / image 396 张，首次可能需要几十秒）")
+                val resourceOk = maa.loadResource(resourceBase)
+                sendLog("资源加载返回：loaded=$resourceOk")
+                if (!resourceOk) {
                     Ln.e("$TAG loadResource failed")
                     sendLog("资源加载失败：$resourceBase（pipeline/image/model 缺失或 MaaFramework 不支持）")
                     running = false
@@ -687,7 +690,10 @@ class RemoteEngineServiceImpl(private val context: Context) : IRemoteEngineServi
                 // 注册任务事件回调（事件驱动：任务开始/完成/失败时广播，无需轮询）
                 // + 节点事件回调（显示节点 focus 文案）
                 registerEventSink(maa)
-                registerFocusSink(maa, resourceBase)
+                // 红线：不注册 MaaTaskerAddContextSink（focus 监听）。Node.* 事件回调会让
+                // 引擎随机崩溃/卡死，尤其是 PC 资源包这种 500+ 节点的高频事件场景。
+                // focus 文案改由 App 侧解析 maafw.log 获取。
+                // registerFocusSink(maa, resourceBase)
 
                 sendLog("引擎就绪，开始执行任务")
                 // 注意：focus 监听（MaaTaskerAddContextSink）确认是 v5.13.0-beta.2 引擎崩溃元凶：
