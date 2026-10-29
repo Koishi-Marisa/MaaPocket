@@ -23,7 +23,7 @@ on:
         description: 'MaaFramework release tag'
         required: false
         type: string
-        default: 'v5.12.3'
+        default: 'v5.14.2'
 
 concurrency:
   group: maa-kotlin-ui-${{ github.ref }}
@@ -34,7 +34,7 @@ permissions:
 
 env:
   PROJECT_DIR: maa-kotlin-ui
-  MAAFW_TAG: ${{ github.event.inputs.maafw_tag || 'v5.12.3' }}
+  MAAFW_TAG: ${{ github.event.inputs.maafw_tag || 'v5.14.2' }}
   NDK_VERSION: '25.2.9519653'
   BUILD_TOOLS: '34.0.0'
   ANDROID_PLATFORM: 'android-34'

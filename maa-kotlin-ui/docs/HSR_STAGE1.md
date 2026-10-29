@@ -54,7 +54,7 @@ pipeline：556 个节点，引用完整
 
 推送到 `maa-kotlin-ui/**` 后，GitHub Actions 会：
 
-1. 拉 MaaFramework v5.12.3 原生库；
+1. 拉 MaaFramework v5.14.2 原生库；
 2. 构建 release APK，用仓库内固定 keystore 签名；
 3. 上传 artifact，并覆盖发布到
    [Release v0.1.0-stage1](https://github.com/Koishi-Marisa/MaaPocket/releases/tag/v0.1.0-stage1)。
@@ -62,7 +62,7 @@ pipeline：556 个节点，引用完整
 本地构建：
 
 ```bash
-python scripts/setup_maaframework.py --tag v5.12.3
+python scripts/setup_maaframework.py --tag v5.14.2
 chmod +x gradlew
 bash ./gradlew :app:assembleRelease \
   -Pandroid.aapt2FromMavenOverride="$ANDROID_HOME/build-tools/34.0.0/aapt2"

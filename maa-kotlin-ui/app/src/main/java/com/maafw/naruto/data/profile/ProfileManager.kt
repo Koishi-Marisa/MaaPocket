@@ -32,6 +32,11 @@ object ProfileManager {
     }
 
     private const val PREF_PROFILE_ORDER = "profile_order"
+    /**
+     * 默认配置对应的 interface 任务签名。资源包/任务列表变化后，旧的 default profile
+     * 会残留一批已不存在的任务（例如换资源包后仍有 10 个 PC 任务），必须重建。
+     */
+    private const val PREF_DEFAULT_SIGNATURE = "default_profile_signature"
 
     private fun getProfileOrder(context: Context): List<String> {
         val raw = context.applicationContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
@@ -96,13 +101,25 @@ object ProfileManager {
      * 如果不存在，根据 interface.json 的 default_check 生成一份。
      */
     fun loadDefault(context: Context, interfaceData: MaaInterface?): Profile {
+        val signature = interfaceSignature(interfaceData)
+        val prefs = context.applicationContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        val stored = prefs.getString(PREF_DEFAULT_SIGNATURE, null)
         val file = profileFile(context, DEFAULT_PROFILE_NAME)
-        if (file.exists()) {
-            return runCatching { parseProfile(file.readText()) }.getOrNull()
-                ?: createDefaultProfile(context, interfaceData)
+
+        if (file.exists() && stored == signature) {
+            runCatching { parseProfile(file.readText()) }.getOrNull()?.let { return it }
         }
-        return createDefaultProfile(context, interfaceData).also { save(context, it) }
+
+        // 首次使用，或 interface 任务列表发生变化：重建默认配置并记住新签名。
+        val fresh = createDefaultProfile(context, interfaceData)
+        save(context, fresh)
+        prefs.edit().putString(PREF_DEFAULT_SIGNATURE, signature).apply()
+        return fresh
     }
+
+    /** 任务列表 + default_check 的稳定签名；顺序变化也算变化。 */
+    private fun interfaceSignature(interfaceData: MaaInterface?): String =
+        interfaceData?.task?.joinToString("|") { "${it.entry}:${it.defaultCheck}" } ?: ""
 
     /**
      * 保存配置文件。

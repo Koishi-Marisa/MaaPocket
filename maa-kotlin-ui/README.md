@@ -197,7 +197,7 @@ bash gradlew :app:assembleDebug --no-daemon \
 
 ```bash
 python scripts/setup_maaframework.py                 # 下载最新 release 并部署
-python scripts/setup_maaframework.py --tag v5.12.3   # 指定版本
+python scripts/setup_maaframework.py --tag v5.14.2   # 指定版本
 ```
 
 ---
