@@ -312,6 +312,10 @@ private var focusLastOffset = 0L
     private var pausedFromEntry: String? = null
     /** P0-5 运行期守护：后台任务期间每 5s 检查游戏存活/漂移，游戏死则提示，漂移自动拉回 */
     private var appWatchdog: com.maafw.naruto.service.GameWatchdog? = null
+
+    /** 本次运行解析出的游戏包名（国服 / B服），供预启动、守护、关闭游戏共用。 */
+    @Volatile
+    private var activeGamePackage: String = com.maafw.naruto.data.settings.GamePackageResolver.HSR_OFFICIAL
     /** 任务链分段进度（驱动通知进度条） */
     private val taskProgress = com.maafw.naruto.data.task.MaaFwTaskProgress()
     /** 引擎异常被杀后自动恢复：记录任务运行中的配置，重连成功后自动重跑 */
@@ -924,10 +928,10 @@ private fun extractFocusFromLine(line: String): String? {
             if (showWelcome) {
                 AlertDialog(
                     onDismissRequest = {},
-                    title = { Text("欢迎使用 MAAFW 火影忍者") },
+                    title = { Text("欢迎使用 MaaPocket") },
                     text = {
                         Column {
-                            Text("本应用通过 Shizuku/Root 创建虚拟屏，自动运行火影忍者日常任务。", style = MaterialTheme.typography.bodyMedium)
+                            Text("本应用通过 Shizuku/Root 创建虚拟屏，自动运行《崩坏：星穹铁道》每日任务。", style = MaterialTheme.typography.bodyMedium)
                             Spacer(Modifier.height(8.dp))
                             Text("使用前请完成：", style = MaterialTheme.typography.bodyMedium)
                             Spacer(Modifier.height(4.dp))
@@ -1086,8 +1090,10 @@ private fun extractFocusFromLine(line: String): String? {
         runCatching {
             val am = getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
             val keepPrefix = listOf(
-                "com.maafw.naruto",              // 自身所有进程（App/引擎/agent）
-                "com.tencent.KiHan",             // 游戏（马上启动，不能杀）
+                packageName,                     // 自身所有进程（App/引擎/agent）
+                activeGamePackage,               // 本次要启动的游戏
+                com.maafw.naruto.data.settings.GamePackageResolver.HSR_OFFICIAL,
+                com.maafw.naruto.data.settings.GamePackageResolver.HSR_BILIBILI,
                 "moe.shizuku.privileged.api",    // Shizuku
                 "com.miui", "com.huawei", "com.vivo", "com.oppo", "com.coloros",
                 "com.xiaomi", "com.oneplus", "com.samsung", "com.google.android.gms"
@@ -1174,6 +1180,15 @@ private fun extractFocusFromLine(line: String): String? {
             addLog("默认配置里没有启用任何任务")
             return
         }
+        // 国服 / B服：优先用任务选项 Server，其次看本机装了哪个包。
+        // 结果同时写进引擎共享配置，并覆盖 StartUpGame/CloseGame 的 package。
+        activeGamePackage = com.maafw.naruto.data.settings.GamePackageResolver.resolve(
+            applicationContext,
+            interfaceData,
+            enabled.map { it.entry },
+            profileName,
+        )
+        addLog("游戏包名：$activeGamePackage")
         val tasks = interfaceData?.task ?: emptyList()
         // 适配层：资源包的 roi/模板都按 720p 基线采集，虚拟屏可能被用户切到 1080p。
         // 这里读出「本次将要应用」的分辨率（与下方 setResolution 用的是同一份设置），
@@ -1248,6 +1263,9 @@ private fun extractFocusFromLine(line: String): String? {
                 // 手机端适配：分辨率缩放 roi + 选择当前分辨率的模板集。
                 // 结果与选项 override 浅合并，只在节点级覆盖 roi/template。
                 val adapted = PipelineAdaptation.apply(applicationContext, screenProfile, finalOverride)
+                // 资源包写死的是国服包名；这里用解析结果覆盖启动/关闭节点，B服 才能起来。
+                adapted.override.put("StartUpGame", JSONObject().put("package", activeGamePackage))
+                adapted.override.put("CloseGame", JSONObject().put("package", activeGamePackage))
                 if (adapted.override.length() > 0) put("pipeline_override", adapted.override.toString())
                 if (adapted.details.isNotEmpty()) {
                     addLog(adapted.summary)
@@ -1270,6 +1288,7 @@ private fun extractFocusFromLine(line: String): String? {
                     closeGameAfterTask = SettingsRepository.isCloseGameAfterTask(applicationContext),
                     verboseLogging = SettingsRepository.isVerboseLogging(applicationContext),
                     forceStop = SettingsRepository.isForceStopEnabled(applicationContext),
+                    gamePackage = activeGamePackage,
                     taskOptions = com.maafw.naruto.data.settings.EngineSharedConfig.taskOptionsFrom(items)
                 )
             )
@@ -1277,7 +1296,7 @@ private fun extractFocusFromLine(line: String): String? {
 
         // P0-4/E5：任务启动前给游戏授予"省电豁免+后台不受限"（vivo/澎湃后台杀游戏防护）
         runCatching {
-            val granted = remote.grantPermissions("com.tencent.KiHan", 1 or 2)
+            val granted = remote.grantPermissions(activeGamePackage, 1 or 2)
             if (granted != 0) addLog("已为游戏授予后台保护（省电豁免+后台不受限）")
             else addLog("游戏后台保护授予未生效（部分 ROM 需在系统设置手动允许后台运行）")
         }.onFailure { addLog("游戏后台保护授予失败: ${it.message}") }
@@ -1388,7 +1407,7 @@ private fun extractFocusFromLine(line: String): String? {
         appWatchdog?.stop()
         appWatchdog = com.maafw.naruto.service.GameWatchdog(
             remote = remote,
-            packageName = "com.tencent.KiHan",
+            packageName = activeGamePackage,
             onGameDied = {
                 addLog("注意：游戏进程已死亡，任务可能失效（可停止后重新开始）")
             },
@@ -1529,7 +1548,7 @@ private fun extractFocusFromLine(line: String): String? {
 
     private fun closeGame() {
         runCatching {
-            val ok = remoteEngine?.stopPackage("com.tencent.KiHan") ?: false
+            val ok = remoteEngine?.stopPackage(activeGamePackage) ?: false
             if (ok) {
                 addLog("已关闭游戏")
             } else {
@@ -1547,14 +1566,14 @@ private fun extractFocusFromLine(line: String): String? {
     private fun forceStopGameDirect() {
         val killed = if (SettingsRepository.isRootMode(applicationContext)) {
             runCatching {
-                val p = Runtime.getRuntime().exec(arrayOf("su", "-c", "am force-stop com.tencent.KiHan"))
+                val p = Runtime.getRuntime().exec(arrayOf("su", "-c", "am force-stop $activeGamePackage"))
                 p.waitFor() == 0
             }.getOrDefault(false)
         } else {
             // Shizuku 模式：引擎 binder 正常时由 stopPackage（shell 进程 am force-stop）处理；
             // 此处兜底尝试本地 am（无权限通常失败，仅作最后尝试）
             runCatching {
-                val p = Runtime.getRuntime().exec("am force-stop com.tencent.KiHan")
+                val p = Runtime.getRuntime().exec("am force-stop $activeGamePackage")
                 p.waitFor() == 0
             }.getOrDefault(false)
         }

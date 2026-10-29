@@ -56,7 +56,7 @@ object PushDispatcher {
         if (isSuccess && !SettingsRepository.isPushNotifySuccess(context)) return
         if (!isSuccess && !SettingsRepository.isPushNotifyError(context)) return
 
-        val prefixedTitle = "[MAAFW] $title"
+        val prefixedTitle = "[MaaPocket] $title"
         submit(context, channel, prefixedTitle, body)
     }
 
@@ -68,14 +68,14 @@ object PushDispatcher {
         if (!SettingsRepository.isNotificationEnabled(context)) return
         val channel = SettingsRepository.getPushChannel(context)
         if (channel == "none") return
-        submit(context, channel, "[MAAFW] $title", body)
+        submit(context, channel, "[MaaPocket] $title", body)
     }
 
     /**
      * 测试单个通道。结果通过回调给出。
      */
     fun test(context: Context, channel: String, onResult: (String) -> Unit) {
-        val title = "MAAFW 测试通知"
+        val title = "MaaPocket 测试通知"
         val body = "这是一条测试推送"
         scope.launch {
             val result = withContext(Dispatchers.IO) {

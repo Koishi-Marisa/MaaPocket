@@ -12,7 +12,7 @@ import java.net.URL
  */
 object UpdateChecker {
 
-    private const val RELEASE_API = "https://api.github.com/repos/ShrugYu/MAAFW-Android/releases/latest"
+    private const val RELEASE_API = "https://api.github.com/repos/Koishi-Marisa/MaaPocket/releases/latest"
     private const val TAG = "UpdateChecker"
 
     data class UpdateInfo(

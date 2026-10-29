@@ -306,7 +306,7 @@ object CustomActions {
      * 原版 StartApp 不带 displayId，会把已在虚拟屏上的游戏 task 挪回主屏（部分 ROM 行为，
      * 见 MaaFwActivityHelper.ensureAppOnDisplay 注释）-> 虚拟屏黑屏 -> 截图识别全失败。
      * 本 action：带 displayId 启动 + 启动后校验/拉回虚拟屏，与 prelaunchGame 同一套防漂移逻辑。
-     * param: {"package": "com.tencent.KiHan"}
+     * param: {"package": "com.miHoYo.hkrpg"}
      */
     private fun actionStartGameToVirtualDisplay(
         context: Pointer?, taskId: Long, nodeName: String?, actionName: String?,
@@ -314,7 +314,7 @@ object CustomActions {
     ): Byte {
         return try {
             val p = runCatching { JSONObject(actionParam ?: "{}") }.getOrDefault(JSONObject())
-            val pkg = p.optString("package", "").ifBlank { "com.tencent.KiHan" }
+            val pkg = p.optString("package", "").ifBlank { com.maafw.naruto.data.settings.GamePackageResolver.HSR_OFFICIAL }
             val displayId = com.maafw.naruto.remote.internal.MaaFwVirtualDisplay.getDisplayId()
             if (displayId < 0) {
                 Ln.w("$TAG StartGameToVirtualDisplay: 虚拟屏未就绪，跳过启动")

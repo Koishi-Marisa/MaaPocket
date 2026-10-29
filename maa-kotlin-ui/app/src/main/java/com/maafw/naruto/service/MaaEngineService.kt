@@ -111,7 +111,7 @@ class MaaEngineService : Service() {
             // Android 13+ 无通知权限 FGS 仍可启动（只是通知不可见），任务照常执行
             Log.w(TAG, "通知权限未授予：任务照常执行，但前台通知不可见（可在系统设置开启通知）")
         }
-        startForeground(NOTIFICATION_ID, buildNotification("MAAFW 定时任务待命中"))
+        startForeground(NOTIFICATION_ID, buildNotification("MaaPocket 定时任务待命中"))
         // 后台唤醒开启时持有唤醒锁（锁屏/熄屏也执行任务）
         if (com.maafw.naruto.data.settings.SettingsRepository.isScheduleWakeOn(applicationContext)) {
             acquireWakeLock()
@@ -306,10 +306,6 @@ val args = Shizuku.UserServiceArgs(ComponentName(this, RemoteEngineServiceImpl::
                 }
             }.onFailure { Log.w(TAG, "libbridge.so 复制失败: ${it.message}") }
 
-            // P0-4/E5：任务启动前给游戏授予"省电豁免+后台不受限"（vivo/澎湃后台杀游戏防护）
-            runCatching { remote.grantPermissions("com.tencent.KiHan", 1 or 2) }
-                .onFailure { Log.w(TAG, "游戏后台保护授予失败: ${it.message}") }
-
             // 启动任务时自动静音（ muteOnGameLaunch）
             if (SettingsRepository.isMuteOnGameLaunch(applicationContext)) {
                 runCatching { remote.setAudioMuted(true) }
@@ -356,18 +352,29 @@ if (enabled.isEmpty()) {
                     return
                 }
 
+            // 国服 / B服：定时任务与手动任务必须用同一套解析逻辑
+            val gamePackage = com.maafw.naruto.data.settings.GamePackageResolver.resolve(
+                applicationContext, interfaceData, enabled.map { it.entry }, profileName,
+            )
+            Log.i(TAG, "定时任务游戏包名：$gamePackage")
+            runCatching { remote.grantPermissions(gamePackage, 1 or 2) }
+                .onFailure { Log.w(TAG, "游戏后台保护授予失败: ${it.message}") }
+
             val tasks = interfaceData?.task ?: emptyList()
             val items = JSONArray()
             for (entry in enabled.map { it.entry }) {
                 val task = tasks.find { it.entry == entry } ?: continue
                 val config = SettingsRepository.getTaskConfig(applicationContext, entry)
-                val override = OptionOverrideBuilder.build(task, config.options, interfaceData)
+                val override = com.maafw.naruto.data.settings.EngineSharedConfig.applyGamePackage(
+                    OptionOverrideBuilder.build(task, config.options, interfaceData),
+                    gamePackage,
+                )
                 items.put(JSONObject().apply {
                     put("entry", entry)
                     put("options", JSONObject().apply {
                         config.options.forEach { (k, v) -> put(k, v) }
                     })
-                    override?.let { put("pipeline_override", it) }
+                    put("pipeline_override", override)
                 })
             }
 if (items.length() == 0) {
@@ -387,6 +394,7 @@ if (items.length() == 0) {
                         closeGameAfterTask = com.maafw.naruto.data.settings.SettingsRepository.isCloseGameAfterTask(applicationContext),
                         verboseLogging = com.maafw.naruto.data.settings.SettingsRepository.isVerboseLogging(applicationContext),
                         forceStop = com.maafw.naruto.data.settings.SettingsRepository.isForceStopEnabled(applicationContext),
+                        gamePackage = gamePackage,
                         taskOptions = com.maafw.naruto.data.settings.EngineSharedConfig.taskOptionsFrom(items)
                     )
                 )
@@ -412,7 +420,7 @@ if (!remote.startTasksJson(items.toString())) {
 
             // closeGame：任务结束后关闭游戏（）
             if (closeGame || SettingsRepository.isCloseGameAfterTask(applicationContext)) {
-                runCatching { remote.stopPackage("com.tencent.KiHan") }
+                runCatching { remote.stopPackage(gamePackage) }
             }
 
             updateNotification("定时任务执行完毕")
@@ -460,7 +468,7 @@ if (!remote.startTasksJson(items.toString())) {
             val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val foregroundChannel = NotificationChannel(
                 CHANNEL_ID_FOREGROUND,
-                "MAAFW 运行状态",
+                "MaaPocket 运行状态",
                 NotificationManager.IMPORTANCE_LOW
             ).apply { description = "定时任务前台服务通知" }
             manager.createNotificationChannel(foregroundChannel)
@@ -480,7 +488,7 @@ if (!remote.startTasksJson(items.toString())) {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         return NotificationCompat.Builder(this, CHANNEL_ID_FOREGROUND)
-            .setContentTitle("MAAFW 火影忍者")
+            .setContentTitle("MaaPocket 星穹铁道")
             .setContentText(text)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentIntent(pendingIntent)

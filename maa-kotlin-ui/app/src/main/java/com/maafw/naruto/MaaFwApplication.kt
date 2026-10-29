@@ -28,7 +28,7 @@ class MaaFwApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.i(TAG, "MAAFW 火影忍者手游 Android 容器已启动")
+        Log.i(TAG, "MaaPocket 星穹铁道 Android 容器已启动")
 
         // P1/L-1 MaaFwCrashHandler + P1-1 AppBindLogger（仅主进程；引擎进程不注册，避免干扰）
         if (!isRemoteEngineProcess()) {

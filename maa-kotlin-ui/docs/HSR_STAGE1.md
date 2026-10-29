@@ -7,7 +7,7 @@
 
 | 位置 | 内容 |
 |---|---|
-| `app/build.gradle` | applicationId 改为 `com.maapocket.hsr`，versionCode 70 / versionName 1.2 |
+| `app/build.gradle` | applicationId 改为 `com.maapocket.hsr`，应用名 MaaPocket，versionCode 70 / versionName 1.2 |
 | `app/src/main/assets/interface.json` | 原 PC 项目的 32 个任务 + 手机端入口「崩铁·领取每日奖励」，共 33 个 |
 | `app/src/main/assets/resource/base/pipeline/**` | PC 迁移包的全部 pipeline（screen 57 文件 / task 32 文件）+ Startup.json + 手机端领取链 |
 | `app/src/main/assets/resource/base/image/**` | PC 项目的 396 张模板，原样使用，不重采样 |
@@ -107,8 +107,11 @@ BACK 退出，状态 3000。
   手机上这些节点语义仍不完整；
 - 手机端领取任务要求「已经在邮箱界面」；主界面→菜单→邮箱的导航仍用 PC 的
   `NavTo_mail`（单跳，从 menu 可用，从 main 会诚实失败）；
-- `Server` 选项可切 B服包名，但 `Startup.json` 的预启动包名固定国服；
-- 关闭游戏的后台逻辑仍写死 `com.tencent.KiHan`（阶段 1 不要开启「任务结束后关闭游戏」）。
+- **B服已支持**：App 会自动识别本机装的是 `com.miHoYo.hkrpg` 还是
+  `com.miHoYo.hkrpg.bilibili`；也可以在任务的 `Server` 选项里显式选择。
+  解析结果会写入引擎共享配置，并覆盖 `StartUpGame` / `CloseGame` 的 `package`。
+  但 B服 的登录 / 协议页仍可能需要手动处理（`resource_bilibili` 覆盖层没有导入）；
+- 「任务结束后关闭游戏」也已改为关闭解析出的包名（国服 / B服），不再写死。
 
 ## 6. 可选：手机端模板重采（阶段 2）
 

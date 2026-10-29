@@ -241,7 +241,8 @@ jobs:
           notes=$(cat <<'EOF'
           基于 MaaKotlinUI 的《崩坏：星穹铁道》每日奖励最小闭环（阶段 1）。
 
-          - 包名：com.maapocket.hsr（arm64-v8a）
+          - 包名：com.maapocket.hsr（arm64-v8a），应用名 MaaPocket 星穹铁道
+          - 服务器：自动识别国服 / B服，也可在任务设置里选 Server
           - 资源：原 PC 项目迁移的完整 MaaFramework 资源包（33 个任务 + 396 张模板）
           - 虚拟屏：必须设为 1080p（1920×1080），PC 模板 1:1 匹配
           - 签名：仓库内固定 keystore，可覆盖安装

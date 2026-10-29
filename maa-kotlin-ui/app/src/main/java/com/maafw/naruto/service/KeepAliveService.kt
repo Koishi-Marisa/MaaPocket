@@ -52,7 +52,7 @@ class KeepAliveService : Service() {
         )
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle("MAAFW 运行中")
+            .setContentTitle("MaaPocket 运行中")
             .setContentText(
                 if (com.maafw.naruto.data.settings.SettingsRepository.isAccessibilityKeepAliveEnabled(this))
                     "无障碍保活已启用，后台挂机任务持续稳定运行"

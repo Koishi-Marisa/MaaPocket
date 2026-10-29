@@ -98,20 +98,20 @@ fun OnboardingScreen(
 private fun StepWelcome() {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
-            "MAAFW 火影忍者",
+            "MaaPocket 星穹铁道",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold
         )
         Spacer(Modifier.height(8.dp))
         Text(
-            "欢迎使用火影忍者手游自动化脚本",
+            "欢迎使用《崩坏：星穹铁道》自动化助手",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(Modifier.height(24.dp))
         Text(
             "基于 MaaFramework 的安卓自动化助手\n" +
-                "自动完成日常任务、决斗场、秘境等玩法\n" +
+                "自动完成每日任务、领取奖励等\n" +
                 "支持定时任务与后台唤醒，挂机解放双手",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -169,7 +169,9 @@ private fun StepPermission(onRequestShizuku: () -> Unit, onRequestAll: () -> Uni
             desc = if (android.provider.Settings.Secure.getString(
                     context.contentResolver,
                     android.provider.Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
-                )?.contains("com.maafw.naruto/.service.KeepAliveAccessibilityService") == true
+                )?.contains(
+                    com.maafw.naruto.service.KeepAliveAccessibilityService.componentId(context)
+                ) == true
             ) "已启用：后台挂机时 App 进程受系统保护，引擎任务更稳定。"
             else "后台挂机防杀关键：点击前往无障碍设置开启（不读取屏幕内容，仅防杀）。"
         )

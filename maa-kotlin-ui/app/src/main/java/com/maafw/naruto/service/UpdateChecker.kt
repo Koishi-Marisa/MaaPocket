@@ -17,8 +17,8 @@ import java.net.URL
  */
 object UpdateChecker {
 
-    /** 发布仓库（按实际发布地址配置） */
-    private const val REPO = "ShrugYu/MAAFW-Android"
+    /** 发布仓库（MaaPocket 自己的 Release） */
+    private const val REPO = "Koishi-Marisa/MaaPocket"
     private const val GITHUB_API = "https://api.github.com/repos/$REPO/releases/latest"
     private const val DOWNLOAD_TIMEOUT = 20_000
 

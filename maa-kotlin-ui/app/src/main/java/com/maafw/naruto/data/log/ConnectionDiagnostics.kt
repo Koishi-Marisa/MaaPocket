@@ -53,10 +53,11 @@ object ConnectionDiagnostics {
 
         // ── 引擎相关进程（Shizuku UserService / Root app_process） ──
         sb.appendLine("[进程] App pid=${android.os.Process.myPid()}")
-        sb.appendLine("[进程] remote_engine: ${procInfo("com.maafw.naruto:remote_engine")}")
-        sb.appendLine("[进程] engine(方案C): ${procInfo("com.maafw.naruto:engine")}")
+        val pkg = context.packageName
+        sb.appendLine("[进程] remote_engine: ${procInfo("$pkg:remote_engine")}")
+        sb.appendLine("[进程] engine(方案C): ${procInfo("$pkg:engine")}")
         sb.appendLine("[进程] root引擎(app_process RootServiceStarter): ${procInfo("RootServiceStarter")}")
-        sb.appendLine("[进程] logcat服务: ${procInfo("com.maafw.naruto:logcat")}")
+        sb.appendLine("[进程] logcat服务: ${procInfo("$pkg:logcat")}")
 
         // ── 引擎日志痕迹（判断引擎是否曾启动） ──
         val ext = context.getExternalFilesDir(null)

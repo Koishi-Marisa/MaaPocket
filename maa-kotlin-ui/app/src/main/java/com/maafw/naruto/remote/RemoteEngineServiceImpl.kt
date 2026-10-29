@@ -291,7 +291,9 @@ class RemoteEngineServiceImpl(private val context: Context) : IRemoteEngineServi
      */
     private fun prelaunchGame(displayId: Int, resourceBase: String): Boolean {
         return runCatching {
-            val pkg = runCatching {
+            // 包名优先级：App 写进共享配置的解析结果 > Startup.json > 国服兜底。
+            // B服 机器上 App 侧会解析成 com.miHoYo.hkrpg.bilibili。
+            val startupPkg = runCatching {
                 val f = File(resourceBase, "pipeline/Startup.json")
                 if (f.exists()) {
                     JSONObject(f.readText())
@@ -299,7 +301,10 @@ class RemoteEngineServiceImpl(private val context: Context) : IRemoteEngineServi
                         ?.optString("package")
                         .orEmpty()
                 } else ""
-            }.getOrDefault("").ifBlank { "com.tencent.KiHan" }
+            }.getOrDefault("")
+            val pkg = engineConfig.gamePackage
+                .takeIf { it.isNotBlank() }
+                ?: startupPkg.ifBlank { com.maafw.naruto.data.settings.GamePackageResolver.HSR_OFFICIAL }
             sendLog("预启动游戏 $pkg 到虚拟屏 displayId=$displayId ")
             var ok = MaaFwActivityHelper.startApp(pkg, displayId, forceStop = false)
             if (!ok) {
@@ -761,7 +766,7 @@ class RemoteEngineServiceImpl(private val context: Context) : IRemoteEngineServi
                 // 任务结束（非用户暂停）且开启「任务结束后关闭游戏」时：关闭游戏进程 + 释放虚拟屏
                 if (!isPausedByUser && engineConfig.closeGameAfterTask) {
                     sendLog("任务结束，按设置关闭游戏并释放虚拟屏")
-                    runCatching { stopPackage("com.tencent.KiHan") }
+                    runCatching { stopPackage(engineConfig.gamePackage) }
                     runCatching { MaaFwVirtualDisplay.stop() }
                 }
             }
@@ -977,7 +982,7 @@ class RemoteEngineServiceImpl(private val context: Context) : IRemoteEngineServi
         //     root / Shizuku root 可写；Shizuku shell 部分可写，失败无害）
         if (permissions and 32 != 0) {
             runCatching {
-                val svcId = "com.maafw.naruto/.service.KeepAliveAccessibilityService"
+                val svcId = com.maafw.naruto.service.KeepAliveAccessibilityService.componentId(context)
                 // 读取现有服务列表（多服务冒号分隔），追加而非覆盖
                 val cur = runCatching {
                     val p = Runtime.getRuntime().exec(arrayOf("sh", "-c", "settings get secure enabled_accessibility_services"))

@@ -28,7 +28,7 @@ class MaaApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.i(TAG, "MAAFW 火影忍者手游 Android 容器已启动喵～")
+        Log.i(TAG, "MaaPocket 星穹铁道 Android 容器已启动")
 
         // JNA 需要可写目录解压其原生库，远端 shell 进程优先用 /data/local/tmp
         val jnaTmpDir = if (isRemoteEngineProcess()) {

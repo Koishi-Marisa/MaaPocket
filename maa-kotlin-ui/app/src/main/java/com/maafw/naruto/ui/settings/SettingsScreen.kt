@@ -285,8 +285,8 @@ fun SettingsScreen(
                     val share = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
                         type = "application/octet-stream"
                         putExtra(android.content.Intent.EXTRA_STREAM, uri)
-                        putExtra(android.content.Intent.EXTRA_SUBJECT, "MAAFW 火影忍者 日志导出")
-                        putExtra(android.content.Intent.EXTRA_TEXT, "MAAFW 诊断日志 ZIP（含绑定链路/引擎启动/会话/crash/设备信息），请查收")
+                        putExtra(android.content.Intent.EXTRA_SUBJECT, "MaaPocket 星穹铁道 日志导出")
+                        putExtra(android.content.Intent.EXTRA_TEXT, "MaaPocket 诊断日志 ZIP（含绑定链路/引擎启动/会话/crash/设备信息），请查收")
                         flags = android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
                     }
                     context.startActivity(android.content.Intent.createChooser(share, "分享日志 ZIP 到…").apply {
@@ -621,7 +621,7 @@ fun SettingsScreen(
                         ListItemDivider()
                         SettingRow(
                             title = "任务结束后关闭游戏",
-                            description = "任务自然结束后关闭火影忍者",
+                            description = "任务自然结束后关闭游戏",
                             trailing = {
                                 Switch(
                                     checked = closeGameAfterTask,
@@ -1151,34 +1151,8 @@ fun SettingsScreen(
                         )
                         ListItemDivider()
                         SettingRow(
-                            title = "MaaFramework",
-                            description = "MAAFW 火影忍者手游 Android 适配版"
-                        )
-                        ListItemDivider()
-                        SettingRow(
-                            title = "交流QQ群",
-                            description = "801637524（点击复制群号）",
-                            onClick = {
-                                runCatching {
-                                    val cm = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                                    cm.setPrimaryClip(android.content.ClipData.newPlainText("QQ群", "801637524"))
-                                    Toast.makeText(context, "QQ群号已复制：801637524", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        )
-                        ListItemDivider()
-                        SettingRow(
-                            title = "项目GitHub",
-                            description = "github.com/ShrugYu（点击打开）",
-                            onClick = {
-                                runCatching {
-                                    context.startActivity(
-                                        Intent(Intent.ACTION_VIEW, "https://github.com/ShrugYu".toUri())
-                                    )
-                                }.onFailure {
-                                    Toast.makeText(context, "无法打开浏览器", Toast.LENGTH_SHORT).show()
-                                }
-                            }
+                            title = "自动化引擎",
+                            description = "MaaPocket 星穹铁道 · 基于 MaaFramework"
                         )
                         ListItemDivider()
                         SettingRow(
@@ -1186,44 +1160,8 @@ fun SettingsScreen(
                             description = "查看本版本改进内容",
                             onClick = { showChangelog = true }
                         )
-                        ListItemDivider()
-                        SettingRow(
-                            title = "检查更新",
-                            description = if (updateChecking) "正在检查…" else "检查 GitHub 最新版本并下载安装",
-                            onClick = {
-                                if (updateChecking) return@SettingRow
-                                updateChecking = true
-                                scope.launch {
-                                    val result = withContext(Dispatchers.IO) {
-                                        com.maafw.naruto.data.update.UpdateChecker.checkForUpdate()
-                                    }
-                                    updateChecking = false
-                                    result.onSuccess { info ->
-                                        val current = com.maafw.naruto.BuildConfig.VERSION_NAME
-                                        if (info.version.trimStart('v', 'V') != current) {
-                                            showUpdateInfo = info
-                                        } else {
-                                            Toast.makeText(context, "当前已是最新版本（$current）", Toast.LENGTH_SHORT).show()
-                                        }
-                                    }.onFailure {
-                                        Toast.makeText(context, "检查更新失败：${it.message}", Toast.LENGTH_SHORT).show()
-                                    }
-                                }
-                            }
-                        )
                     }
                 }
-            }
-
-            item {
-                Text(
-                    "By.白川～",
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
             }
         }
 

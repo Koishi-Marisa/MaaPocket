@@ -78,6 +78,9 @@
       "default_check": false,
       "group": [
         "reward"
+      ],
+      "option": [
+        "Server"
       ]
     },
     {

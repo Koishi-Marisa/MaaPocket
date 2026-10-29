@@ -133,7 +133,7 @@ fun ScriptsScreen(
     val activity = context as? Activity
     val allTasks = remember {
         interfaceData?.task?.takeIf { it.isNotEmpty() }
-            ?: listOf(MaaTask(name = "进入火影", entry = "start_up"))
+            ?: listOf(MaaTask(name = "崩铁·启动游戏", entry = "Task_start_up_game"))
     }
     var profile by remember {
         mutableStateOf(
@@ -941,7 +941,7 @@ if (showTouchPreview) {
         AlertDialog(
             onDismissRequest = { showCloseConfirm = false },
             title = { Text("关闭游戏") },
-            text = { Text("确定要关闭火影忍者游戏吗？") },
+            text = { Text("确定要关闭游戏吗？") },
             confirmButton = {
                 TextButton(onClick = {
                     showCloseConfirm = false

@@ -80,6 +80,8 @@ def build_interface(src: dict, has_locale: bool) -> dict:
         ),
         "default_check": False,
         "group": ["reward"],
+        # 让用户在任务面板里直接选国服 / B服；保存后 GamePackageResolver 会读这个值
+        "option": ["Server"],
     }
 
     tasks = [claim_task]

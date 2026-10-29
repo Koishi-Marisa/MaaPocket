@@ -131,7 +131,7 @@ fun LogPanel(
                 if (showCopy) {
                     IconButton(onClick = {
                         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                        clipboard.setPrimaryClip(ClipData.newPlainText("MAAFW 运行日志", logs.joinToString("\n")))
+                        clipboard.setPrimaryClip(ClipData.newPlainText("MaaPocket 运行日志", logs.joinToString("\n")))
                     }) {
                         Icon(
                             imageVector = Icons.Filled.ContentCopy,

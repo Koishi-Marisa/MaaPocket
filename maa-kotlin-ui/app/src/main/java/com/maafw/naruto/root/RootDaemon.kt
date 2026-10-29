@@ -163,18 +163,26 @@ object RootDaemon {
                 return
             }
 
+            val gamePackage = com.maafw.naruto.data.settings.GamePackageResolver.resolve(
+                context, interfaceData, enabled.map { it.entry }, strategy.profileId,
+            )
+            Ln.i("$TAG: 游戏包名 $gamePackage")
+
             val tasks = interfaceData?.task ?: emptyList()
             val items = JSONArray()
             for (entry in enabled.map { it.entry }) {
                 val task = tasks.find { it.entry == entry } ?: continue
                 val config = SettingsRepository.getTaskConfig(context, entry)
-                val override = OptionOverrideBuilder.build(task, config.options, interfaceData)
+                val override = com.maafw.naruto.data.settings.EngineSharedConfig.applyGamePackage(
+                    OptionOverrideBuilder.build(task, config.options, interfaceData),
+                    gamePackage,
+                )
                 items.put(JSONObject().apply {
                     put("entry", entry)
                     put("options", JSONObject().apply {
                         config.options.forEach { (k, v) -> put(k, v) }
                     })
-                    override?.let { put("pipeline_override", it) }
+                    put("pipeline_override", override)
                 })
             }
             if (items.length() == 0) {
@@ -190,6 +198,7 @@ object RootDaemon {
                     com.maafw.naruto.data.settings.EngineSharedConfig.Config(
                         engineReuse = SettingsRepository.isEngineReuseEnabled(context),
                         closeGameAfterTask = SettingsRepository.isCloseGameAfterTask(context),
+                        gamePackage = gamePackage,
                         taskOptions = com.maafw.naruto.data.settings.EngineSharedConfig.taskOptionsFrom(items)
                     )
                 )
@@ -210,7 +219,7 @@ object RootDaemon {
             }
             eng.stopVirtualDisplay()
             if (strategy.closeGameAfterTask) {
-                runCatching { eng.stopPackage("com.tencent.KiHan") }
+                runCatching { eng.stopPackage(gamePackage) }
             }
 
             repository.recordExecutionResult(strategy.id, ExecutionResult.STARTED, "守护进程执行完成")

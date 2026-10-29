@@ -1,6 +1,7 @@
 package com.maafw.naruto.service
 
 import android.accessibilityservice.AccessibilityService
+import android.content.Context
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,8 +21,14 @@ class KeepAliveAccessibilityService : AccessibilityService() {
 
     companion object {
         private const val TAG = "KeepAliveAccessibility"
-        /** 服务完整 ID（引擎 shell 代授无障碍时写入 secure settings 用） */
-        const val SERVICE_ID = "com.maafw.naruto/.service.KeepAliveAccessibilityService"
+
+        /**
+         * 服务完整 ID（引擎 shell 代授无障碍时写入 secure settings 用）。
+         * 必须是 `<applicationId>/<服务类的全限定名>`；applicationId 换成
+         * com.maapocket.hsr 后，不能再写死 com.maafw.naruto。
+         */
+        fun componentId(context: Context): String =
+            "${context.packageName}/${KeepAliveAccessibilityService::class.java.name}"
 
         private val _isConnected = kotlinx.coroutines.flow.MutableStateFlow(false)
         /** 无障碍服务是否已连接（UI 实时观察开启状态） */

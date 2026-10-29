@@ -122,7 +122,9 @@ private const val KEY_EDIT_DRAG_TIP_DISMISSED = "edit_drag_tip_dismissed"
             android.provider.Settings.Secure.getString(
                 context.contentResolver,
                 android.provider.Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
-            )?.contains("com.maafw.naruto/.service.KeepAliveAccessibilityService") == true
+            )?.contains(
+                com.maafw.naruto.service.KeepAliveAccessibilityService.componentId(context)
+            ) == true
         }.getOrDefault(false)
     }
 

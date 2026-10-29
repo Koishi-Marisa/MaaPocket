@@ -24,7 +24,7 @@ object EngineSharedConfig {
         val engineReuse: Boolean = true,
         /** 任务结束后关闭游戏（默认关，对应设置页「任务结束关闭游戏」） */
         val closeGameAfterTask: Boolean = false,
-        /** 游戏包名（默认火影忍者官方包；渠道包/改名在设置页可改） */
+        /** 本次要启动的游戏包名（国服 / B服，由 GamePackageResolver 解析） */
         val gamePackage: String = DEFAULT_GAME_PACKAGE,
         /** 详细日志（L-6：开启后引擎输出更详细的识别/动作日志） */
         val verboseLogging: Boolean = false,
@@ -36,8 +36,8 @@ object EngineSharedConfig {
         fun optionsOf(entry: String): Map<String, String> = taskOptions[entry] ?: emptyMap()
     }
 
-    /** 火影忍者官方包名（默认值） */
-    const val DEFAULT_GAME_PACKAGE = "com.tencent.KiHan"
+    /** 崩铁国服包名（默认值；B服由 GamePackageResolver 覆盖） */
+    const val DEFAULT_GAME_PACKAGE = GamePackageResolver.HSR_OFFICIAL
 
     private fun configFile(userDir: String?): File? {
         if (userDir.isNullOrBlank()) return null
@@ -90,6 +90,19 @@ object EngineSharedConfig {
                 taskOptions = taskOpts,
             )
         }.getOrElse { Config() }
+    }
+
+    /**
+     * 把解析出的游戏包名写进 pipeline_override 的 StartUpGame / CloseGame。
+     * 资源包默认写的是国服包名，B服 机器必须靠这个覆盖才能启动。
+     */
+    fun applyGamePackage(baseOverrideJson: String?, gamePackage: String): String {
+        val base = runCatching {
+            JSONObject(baseOverrideJson?.takeIf { it.isNotBlank() } ?: "{}")
+        }.getOrDefault(JSONObject())
+        base.put("StartUpGame", JSONObject().put("package", gamePackage))
+        base.put("CloseGame", JSONObject().put("package", gamePackage))
+        return base.toString()
     }
 
     /** 从已构建的 items JSON 提取「entry -> options」映射（App 侧组装 Config 用） */
