@@ -61,8 +61,10 @@ bash ./gradlew :app:assembleDebug
 ```
 
 或者不装本地环境，直接走 GitHub Actions：推送后在 Actions 里跑
-`maa-kotlin-ui apk` workflow，下载 `MaaPocket-HSR-stage1-<sha>` artifact 即可
-（工作流用仓库内固定 keystore 签名，可覆盖安装）。
+`maa-kotlin-ui apk` workflow。构建成功后会自动发布到
+[Release v0.1.0-stage1](https://github.com/Koishi-Marisa/MaaPocket/releases/tag/v0.1.0-stage1)
+（免登录直接下载），同时在 run 页保留 `MaaPocket-HSR-stage1-<sha>` artifact。
+工作流用仓库内固定 keystore 签名，可覆盖安装。
 
 安装 APK → Shizuku 授权 → 设置页把虚拟屏分辨率选成 **720p**（阶段 1 基线 1280×720）。
 

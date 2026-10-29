@@ -188,3 +188,67 @@ jobs:
             /home/runner/.gradle/daemon/**/*.log
           if-no-files-found: warn
           retention-days: 7
+
+  # 发布到 GitHub Release：artifact 下载要登录，release asset 是普通 CDN 文件，
+  # 手机浏览器/下载器都能直接拿，方便侧载。
+  release:
+    name: publish release
+    needs: build
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    # 覆盖 workflow 级的 `working-directory: maa-kotlin-ui`：
+    # artifact 下载在仓库根目录，后续 gh 命令也应在根目录执行。
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - name: Download APK artifact
+        uses: actions/download-artifact@v4
+        with:
+          pattern: MaaPocket-HSR-stage1-*
+          path: dist
+          merge-multiple: true
+
+      - name: List APKs
+        shell: bash
+        run: |
+          set -euo pipefail
+          find dist -maxdepth 1 -name '*.apk' -printf '%f %s bytes\n'
+
+      - name: Create or update release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: v0.1.0-stage1
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          count=$(find dist -maxdepth 1 -name '*.apk' | wc -l)
+          [ "$count" -eq 1 ] || { echo "::error::期望 1 个 APK，实际 $count"; exit 1; }
+
+          notes=$(cat <<'EOF'
+          基于 MaaKotlinUI 的《崩坏：星穹铁道》每日奖励最小闭环（阶段 1）。
+
+          - 包名：com.maafw.naruto（arm64-v8a）
+          - 任务：崩铁·领取每日奖励（HSR_Daily_ClaimRewards）
+          - 签名：仓库内固定 keystore，可覆盖安装
+          - 注意：手机端模板尚未采集时，任务会在 HSR_Daily_EnterMailbox 诚实失败；采集步骤见 docs/HSR_STAGE1.md
+          EOF
+          )
+          notes="$notes
+          - 构建：${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+
+          if gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
+            echo "release $TAG 已存在，覆盖同名资产"
+          else
+            gh release create "$TAG" --repo "$REPO" --target "$GITHUB_SHA" \
+              --title "MaaPocket · 崩铁阶段 1" --notes "$notes"
+          fi
+
+          gh release upload "$TAG" --repo "$REPO" --clobber dist/*.apk
+          gh release view "$TAG" --repo "$REPO" --json url,assets \
+            --jq '"release: \(.url)", (.assets[] | "asset: \(.name) \(.size) bytes")'
