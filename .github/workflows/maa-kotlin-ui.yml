@@ -170,8 +170,9 @@ jobs:
           unzip -l "$apk" | grep -E 'assets/interface.json|assets/resource/base/pipeline/hsr/daily/claim_rewards.json|assets/resource/base/pipeline/screen/mail.json|assets/resource/base/image/screen/mail.png|assets/resource/base/adaptation/template_sets.json'
           echo "PC 资源文件数: $(unzip -l "$apk" | grep -c 'assets/resource/base/image/')"
           echo "=== 包名 / 应用名 ==="
+          # 不要接 head：pipefail 下 aapt2 收到 SIGPIPE 会让整步退出码 2。
           "$ANDROID_HOME/build-tools/${BUILD_TOOLS}/aapt2" dump badging "$apk" \
-            | grep -E '^package:|^application-label|^launchable-activity' | head -5
+            | grep -E '^(package:|application-label:|launchable-activity:)'
           echo "=== 原生库 ==="
           unzip -l "$apk" | grep -E 'lib/arm64-v8a/lib(MaaFramework|bridge|launcher)\.so'
           ls -lh "$apk"
