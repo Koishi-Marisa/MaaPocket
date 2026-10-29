@@ -106,6 +106,9 @@ jobs:
             app/src/main/assets/interface.json \
             app/src/main/assets/resource/base/pipeline/Startup.json \
             app/src/main/assets/resource/base/pipeline/hsr/daily/claim_rewards.json \
+            app/src/main/assets/resource/base/pipeline/screen/mail.json \
+            app/src/main/assets/resource/base/image/screen/mail.png \
+            app/src/main/assets/resource/base/image/zh_CN/reward/mail/receive_all.png \
             app/src/main/assets/resource/base/adaptation/template_sets.json
           do
             [ -f "$f" ] || { echo "::error file=$f::阶段 1 资源包缺文件"; exit 1; }
@@ -164,7 +167,8 @@ jobs:
           set -euo pipefail
           apk=dist/MaaPocket-HSR-stage1.apk
           echo "=== 关键资源 ==="
-          unzip -l "$apk" | grep -E 'assets/interface.json|assets/resource/base/pipeline/hsr/daily/claim_rewards.json|assets/resource/base/adaptation/template_sets.json'
+          unzip -l "$apk" | grep -E 'assets/interface.json|assets/resource/base/pipeline/hsr/daily/claim_rewards.json|assets/resource/base/pipeline/screen/mail.json|assets/resource/base/image/screen/mail.png|assets/resource/base/adaptation/template_sets.json'
+          echo "PC 资源文件数: $(unzip -l "$apk" | grep -c 'assets/resource/base/image/')"
           echo "=== 原生库 ==="
           unzip -l "$apk" | grep -E 'lib/arm64-v8a/lib(MaaFramework|bridge|launcher)\.so'
           ls -lh "$apk"
@@ -233,10 +237,11 @@ jobs:
           notes=$(cat <<'EOF'
           基于 MaaKotlinUI 的《崩坏：星穹铁道》每日奖励最小闭环（阶段 1）。
 
-          - 包名：com.maafw.naruto（arm64-v8a）
-          - 任务：崩铁·领取每日奖励（HSR_Daily_ClaimRewards）
+          - 包名：com.maapocket.hsr（arm64-v8a）
+          - 资源：原 PC 项目迁移的完整 MaaFramework 资源包（33 个任务 + 396 张模板）
+          - 虚拟屏：必须设为 1080p（1920×1080），PC 模板 1:1 匹配
           - 签名：仓库内固定 keystore，可覆盖安装
-          - 注意：手机端模板尚未采集时，任务会在 HSR_Daily_EnterMailbox 诚实失败；采集步骤见 docs/HSR_STAGE1.md
+          - 注意：PC 模板在手机端成功率不保证；手机端重采步骤见 docs/HSR_STAGE1.md
           EOF
           )
           notes="$notes

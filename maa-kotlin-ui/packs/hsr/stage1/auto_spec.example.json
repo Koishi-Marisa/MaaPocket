@@ -1,10 +1,10 @@
 {
   "source": "adb:latest",
   "_source_note": "adb:latest = 用 adb 自动拉取 App 截图目录里最新的一张；也可改成具体 PNG 路径",
-  "set": "720p",
+  "set": "1080p",
   "baseline": [
-    1280,
-    720
+    1920,
+    1080
   ],
   "reference_root": "../../../../app-hsr/src/main/assets/pi/resource/image",
   "scale_range": [
@@ -12,7 +12,7 @@
     2.0,
     0.05
   ],
-  "debug_out": "../../../shots/mail_720p_auto_debug.png",
+  "debug_out": "../../../shots/mail_1080p_auto_debug.png",
   "nodes": {
     "HSR_Daily_EnterMailbox": {
       "asset": "hsr/daily_claim/mail_anchor",

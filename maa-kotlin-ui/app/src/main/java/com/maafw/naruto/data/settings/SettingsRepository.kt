@@ -459,9 +459,14 @@ const val RES_720P = "720p"
     private const val KEY_RES_CUSTOM_H = "res_custom_h"
     private const val KEY_RES_CUSTOM_DPI = "res_custom_dpi"
 
-    /** 虚拟屏分辨率（720p/1080p/custom） */
+    /**
+     * 虚拟屏分辨率（720p/1080p/custom）。
+     *
+     * 默认 1080p：当前资源包直接复用原 PC 项目的 1920×1080 模板，选 720p 会导致
+     * 模板与截图尺度不一致（模板不重采样），识别必失败。
+     */
     fun getResolution(context: Context): String {
-        return MaaFwSettingsStore.getString(KEY_RESOLUTION, RES_720P) ?: RES_720P
+        return MaaFwSettingsStore.getString(KEY_RESOLUTION, RES_1080P) ?: RES_1080P
     }
 
     fun setResolution(context: Context, value: String) {

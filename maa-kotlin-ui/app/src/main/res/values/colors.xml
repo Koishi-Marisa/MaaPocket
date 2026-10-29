@@ -7,6 +7,8 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <!-- 主题主色；保留原资源名，避免改 themes.xml（颜色值本身是紫色） -->
     <color name="naruto_orange">#FF6A1B9A</color>
     <color name="naruto_yellow">#FFFFD700</color>
+    <color name="ic_launcher_background">#FF1B2430</color>
 </resources>

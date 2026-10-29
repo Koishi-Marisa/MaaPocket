@@ -1,0 +1,18 @@
+{
+  "Task_daily": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "NavTo_main"
+    ],
+    "attach": {
+      "march7th:kind": "task-entry",
+      "march7th:task_id": "daily",
+      "march7th:entry_screen": "main",
+      "march7th:source_module": "tasks/daily/daily.py",
+      "march7th:confidence": "medium",
+      "march7th:rationale": "Daily 本身没有单一 change_to；它是调度器，把工作分给 buildtarget/fight/synthesis 等子模块（tasks/daily/daily.py:131 currency_wars_homepage、:142 divergent_main、:222 guide2 都是交接点）。入口取 main 是因为所有子任务都从主界面出发。",
+      "march7th:note": "本节点只负责把游戏导航到该功能所在的界面；上游任务的采集/战斗循环逻辑没有迁移。"
+    }
+  }
+}

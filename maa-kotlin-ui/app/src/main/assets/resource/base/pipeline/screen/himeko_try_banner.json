@@ -1,0 +1,94 @@
+{
+  "Screen_himeko_try_banner": {
+    "recognition": "TemplateMatch",
+    "template": "screen/warp/himeko_try_banner.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [],
+    "attach": {
+      "march7th:kind": "screen-anchor",
+      "march7th:screen_id": "himeko_try_banner",
+      "march7th:screen_name": "姬子试用-弹窗",
+      "march7th:source_image_path": "./assets/images/screen/warp/himeko_try_banner.png",
+      "march7th:note": "模板是 1920x1080 PC 客户端截图的小块裁剪，手机上必须重新采集，见 RECAPTURE.md"
+    }
+  },
+  "himeko_try_banner__himeko_prepare__0": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 111,
+    "next": [
+      "Screen_himeko_prepare"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "himeko_try_banner",
+        "himeko_prepare"
+      ],
+      "march7th:edge_index": 0,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.press_key('esc')",
+      "march7th:kind": "press_key",
+      "march7th:upstream_key": "esc",
+      "march7th:android_keycode": 111,
+      "march7th:recapture_note": "上游按 esc 打开/关闭暂停菜单（49 次中的 48 次）。Android 客户端没有键盘，esc 不会到达游戏；手机上应改为 Android KEYCODE_BACK(4)，即把 key 由 111 改成 4，或改成点击屏幕上的返回/暂停按钮的模板匹配节点。"
+    }
+  },
+  "Nav_himeko_try_banner_from_himeko_try": {
+    "recognition": "TemplateMatch",
+    "template": "screen/warp/himeko_try.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "himeko_try__himeko_try_banner__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 himeko_try 上时，沿上游第一条 himeko_try -> himeko_try_banner 边前进"
+    }
+  },
+  "__NavRecheck_himeko_try_banner_from_himeko_try": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_himeko_try_banner",
+      "NavTo_himeko_try"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_himeko_try 之前先复查 Screen_himeko_try_banner：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "NavTo_himeko_try_banner": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_himeko_try_banner",
+      "Nav_himeko_try_banner_from_himeko_try",
+      "__NavRecheck_himeko_try_banner_from_himeko_try"
+    ],
+    "attach": {
+      "march7th:kind": "nav-router",
+      "march7th:target_screen": "himeko_try_banner",
+      "march7th:predecessors": [
+        "himeko_try"
+      ],
+      "march7th:routed_predecessors": [
+        "himeko_try"
+      ],
+      "march7th:note": "DirectHit 进入：先按顺序试探各前驱屏幕守卫节点（TemplateMatch 前驱屏幕锚点），命中则沿那条上游边导航；全部未命中则回退到 Screen_himeko_try_banner 锚点——若此时已经在 himeko_try_banner 上即成功，否则本节点识别失败（诚实失败，不静默跳过）。只覆盖单跳。"
+    }
+  }
+}

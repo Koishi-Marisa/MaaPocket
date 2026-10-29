@@ -6,8 +6,10 @@
 
 > 侧重：**Android 侧 UI 与 MaaFramework 引擎集成**。游戏脚本 / 资源（`assets/resource/base` 等）属于业务资源，后续会从本仓库解耦，不在此描述。
 
-> **本工作区已切换为 MaaPocket 的重构基座。** 阶段 1 只包含《崩坏：星穹铁道》的「领取每日奖励」最小闭环；
-> 构建、手机端模板采集与真机验收步骤见 [docs/HSR_STAGE1.md](docs/HSR_STAGE1.md)。
+> **本工作区已切换为 MaaPocket 的重构基座（包名 `com.maapocket.hsr`）。**
+> 阶段 1 已把原 PC 项目迁移来的完整资源转换成 `assets/resource/base` 直接使用，
+> 并追加「领取每日奖励」手机端入口；PC 模板要求虚拟屏设为 **1080p**。
+> 构建、验证与可选的手机端重采步骤见 [docs/HSR_STAGE1.md](docs/HSR_STAGE1.md)。
 
 ---
 
@@ -239,7 +241,7 @@ python scripts/setup_maaframework.py --tag v5.12.3   # 指定版本
 ## 日志与诊断
 
 - 日志导出目录：`/storage/emulated/0/MaaFw日志/`（设置页「导出日志」生成）
-- 引擎实时日志：`/storage/emulated/0/Android/data/com.maafw.naruto/files/maa_logs/maafw.log`
+- 引擎实时日志：`/storage/emulated/0/Android/data/com.maapocket.hsr/files/maa_logs/maafw.log`
 - 三层启动诊断：
   - App 侧绑定：`service_bind_debug.log`
   - 引擎侧启动：`service_boot_debug.log`

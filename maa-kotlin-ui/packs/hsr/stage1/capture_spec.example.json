@@ -1,9 +1,9 @@
 {
-  "source": "../../../shots/mail_720p.png",
-  "set": "720p",
+  "source": "shots/mail_1080p.png",
+  "set": "1080p",
   "baseline": [
-    1280,
-    720
+    1920,
+    1080
   ],
   "nodes": {
     "HSR_Daily_EnterMailbox": {

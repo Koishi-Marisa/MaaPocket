@@ -1,0 +1,18 @@
+{
+  "Task_currency_wars": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "NavTo_currency_wars_homepage"
+    ],
+    "attach": {
+      "march7th:kind": "task-entry",
+      "march7th:task_id": "currency_wars",
+      "march7th:entry_screen": "currency_wars_homepage",
+      "march7th:source_module": "tasks/weekly/currency_wars.py",
+      "march7th:confidence": "high",
+      "march7th:rationale": "tasks/weekly/currency_wars.py:2977 check_screen('currency_wars_homepage')（:317 先 change_to('guide3')）。",
+      "march7th:note": "本节点只负责把游戏导航到该功能所在的界面；上游任务的采集/战斗循环逻辑没有迁移。"
+    }
+  }
+}

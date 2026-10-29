@@ -67,7 +67,7 @@ object TemplateSelector {
             baselineWidth = baseline?.optInt(0, ScreenProfile.BASELINE_WIDTH)
                 ?: ScreenProfile.BASELINE_WIDTH,
             baselineHeight = baseline?.optInt(1, ScreenProfile.BASELINE_HEIGHT)
-                ?: ScreenProfile.BASELINE_HEIGHT,
+                ?: ScreenProfile.BASELINE_HEIGHT,  // 当前资源包：1920×1080
             sets = sets,
             nodes = nodes,
         )

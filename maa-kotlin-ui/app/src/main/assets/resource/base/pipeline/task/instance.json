@@ -1,0 +1,18 @@
+{
+  "Task_instance": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "NavTo_guide3"
+    ],
+    "attach": {
+      "march7th:kind": "task-entry",
+      "march7th:task_id": "instance",
+      "march7th:entry_screen": "guide3",
+      "march7th:source_module": "tasks/power/instance.py",
+      "march7th:confidence": "high",
+      "march7th:rationale": "tasks/power/instance.py:88 显式 screen.change_to('guide3')。",
+      "march7th:note": "本节点只负责把游戏导航到该功能所在的界面；上游任务的采集/战斗循环逻辑没有迁移。"
+    }
+  }
+}

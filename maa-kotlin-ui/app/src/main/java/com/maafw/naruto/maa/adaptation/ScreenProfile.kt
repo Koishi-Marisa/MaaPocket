@@ -5,9 +5,9 @@ import java.util.Locale
 /**
  * 当前虚拟屏的坐标空间。
  *
- * 资源包里的模板与 roi 都按 1280×720（MaaFramework 的 720p 约定）采集。虚拟屏
- * 分辨率可由设置页切到 1080p（1920×1080），这时同一块 UI 元素的像素坐标会等比放大，
- * 直接拿 720p 的 roi 去匹配 1080p 画面必然失败。
+ * 当前资源包直接复用原 PC 项目的 1920×1080 模板与 roi，因此基线是 1080p。
+ * 虚拟屏分辨率由设置页决定；若用户切到 720p，roi 会按比例缩放，但模板本身
+ * 仍是 1920 尺度（不会重采样），识别会失败——所以 PC 模板直用必须选 1080p。
  *
  * 这个类只做「换算」这一件事，不碰引擎，也不改变 MaaKotlinUI 的虚拟屏模型。
  */
@@ -39,7 +39,7 @@ data class ScreenProfile(
     )
 
     companion object {
-        const val BASELINE_WIDTH = 1280
-        const val BASELINE_HEIGHT = 720
+        const val BASELINE_WIDTH = 1920
+        const val BASELINE_HEIGHT = 1080
     }
 }

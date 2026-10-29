@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MAAFW火影忍者手游</string>
+    <string name="app_name">MaaPocket 星穹铁道</string>
     <string name="status_idle">待机中</string>
     <string name="status_running">运行中</string>
     <string name="status_shizuku_unbound">Shizuku 未连接</string>
@@ -9,8 +9,8 @@
     <string name="btn_shizuku">检查 Shizuku</string>
     <string name="hint_select_task">选择任务</string>
     <string name="log_placeholder">等待运行日志…</string>
-    <string name="channel_engine">MAAFW 引擎服务</string>
+    <string name="channel_engine">MaaPocket 引擎服务</string>
     <string name="channel_engine_desc">显示脚本运行状态与前台保活通知</string>
     <string name="accessibility_keepalive_desc">用于后台防杀保活（不读取任何屏幕内容）：启用后本应用进程受系统保护，后台挂机时引擎任务更稳定。可在设置页关闭。</string>
-    <string name="accessibility_keepalive_label">♥️MAAFW后台保活防杀</string>
+    <string name="accessibility_keepalive_label">♥️MaaPocket 后台保活防杀</string>
 </resources>

@@ -8,7 +8,7 @@
   },
   "HSR_Daily_EnterMailbox": {
     "recognition": "TemplateMatch",
-    "template": "hsr/daily_claim/mail_anchor.png",
+    "template": "screen/mail.png",
     "threshold": 0.8,
     "roi": [
       0,
@@ -32,7 +32,7 @@
   },
   "HSR_Daily_ClickReceiveAll": {
     "recognition": "TemplateMatch",
-    "template": "hsr/daily_claim/receive_all.png",
+    "template": "zh_CN/reward/mail/receive_all.png",
     "threshold": 0.8,
     "roi": [
       0,
@@ -58,7 +58,7 @@
   },
   "HSR_Daily_CloseRewardPopup": {
     "recognition": "TemplateMatch",
-    "template": "hsr/daily_claim/click_close.png",
+    "template": "zh_CN/base/click_close.png",
     "threshold": 0.8,
     "roi": [
       0,

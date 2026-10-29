@@ -28,7 +28,8 @@ from typing import Dict, List, Tuple
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_ASSETS = PROJECT_ROOT / "app/src/main/assets"
-BASELINE = (1280, 720)
+# 当前资源包直接复用原 PC 项目的 1920×1080 模板与 roi。
+BASELINE = (1920, 1080)
 MIN_TEMPLATE_SIDE = 64
 
 errors: List[str] = []
@@ -117,7 +118,7 @@ def check_pipeline(pipeline_root: Path) -> Dict[str, Tuple[Path, dict]]:
             x, y, w, h = (int(v) for v in roi)
             if w > 0 and h > 0:
                 if x < 0 or y < 0 or x + w > BASELINE[0] or y + h > BASELINE[1]:
-                    err(f"{name}: roi={roi} 超出 720p 基线 {BASELINE}")
+                    err(f"{name}: roi={roi} 超出 1920×1080 基线 {BASELINE}")
     ok(f"pipeline：{len(nodes)} 个节点，引用完整")
     return nodes
 
@@ -126,6 +127,7 @@ def check_templates(assets: Path, nodes: Dict[str, Tuple[Path, dict]]) -> None:
     image_root = assets / "resource/base/image"
     referenced = 0
     missing = 0
+    small: List[str] = []
     for name, (_path, node) in nodes.items():
         template = node.get("template")
         if not isinstance(template, str) or not template:
@@ -148,14 +150,17 @@ def check_templates(assets: Path, nodes: Dict[str, Tuple[Path, dict]]) -> None:
                 with Image.open(p) as im:
                     w, h = im.size
                 if min(w, h) < MIN_TEMPLATE_SIDE:
-                    warn(f"{name}: 模板 {p.name} 只有 {w}x{h}，短边 < {MIN_TEMPLATE_SIDE}px")
+                    small.append(f"{name}={w}x{h}")
             except ImportError:  # pragma: no cover
                 pass
             except Exception as exc:  # noqa: BLE001
                 err(f"{name}: 模板 {p} 无法读取：{exc}")
     ok(f"模板引用：{referenced} 个，已采集 {referenced - missing} 个")
+    if small:
+        preview = "、".join(small[:5]) + (" …" if len(small) > 5 else "")
+        warn(f"{len(small)} 个模板短边 < {MIN_TEMPLATE_SIDE}px（PC 迁移资产，属预期）：{preview}")
     if missing:
-        warn(f"共 {missing} 个模板待真机采集（见 docs/HSR_STAGE1.md）")
+        warn(f"共 {missing} 个模板缺失（见 docs/HSR_STAGE1.md）")
 
 
 def check_manifest(assets: Path, nodes: Dict[str, Tuple[Path, dict]]) -> None:

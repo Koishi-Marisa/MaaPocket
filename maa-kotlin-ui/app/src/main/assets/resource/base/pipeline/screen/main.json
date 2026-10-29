@@ -1,0 +1,896 @@
+{
+  "Screen_main": {
+    "recognition": "TemplateMatch",
+    "template": "screen/main.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [],
+    "attach": {
+      "march7th:kind": "screen-anchor",
+      "march7th:screen_id": "main",
+      "march7th:screen_name": "主界面",
+      "march7th:source_image_path": "./assets/images/screen/main.png",
+      "march7th:note": "模板是 1920x1080 PC 客户端截图的小块裁剪，手机上必须重新采集，见 RECAPTURE.md"
+    }
+  },
+  "main__menu__0": {
+    "recognition": "TemplateMatch",
+    "template": "screen/menu_button.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      200,
+      200
+    ],
+    "action": "Click",
+    "next": [
+      "Screen_menu"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "main",
+        "menu"
+      ],
+      "march7th:edge_index": 0,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.press_key('esc')",
+      "march7th:kind": "tap-template",
+      "march7th:upstream_key": "esc",
+      "march7th:android_keycode": null,
+      "march7th:recapture_note": "上游按 esc 打开暂停菜单（49 次中的 48 次）。Android 客户端没有键盘，真机实测 ClickKey 111 会让崩铁弹出「确定要退出？」确认框——这曾在 NavTo_main 失败时把游戏推离大世界。MaaEnd 的同类节点（SceneManager/__ScenePrivateWorldEnterMenuList）从不按键，而是 TemplateMatch 屏幕上的菜单按钮后 Click。这里改成点左上角「手机」按钮（screen/menu_button.png，65x64，取自真机虚拟屏帧）。"
+    }
+  },
+  "main__map__0": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 41,
+    "next": [
+      "main__map__1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "main",
+        "map"
+      ],
+      "march7th:edge_index": 1,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.press_key(cfg.get_value('hotkey_map', 'm'))",
+      "march7th:kind": "press_key",
+      "march7th:upstream_key": "m",
+      "march7th:config_dependency": {
+        "section": "hotkey_map",
+        "key": "m",
+        "note": "静态资源包读不到用户的 config.yaml，已常量折叠为默认热键。"
+      },
+      "march7th:android_keycode": 41,
+      "march7th:recapture_note": "上游是键盘热键（m），手机端没有任何键盘热键；这一跳必须改成点击屏幕上对应功能入口的模板匹配节点。"
+    }
+  },
+  "main__map__1": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 2000,
+    "next": [
+      "main__map__2"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "main",
+        "map"
+      ],
+      "march7th:edge_index": 1,
+      "march7th:action_index": 1,
+      "march7th:expression": "time.sleep(2)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "main__map__2": {
+    "recognition": "TemplateMatch",
+    "template": "zh_CN/map/back.png",
+    "threshold": 0.9,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "Screen_map"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "main",
+        "map"
+      ],
+      "march7th:edge_index": 1,
+      "march7th:action_index": 2,
+      "march7th:expression": "auto.click_element('./assets/images/zh_CN/map/back.png', 'image', 0.9)",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 0.9,
+      "march7th:masked_template": false
+    }
+  },
+  "main__stellar_warp__0": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 133,
+    "next": [
+      "main__stellar_warp__1"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "main",
+        "stellar_warp"
+      ],
+      "march7th:edge_index": 2,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.press_key(cfg.get_value('hotkey_warp', 'f3'))",
+      "march7th:kind": "press_key",
+      "march7th:upstream_key": "f3",
+      "march7th:config_dependency": {
+        "section": "hotkey_warp",
+        "key": "f3",
+        "note": "静态资源包读不到用户的 config.yaml，已常量折叠为默认热键。"
+      },
+      "march7th:android_keycode": 133,
+      "march7th:recapture_note": "上游是键盘热键（f3），手机端没有任何键盘热键；这一跳必须改成点击屏幕上对应功能入口的模板匹配节点。"
+    }
+  },
+  "main__stellar_warp__1": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 2000,
+    "next": [
+      "main__stellar_warp__2"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "main",
+        "stellar_warp"
+      ],
+      "march7th:edge_index": 2,
+      "march7th:action_index": 1,
+      "march7th:expression": "time.sleep(2)",
+      "march7th:kind": "sleep"
+    }
+  },
+  "main__stellar_warp__2": {
+    "recognition": "TemplateMatch",
+    "template": "share/warp/stellar_warp.png",
+    "threshold": 0.9,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "Click",
+    "target": true,
+    "next": [
+      "Screen_stellar_warp"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "main",
+        "stellar_warp"
+      ],
+      "march7th:edge_index": 2,
+      "march7th:action_index": 2,
+      "march7th:expression": "auto.click_element('./assets/images/share/warp/stellar_warp.png', 'image', 0.9)",
+      "march7th:kind": "click-image",
+      "march7th:upstream_threshold": 0.9,
+      "march7th:masked_template": false
+    }
+  },
+  "main__incoming_message__0": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 44,
+    "next": [
+      "Screen_incoming_message"
+    ],
+    "attach": {
+      "march7th:edge": [
+        "main",
+        "incoming_message"
+      ],
+      "march7th:edge_index": 3,
+      "march7th:action_index": 0,
+      "march7th:expression": "auto.press_key('p')",
+      "march7th:kind": "press_key",
+      "march7th:upstream_key": "p",
+      "march7th:android_keycode": 44
+    }
+  },
+  "Nav_main_from_apocalyptic": {
+    "recognition": "TemplateMatch",
+    "template": "screen/apocalyptic/apocalyptic.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "apocalyptic__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 apocalyptic 上时，沿上游第一条 apocalyptic -> main 边前进"
+    }
+  },
+  "Nav_main_from_camera": {
+    "recognition": "TemplateMatch",
+    "template": "screen/camera.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "camera__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 camera 上时，沿上游第一条 camera -> main 边前进"
+    }
+  },
+  "Nav_main_from_click_enter": {
+    "recognition": "TemplateMatch",
+    "template": "screen/click_enter.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "click_enter__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 click_enter 上时，沿上游第一条 click_enter -> main 边前进"
+    }
+  },
+  "Nav_main_from_configure_team": {
+    "recognition": "TemplateMatch",
+    "template": "screen/configure_team.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "configure_team__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 configure_team 上时，沿上游第一条 configure_team -> main 边前进"
+    }
+  },
+  "Nav_main_from_currency_wars_homepage": {
+    "recognition": "TemplateMatch",
+    "template": "screen/currency_wars/homepage.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "currency_wars_homepage__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 currency_wars_homepage 上时，沿上游第一条 currency_wars_homepage -> main 边前进"
+    }
+  },
+  "Nav_main_from_divergent_main": {
+    "recognition": "TemplateMatch",
+    "template": "screen/universe/divergent_main.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "divergent_main__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 divergent_main 上时，沿上游第一条 divergent_main -> main 边前进"
+    }
+  },
+  "Nav_main_from_fight_exit": {
+    "recognition": "TemplateMatch",
+    "template": "zh_CN/fight/fight_exit.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "fight_exit__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 fight_exit 上时，沿上游第一条 fight_exit -> main 边前进"
+    }
+  },
+  "Nav_main_from_incoming_message": {
+    "recognition": "TemplateMatch",
+    "template": "screen/incoming_message.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "incoming_message__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 incoming_message 上时，沿上游第一条 incoming_message -> main 边前进"
+    }
+  },
+  "Nav_main_from_leave_temporarily": {
+    "recognition": "TemplateMatch",
+    "template": "screen/universe/leave_temporarily.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "leave_temporarily__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 leave_temporarily 上时，沿上游第一条 leave_temporarily -> main 边前进"
+    }
+  },
+  "Nav_main_from_map": {
+    "recognition": "TemplateMatch",
+    "template": "screen/map.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "map__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 map 上时，沿上游第一条 map -> main 边前进"
+    }
+  },
+  "Nav_main_from_memory": {
+    "recognition": "TemplateMatch",
+    "template": "screen/forgottenhall/memory.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "memory__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 memory 上时，沿上游第一条 memory -> main 边前进"
+    }
+  },
+  "Nav_main_from_memory_of_chaos": {
+    "recognition": "TemplateMatch",
+    "template": "screen/forgottenhall/memory_of_chaos.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "memory_of_chaos__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 memory_of_chaos 上时，沿上游第一条 memory_of_chaos -> main 边前进"
+    }
+  },
+  "Nav_main_from_menu": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/more.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "menu__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 menu 上时，沿上游第一条 menu -> main 边前进"
+    }
+  },
+  "Nav_main_from_monthly_card": {
+    "recognition": "TemplateMatch",
+    "template": "screen/monthly_card.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "monthly_card__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 monthly_card 上时，沿上游第一条 monthly_card -> main 边前进"
+    }
+  },
+  "Nav_main_from_purefiction": {
+    "recognition": "TemplateMatch",
+    "template": "screen/purefiction/purefiction.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "purefiction__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 purefiction 上时，沿上游第一条 purefiction -> main 边前进"
+    }
+  },
+  "Nav_main_from_retreat": {
+    "recognition": "TemplateMatch",
+    "template": "zh_CN/fight/retreat.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "retreat__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 retreat 上时，沿上游第一条 retreat -> main 边前进"
+    }
+  },
+  "Nav_main_from_stellar_warp": {
+    "recognition": "TemplateMatch",
+    "template": "screen/warp/stellar_warp.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "stellar_warp__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 stellar_warp 上时，沿上游第一条 stellar_warp -> main 边前进"
+    }
+  },
+  "Nav_main_from_universe_expansion": {
+    "recognition": "TemplateMatch",
+    "template": "screen/universe/universe_expansion.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "universe_expansion__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 universe_expansion 上时，沿上游第一条 universe_expansion -> main 边前进"
+    }
+  },
+  "Nav_main_from_universe_main": {
+    "recognition": "TemplateMatch",
+    "template": "screen/universe/universe_main.png",
+    "threshold": 0.8,
+    "roi": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "action": "DoNothing",
+    "next": [
+      "universe_main__main__0"
+    ],
+    "attach": {
+      "march7th:kind": "nav-guard",
+      "march7th:note": "在 universe_main 上时，沿上游第一条 universe_main -> main 边前进"
+    }
+  },
+  "__NavRecheck_main_from_menu": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_menu"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_menu 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_universe_main": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_universe_main"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_universe_main 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_camera": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_camera"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_camera 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_click_enter": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_click_enter"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_click_enter 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_currency_wars_homepage": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_currency_wars_homepage"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_currency_wars_homepage 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_divergent_main": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_divergent_main"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_divergent_main 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_map": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_map"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_map 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_memory_of_chaos": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_memory_of_chaos"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_memory_of_chaos 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_stellar_warp": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_stellar_warp"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_stellar_warp 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_apocalyptic": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_apocalyptic"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_apocalyptic 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_configure_team": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_configure_team"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_configure_team 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_incoming_message": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_incoming_message"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_incoming_message 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_leave_temporarily": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_leave_temporarily"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_leave_temporarily 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_memory": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_memory"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_memory 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_purefiction": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_purefiction"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_purefiction 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_universe_expansion": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_universe_expansion"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_universe_expansion 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_fight_exit": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_fight_exit"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_fight_exit 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_monthly_card": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_monthly_card"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_monthly_card 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "__NavRecheck_main_from_retreat": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "Screen_main",
+      "NavTo_retreat"
+    ],
+    "attach": {
+    "march7th:kind": "nav-recheck",
+      "march7th:note": "兜底走 NavTo_retreat 之前先复查 Screen_main：守卫列表要走二十来项，走到这里时画面往往已经从加载黑屏切回可用界面，照着旧结论导航会把游戏带离刚到达的目标。"
+    }
+  },
+  "NavTo_main": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "timeout": 300000,
+    "next": [
+      "Screen_main",
+      "Nav_main_from_menu",
+      "Nav_main_from_universe_main",
+      "Nav_main_from_camera",
+      "Nav_main_from_click_enter",
+      "Nav_main_from_currency_wars_homepage",
+      "Nav_main_from_divergent_main",
+      "Nav_main_from_map",
+      "Nav_main_from_memory_of_chaos",
+      "Nav_main_from_stellar_warp",
+      "Nav_main_from_apocalyptic",
+      "Nav_main_from_configure_team",
+      "Nav_main_from_incoming_message",
+      "Nav_main_from_leave_temporarily",
+      "Nav_main_from_memory",
+      "Nav_main_from_purefiction",
+      "Nav_main_from_universe_expansion",
+      "Nav_main_from_fight_exit",
+      "Nav_main_from_monthly_card",
+      "Nav_main_from_retreat",
+      "__NavRecheck_main_from_menu",
+      "__NavRecheck_main_from_universe_main",
+      "__NavRecheck_main_from_camera",
+      "__NavRecheck_main_from_click_enter",
+      "__NavRecheck_main_from_currency_wars_homepage",
+      "__NavRecheck_main_from_divergent_main",
+      "__NavRecheck_main_from_map",
+      "__NavRecheck_main_from_memory_of_chaos",
+      "__NavRecheck_main_from_stellar_warp",
+      "__NavRecheck_main_from_apocalyptic",
+      "__NavRecheck_main_from_configure_team",
+      "__NavRecheck_main_from_incoming_message",
+      "__NavRecheck_main_from_leave_temporarily",
+      "__NavRecheck_main_from_memory",
+      "__NavRecheck_main_from_purefiction",
+      "__NavRecheck_main_from_universe_expansion",
+      "__NavRecheck_main_from_fight_exit",
+      "__NavRecheck_main_from_monthly_card",
+      "__NavRecheck_main_from_retreat"
+    ],
+    "attach": {
+      "march7th:kind": "nav-router",
+      "march7th:target_screen": "main",
+      "march7th:predecessors": [
+        "apocalyptic",
+        "camera",
+        "click_enter",
+        "configure_team",
+        "currency_wars_homepage",
+        "divergent_main",
+        "fight_exit",
+        "incoming_message",
+        "leave_temporarily",
+        "map",
+        "memory",
+        "memory_of_chaos",
+        "menu",
+        "monthly_card",
+        "purefiction",
+        "retreat",
+        "stellar_warp",
+        "universe_expansion",
+        "universe_main"
+      ],
+      "march7th:routed_predecessors": [
+        "apocalyptic",
+        "camera",
+        "click_enter",
+        "configure_team",
+        "currency_wars_homepage",
+        "divergent_main",
+        "fight_exit",
+        "incoming_message",
+        "leave_temporarily",
+        "map",
+        "memory",
+        "memory_of_chaos",
+        "menu",
+        "monthly_card",
+        "purefiction",
+        "retreat",
+        "stellar_warp",
+        "universe_expansion",
+        "universe_main"
+      ],
+      "march7th:note": "DirectHit 进入：先按顺序试探各前驱屏幕守卫节点（TemplateMatch 前驱屏幕锚点），命中则沿那条上游边导航；全部未命中则回退到 Screen_main 锚点——若此时已经在 main 上即成功，否则本节点识别失败（诚实失败，不静默跳过）。只覆盖单跳。"
+    }
+  }
+}

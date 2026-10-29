@@ -53,7 +53,7 @@ spec::
     spec 里把 `source` 写成 `"adb:latest"`，或命令行加 `--adb-pull`，
     工具会用 adb 从 App 的截图目录拉取最新一张虚拟屏 PNG 再开始匹配：
 
-        adb shell ls -t /storage/emulated/0/Android/data/com.maafw.naruto/files/screenshots
+        adb shell ls -t /storage/emulated/0/Android/data/com.maapocket.hsr/files/screenshots
         adb pull <最新文件> <项目>/shots/
 
     这只用于开发期采集模板；APK 运行时仍然不依赖 PC / adb。
@@ -98,7 +98,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_REF_ROOT = PROJECT_ROOT.parent / "app-hsr/src/main/assets/pi/resource/image"
 DEFAULT_SHOTS_DIR = PROJECT_ROOT / "shots"
 DEFAULT_ADB_REMOTE_DIR = (
-    "/storage/emulated/0/Android/data/com.maafw.naruto/files/screenshots"
+    "/storage/emulated/0/Android/data/com.maapocket.hsr/files/screenshots"
 )
 
 
