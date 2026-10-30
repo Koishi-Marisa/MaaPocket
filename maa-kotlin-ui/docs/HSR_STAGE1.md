@@ -138,3 +138,5 @@ python scripts/auto_capture_templates.py --spec packs/hsr/stage1/mail_1080p.json
 - 不用原生 Swipe 多途径点数组；
 - 不在 `CustomRecognition` 里嵌套 OCR，不在 `CustomAction` 里取 image；
 - 识别/截图/注入留在引擎进程，App 只做 UI 与编排。
+
+> 资源加载使用 `MaaResourcePostBundle`（pipeline/image/model 整包），不要把 resource/base 直接传给 `MaaResourcePostPipeline`。
