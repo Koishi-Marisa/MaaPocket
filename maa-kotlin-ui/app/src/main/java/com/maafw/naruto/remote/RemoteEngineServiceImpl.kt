@@ -649,6 +649,14 @@ class RemoteEngineServiceImpl(private val context: Context) : IRemoteEngineServi
                 if (!resourceOk) {
                     Ln.e("$TAG loadResource failed")
                     sendLog("资源加载失败：$resourceBase（pipeline/image/model 缺失或 MaaFramework 不支持）")
+                    // 把 MaaFramework 自己的日志尾部带回 App，直接看到解析/校验错误
+                    runCatching {
+                        val maaLog = File(logDir, "maafw.log")
+                        if (maaLog.exists() && maaLog.length() > 0) {
+                            sendLog("—— maafw.log 尾部 ——")
+                            maaLog.readLines().takeLast(25).forEach { sendLog("  $it") }
+                        }
+                    }
                     running = false
                     return@launch
                 }

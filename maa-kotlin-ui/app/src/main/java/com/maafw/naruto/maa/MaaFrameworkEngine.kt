@@ -136,35 +136,13 @@ class MaaFrameworkEngine(context: Context) {
         val modelCount = modelDir.listFiles()?.size ?: 0
         Log.i(TAG, "资源目录统计：pipeline=$pipelineCount image=$imageCount ocrModel=$modelCount")
 
-        // pipeline（MaaResourcePostPipeline 只加载 pipeline JSON，不扫描 model/ 和 image/）
-        val id = lib.MaaResourcePostPipeline(res, resourceDir)
+        // 整包加载：PostBundle 会按约定扫描 pipeline/、image/、model/ocr/。
+        // 不能把 base 直接传给 PostPipeline —— 那会递归解析 adaptation/locale 下的
+        // 非 pipeline JSON（template_sets.json、zh_cn.json），导致资源加载失败。
+        val id = lib.MaaResourcePostBundle(res, resourceDir)
         lib.MaaResourceWait(res, id)
-        loaded = loaded && lib.MaaResourceLoaded(res).toBool()
-        Log.i(TAG, "加载 pipeline：id=$id loaded=$loaded")
-
-        // 图片模板：MaaFramework 只在 PostBundle / PostImage 时才会注册 image/ 目录
-        val imageDir = File(resourceDir, "image")
-        if (imageDir.exists()) {
-            Log.i(TAG, "加载图片模板：path=${imageDir.absolutePath} 子目录=${imageDir.listFiles()?.size ?: 0}")
-            val imgId = lib.MaaResourcePostImage(res, imageDir.absolutePath)
-            lib.MaaResourceWait(res, imgId)
-            loaded = loaded && lib.MaaResourceLoaded(res).toBool()
-            Log.i(TAG, "加载图片模板：id=$imgId loaded=$loaded")
-        } else {
-            Log.w(TAG, "图片目录不存在：${imageDir.absolutePath}")
-        }
-
-        // OCR 模型：只在 PostBundle / PostOcrModel 时才会扫描 model/ocr 目录
-        val ocrDir = File(resourceDir, "model/ocr")
-        if (ocrDir.exists()) {
-            Log.i(TAG, "加载 OCR 模型：path=${ocrDir.absolutePath} 文件数=${ocrDir.listFiles()?.size ?: 0}")
-            val ocrId = lib.MaaResourcePostOcrModel(res, ocrDir.absolutePath)
-            lib.MaaResourceWait(res, ocrId)
-            loaded = loaded && lib.MaaResourceLoaded(res).toBool()
-            Log.i(TAG, "加载 OCR 模型：id=$ocrId loaded=$loaded")
-        } else {
-            Log.w(TAG, "OCR 模型目录不存在：${ocrDir.absolutePath}（OCR 识别将不可用）")
-        }
+        loaded = lib.MaaResourceLoaded(res).toBool()
+        Log.i(TAG, "加载 bundle：id=$id loaded=$loaded")
 
         Log.i(TAG, "加载资源：path=$resourceDir, loaded=$loaded")
         return loaded
