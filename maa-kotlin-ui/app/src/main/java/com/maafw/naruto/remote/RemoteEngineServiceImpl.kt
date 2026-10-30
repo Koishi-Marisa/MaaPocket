@@ -2,6 +2,7 @@ package com.maafw.naruto.remote
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.IBinder
 import android.os.Process
 import android.os.SystemClock
@@ -506,6 +507,8 @@ class RemoteEngineServiceImpl(private val context: Context) : IRemoteEngineServi
         if (json.isNullOrBlank()) return false
         val tasks = runCatching { JSONArray(json) }.getOrNull() ?: return false
         if (tasks.length() == 0) return false
+        userDir?.let { runCatching { File(it, "engine_stage.log").writeText("") } }
+        stageLog("startTasksJson tasks=${tasks.length()} pkg=${context.packageName} abi=${Build.SUPPORTED_ABIS.firstOrNull()}")
         if (running) {
             Ln.w("$TAG engine already running")
             return false
@@ -630,12 +633,18 @@ class RemoteEngineServiceImpl(private val context: Context) : IRemoteEngineServi
         CustomActions.clearCounters()
         // 复刻 py 的 custom 日志文件（导出时打包，对应原版 debug/custom/*.log）
         CustomRecognitions.setLogFile(userDir?.let { File(File(it, "maa_logs"), "custom_kt.log") })
+                stageLog("maa-construct")
                 val maa = MaaFrameworkEngine(context).apply { init(logDir) }
+                stageLog("maa-init-done")
                 engine = maa
-                Ln.i("$TAG MaaFramework version ${maa.version}")
-                sendLog("MaaFramework 版本 ${maa.version}")
+                val maaVersion = runCatching { maa.version }.getOrDefault("unknown")
+                stageLog("maa-version=$maaVersion")
+                Ln.i("$TAG MaaFramework version $maaVersion")
+                sendLog("MaaFramework 版本 $maaVersion")
                 sendLog("开始加载资源：$resourceBase（pipeline 556 节点 / image 396 张，首次可能需要几十秒）")
+                stageLog("loadResource-start")
                 val resourceOk = maa.loadResource(resourceBase)
+                stageLog("loadResource-end ok=$resourceOk")
                 sendLog("资源加载返回：loaded=$resourceOk")
                 if (!resourceOk) {
                     Ln.e("$TAG loadResource failed")
@@ -646,23 +655,27 @@ class RemoteEngineServiceImpl(private val context: Context) : IRemoteEngineServi
                 sendLog("资源加载完成")
                 // F5：控制器创建前等待游戏预启动完成（画面流动）——资源加载已与预启动并行
                 prelaunchJob.await()
+                stageLog("controller-start")
                 if (!maa.createController(bridgePath, cfg.width, cfg.height, displayId, engineConfig.forceStop)) {
                     Ln.e("$TAG createController failed")
                     sendLog("控制器创建失败：libbridge=$bridgePath 分辨率=${cfg.width}x${cfg.height} displayId=$displayId（请确认 Shizuku/Root 权限）")
                     running = false
                     return@launch
                 }
+                stageLog("controller-done")
                 sendLog("控制器创建成功")
                 // 引擎复用时 tasker 已存在（复用分支保留 engine），跳过重建——
                 // 重建会导致旧 tasker 泄漏且与同一 controller 竞争（滑动/多指操作卡死根因）
+                stageLog("tasker-start")
                 if (!maa.hasTasker() && !maa.createTasker()) {
                     Ln.e("$TAG createTasker failed")
                     sendLog("任务器创建失败（引擎初始化异常）")
                     running = false
                     return@launch
                 }
+                stageLog("tasker-done")
                 sendLog(if (maa.hasTasker()) "任务器就绪（复用）" else "任务器创建失败")
-                sendLog("MaaFramework 版本：${maa.version}")
+                sendLog("MaaFramework 版本：$maaVersion")
                 // 预览投递恢复：任务初始化完成（控制器/任务器就绪）后，重新投递预览 Surface——
                 // MaaFramework 接管 libbridge capturer 后预览投递可能失效（现象：有声音但预览黑屏，
                 // 切页回来才恢复），这里先 null 再重投，强制 libbridge 重建预览渲染线程
@@ -1282,6 +1295,20 @@ class RemoteEngineServiceImpl(private val context: Context) : IRemoteEngineServi
             Ln.i("$TAG libbridge.so 已通过 binder 部署到 ${f.absolutePath}（${data.size} 字节）")
             true
         }.getOrDefault(false)
+    }
+
+    /**
+     * 引擎阶段标记：写入 userDir/engine_stage.log。
+     * 引擎进程是 shell uid，崩溃时 App 侧 logcat 拿不到原因；文件标记能在断开后
+     * 由 App 读出来，定位到「原生库加载 / 全局初始化 / 资源加载 / 控制器」具体哪一步。
+     */
+    private fun stageLog(message: String) {
+        val dir = userDir ?: return
+        runCatching {
+            File(dir, "engine_stage.log").appendText(
+                "${System.currentTimeMillis()} $message\n"
+            )
+        }
     }
 
     /** 启动帧率采样协程（500ms 采样一次：游戏帧数增量 + 识别事件数 -> 平滑 FPS） */

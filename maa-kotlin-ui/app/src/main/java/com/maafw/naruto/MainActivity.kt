@@ -220,10 +220,34 @@ class MainActivity : ComponentActivity() {
                         }
                     }.onFailure { addLog("libbridge.so 读取失败: ${it.message}") }
                 }
-                // P0：引擎（重）连接后，若存在"未连接时点击的开始任务"请求，自动执行（避免任务请求丢失）
-                pendingStartRequest?.let { req ->
+                // 引擎崩溃后不再自动重跑整份配置：否则会形成「启动 -> 引擎死 -> 重绑 -> 再启动」
+                // 的死循环，并且反复创建虚拟屏（displayId 持续增长）、覆盖掉崩溃现场的阶段日志。
+                pendingStartRequest?.let {
                     pendingStartRequest = null
-                    startEnabledTasks(req.interfaceData, req.profileName, req.resumeFromEntry, req.isResume, req.profileTasks)
+                    addLog("引擎已重连；为避免崩溃循环，本次不自动重跑，请手动点「开始任务」")
+                }
+                // 上次引擎进程的崩溃现场（shell 进程 logcat 拿不到，只能靠文件标记）
+                runCatching {
+                    val stage = java.io.File(getExternalFilesDir(null), "engine_stage.log")
+                    if (stage.exists() && stage.length() > 0) {
+                        addLog("—— 上次引擎阶段（崩溃现场）——")
+                        stage.readLines().takeLast(20).forEach { addLog("  $it") }
+                    }
+                }
+                // 引擎侧有 shell/root 权限，任务期间会用 logcat --pid 落盘 debug/logcat/；
+                // 原生崩溃（libc/DEBUG）会留在文件尾部，直接带回 App 日志。
+                runCatching {
+                    val dir = java.io.File(getExternalFilesDir(null), "debug/logcat")
+                    val latest = dir.listFiles { f -> f.isFile && f.name.startsWith("logcat_") }
+                        ?.maxByOrNull { it.lastModified() }
+                    if (latest != null && latest.length() > 0) {
+                        addLog("—— 上次 logcat 尾部（${latest.name}）——")
+                        if (latest.length() <= 4_000_000L) {
+                            latest.readLines().takeLast(30).forEach { addLog("  $it") }
+                        } else {
+                            addLog("  logcat 文件过大，已跳过（可导出日志查看）")
+                        }
+                    }
                 }
                 // 暂停恢复：引擎初始化完成后，自动从暂停的任务继续
                 pendingResumeEntry?.let { entry ->
