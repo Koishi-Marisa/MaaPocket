@@ -18,8 +18,8 @@ android {
         applicationId "com.maapocket.hsr"
         minSdkVersion 24
         targetSdkVersion 33
-        versionCode 75
-        versionName "1.2.5"
+        versionCode 76
+        versionName "1.2.6"
 
         ndk {
             abiFilters 'arm64-v8a'
@@ -45,6 +45,11 @@ android {
     packagingOptions {
         jniLibs {
             useLegacyPackaging true
+            // 关键：预编译的 MaaFramework/ppocr .so 不能被 AGP 的 llvm-strip 二次裁剪。
+            // strip 会移动最后一个 LOAD 段的文件偏移但不改 p_vaddr，破坏
+            // p_vaddr ≡ p_offset (mod p_align)，Android 链接器映射成全 0，
+            // 报 "empty/missing DT_HASH/DT_GNU_HASH" 并导致引擎进程崩溃。
+            keepDebugSymbols.add("**/*.so")
         }
     }
 
