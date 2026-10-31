@@ -3,21 +3,40 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
-      "HSR_Phone_EnterGame"
+      "HSR_Phone_GameEnterCheck"
     ]
   },
-  "HSR_Phone_EnterGame": {
+  "HSR_Phone_GameEnterCheck": {
     "recognition": "DirectHit",
-    "action": "Click",
-    "target": [
-      560,
-      280,
-      160,
-      160
-    ],
-    "post_delay": 3000,
-    "max_hit": 3,
+    "action": "DoNothing",
     "next": [
+      "HSR_Phone_ClickEnter",
+      "HSR_Phone_WaitMain"
+    ]
+  },
+  "HSR_Phone_ClickEnter": {
+    "recognition": "OCR",
+    "expected": [
+      "点击进入",
+      "开始游戏",
+      "进入游戏",
+      "点击屏幕"
+    ],
+    "threshold": 0.4,
+    "roi": [
+      300,
+      450,
+      1320,
+      600
+    ],
+    "timeout": 8000,
+    "action": "Click",
+    "target": true,
+    "post_delay": 2000,
+    "next": [
+      "HSR_Phone_GameEnterCheck"
+    ],
+    "on_error": [
       "HSR_Phone_WaitMain"
     ]
   },
