@@ -129,8 +129,6 @@ def build_interface(src: dict, has_locale: bool) -> dict:
         # 避免上来就执行 10 个 PC 任务（B服 登录/OCR 节点会让它卡很久）。
         t = dict(task)
         t["default_check"] = False
-        if t.get("entry") == "Task_start_up_game":
-            t["name"] = "启动游戏（PC 模板，手机端不可用）"
         tasks.append(t)
 
     out = dict(src)
