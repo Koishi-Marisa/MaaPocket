@@ -75,7 +75,7 @@
       "name": "崩铁·领取每日奖励（PC 模板）",
       "entry": "HSR_Daily_ClaimRewards",
       "description": "手机端最小入口：要求游戏已停在邮箱界面。识别 screen/mail.png → 点击 zh_CN/reward/mail/receive_all.png（0.8）→ 等 2 秒 → 最多点 10 次 zh_CN/base/click_close.png → BACK 退出。模板全部直接复用 PC 资源，虚拟屏需设为 1080p。",
-      "default_check": true,
+      "default_check": false,
       "group": [
         "reward"
       ],
@@ -90,6 +90,18 @@
       "default_check": false,
       "group": [
         "reward"
+      ],
+      "option": [
+        "Server"
+      ]
+    },
+    {
+      "name": "崩铁·完成每日（邮件+委托+清体力）",
+      "entry": "HSR_Phone_CompleteDaily",
+      "description": "手机端 720p 日常：手机菜单进邮件全部领取、委托领取奖励，再进星际和平指南→生存索引→拟造花萼，挑战并按「再来一次」循环，体力不足/达到 12 次后退出。需要虚拟屏设为 720p。",
+      "default_check": true,
+      "group": [
+        "daily"
       ],
       "option": [
         "Server"

@@ -1,0 +1,322 @@
+{
+  "HSR_Phone_CompleteDaily": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "HSR_Phone_OpenMenu"
+    ]
+  },
+  "HSR_Phone_OpenMenu": {
+    "recognition": "TemplateMatch",
+    "template": "screen/menu_button.png",
+    "threshold": 0.9,
+    "action": "Click",
+    "target": true,
+    "next": [
+      "HSR_Phone_Menu_Mail"
+    ],
+    "on_error": [
+      "HSR_Phone_Done"
+    ]
+  },
+  "HSR_Phone_Menu_Mail": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/mail.png",
+    "threshold": 0.85,
+    "action": "Click",
+    "target": true,
+    "next": [
+      "HSR_Phone_Mail_ClaimAll"
+    ],
+    "on_error": [
+      "HSR_Phone_Menu_Commission"
+    ]
+  },
+  "HSR_Phone_Mail_ClaimAll": {
+    "recognition": "OCR",
+    "expected": [
+      "全部领取"
+    ],
+    "threshold": 0.4,
+    "roi": [
+      260,
+      600,
+      360,
+      120
+    ],
+    "only_rec": true,
+    "timeout": 6000,
+    "action": "Click",
+    "target": true,
+    "next": [
+      "HSR_Phone_BackToMenu1"
+    ],
+    "on_error": [
+      "HSR_Phone_BackToMenu1"
+    ]
+  },
+  "HSR_Phone_BackToMenu1": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 4,
+    "post_delay": 800,
+    "next": [
+      "HSR_Phone_Menu_Commission"
+    ]
+  },
+  "HSR_Phone_Menu_Commission": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/dispatch.png",
+    "threshold": 0.8,
+    "action": "Click",
+    "target": true,
+    "next": [
+      "HSR_Phone_Commission_Claim"
+    ],
+    "on_error": [
+      "HSR_Phone_Menu_Guide"
+    ]
+  },
+  "HSR_Phone_Commission_Claim": {
+    "recognition": "OCR",
+    "expected": [
+      "领取奖励"
+    ],
+    "threshold": 0.4,
+    "roi": [
+      600,
+      600,
+      380,
+      90
+    ],
+    "only_rec": true,
+    "timeout": 6000,
+    "action": "Click",
+    "target": true,
+    "next": [
+      "HSR_Phone_Commission_Close"
+    ],
+    "on_error": [
+      "HSR_Phone_Commission_Close"
+    ]
+  },
+  "HSR_Phone_Commission_Close": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 4,
+    "post_delay": 800,
+    "next": [
+      "HSR_Phone_Menu_Guide"
+    ]
+  },
+  "HSR_Phone_Menu_Guide": {
+    "recognition": "TemplateMatch",
+    "template": "share/menu/guide.png",
+    "threshold": 0.8,
+    "action": "Click",
+    "target": true,
+    "next": [
+      "HSR_Phone_Guide_SurvivalTab"
+    ],
+    "on_error": [
+      "HSR_Phone_Done"
+    ]
+  },
+  "HSR_Phone_Guide_SurvivalTab": {
+    "recognition": "DirectHit",
+    "action": "Click",
+    "target": [
+      240,
+      100,
+      35,
+      35
+    ],
+    "post_delay": 1000,
+    "next": [
+      "HSR_Phone_Guide_SelectCalyx"
+    ]
+  },
+  "HSR_Phone_Guide_SelectCalyx": {
+    "recognition": "DirectHit",
+    "action": "Click",
+    "target": [
+      110,
+      330,
+      220,
+      60
+    ],
+    "post_delay": 1000,
+    "next": [
+      "HSR_Phone_Guide_EnterFirst"
+    ]
+  },
+  "HSR_Phone_Guide_EnterFirst": {
+    "recognition": "OCR",
+    "expected": [
+      "进入"
+    ],
+    "threshold": 0.5,
+    "roi": [
+      950,
+      150,
+      300,
+      500
+    ],
+    "timeout": 6000,
+    "action": "Click",
+    "target": true,
+    "next": [
+      "HSR_Phone_Calyx_Challenge"
+    ],
+    "on_error": [
+      "HSR_Phone_Done"
+    ]
+  },
+  "HSR_Phone_Calyx_Challenge": {
+    "recognition": "OCR",
+    "expected": [
+      "挑战"
+    ],
+    "threshold": 0.4,
+    "roi": [
+      850,
+      600,
+      400,
+      100
+    ],
+    "only_rec": true,
+    "timeout": 8000,
+    "action": "Click",
+    "target": true,
+    "next": [
+      "HSR_Phone_Team_Start"
+    ],
+    "on_error": [
+      "HSR_Phone_Done"
+    ]
+  },
+  "HSR_Phone_Team_Start": {
+    "recognition": "OCR",
+    "expected": [
+      "开始挑战"
+    ],
+    "threshold": 0.4,
+    "roi": [
+      900,
+      620,
+      380,
+      80
+    ],
+    "only_rec": true,
+    "timeout": 8000,
+    "action": "Click",
+    "target": true,
+    "next": [
+      "HSR_Phone_Battle_Wait"
+    ],
+    "on_error": [
+      "HSR_Phone_Done"
+    ]
+  },
+  "HSR_Phone_Battle_Wait": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 30000,
+    "next": [
+      "HSR_Phone_Result_Again"
+    ]
+  },
+  "HSR_Phone_Result_Again": {
+    "recognition": "OCR",
+    "expected": [
+      "再来一次"
+    ],
+    "threshold": 0.4,
+    "roi": [
+      650,
+      600,
+      300,
+      100
+    ],
+    "only_rec": true,
+    "timeout": 15000,
+    "max_hit": 12,
+    "action": "Click",
+    "target": true,
+    "post_delay": 1000,
+    "next": [
+      "HSR_Phone_Stamina_Check"
+    ],
+    "on_error": [
+      "HSR_Phone_Result_Exit"
+    ]
+  },
+  "HSR_Phone_Stamina_Check": {
+    "recognition": "OCR",
+    "expected": [
+      "开拓力不足",
+      "体力不足",
+      "补充开拓力"
+    ],
+    "threshold": 0.4,
+    "roi": [
+      300,
+      200,
+      700,
+      400
+    ],
+    "timeout": 3000,
+    "action": "DoNothing",
+    "next": [
+      "HSR_Phone_Result_Exit"
+    ],
+    "on_error": [
+      "HSR_Phone_Battle_Wait"
+    ]
+  },
+  "HSR_Phone_Result_Exit": {
+    "recognition": "OCR",
+    "expected": [
+      "退出关卡"
+    ],
+    "threshold": 0.4,
+    "roi": [
+      300,
+      600,
+      300,
+      100
+    ],
+    "only_rec": true,
+    "timeout": 6000,
+    "action": "Click",
+    "target": true,
+    "next": [
+      "HSR_Phone_BackToMain"
+    ],
+    "on_error": [
+      "HSR_Phone_BackToMain"
+    ]
+  },
+  "HSR_Phone_BackToMain": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 4,
+    "post_delay": 800,
+    "next": [
+      "HSR_Phone_BackToMain2"
+    ]
+  },
+  "HSR_Phone_BackToMain2": {
+    "recognition": "DirectHit",
+    "action": "ClickKey",
+    "key": 4,
+    "post_delay": 800,
+    "next": [
+      "HSR_Phone_Done"
+    ]
+  },
+  "HSR_Phone_Done": {
+    "recognition": "DirectHit",
+    "action": "DoNothing"
+  }
+}
