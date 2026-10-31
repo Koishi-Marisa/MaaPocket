@@ -751,6 +751,12 @@ class RemoteEngineServiceImpl(private val context: Context) : IRemoteEngineServi
                     }
                     sendLog("任务 $entry 结束，状态 $status")
                     if (status != 3000) {
+                        // 失败瞬间保存原始帧：只靠日志里的 OCR 文本无法判断当时到底是什么界面
+                        runCatching {
+                            val dir = userDir?.let { File(it, "screenshots") }?.absolutePath
+                            val p = captureFramePng(dir)
+                            sendLog("失败画面已保存：${p ?: "无可用帧"}")
+                        }
                         // 失败时把 MaaFramework 自己的节点日志尾部带回 App，
                         // 能直接看到是哪个节点识别超时/动作失败，而不是只看到 4000。
                         runCatching {

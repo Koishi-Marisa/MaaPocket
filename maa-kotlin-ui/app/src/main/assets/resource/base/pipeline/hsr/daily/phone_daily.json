@@ -11,7 +11,8 @@
     "action": "DoNothing",
     "timeout": 120000,
     "next": [
-      "HSR_Phone_ClickEnter"
+      "HSR_Phone_ClickEnter",
+      "HSR_Phone_ClickEnterFallback"
     ]
   },
   "HSR_Phone_ClickEnter": {
@@ -26,7 +27,7 @@
       450,
       150
     ],
-    "timeout": 60000,
+    "timeout": 20000,
     "action": "Click",
     "target": true,
     "post_delay": 5000,
@@ -424,5 +425,19 @@
   "HSR_Phone_Done": {
     "recognition": "DirectHit",
     "action": "DoNothing"
+  },
+  "HSR_Phone_ClickEnterFallback": {
+    "recognition": "DirectHit",
+    "action": "Click",
+    "target": [
+      450,
+      595,
+      120,
+      35
+    ],
+    "post_delay": 5000,
+    "next": [
+      "HSR_Phone_WaitMain"
+    ]
   }
 }
