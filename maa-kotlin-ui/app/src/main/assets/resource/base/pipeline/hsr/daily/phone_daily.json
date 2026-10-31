@@ -24,9 +24,6 @@
     "action": "DoNothing",
     "next": [
       "HSR_Phone_OpenMenu"
-    ],
-    "on_error": [
-      "HSR_Phone_Done"
     ]
   },
   "HSR_Phone_OpenMenu": {

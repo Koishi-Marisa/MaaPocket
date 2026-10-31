@@ -96,6 +96,20 @@
       ]
     },
     {
+      "name": "启动游戏（先运行，再跑每日）",
+      "label": "启动游戏",
+      "entry": "Task_start_up_game",
+      "description": "必须先运行：它会 StartApp 把游戏拉到后台虚拟屏，其余任务都依赖它。tasks/game/__init__.py:71 start_game() 是上游唯一的游戏启动入口；:186 用 check_and_click_enter() 轮询点击『进入』。迁移为 StartApp（包名可由 Server 选项覆盖）→ 等待加载 → 找『进入』→ 导航到主界面。",
+      "default_check": true,
+      "group": [
+        "startup"
+      ],
+      "option": [
+        "Server",
+        "StartupWait"
+      ]
+    },
+    {
       "name": "崩铁·完成每日（邮件+委托+清体力）",
       "entry": "HSR_Phone_CompleteDaily",
       "description": "手机端 720p 日常：手机菜单进邮件全部领取、委托领取奖励、每日实训领取，再进星际和平指南→生存索引→拟造花萼，挑战并按「再来一次」循环，体力不足/达到 12 次后退出。需要虚拟屏设为 720p。",
@@ -105,32 +119,6 @@
       ],
       "option": [
         "Server"
-      ]
-    },
-    {
-      "name": "手机·启动游戏（B服）",
-      "entry": "HSR_Phone_StartUpGame",
-      "description": "StartApp 启动 B服 客户端，等待 30 秒，OCR 点击「点击进入」，再等主界面手机菜单图标出现。适合单独用于冷启动。",
-      "default_check": false,
-      "group": [
-        "startup"
-      ],
-      "option": [
-        "Server"
-      ]
-    },
-    {
-      "name": "start_up_game",
-      "label": "启动游戏",
-      "entry": "Task_start_up_game",
-      "description": "必须先运行：它会 StartApp 把游戏拉到后台虚拟屏，其余任务都依赖它。tasks/game/__init__.py:71 start_game() 是上游唯一的游戏启动入口；:186 用 check_and_click_enter() 轮询点击『进入』。迁移为 StartApp（包名可由 Server 选项覆盖）→ 等待加载 → 找『进入』→ 导航到主界面。",
-      "default_check": false,
-      "group": [
-        "startup"
-      ],
-      "option": [
-        "Server",
-        "StartupWait"
       ]
     },
     {
