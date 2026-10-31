@@ -108,6 +108,18 @@
       ]
     },
     {
+      "name": "手机·启动游戏（B服）",
+      "entry": "HSR_Phone_StartUpGame",
+      "description": "StartApp 启动 B服 客户端，等待 30 秒，OCR 点击「点击进入」，再等主界面手机菜单图标出现。适合单独用于冷启动。",
+      "default_check": false,
+      "group": [
+        "startup"
+      ],
+      "option": [
+        "Server"
+      ]
+    },
+    {
       "name": "start_up_game",
       "label": "启动游戏",
       "entry": "Task_start_up_game",

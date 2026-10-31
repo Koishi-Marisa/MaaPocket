@@ -3,6 +3,14 @@
     "recognition": "DirectHit",
     "action": "DoNothing",
     "next": [
+      "HSR_Phone_BootWait"
+    ]
+  },
+  "HSR_Phone_BootWait": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 30000,
+    "next": [
       "HSR_Phone_GameEnterCheck"
     ]
   },
@@ -17,24 +25,22 @@
   "HSR_Phone_ClickEnter": {
     "recognition": "OCR",
     "expected": [
-      "点击进入",
-      "开始游戏",
-      "进入游戏",
-      "点击屏幕"
+      "点击进入"
     ],
-    "threshold": 0.4,
+    "threshold": 0.35,
     "roi": [
-      300,
+      600,
+      840,
       450,
-      1320,
-      600
+      150
     ],
-    "timeout": 8000,
+    "only_rec": true,
+    "timeout": 10000,
     "action": "Click",
     "target": true,
-    "post_delay": 2000,
+    "post_delay": 5000,
     "next": [
-      "HSR_Phone_GameEnterCheck"
+      "HSR_Phone_WaitMain"
     ],
     "on_error": [
       "HSR_Phone_WaitMain"
@@ -44,7 +50,7 @@
     "recognition": "TemplateMatch",
     "template": "screen/menu_button.png",
     "threshold": 0.8,
-    "timeout": 30000,
+    "timeout": 60000,
     "action": "DoNothing",
     "next": [
       "HSR_Phone_OpenMenu"

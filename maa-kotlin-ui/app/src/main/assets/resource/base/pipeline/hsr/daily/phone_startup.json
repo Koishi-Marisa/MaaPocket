@@ -1,0 +1,74 @@
+{
+  "HSR_Phone_StartUpGame": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "HSR_Phone_StartApp"
+    ]
+  },
+  "HSR_Phone_StartApp": {
+    "recognition": "DirectHit",
+    "action": "StartApp",
+    "package": "com.miHoYo.hkrpg.bilibili",
+    "next": [
+      "HSR_Phone_StartUp_BootWait"
+    ]
+  },
+  "HSR_Phone_StartUp_BootWait": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "post_delay": 30000,
+    "next": [
+      "HSR_Phone_StartUp_Check"
+    ]
+  },
+  "HSR_Phone_StartUp_Check": {
+    "recognition": "DirectHit",
+    "action": "DoNothing",
+    "next": [
+      "HSR_Phone_StartUp_ClickEnter",
+      "HSR_Phone_StartUp_WaitMain"
+    ]
+  },
+  "HSR_Phone_StartUp_ClickEnter": {
+    "recognition": "OCR",
+    "expected": [
+      "点击进入"
+    ],
+    "threshold": 0.35,
+    "roi": [
+      600,
+      840,
+      450,
+      150
+    ],
+    "only_rec": true,
+    "timeout": 10000,
+    "action": "Click",
+    "target": true,
+    "post_delay": 5000,
+    "next": [
+      "HSR_Phone_StartUp_WaitMain"
+    ],
+    "on_error": [
+      "HSR_Phone_StartUp_WaitMain"
+    ]
+  },
+  "HSR_Phone_StartUp_WaitMain": {
+    "recognition": "TemplateMatch",
+    "template": "screen/menu_button.png",
+    "threshold": 0.8,
+    "timeout": 60000,
+    "action": "DoNothing",
+    "next": [
+      "HSR_Phone_StartUp_Done"
+    ],
+    "on_error": [
+      "HSR_Phone_StartUp_Done"
+    ]
+  },
+  "HSR_Phone_StartUp_Done": {
+    "recognition": "DirectHit",
+    "action": "DoNothing"
+  }
+}

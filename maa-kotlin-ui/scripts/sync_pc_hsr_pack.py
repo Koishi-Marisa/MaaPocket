@@ -109,7 +109,19 @@ def build_interface(src: dict, has_locale: bool) -> dict:
         "option": ["Server"],
     }
 
-    tasks = [claim_task, claim_in_mailbox, phone_daily]
+    phone_startup = {
+        "name": "手机·启动游戏（B服）",
+        "entry": "HSR_Phone_StartUpGame",
+        "description": (
+            "StartApp 启动 B服 客户端，等待 30 秒，OCR 点击「点击进入」，"
+            "再等主界面手机菜单图标出现。适合单独用于冷启动。"
+        ),
+        "default_check": False,
+        "group": ["startup"],
+        "option": ["Server"],
+    }
+
+    tasks = [claim_task, claim_in_mailbox, phone_daily, phone_startup]
     for task in src.get("task", []):
         if task.get("entry") == CLAIM_ENTRY:
             continue
