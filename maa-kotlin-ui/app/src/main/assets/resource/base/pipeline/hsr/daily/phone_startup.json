@@ -26,13 +26,14 @@
     "post_delay": 8000,
     "next": [
       "HSR_Phone_StartUp_WaitMain"
-    ]
+    ],
+    "timeout": 200000
   },
   "HSR_Phone_StartUp_WaitMain": {
     "recognition": "TemplateMatch",
     "template": "screen/menu_button.png",
     "threshold": 0.8,
-    "timeout": 120000,
+    "timeout": 180000,
     "action": "DoNothing",
     "next": [
       "HSR_Phone_StartUp_Done"
