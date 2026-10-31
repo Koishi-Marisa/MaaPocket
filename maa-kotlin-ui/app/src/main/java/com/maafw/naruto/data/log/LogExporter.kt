@@ -302,7 +302,13 @@ object LogExporter {
                 if (rootMaa.exists() && rootMaa.canRead()) {
                     zipEntry(zos, "root/maafw.log", rootMaa)
                 }
-                // 6) config/：当前引擎配置（帮助还原复现环境）
+                // 6) screenshots/：App 内「截图」按钮保存的原始帧（1920×1080），
+                // 用于按手机 UI 裁模板/校准 ROI，避免用户去 Android/data 里翻文件。
+                File(ext, "screenshots").listFiles()
+                    ?.filter { it.isFile && it.name.endsWith(".png") }
+                    ?.sortedBy { it.lastModified() }
+                    ?.forEach { f -> zipEntry(zos, "screenshots/${f.name}", f) }
+                // 7) config/：当前引擎配置（帮助还原复现环境）
                 val cfg = File(ext, "engine_config.json")
                 if (cfg.exists()) zipEntry(zos, "config/engine_config.json", cfg)
                 // 7) 设备信息（getprop 全量；App 进程受限时写入占位说明，确保 entry 始终存在）
