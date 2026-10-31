@@ -464,11 +464,11 @@ const val RES_720P = "720p"
     /**
      * 虚拟屏分辨率（720p/1080p/custom）。
      *
-     * 默认 1080p：当前资源包直接复用原 PC 项目的 1920×1080 模板，选 720p 会导致
-     * 模板与截图尺度不一致（模板不重采样），识别必失败。
+     * 默认 720p：手机端 OCR/识别在 1280×720 下最快；PC 模板任务需要 1080p 时
+     * 用户可在设置里切回 1080p（控制器识别尺寸会跟随虚拟屏自动切换）。
      */
     fun getResolution(context: Context): String {
-        return MaaFwSettingsStore.getString(KEY_RESOLUTION, RES_1080P) ?: RES_1080P
+        return MaaFwSettingsStore.getString(KEY_RESOLUTION, RES_720P) ?: RES_720P
     }
 
     fun setResolution(context: Context, value: String) {
