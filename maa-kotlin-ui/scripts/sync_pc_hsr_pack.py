@@ -84,7 +84,19 @@ def build_interface(src: dict, has_locale: bool) -> dict:
         "option": ["Server"],
     }
 
-    tasks = [claim_task]
+    claim_in_mailbox = {
+        "name": "崩铁·领取奖励（已打开邮箱）",
+        "entry": "HSR_Daily_ClickReceiveAll",
+        "description": (
+            "手动把游戏停在邮箱界面后运行：只做「全部领取」→ 关奖励弹窗 → BACK。"
+            "用于 main 界面找不到「邮箱」按钮的机型/分辨率，跳过入口识别。"
+        ),
+        "default_check": False,
+        "group": ["reward"],
+        "option": ["Server"],
+    }
+
+    tasks = [claim_task, claim_in_mailbox]
     for task in src.get("task", []):
         if task.get("entry") == CLAIM_ENTRY:
             continue

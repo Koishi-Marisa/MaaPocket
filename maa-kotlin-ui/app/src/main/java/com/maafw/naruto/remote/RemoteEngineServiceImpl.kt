@@ -750,7 +750,18 @@ class RemoteEngineServiceImpl(private val context: Context) : IRemoteEngineServi
                         break
                     }
                     sendLog("任务 $entry 结束，状态 $status")
-                    if (status != 3000) break
+                    if (status != 3000) {
+                        // 失败时把 MaaFramework 自己的节点日志尾部带回 App，
+                        // 能直接看到是哪个节点识别超时/动作失败，而不是只看到 4000。
+                        runCatching {
+                            val maaLog = File(logDir, "maafw.log")
+                            if (maaLog.exists() && maaLog.length() > 0) {
+                                sendLog("—— maafw.log 尾部（任务失败）——")
+                                maaLog.readLines().takeLast(35).forEach { sendLog("  $it") }
+                            }
+                        }
+                        break
+                    }
                 }
                 // 暂停中断时不再显示误导性的"全部任务执行完毕"
                 sendLog(if (isPausedByUser) "任务已暂停" else "全部任务执行完毕")

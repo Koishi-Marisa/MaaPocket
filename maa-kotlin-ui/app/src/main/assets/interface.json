@@ -84,6 +84,18 @@
       ]
     },
     {
+      "name": "崩铁·领取奖励（已打开邮箱）",
+      "entry": "HSR_Daily_ClickReceiveAll",
+      "description": "手动把游戏停在邮箱界面后运行：只做「全部领取」→ 关奖励弹窗 → BACK。用于 main 界面找不到「邮箱」按钮的机型/分辨率，跳过入口识别。",
+      "default_check": false,
+      "group": [
+        "reward"
+      ],
+      "option": [
+        "Server"
+      ]
+    },
+    {
       "name": "start_up_game",
       "label": "启动游戏",
       "entry": "Task_start_up_game",

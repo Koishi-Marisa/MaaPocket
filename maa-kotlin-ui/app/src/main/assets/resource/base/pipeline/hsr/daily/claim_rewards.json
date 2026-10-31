@@ -16,7 +16,7 @@
       0,
       0
     ],
-    "timeout": 8000,
+    "timeout": 15000,
     "action": "DoNothing",
     "next": [
       "HSR_Daily_ClaimOrExit"
@@ -45,6 +45,9 @@
     "target": true,
     "next": [
       "HSR_Daily_WaitAfterReceive"
+    ],
+    "on_error": [
+      "HSR_Daily_Exit"
     ]
   },
   "HSR_Daily_WaitAfterReceive": {
@@ -71,6 +74,9 @@
     "action": "Click",
     "target": true,
     "next": [
+      "HSR_Daily_Exit"
+    ],
+    "on_error": [
       "HSR_Daily_Exit"
     ]
   },
