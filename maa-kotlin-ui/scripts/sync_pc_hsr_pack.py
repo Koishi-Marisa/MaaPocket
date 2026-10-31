@@ -100,7 +100,7 @@ def build_interface(src: dict, has_locale: bool) -> dict:
         "name": "崩铁·完成每日（邮件+委托+清体力）",
         "entry": "HSR_Phone_CompleteDaily",
         "description": (
-            "手机端 720p 日常：手机菜单进邮件全部领取、委托领取奖励，"
+            "手机端 720p 日常：手机菜单进邮件全部领取、委托领取奖励、每日实训领取，"
             "再进星际和平指南→生存索引→拟造花萼，挑战并按「再来一次」循环，"
             "体力不足/达到 12 次后退出。需要虚拟屏设为 720p。"
         ),
