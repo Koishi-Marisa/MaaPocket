@@ -19,6 +19,7 @@ interface MaaFrameworkLib : Library {
 
     // Global
     fun MaaGlobalSetOption(key: Int, value: Pointer?, valueSize: Long): Byte
+    fun MaaControllerSetOption(ctrl: Pointer, key: Int, value: Pointer?, valueSize: Long): Byte
     fun MaaGlobalLoadPlugin(libraryPath: String?): Byte
     fun MaaVersion(): String?
 

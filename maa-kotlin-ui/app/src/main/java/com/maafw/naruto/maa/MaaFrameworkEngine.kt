@@ -170,6 +170,14 @@ class MaaFrameworkEngine(context: Context) {
             Log.e(TAG, "控制器创建失败（返回空句柄）")
             return false
         }
+        // 关闭 MaaFramework 默认的 720p 缩图：PC 资源包的全部模板都是 1920×1080，
+        // 不设长边会把截图缩到 1280×720，模板和 ROI 全部对不上。
+        val targetLongSide = intArrayOf(1920)
+        val setLong = lib.MaaControllerSetOption(
+            ctrl, 1 /* MaaCtrlOption_ScreenshotTargetLongSide */,
+            MemoryUtil.intArrayToPointer(targetLongSide), 4
+        )
+        Log.i(TAG, "控制器截图长边=1920 set=$setLong")
         val connId = lib.MaaControllerPostConnection(ctrl)
         val status = waitController(ctrl, connId)
         Log.i(TAG, "控制器连接 status=$status（3000=成功，其余失败）")
