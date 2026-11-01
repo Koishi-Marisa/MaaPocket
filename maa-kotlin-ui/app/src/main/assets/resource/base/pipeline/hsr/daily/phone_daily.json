@@ -13,14 +13,14 @@
     "timeout": 400000,
     "next": [
       "HSR_Phone_WaitMainShort",
-      "HSR_Phone_ClickEnter"
+      "HSR_Phone_ClickEnterFallback"
     ]
   },
   "HSR_Phone_WaitMain": {
     "recognition": "TemplateMatch",
     "template": "screen/menu_button.png",
     "threshold": 0.8,
-    "timeout": 180000,
+    "timeout": 15000,
     "action": "DoNothing",
     "next": [
       "HSR_Phone_OpenMenu"
@@ -411,29 +411,20 @@
       "HSR_Phone_OpenMenu"
     ],
     "on_error": [
-      "HSR_Phone_ClickEnter"
+      "HSR_Phone_ClickEnterFallback"
     ]
   },
-  "HSR_Phone_ClickEnter": {
-    "recognition": "OCR",
-    "expected": [
-      "点击进入"
-    ],
-    "threshold": 0.35,
-    "roi": [
-      600,
-      840,
-      450,
-      150
-    ],
-    "timeout": 180000,
+  "HSR_Phone_ClickEnterFallback": {
+    "recognition": "DirectHit",
     "action": "Click",
-    "target": true,
+    "target": [
+      450,
+      595,
+      120,
+      35
+    ],
     "post_delay": 5000,
     "next": [
-      "HSR_Phone_WaitMain"
-    ],
-    "on_error": [
       "HSR_Phone_WaitMain"
     ]
   }

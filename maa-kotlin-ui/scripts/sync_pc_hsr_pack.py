@@ -124,20 +124,14 @@ def build_interface(src: dict, has_locale: bool) -> dict:
     # 原版 Task_start_up_game 在手机端实测能进主界面，默认先跑它，再跑每日。
     # 手机自建启动任务易在加载页空转，不再暴露给用户。
     tasks = [claim_task, claim_in_mailbox, phone_daily]
-    pc_startup = None
     for task in src.get("task", []):
         if task.get("entry") == CLAIM_ENTRY:
             continue
         t = dict(task)
         t["default_check"] = False
         if t.get("entry") == "Task_start_up_game":
-            t["default_check"] = True
-            t["name"] = "启动游戏（先运行，再跑每日）"
-            pc_startup = t
-        else:
-            tasks.append(t)
-    if pc_startup is not None:
-        tasks.insert(2, pc_startup)
+            t["name"] = "启动游戏（PC 模板，720p 不可用）"
+        tasks.append(t)
 
     out = dict(src)
     out["name"] = "MaaPocket 崩铁（PC 资源直用）"
