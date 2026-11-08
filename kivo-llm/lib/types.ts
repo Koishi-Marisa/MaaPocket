@@ -52,6 +52,7 @@ export interface CharacterSearchResult {
   school: string;
   intro: string;
   url: string;
+  isCn: boolean;
 }
 
 export interface CharacterProfile {
@@ -109,6 +110,15 @@ export interface CharacterGalleryGroup {
   images: string[];
 }
 
+export interface CharacterRelease {
+  cn: boolean;
+  jp: boolean;
+  global: boolean;
+  cnDate: string | null;
+  jpDate: string | null;
+  globalDate: string | null;
+}
+
 export interface CharacterDoc {
   id: number;
   displayName: string;
@@ -122,10 +132,12 @@ export interface CharacterDoc {
   skins: SkinEntry[];
   profile: CharacterProfile;
   intro: string;
+  introSource: "cn" | "wiki" | "none";
   lore: string;
   combat: CharacterCombat;
   voices: CharacterVoice[];
   gallery: CharacterGalleryGroup[];
+  release: CharacterRelease;
   meta: {
     source: string;
     updatedAt: string | null;

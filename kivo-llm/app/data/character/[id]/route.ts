@@ -19,7 +19,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const doc = await getCharacterDoc(id);
     if (!doc) {
-      return new Response("未找到国服已实装角色\n", { status: 404 });
+      return new Response("未找到该角色\n", { status: 404 });
     }
 
     const markdown = renderCharacterMarkdown(doc, {

@@ -106,8 +106,8 @@ function buildProfile(student: Record<string, any>, schoolName: string): Charact
   return {
     school: schoolName || SCHOOL_BY_ID.get(Number(student.school))?.nameCn || "",
     grade: student.grade ?? "",
-    age: typeof student.age === "number" ? student.age : null,
-    height: typeof student.height === "number" ? student.height : null,
+    age: typeof student.age === "number" && student.age > 1 ? student.age : null,
+    height: typeof student.height === "number" && student.height > 1 ? student.height : null,
     birthday: student.birthday ?? "",
     hobby: student.hobby ?? "",
     voiceJp: student.character_voice ?? "",
@@ -202,6 +202,29 @@ function toSearchResult(entry: CharacterIndexEntry): CharacterSearchResult {
     school: entry.school.name,
     intro: entry.intro,
     url: entry.source,
+    isCn: entry.isCn,
+  };
+}
+
+function toSearchResultFromStudent(student: Record<string, any>): CharacterSearchResult {
+  const names = toNames(student);
+  const skin = {
+    cn: student.skin_cn || student.skin || "",
+    jp: student.skin_jp || "",
+    zh_tw: student.skin_zh_tw || "",
+  };
+  const school = SCHOOL_BY_ID.get(Number(student.school));
+
+  return {
+    id: Number(student.id),
+    displayName: displayName(names, skin),
+    names,
+    aliases: splitAliases(student.nick_name),
+    skin,
+    school: school?.nameCn || "",
+    intro: student.introduction_cn || student.introduction || "",
+    url: `https://kivo.wiki/data/character/${student.id}`,
+    isCn: Boolean(student.is_install_cn),
   };
 }
 
@@ -275,12 +298,27 @@ export async function searchCharacters(query: string, limit = 5): Promise<Charac
     try {
       const upstream = await searchUpstream(query, 20);
       const seen = new Set(results.map((item) => item.id));
-      for (const item of upstream) {
-        if (item.type !== "data_student") continue;
-        const entry = BY_ID.get(Number(item.id));
-        if (!entry || seen.has(entry.id)) continue;
-        results.push(toSearchResult(entry));
-        seen.add(entry.id);
+      const candidates = upstream
+        .filter((item) => item.type === "data_student")
+        .slice(0, safeLimit);
+
+      const hydrated = await Promise.all(
+        candidates.map(async (item) => {
+          const entry = BY_ID.get(Number(item.id));
+          if (entry) return toSearchResult(entry);
+          try {
+            const student = await getStudent(Number(item.id));
+            return toSearchResultFromStudent(student);
+          } catch {
+            return null;
+          }
+        }),
+      );
+
+      for (const result of hydrated) {
+        if (!result || seen.has(result.id)) continue;
+        results.push(result);
+        seen.add(result.id);
         if (results.length >= safeLimit) break;
       }
     } catch {
@@ -316,9 +354,6 @@ export function listCharacters(options: {
 }
 
 export async function getCharacterDoc(id: number): Promise<CharacterDoc | null> {
-  const indexEntry = BY_ID.get(id);
-  if (!indexEntry) return null;
-
   let student: Record<string, any>;
   try {
     student = await getStudent(id);
@@ -328,8 +363,8 @@ export async function getCharacterDoc(id: number): Promise<CharacterDoc | null> 
     if (message.includes("不存在")) return null;
     throw error;
   }
-  if (!student.is_install_cn) return null;
 
+  const indexEntry = BY_ID.get(id);
   const names = toNames(student);
   const skin = {
     cn: student.skin_cn || student.skin || "",
@@ -340,6 +375,10 @@ export async function getCharacterDoc(id: number): Promise<CharacterDoc | null> 
   const profile = buildProfile(student, indexEntry?.school.name || schools?.nameCn || "");
   const combat = buildCombat(student);
   const characterId = asArray(student.character_datas)[0]?.character_id ?? "";
+  const introCn = student.introduction_cn || "";
+  const introWiki = student.introduction || "";
+  const intro = introCn || introWiki;
+  const introSource = introCn ? "cn" : introWiki ? "wiki" : "none";
 
   return {
     id: Number(student.id),
@@ -349,11 +388,20 @@ export async function getCharacterDoc(id: number): Promise<CharacterDoc | null> 
     skin,
     skins: buildSkins(student, indexEntry),
     profile,
-    intro: student.introduction_cn || student.introduction || "",
+    intro,
+    introSource,
     lore: student.more || "",
     combat,
     voices: buildVoices(student),
     gallery: buildGallery(student),
+    release: {
+      cn: Boolean(student.is_install_cn),
+      jp: Boolean(student.is_install),
+      global: Boolean(student.is_install_global),
+      cnDate: student.release_date_cn || null,
+      jpDate: student.release_date || null,
+      globalDate: student.release_date_global || null,
+    },
     meta: {
       source: `https://kivo.wiki/data/character/${student.id}`,
       updatedAt: student.updated_at ? new Date(student.updated_at * 1000).toISOString() : null,

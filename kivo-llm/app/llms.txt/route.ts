@@ -10,7 +10,8 @@ export async function GET(request: NextRequest) {
 
 ## 范围
 
-- 仅国服已实装角色（含皮肤形态），共 237 条。
+- 搜索索引覆盖国服已实装角色（含皮肤形态），共 237 条。
+- 详情接口支持站内任意角色 ID；未在国服实装的会返回角色资料，并在开头标注「国服状态：未实装」。
 - 数据来源：https://kivo.wiki 与 https://api.kivo.wiki
 - 内容版权归基沃托斯古书馆及原作者所有；本接口仅做检索与格式转换。
 
@@ -43,9 +44,12 @@ export async function GET(request: NextRequest) {
 - names.jp / kr / en / zh_tw：其他语言译名
 - aliases：别称
 - profile：学校、年级、年龄、身高、生日、兴趣、声优、画师、武器、实装日期
-- intro：国服官方简介
+- intro：国服官方简介；国服未实装时回退为站内简介
+- introSource：cn / wiki / none
 - lore：站内设定整理（非国服官方文案）
 - combat：稀有度、定位、攻击/防御类型、适应性、技能、基础数值
+- release：国服、日服、国际服的实装状态与日期
+- meta.isCn：是否已在国服实装
 
 ## 示例
 

@@ -15,7 +15,7 @@ const handler = createMcpHandler(
       {
         title: "搜索国服角色",
         description:
-          "按国服译名、站内译名、日文名、英文名、韩文名、繁中名或别称搜索《蔚蓝档案》国服角色。返回全部语言译名。",
+          "按国服译名、站内译名、日文名、英文名、韩文名、繁中名或别称搜索《蔚蓝档案》角色。返回全部语言译名；未在国服实装的角色会标注「国服状态：未实装」。",
         inputSchema: z.object({
           query: z.string().describe("角色名或别称，例如：未花、mika、Misono Mika"),
           limit: z.number().int().min(1).max(20).optional().default(5),
@@ -39,9 +39,9 @@ const handler = createMcpHandler(
     server.registerTool(
       "get_character",
       {
-        title: "获取国服角色资料",
+        title: "获取角色资料",
         description:
-          "获取一个国服已实装角色的全部译名、基本资料、国服简介、站内设定整理和战斗资料。",
+          "获取一个角色的全部译名、基本资料、国服简介、站内设定整理和战斗资料。若国服未实装，会返回资料并标注「国服状态：未实装」。",
         inputSchema: z.object({
           id: z.number().int().positive().describe("角色 ID，例如圣园未花是 1"),
           sections: z.array(z.enum(SECTIONS)).optional().describe("默认返回 names,profile,intro,lore,combat"),
@@ -53,7 +53,7 @@ const handler = createMcpHandler(
           const doc = await getCharacterDoc(id);
           if (!doc) {
             return {
-              content: [{ type: "text", text: `未找到 ID 为 ${id} 的国服已实装角色。` }],
+              content: [{ type: "text", text: `未找到 ID 为 ${id} 的角色。` }],
               isError: true,
             };
           }

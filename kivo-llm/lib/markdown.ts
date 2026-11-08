@@ -153,7 +153,8 @@ function profileSection(doc: CharacterDoc): string {
 
 function introSection(doc: CharacterDoc): string {
   if (!doc.intro) return "";
-  return ["## 国服简介", "", cleanMarkdown(doc.intro)].join("\n");
+  const heading = doc.introSource === "cn" ? "## 国服简介" : "## 站内简介（非国服）";
+  return [heading, "", cleanMarkdown(doc.intro)].join("\n");
 }
 
 function loreSection(doc: CharacterDoc, keepImages: boolean): string {
@@ -174,6 +175,15 @@ function loreSection(doc: CharacterDoc, keepImages: boolean): string {
 
 function combatSection(doc: CharacterDoc): string {
   const c = doc.combat;
+  const hasCombat =
+    (c.rarity !== null && c.rarity > 0) ||
+    Boolean(c.role || c.attackType || c.defenseType || c.weaponName) ||
+    c.exSkills.length > 0 ||
+    c.otherSkills.length > 0 ||
+    Object.values(c.stats).some((value) => value > 0);
+
+  if (!hasCombat) return "";
+
   const bullets = [
     bullet("稀有度", c.rarity ? `${c.rarity}★` : ""),
     bullet("定位", c.role),
@@ -257,7 +267,10 @@ export function renderCharacterMarkdown(doc: CharacterDoc, options: RenderOption
     .filter(Boolean)
     .join("\n");
 
-  const blocks: string[] = [`# ${doc.displayName}`, footer];
+  const status = doc.release.cn
+    ? `> 国服状态：已实装${doc.release.cnDate ? `（${doc.release.cnDate}）` : ""}`
+    : "> 国服状态：未实装（以下为站内资料，不代表国服内容）";
+  const blocks: string[] = [`# ${doc.displayName}`, footer, status];
 
   if (sections.has("names")) blocks.push(namesSection(doc));
   if (sections.has("profile")) blocks.push(profileSection(doc));
@@ -308,6 +321,7 @@ export function renderSearchMarkdown(results: CharacterSearchResult[], query: st
       result.aliases.length > 0 && `别称：${result.aliases.join("、")}`,
     ].filter(Boolean);
     if (aliases.length > 0) lines.push(`   ${aliases.join(" | ")}`);
+    if (!result.isCn) lines.push("   国服状态：未实装");
     if (result.school) lines.push(`   学校：${result.school}`);
     if (result.intro) lines.push(`   简介：${result.intro}`);
     lines.push(`   链接：${result.url}`);
