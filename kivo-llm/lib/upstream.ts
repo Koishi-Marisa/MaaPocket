@@ -19,14 +19,14 @@ async function request<T>(path: string, revalidate = 900): Promise<T> {
   const url = `${API_BASE}${path}`;
   let lastError: unknown;
 
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < 2; attempt++) {
     try {
       const init: NextFetchInit = {
         headers: {
           "user-agent": USER_AGENT,
           accept: "application/json",
         },
-        signal: AbortSignal.timeout(12000),
+        signal: AbortSignal.timeout(8000),
         next: { revalidate },
       };
       const response = await fetch(url, init);
@@ -48,8 +48,8 @@ async function request<T>(path: string, revalidate = 900): Promise<T> {
       if (error instanceof UpstreamError && error.status >= 400 && error.status < 500) {
         throw error;
       }
-      if (attempt < 2) {
-        await new Promise((resolve) => setTimeout(resolve, 300 * (attempt + 1)));
+      if (attempt < 1) {
+        await new Promise((resolve) => setTimeout(resolve, 300));
       }
     }
   }

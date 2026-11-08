@@ -274,7 +274,19 @@ export function renderCharacterMarkdown(doc: CharacterDoc, options: RenderOption
     .trim();
 
   if (output.length > maxChars) {
-    output = `${output.slice(0, Math.max(0, maxChars - 120)).trim()}\n\n> 内容过长，已截断。完整内容请访问 ${doc.meta.source}`;
+    const budget = Math.max(0, maxChars - 120);
+    const slice = output.slice(0, budget);
+    const lastBreak = Math.max(
+      slice.lastIndexOf("\n\n"),
+      slice.lastIndexOf("\n"),
+      slice.lastIndexOf("。"),
+      slice.lastIndexOf("！"),
+      slice.lastIndexOf("？"),
+      slice.lastIndexOf("；"),
+      slice.lastIndexOf(". "),
+    );
+    const cut = lastBreak > budget * 0.5 ? slice.slice(0, lastBreak) : slice;
+    output = `${cut.trim()}\n\n> 内容过长，已截断。完整内容请访问 ${doc.meta.source}`;
   }
 
   return `${output}\n`;
