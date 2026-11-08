@@ -6,7 +6,7 @@ import { renderCharacterMarkdown, renderSearchMarkdown } from "@/lib/markdown";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const SECTIONS = ["names", "profile", "intro", "lore", "combat", "voices", "gallery"] as const;
+const SECTIONS = ["names", "profile", "intro", "lore", "related", "combat", "voices", "gallery"] as const;
 
 const handler = createMcpHandler(
   (server) => {

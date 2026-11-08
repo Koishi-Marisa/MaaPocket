@@ -10,7 +10,7 @@ type RouteContext = {
 
 function parseSections(value: string | null): string[] | undefined {
   if (!value) return undefined;
-  if (value === "all") return ["names", "profile", "intro", "lore", "combat", "voices", "gallery"];
+  if (value === "all") return ["names", "profile", "intro", "lore", "related", "combat", "voices", "gallery"];
   return value.split(",").map((item) => item.trim()).filter(Boolean);
 }
 

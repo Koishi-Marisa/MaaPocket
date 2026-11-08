@@ -4,7 +4,7 @@ import type {
   RenderOptions,
 } from "@/lib/types";
 
-const DEFAULT_SECTIONS = ["names", "profile", "intro", "lore", "combat"];
+const DEFAULT_SECTIONS = ["names", "profile", "intro", "lore", "related", "combat"];
 
 export function absoluteUrl(raw: string): string {
   const url = raw.trim();
@@ -237,27 +237,50 @@ function combatSection(doc: CharacterDoc): string {
 
 function voicesSection(doc: CharacterDoc): string {
   if (doc.voices.length === 0) return "";
-  const lines = ["## 语音", ""];
-  for (const voice of doc.voices.slice(0, 40)) {
-    const text = voice.text || "（无文本）";
-    lines.push(`- [${voice.category}] ${voice.description || ""}：${text}`);
-    if (voice.file) lines.push(`  - ${voice.file}`);
+  const groups = new Map<string, string[]>();
+
+  for (const voice of doc.voices) {
+    const category = voice.category || "其他";
+    const list = groups.get(category) ?? [];
+    list.push(voice.text);
+    groups.set(category, list);
   }
-  if (doc.voices.length > 40) {
-    lines.push(`- 其余 ${doc.voices.length - 40} 条语音已省略`);
+
+  const lines = ["## 语音台词", ""];
+  for (const [category, texts] of groups) {
+    lines.push(`### ${category}`, "");
+    for (const text of texts.slice(0, 20)) lines.push(`- ${text}`);
+    if (texts.length > 20) lines.push(`- 其余 ${texts.length - 20} 条已省略`);
+    lines.push("");
+  }
+  return lines.join("\n").trim();
+}
+
+function gallerySection(doc: CharacterDoc, keepImages: boolean): string {
+  if (doc.gallery.length === 0) return "";
+  const lines = ["## 外观参考", ""];
+
+  for (const group of doc.gallery) {
+    lines.push(`- **${group.title}**（${group.images.length} 张）`);
+    if (keepImages) {
+      lines.push(...group.images.slice(0, 3).map((image) => `  - ${image}`));
+      if (group.images.length > 3) lines.push(`  - 其余 ${group.images.length - 3} 张已省略`);
+    }
+  }
+
+  if (!keepImages) {
+    lines.push("", "> 图片本身需要视觉模型查看；这里仅提供图集分组名称作为外观线索。");
   }
   return lines.join("\n");
 }
 
-function gallerySection(doc: CharacterDoc): string {
-  if (doc.gallery.length === 0) return "";
-  const lines = ["## 图集", ""];
-  for (const group of doc.gallery) {
-    lines.push(`- **${group.title}**（${group.images.length} 张）`);
-    lines.push(...group.images.slice(0, 3).map((image) => `  - ${image}`));
-    if (group.images.length > 3) lines.push(`  - 其余 ${group.images.length - 3} 张已省略`);
-  }
-  return lines.join("\n");
+function relatedSection(doc: CharacterDoc): string {
+  if (doc.related.length === 0) return "";
+  return [
+    "## 相关角色",
+    "",
+    ...doc.related.map((relation) => `- ${relation.name}（ID ${relation.id}）`),
+  ].join("\n");
 }
 
 export function renderCharacterMarkdown(doc: CharacterDoc, options: RenderOptions = {}): string {
@@ -276,9 +299,10 @@ export function renderCharacterMarkdown(doc: CharacterDoc, options: RenderOption
   if (sections.has("profile")) blocks.push(profileSection(doc));
   if (sections.has("intro")) blocks.push(introSection(doc));
   if (sections.has("lore")) blocks.push(loreSection(doc, Boolean(options.keepImages)));
+  if (sections.has("related")) blocks.push(relatedSection(doc));
   if (sections.has("combat")) blocks.push(combatSection(doc));
   if (sections.has("voices")) blocks.push(voicesSection(doc));
-  if (sections.has("gallery")) blocks.push(gallerySection(doc));
+  if (sections.has("gallery")) blocks.push(gallerySection(doc, Boolean(options.keepImages)));
 
   let output = blocks
     .filter((block) => block.trim().length > 0)

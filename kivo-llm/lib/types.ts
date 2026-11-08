@@ -119,6 +119,12 @@ export interface CharacterRelease {
   globalDate: string | null;
 }
 
+export interface CharacterRelation {
+  id: number;
+  name: string;
+  url: string;
+}
+
 export interface CharacterDoc {
   id: number;
   displayName: string;
@@ -137,6 +143,7 @@ export interface CharacterDoc {
   combat: CharacterCombat;
   voices: CharacterVoice[];
   gallery: CharacterGalleryGroup[];
+  related: CharacterRelation[];
   release: CharacterRelease;
   meta: {
     source: string;

@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
 
 详情参数：
 
-- sections=names,profile,intro,lore,combat,voices,gallery
+- sections=names,profile,intro,lore,related,combat,voices,gallery
 - max_chars=8000
 - images=1（保留设定中的图片链接）
 
@@ -47,6 +47,7 @@ export async function GET(request: NextRequest) {
 - intro：国服官方简介；国服未实装时回退为站内简介
 - introSource：cn / wiki / none
 - lore：站内设定整理（非国服官方文案）
+- related：相关角色
 - combat：稀有度、定位、攻击/防御类型、适应性、技能、基础数值
 - release：国服、日服、国际服的实装状态与日期
 - meta.isCn：是否已在国服实装

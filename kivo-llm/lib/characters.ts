@@ -172,12 +172,14 @@ function buildCombat(student: Record<string, any>): CharacterCombat {
 
 function buildVoices(student: Record<string, any>): CharacterVoice[] {
   const list = asArray(student.voice_cn).length > 0 ? asArray(student.voice_cn) : asArray(student.voice);
-  return list.map((voice: Record<string, any>) => ({
-    category: voice.category ?? "",
-    description: voice.description ?? "",
-    text: voice.text || voice.text_original || "",
-    file: absoluteUrl(voice.file ?? ""),
-  }));
+  return list
+    .map((voice: Record<string, any>) => ({
+      category: voice.category ?? "",
+      description: voice.description ?? "",
+      text: voice.text || voice.text_original || "",
+      file: absoluteUrl(voice.file ?? ""),
+    }))
+    .filter((voice) => voice.text.trim().length > 0);
 }
 
 function buildGallery(student: Record<string, any>): CharacterGalleryGroup[] {
@@ -379,6 +381,24 @@ export async function getCharacterDoc(id: number): Promise<CharacterDoc | null> 
   const introWiki = student.introduction || "";
   const intro = introCn || introWiki;
   const introSource = introCn ? "cn" : introWiki ? "wiki" : "none";
+  const relatedSeen = new Set<string>();
+  const related = asArray(student.relation)
+    .map((relationId) => BY_ID.get(Number(relationId)))
+    .filter((entry): entry is CharacterIndexEntry => Boolean(entry))
+    .map((entry) => ({
+      entry,
+      name: entry.names.cn || entry.displayName,
+    }))
+    .filter(({ name }) => {
+      if (relatedSeen.has(name)) return false;
+      relatedSeen.add(name);
+      return true;
+    })
+    .map(({ entry, name }) => ({
+      id: entry.id,
+      name,
+      url: entry.source,
+    }));
 
   return {
     id: Number(student.id),
@@ -394,6 +414,7 @@ export async function getCharacterDoc(id: number): Promise<CharacterDoc | null> 
     combat,
     voices: buildVoices(student),
     gallery: buildGallery(student),
+    related,
     release: {
       cn: Boolean(student.is_install_cn),
       jp: Boolean(student.is_install),
